@@ -197,10 +197,10 @@ BigFairing_OD=5.5 * 25.4;
 SmallFairing_OD=PML54Body_OD; //BigFairing_OD;
 PJ_Clip_a=6;
 
-module PJ_Clip(Fairing_OD=100){
+module PJ_Clip(Fairing_OD=100, FairingWall_t=2.2){
 	PJ_Clip_a=BigFairing_OD/Fairing_OD*PJ_Clip_a;
-	LockXtra=-0.6; // Cheet for Fairing54 -0.4 was still too tight
-	FairingWall_t=2.2;
+	LockXtra=-0.6; // Cheet for Fairing54 -0.4 was still too tight, -0.6 work perfectly
+	
 	LockTip_X=Fairing_OD/2-FairingWall_t-PJ_Jointer_d/2;
 	Back_Face_X=LockTip_X-PJ_Jointer_d*1.5;
 	Back_Back_X=LockTip_X-PJ_Jointer_d*2.5;
@@ -250,7 +250,9 @@ module PJ_Clip(Fairing_OD=100){
 //rotate([0,0,-0.2]) PJ_CW(Fairing_OD=SmallFairing_OD, FairingWall_T=2.2, Len=10);
 //PJ_CCW(Fairing_OD=SmallFairing_OD, FairingWall_T=2.2, Len=10);
 
-//PJ_Clip(Fairing_OD=BigFairing_OD);
+//PJ_Clip(Fairing_OD=BigFairing_OD, FairingWall_t=2.2);
+//rotate([0,0,-0.2]) PJ_CW(Fairing_OD=BigFairing_OD, FairingWall_T=2.2, Len=10);
+//PJ_CCW(Fairing_OD=BigFairing_OD, FairingWall_T=2.2, Len=10);
 
 module PJ_CW(Fairing_OD=100, FairingWall_T=2.2, Len=30){
 	Clip_L=PJ_Clip_L;
@@ -299,9 +301,10 @@ module PJ_CCW(Fairing_OD=100, FairingWall_T=2.2, Len=30){
 //PJ_CCW(Fairing_OD=BigFairing_OD, FairingWall_T=2.2, Len=30);
 
 module Test_PJ(){
+	// Test the fit of the passive joint
 	FairingWall_T=2.2;
-	//Fairing_OD=5.5 * 25.4;
-	Fairing_OD=PML54Body_OD;
+	Fairing_OD=5.5 * 25.4;
+	//Fairing_OD=PML54Body_OD;
 	Fairing_ID=Fairing_OD-FairingWall_T*2;
 	
 	Arc_a=180;
@@ -322,10 +325,11 @@ module Test_PJ(){
 	
 	rotate([0,0,Arc_a]) PJ_CW(Fairing_OD=Fairing_OD, Len=30);
 	
-	translate([0,0,12.5]) rotate([0,0,Arc_a]) rotate([180,0,0]) PJ_Clip(Fairing_OD=Fairing_OD);
+	translate([0,0,12.5]) rotate([0,0,Arc_a]) 
+		rotate([180,0,0]) PJ_Clip(Fairing_OD=Fairing_OD, FairingWall_t=FairingWall_T);
 	
-	translate([0,0,5]) PJ_Clip(Fairing_OD=Fairing_OD);
-	translate([0,0,20]) PJ_Clip(Fairing_OD=Fairing_OD);
+	translate([0,0,5]) PJ_Clip(Fairing_OD=Fairing_OD, FairingWall_t=FairingWall_T);
+	translate([0,0,20]) PJ_Clip(Fairing_OD=Fairing_OD, FairingWall_t=FairingWall_T);
 	PJ_CCW(Fairing_OD=Fairing_OD, Len=30);
 } // Test_PJ
 

@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: NoseCone.scad
 // Created: 6/13/2022 
-// Revision: 0.9.2  7/25/2022
+// Revision: 0.9.3  9/8/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -11,6 +11,7 @@
 //
 //  ***** History *****
 //
+// 0.9.3  9/8/2022  Added base radius to BluntConeNoseCone. 
 // 0.9.2  7/25/2022 Using offset for nosecone wall. Added BluntConeNoseCone and OgiveNoseCone. 
 // 0.9.1  6/24/2022 Thinner wall nosecone, added Wall_T
 // 0.9.0  6/13/2022 First code.
@@ -43,10 +44,12 @@ IDXtra=0.2;
 
 module BluntConeShape(L=100, D=50, Base_L=2, Tip_R=5){
 	//Spherically blunted conic
+	Trans_R=Tip_R<=Base_L? Tip_R:Base_L;
 	
 	difference(){
 		hull(){
 			translate([0,L-Tip_R,0]) circle(r=Tip_R); 
+			translate([D/2-Trans_R,Base_L,0]) circle(r=Trans_R); 
 			translate([-D/2,0,0]) square([D,Base_L]);
 		} // hull
 		
@@ -55,6 +58,8 @@ module BluntConeShape(L=100, D=50, Base_L=2, Tip_R=5){
 } // BluntConeShape
 
 // rotate_extrude() BluntConeShape(L=100, D=50, Base_L=5, Tip_R=5);
+
+// BluntConeShape(L=100, D=50, Base_L=15, Tip_R=10);
 
 module BluntConeNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3){
 	

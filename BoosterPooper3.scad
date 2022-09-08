@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: BoosterPooper3.scad
 // Created: 9/3/2022 
-// Revision: 0.9.0  9/3/2022
+// Revision: 0.9.1  9/8/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -15,31 +15,67 @@
 //
 //  ***** History *****
 // 
+// 0.9.1  9/8/2022  Booster is ready to print, still working on ForwardBoosterLock and parts. 
 // 0.9.0  9/3/2022  First code.
 //
 // ***********************************
 //  ***** for STL output *****
 //
+// ForwardBoosterLock(); // not ready to print
+// BB_Lock();
+//
 // BP_Fin();
 // rotate([180,0,0]) LowerFinCan();
 // UpperFinCan();
 //
-// rotate([180,0,0]) BoosterTail();
+// *** Strap-On Booster Parts ***
+// 
+/*
+FairingCone(Fairing_OD=BP_Booster_Body_OD, 
+					FairingWall_T=2.2,
+					NC_Base=5, 
+					NC_Len=95, 
+					NC_Wall_t=2,
+					NC_Tip_r=5);
+/**/
+// NoseLockRing();
 //
-// BoosterThrustRing();
+/*
+ F54_FairingHalf(IsLeftHalf=true, 
+				Fairing_OD=PML54Body_OD,
+				Wall_T=2.2,
+				Len=BP_Booster_Fairing_Len); // Booster Fairing, the parachute goes in here. 
+/**/
+//
+/*
+ F54_FairingHalf(IsLeftHalf=false, 
+				Fairing_OD=PML54Body_OD,
+				Wall_T=2.2,
+				Len=BP_Booster_Fairing_Len); // Booster Fairing, the parachute goes in here. 
+/**/
+//
+// rotate([180,0,0]) FairingBase(); // Pring w/ support
+// FairingBaseLockRing();
+//
+// SpringEndCap();
+//
+// Booster_E_Bay();
+// AltDoor54(Tube_OD=BP_Booster_Body_OD);
+// rotate([180,0,0]) BoosterTail();
 // BoosterButton();
-// BB_ThrustPoint();
-// BB_LockingThrustPoint();
-// BB_Lock();
 //
 // ***********************************
 //  ***** Routines *****
 //
-// LighteningHole(H=10, W=8, L=50);
+// TailCone5438(OD=BP_Booster_Body_OD, ID=BP_Booster_MtrTube_OD, Len=50);
+// BoosterThrustRing();
+// BB_ThrustPoint();
+// BB_LockingThrustPoint();
 //
 // ***********************************
 //  ***** for Viewing *****
 //
+// ShowBooster();
 // ShowBoosterPooper();
 //
 // ***********************************
@@ -72,6 +108,7 @@ BP_Booster_Body_ID=PML54Body_ID;
 BP_Booster_MtrTube_OD=PML38Body_OD;
 BP_Booster_MtrTube_ID=PML38Body_ID;
 BP_Booster_MtrRtr_OD=PML38Body_OD+6;
+BP_Booster_Fairing_Len=130;
 
 BP_Body_OD=PML98Body_OD;
 BP_Body_ID=PML98Body_ID;
@@ -411,7 +448,8 @@ module LowerFinCan(){
 			Chamfer_L=BP_Fin_Chamfer_L, HasTailCone=true); // Lower Half of Fin Can
 		
 		for (j=[0:nBoosters-1])
-	rotate([0,0,360/nBoosters*j-180/nFins]) translate([0,BP_Body_OD/2-BoosterButtonOA_h,BP_BoosterButton1_z]) rotate([-90,0,0]) BB_ThrustPoint_Hole();
+			rotate([0,0,360/nBoosters*j-180/nFins]) translate([0,BP_Body_OD/2-BoosterButtonOA_h,
+					BP_BoosterButton1_z]) rotate([-90,0,0]) BB_ThrustPoint_Hole();
 	} // difference
 
 	translate([0,0,60]) rotate([0,0,-180/nFins]) 

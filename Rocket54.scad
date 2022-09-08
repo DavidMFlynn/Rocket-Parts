@@ -238,7 +238,7 @@ module UpperFinCan(){
 	// Upper Half of Fin Can
 	
 	rotate([180,0,0]) 
-		FinCan3(Tube_OD=R54_Body_OD, Tube_ID=R54_Body_ID, MtrTube_OD=R54_MtrTube_OD, nFins=nFins,
+		FinCan3(Tube_OD=R54_Body_OD, Tube_ID=R54_Body_ID, MtrTube_OD=R54_MtrTube_OD+IDXtra*2, nFins=nFins,
 			Post_h=R54_Fin_Post_h, Root_L=R54_Fin_Root_L, Root_W=R54_Fin_Root_W, 
 			Chamfer_L=R54_Fin_Chamfer_L, HasTailCone=false); 
 
@@ -248,7 +248,8 @@ module UpperFinCan(){
 
 module LowerFinCan(){
 	
-	FinCan3(Tube_OD=R54_Body_OD, Tube_ID=R54_Body_ID, MtrTube_OD=R54_MtrTube_OD, nFins=nFins, 
+	difference(){
+		FinCan3(Tube_OD=R54_Body_OD, Tube_ID=R54_Body_ID, MtrTube_OD=R54_MtrTube_OD+IDXtra*2, nFins=nFins, 
 			Post_h=R54_Fin_Post_h, Root_L=R54_Fin_Root_L, Root_W=R54_Fin_Root_W, 
 			Chamfer_L=R54_Fin_Chamfer_L, 
 			HasTailCone=true,
@@ -256,11 +257,15 @@ module LowerFinCan(){
 					MtrRetainer_L=16,
 					MtrRetainer_Inset=5); // Lower Half of Fin Can
 		
+		translate([0,0,40]) rotate([0,0,-180/nFins]) 
+			translate([R54_Body_OD/2+5,0,0]) rotate([0,90,0]) Bolt8Hole(depth=30);
+	} // difference
+		
 
 
 	difference(){
 		translate([0,0,40]) rotate([0,0,-180/nFins]) 
-			RailButtonPost(OD=R54_Body_OD, MtrTube_OD=R54_MtrTube_OD, H=R54_Body_OD/2+5);
+			RailButtonPost(OD=R54_Body_OD, MtrTube_OD=R54_MtrTube_OD, H=R54_Body_OD/2+5, Len=30);
 		translate([0,0,50]) TrapFin2Slots(Tube_OD=R54_Body_OD, nFins=nFins, 	
 			Post_h=R54_Fin_Post_h, Root_L=R54_Fin_Root_L, Root_W=R54_Fin_Root_W, Chamfer_L=R54_Fin_Chamfer_L);
 	} // difference
