@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: FairingJointLib.scad
 // Created: 8/5/2022 
-// Revision: 0.9.6  9/5/2022
+// Revision: 0.9.7  9/9/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -11,6 +11,7 @@
 //
 //  ***** History *****
 //
+// 0.9.7  9/9/2022   Finding size for Fairing98
 // 0.9.6  9/5/2022   Adjustments for 54mm BT
 // 0.9.5  9/3/2022   PJ bug fixes
 // 0.9.4  8/28/2022  Moved sample fairing to Fairing.scad, changed to FairingJointLib
@@ -194,12 +195,18 @@ PJ_Clip_h=5;
 PJ_Clip_Body_L=4;
 
 BigFairing_OD=5.5 * 25.4;
-SmallFairing_OD=PML54Body_OD; //BigFairing_OD;
+SmallFairing_OD=PML54Body_OD;
 PJ_Clip_a=6;
 
 module PJ_Clip(Fairing_OD=100, FairingWall_t=2.2){
 	PJ_Clip_a=BigFairing_OD/Fairing_OD*PJ_Clip_a;
-	LockXtra=-0.6; // Cheet for Fairing54 -0.4 was still too tight, -0.6 work perfectly
+	
+	// LockXtra=-0.6; // Cheet for Fairing54 -0.4 was still too tight, -0.6 work perfectly
+	// 
+	//LockXtra=-0.3; // Cheet for BigFairing_OD Fairing, -0.3 is Loose but usable, -0.6 was too loose
+	
+	//
+	LockXtra=-0.2; // Cheet for Fairing98 Fairing, 
 	
 	LockTip_X=Fairing_OD/2-FairingWall_t-PJ_Jointer_d/2;
 	Back_Face_X=LockTip_X-PJ_Jointer_d*1.5;
@@ -303,11 +310,13 @@ module PJ_CCW(Fairing_OD=100, FairingWall_T=2.2, Len=30){
 module Test_PJ(){
 	// Test the fit of the passive joint
 	FairingWall_T=2.2;
-	Fairing_OD=5.5 * 25.4;
+	//Fairing_OD=5.5 * 25.4;
+	Fairing_OD=PML98Body_OD;
 	//Fairing_OD=PML54Body_OD;
 	Fairing_ID=Fairing_OD-FairingWall_T*2;
 	
-	Arc_a=180;
+	//Arc_a=180;
+	Arc_a=90;
 	
 	difference(){
 		Tube(OD=Fairing_OD, ID=Fairing_ID, Len=30, myfn=$preview? 36:360);
@@ -316,8 +325,9 @@ module Test_PJ(){
 		// cut in half
 		translate([-Fairing_OD/2-Overlap,-Fairing_OD/2-Overlap,-Overlap])
 			cube([Fairing_OD+Overlap*2,Fairing_OD/2+Overlap,30+Overlap*2]);
-		//translate([-Fairing_OD/2-Overlap,-Overlap,-Overlap])
-		//	cube([Fairing_OD/2+Overlap*2,Fairing_OD/2+Overlap,30+Overlap*2]);
+		if (Arc_a==90)
+			translate([-Fairing_OD/2-Overlap,-Overlap,-Overlap])
+				cube([Fairing_OD/2+Overlap*2,Fairing_OD/2+Overlap,30+Overlap*2]);
 		
 		
 		PJ_CCW_Slot(Fairing_OD=Fairing_OD, Len=30);

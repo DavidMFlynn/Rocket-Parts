@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: BoosterDropperLib.scad
 // Created: 9/2/2022 
-// Revision: 0.9.3  9/8/2022
+// Revision: 0.9.4  9/9/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -11,6 +11,7 @@
 //
 //  ***** History *****
 //
+// 0.9.4  9/9/2022  Modified for 6805 ball bearing.
 // 0.9.3  9/8/2022  Added XtraLen to BoosterButton.
 // 0.9.2  9/4/2022  Nearly ready to test. 
 // 0.9.1  9/3/2022  Lowered bearing 0.5mm.
@@ -24,6 +25,7 @@
 // BB_ThrustPoint(); // Print 1 per booster, incorperate into lower fin can
 // BB_LockingThrustPoint(); // Print 1 per booster, incorperate into rocket body
 // BB_Lock(); // Print 1 per booster
+// BB_BearingStop(); // Only used with ball bearing
 //
 // ***********************************
 //  ***** Routines *****
@@ -34,6 +36,7 @@
 //
 // ***********************************
 
+include<involute_gears.scad>
 include<TubesLib.scad>
 include<BearingLib.scad>
  //include<CommonStuffSAEmm.scad>
@@ -58,6 +61,12 @@ BB_Lock_BallCircle_d=BoosterButtonMajor_d+BB_Lock_Wall_t*2+BB_Lock_Ball_d;
 BB_Lock_Race_w=BB_Lock_Ball_d+2;
 
 TopOfRace=-3.5; 
+
+UseBallBearing=true;
+// Ball Bearing 6805-2RS
+BB6805_2RS_ID=25;
+BB6805_2RS_OD=37;
+BB6805_2RS_H=7;
 
 module LighteningHole(H=10, W=8, L=50){
 	R=1;
@@ -110,7 +119,7 @@ module BoosterButton(XtraLen=0){
 	} // difference
 } // BoosterButton
 
-//BoosterButton(XtraLen=0.3);
+//BoosterButton(XtraLen=0.3); // XtraLen=0.3 works well
 
 module BB_ThrustPoint_Hole(Swell=-Overlap){
 	Block_w=BoosterButtonMajor_d+BB_Lock_Wall_t*2+Swell*2;
@@ -193,6 +202,8 @@ module BB_ThrustPoint(BodyTube_OD=PML98Body_OD, BoosterBody_OD=PML54Body_OD){
 Bolt4Inset=4;
 
 module BB_LTP_Hole(){
+	// This is the hole a locking thrust point fits in. 
+	
 	Race_OD=BB_Lock_BallCircle_d+BB_Lock_Ball_d+Bolt4Inset*4;
 	
 	BB_ThrustPoint_Hole(Swell=IDXtra*2);
@@ -220,26 +231,52 @@ module BB_LockingThrustPoint(){
 	
 	module TheBolts(){
 		BB_LTP_BoltPattern() Bolt4HeadHole(depth=12,lHead=22);
-	}
+	} // TheBolts
 	
 	
 	// Bearing outer race
-	difference(){
-		translate([0,0,TopOfRace]) rotate([180,0,0])
-			OnePieceOuterRace(BallCircle_d=BB_Lock_BallCircle_d, 
-					Race_OD=Race_OD, Ball_d=BB_Lock_Ball_d, Race_w=BB_Lock_Race_w, 
-					PreLoadAdj=BB_Lock_Preload, VOffset=0.00, BI=true, myFn=$preview? 90:360);
+	if (UseBallBearing){
+		difference(){
+			translate([0,0,TopOfRace-BB_Lock_Race_w]) cylinder(d=Race_OD, h=BB_Lock_Race_w);
+			
+			translate([0,0,TopOfRace-BB_Lock_Race_w-Overlap])
+				cylinder(d=BB6805_2RS_OD+IDXtra, h=BB6805_2RS_H+Overlap*2);
+			translate([0,0,TopOfRace-BB6805_2RS_H-1-Overlap])
+				cylinder(d=BB6805_2RS_OD+IDXtra, h=BB6805_2RS_H+Overlap*2);
+			translate([0,0,TopOfRace-BB_Lock_Race_w-Overlap])
+				cylinder(d=BB6805_2RS_OD-2, h=BB_Lock_Race_w+Overlap*2);
+			
+			// Bolt holes
+			TheBolts();
+		} // difference
 		
-		// Bolt holes
-		TheBolts();
-	} // difference
+// Ball Bearing 6805-2RS
+//BB6805_2RS_ID=25;
+//BB6805_2RS_OD=37;
+//BB6805_2RS_H=7;
+	}else{
+		difference(){
+			translate([0,0,TopOfRace]) rotate([180,0,0])
+				OnePieceOuterRace(BallCircle_d=BB_Lock_BallCircle_d, 
+						Race_OD=Race_OD, Ball_d=BB_Lock_Ball_d, Race_w=BB_Lock_Race_w, 
+						PreLoadAdj=BB_Lock_Preload, VOffset=0.00, BI=true, myFn=$preview? 90:360);
+			
+			// Bolt holes
+			TheBolts();
+		} // difference
+	} // if UseBallBearing
 	
 	// Middle section
 	difference(){
 		translate([0,0,TopOfRace-Overlap]) cylinder(d=Race_OD, h=17);
 		//cylinder(d1=Race_OD, d2=BoosterButtonMajor_d+6, h=12);
 			
-		BB_ThrustPoint_Hole();
+		difference(){
+			BB_ThrustPoint_Hole();
+			// Rotating lock
+			translate([0,0,TopOfRace-Overlap*3]) 
+				cylinder(d=BoosterButtonMajor_d+BB_Lock_Wall_t*2+6, h=14);
+		}
 		
 		// conform to tube OD
 		translate([0,-30,-PML98Body_OD/2+BoosterButtonOA_h]) rotate([-90,0,0])
@@ -252,13 +289,23 @@ module BB_LockingThrustPoint(){
 		TheBolts();
 		
 		//Ball pushing hole
-		translate([0,-BB_Lock_BallCircle_d/2,TopOfRace]) cylinder(d=BB_Lock_Ball_d/2, h=15);
+		if (UseBallBearing==false)
+		translate([0,-BB_Lock_BallCircle_d/2,TopOfRace]) cylinder(d=BB_Lock_Ball_d/2, h=25);
 		
+		if (UseBallBearing){
+			translate([0,0,TopOfRace-1-Overlap]) cylinder(d=BB6805_2RS_ID+3, h=4+Overlap*2);
+		}else{
 		translate([0,0,TopOfRace-Overlap*2]) 
 			cylinder(d1=BB_Lock_BallCircle_d+BB_Lock_Ball_d*0.7, d2=BoosterButtonMajor_d+BB_Lock_Wall_t*2+LooseFit, h=1);
+		}
 		
-		translate([0,0,TopOfRace-Overlap*2]) cylinder(d=BoosterButtonMajor_d+BB_Lock_Wall_t*2+1, h=8+Overlap*2);
+		// Rotating lock
+		translate([0,0,TopOfRace-Overlap*2]) 
+				cylinder(d=BoosterButtonMajor_d+BB_Lock_Wall_t*2+1, h=8+Overlap*2);
 		
+		
+		
+		// Button clearance
 		translate([0,0,-1.5-Overlap]) hull(){
 			cylinder(d=BoosterButtonMajor_d+LooseFit, h=12+Overlap*2);
 			translate([0,20,0]) cylinder(d=BoosterButtonMajor_d+LooseFit, h=12+Overlap*2);
@@ -272,9 +319,14 @@ module BB_LockingThrustPoint(){
 		// Bolt holes
 		TheBolts();
 		
+		if (UseBallBearing){
+			translate([0,0,TopOfRace-Overlap]) cylinder(d=BB6805_2RS_ID+3,h=3);
+		}else{
 		translate([0,0,TopOfRace-Overlap]) 
 			cylinder(d1=BB_Lock_BallCircle_d+BB_Lock_Ball_d*0.7, d2=BoosterButtonMajor_d+BB_Lock_Wall_t*2+LooseFit, h=1);
+		}
 		
+		// Clearance for the rotating lock
 		translate([0,0,TopOfRace-Overlap]) 
 			cylinder(d=BoosterButtonMajor_d+BB_Lock_Wall_t*2+1, h=-TopOfRace+BoosterButtonMajor_h );
 	} // difference
@@ -287,21 +339,40 @@ module BB_LockShaft(Len=50){
 	nBolts=3;
 	Race_ID=BB_Lock_BallCircle_d-BB_Lock_Ball_d-Bolt4Inset*4;
 	End_h=8;
+	Taper_h=8;
+	
+	Stop_Len=18;
+	StopBlock_a=22.5;
+	Gear_z=14;
 	
 	difference(){
 		union(){
+			translate([0,0,Len/2-Gear_z])
+			gear(number_of_teeth=24, circular_pitch=300, diametral_pitch=false,
+				pressure_angle=20, clearance = 0.2, gear_thickness=8, rim_thickness=8, rim_width=3,
+				hub_thickness=8, hub_diameter=15, bore_diameter=5, circles=0, 
+				backlash=0, twist=0, 
+				involute_facets=0, flat=false);
+
 			cylinder(d=Race_ID+6, h=Len, center=true);
 			
 			translate([0,0,-Len/2])
 				cylinder(d=BB_Lock_BallCircle_d-BB_Lock_Ball_d*0.7, h=End_h);
 			translate([0,0,-Len/2+End_h-Overlap])
-				cylinder(d1=BB_Lock_BallCircle_d-BB_Lock_Ball_d*0.7, d2=Race_ID+6, h=5);
+				cylinder(d1=BB_Lock_BallCircle_d-BB_Lock_Ball_d*0.7, d2=Race_ID+6, h=Taper_h);
 			
 			mirror([0,0,1]){
 			translate([0,0,-Len/2])
 				cylinder(d=BB_Lock_BallCircle_d-BB_Lock_Ball_d*0.7, h=End_h);
 			translate([0,0,-Len/2+End_h-Overlap])
-				cylinder(d1=BB_Lock_BallCircle_d-BB_Lock_Ball_d*0.7, d2=Race_ID+6, h=5);
+				cylinder(d1=BB_Lock_BallCircle_d-BB_Lock_Ball_d*0.7, d2=Race_ID+6, h=Taper_h);
+			}
+			
+			
+			// Hard Stops
+			translate([0,0,-Len/2+5]){
+				cube([8,Stop_Len,5]);
+				rotate([0,0,180+StopBlock_a]) mirror([1,0,0]) cube([8,Stop_Len,5]);
 			}
 		} // union
 		
@@ -317,7 +388,20 @@ module BB_LockShaft(Len=50){
 	} // difference
 } // BB_LockShaft
 
-//BB_LockShaft();
+//rotate([180,0,0]) BB_LockShaft(Len=50);
+
+module BB_LockStop(Len=50, Extra_H=2){
+	StopBlock_a=22.5;
+	Stop_Len=18;
+	
+	translate([0,0,-Len/2+5-Extra_H]) hull(){
+		translate([-Overlap, Stop_Len-4, 0]) cube([Overlap,10,5+Extra_H]);
+		rotate([0,0,StopBlock_a]) translate([0, Stop_Len-4, 0]) cube([Overlap,10,5+Extra_H]);
+	} // hull
+	
+} // BB_LockStop
+
+//BB_LockStop(Len=50, Extra_H=2)
 
 module BB_Lock(){
 	nBolts=3;
@@ -325,10 +409,24 @@ module BB_Lock(){
 	ReceExtend=1.00;
 	
 	difference(){
+		if (UseBallBearing){
+			
+			difference(){
+				union(){
+					translate([0,0,TopOfRace-1]) cylinder(d=BB6805_2RS_ID+2, h=3-Overlap);
+					translate([0,0,TopOfRace-1-BB6805_2RS_H]) cylinder(d=BB6805_2RS_ID, h=BB6805_2RS_H+Overlap);
+				} // union
+				translate([0,0,TopOfRace-1-BB6805_2RS_H-Overlap]) cylinder(d=Race_ID, h=BB6805_2RS_H+3+Overlap*3);
+			} // difference
+			
+		}else{
+			
 		// Race extends 1mm below outer race
 		translate([0,0,TopOfRace]) rotate([180,0,0]) OnePieceInnerRace(BallCircle_d=BB_Lock_BallCircle_d,	
 			Race_ID=Race_ID,	Ball_d=BB_Lock_Ball_d, 
 			Race_w=BB_Lock_Race_w+ReceExtend, PreLoadAdj=BB_Lock_Preload, VOffset=-ReceExtend/2, BI=true, myFn=$preview? 90:360);
+			
+		} // if UseBallBearing
 		
 		// Bolt holes
 		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j])
@@ -355,6 +453,28 @@ module BB_Lock(){
 } // BB_Lock
 
 //BB_Lock();
+
+module BB_BearingStop(){
+	// Only used with ball bearing
+	
+	nBolts=3;
+	Race_ID=BB_Lock_BallCircle_d-BB_Lock_Ball_d-Bolt4Inset*4;
+	
+	difference(){
+		cylinder(d=BB6805_2RS_ID+3, h=2);
+		
+		translate([0,0,-Overlap]) cylinder(d=Race_ID, h=2+Overlap*2);
+		
+		// Bolt holes
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j])
+			translate([BB_Lock_BallCircle_d/2-BB_Lock_Ball_d/2-Bolt4Inset,0,-Overlap])
+				rotate([180,0,0]) Bolt4ClearHole();
+	} // difference
+	
+} // BB_BearingStop
+
+//BB_BearingStop(); // Only used with ball bearing
+
 
 
 

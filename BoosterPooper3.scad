@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: BoosterPooper3.scad
 // Created: 9/3/2022 
-// Revision: 0.9.1  9/8/2022
+// Revision: 0.9.2  9/9/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -15,6 +15,7 @@
 //
 //  ***** History *****
 // 
+// 0.9.2  9/9/2022  Still working on ForwardBoosterLock
 // 0.9.1  9/8/2022  Booster is ready to print, still working on ForwardBoosterLock and parts. 
 // 0.9.0  9/3/2022  First code.
 //
@@ -30,7 +31,7 @@
 //
 // *** Strap-On Booster Parts ***
 // 
-//*
+/*
 FairingCone(Fairing_OD=BP_Booster_Body_OD, 
 					FairingWall_T=2.2,
 					NC_Base=5, 
@@ -150,7 +151,11 @@ module ShowBooster(){
 	}
 
 	// Booster fairing
-	translate([0,0,BP_BoosterButton2_z+EBay_Len+ThrustRing_h/2+Overlap*3]) Sample(IsLeftHalf=true);
+	translate([0,0,BP_BoosterButton2_z+EBay_Len+ThrustRing_h/2+Overlap*3]) 
+		F54_FairingHalf(IsLeftHalf=true, 
+				Fairing_OD=BP_Booster_Body_OD,
+				Wall_T=BP_Booster_Fairing_Wall_t,
+				Len=BP_Booster_Fairing_Len);
 	
 	// Booster electronics bay
 	translate([0,0,BP_BoosterButton2_z+Overlap*2]) rotate([0,0,-90]) color("Orange") Booster_E_Bay();
@@ -182,7 +187,8 @@ module ShowBooster(){
 
 module ShowBoosterPooper(){
 	
-	//translate([0,0,BP_BoosterButton2_z+Overlap*2]) rotate([0,0,45]) rotate([0,90,0]) BB_LockShaft(Len=51.5);
+	translate([0,0,BP_BoosterButton2_z+Overlap*2]) rotate([0,0,45]) rotate([0,90,0]) BB_LockShaft(Len=50);
+	
 	
 	//*
 	translate([0,0,BP_BoosterButton2_z+Overlap*2])
@@ -201,21 +207,25 @@ module ShowBoosterPooper(){
 	
 	translate([0,0,BP_BoosterButton2_z+Overlap*2]) rotate([0,0,-45]) ForwardBoosterLock();
 	
-	//*
+	/*
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j])
 		translate([BP_Body_OD/2-BP_Fin_Post_h,0,BP_Fin_Root_L/2+50]) 
 			rotate([0,90,0]) color("Yellow") BP_Fin();
 	/**/
 	
+	/*  // Motor Tube
 	translate([0,0,17]) color("Blue") Tube(OD=BP_MtrTube_OD, ID=54, 
 			Len=BP_MtrTubeLen, myfn=$preview? 90:360);
+	/**/
 	 
-	translate([0,0,BP_Fin_Root_L+100+Overlap]) color("White") UpperFinCan();
-	color("LightGreen") LowerFinCan();
+	//translate([0,0,BP_Fin_Root_L+100+Overlap]) color("White") UpperFinCan();
+	//color("LightGreen") LowerFinCan();
 	
 	// Boosters 
+	/*
 	rotate([0,0,45]) translate([BP_Booster_Body_OD/2+BP_Body_OD/2,0,0]) ShowBooster();
 	rotate([0,0,45+180]) translate([BP_Booster_Body_OD/2+BP_Body_OD/2,0,0]) ShowBooster();
+	/**/
 		
 } // ShowBoosterPooper
 
@@ -368,8 +378,13 @@ module ForwardBoosterLock(){
 	module BD_Holes(){
 		translate([0,BP_Body_OD/2-BoosterButtonOA_h,0]) rotate([-90,0,0]) BB_LTP_Hole();
 		rotate([0,0,180]) translate([0,BP_Body_OD/2-BoosterButtonOA_h,0]) rotate([-90,0,0]) BB_LTP_Hole();
-		rotate([-90,0,0]) cylinder(d=38, h=BP_Body_OD, center=true);
+		
+		// d=33 Ball Bearing OD - 4
+		rotate([-90,0,0]) cylinder(d=33, h=BP_Body_OD, center=true);
 	} // BD_Holes
+	
+	
+	rotate([-90,0,0]) rotate([0,0,90]) BB_LockStop(Len=50, Extra_H=4);
 	
 	//*
 	difference(){
@@ -394,7 +409,7 @@ module ForwardBoosterLock(){
 	difference(){
 		translate([0,0,Bottom_Z+20]) cylinder(d=BP_Body_OD-1, h=OAL_Z-40, $fn=$preview? 90:360);
 			
-		
+		// Clean up base below centering ring
 		translate([0,0,Bottom_Z+15-Overlap]) cylinder(d1=BP_Body_OD, d2=BP_Body_OD-50, h=25);
 		translate([-BP_Body_OD/2,-CentralCavity2_Y/2,Bottom_Z-Overlap]) 
 			cube([BP_Body_OD,CentralCavity2_Y,OAL_Z+Overlap*2]);
