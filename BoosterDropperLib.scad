@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: BoosterDropperLib.scad
 // Created: 9/2/2022 
-// Revision: 0.9.2  9/4/2022
+// Revision: 0.9.3  9/8/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -11,6 +11,7 @@
 //
 //  ***** History *****
 //
+// 0.9.3  9/8/2022  Added XtraLen to BoosterButton.
 // 0.9.2  9/4/2022  Nearly ready to test. 
 // 0.9.1  9/3/2022  Lowered bearing 0.5mm.
 // 0.9.0  9/2/2022  First code.
@@ -19,7 +20,7 @@
 //  ***** for STL output *****
 //
 // BoosterThrustRing(); // Print 2 per booster
-// BoosterButton(); // Print 2 per booster
+// BoosterButton(XtraLen=0.3); // Print 2 per booster
 // BB_ThrustPoint(); // Print 1 per booster, incorperate into lower fin can
 // BB_LockingThrustPoint(); // Print 1 per booster, incorperate into rocket body
 // BB_Lock(); // Print 1 per booster
@@ -96,20 +97,20 @@ module BoosterThrustRing(MtrTube_OD=PML38Body_OD, BodyTube_OD=PML54Body_OD){
 
 //translate([0,BoosterButtonMinor_d/2,PML54Body_OD/2+BoosterButtonOA_h+Overlap]) rotate([90,0,0]) BoosterThrustRing();
 
-module BoosterButton(){
+module BoosterButton(XtraLen=0){
 	difference(){
 		union(){
 			cylinder(d=BoosterButtonMajor_d, h=BoosterButtonMajor_h);
 			translate([0,0,BoosterButtonMajor_h-Overlap]) 
 				cylinder(d1=BoosterButtonMajor_d, d2=BoosterButtonMinor_d, h=BoosterButtonTrans_h);
-			cylinder(d=BoosterButtonMinor_d, h=BoosterButtonOA_h);
+			cylinder(d=BoosterButtonMinor_d, h=BoosterButtonOA_h+XtraLen);
 		} // union
 		
 		translate([0,0,1.5]) rotate([180,0,0]) Bolt250FlatHeadHole(depth=BoosterButtonOA_h+Overlap, lAccess=12);
 	} // difference
 } // BoosterButton
 
-//BoosterButton();
+//BoosterButton(XtraLen=0.3);
 
 module BB_ThrustPoint_Hole(Swell=-Overlap){
 	Block_w=BoosterButtonMajor_d+BB_Lock_Wall_t*2+Swell*2;

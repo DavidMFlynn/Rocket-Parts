@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: Rocket54.scad
 // Created: 9/6/2022 
-// Revision: 0.9.0  9/6/2022
+// Revision: 0.9.1  9/8/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -11,6 +11,7 @@
 //
 //  ***** History *****
 // 
+// 0.9.1  9/8/2022  Shalower fin slots. 
 // 0.9.0  9/6/2022  First code.
 //
 // ***********************************
@@ -21,8 +22,18 @@
 // NoseLockRing();
 //
 // *** Fairing ***
-// Sample(IsLeftHalf=true);
-// Sample(IsLeftHalf=false);
+/*
+F54_FairingHalf(IsLeftHalf=true, 
+				Fairing_OD=Fairing_OD,
+				Wall_T=FairingWall_T,
+				Len=Fairing_Len);
+/**/
+/*
+F54_FairingHalf(IsLeftHalf=false, 
+				Fairing_OD=Fairing_OD,
+				Wall_T=FairingWall_T,
+				Len=Fairing_Len);
+/**/
 // SpringEndCap();
 //
 // *** Electronics Bay ***
@@ -65,7 +76,7 @@ IDXtra=0.2;
 $fn=$preview? 24:90;
 
 nFins=4;
-R54_Fin_Post_h=10;
+R54_Fin_Post_h=6.8;
 R54_Fin_Root_L=180;
 R54_Fin_Root_W=10;
 R54_Fin_Tip_W=5;

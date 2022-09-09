@@ -30,7 +30,7 @@
 //
 // *** Strap-On Booster Parts ***
 // 
-/*
+//*
 FairingCone(Fairing_OD=BP_Booster_Body_OD, 
 					FairingWall_T=2.2,
 					NC_Base=5, 
@@ -42,15 +42,15 @@ FairingCone(Fairing_OD=BP_Booster_Body_OD,
 //
 /*
  F54_FairingHalf(IsLeftHalf=true, 
-				Fairing_OD=PML54Body_OD,
-				Wall_T=2.2,
+				Fairing_OD=BP_Booster_Fairing_OD,
+				Wall_T=BP_Booster_Fairing_Wall_t,
 				Len=BP_Booster_Fairing_Len); // Booster Fairing, the parachute goes in here. 
 /**/
 //
 /*
  F54_FairingHalf(IsLeftHalf=false, 
-				Fairing_OD=PML54Body_OD,
-				Wall_T=2.2,
+				Fairing_OD=BP_Booster_Fairing_OD,
+				Wall_T=BP_Booster_Fairing_Wall_t,
 				Len=BP_Booster_Fairing_Len); // Booster Fairing, the parachute goes in here. 
 /**/
 //
@@ -109,6 +109,9 @@ BP_Booster_MtrTube_OD=PML38Body_OD;
 BP_Booster_MtrTube_ID=PML38Body_ID;
 BP_Booster_MtrRtr_OD=PML38Body_OD+6;
 BP_Booster_Fairing_Len=130;
+BP_Booster_Fairing_OD=BP_Booster_Body_OD;
+BP_Booster_Fairing_Wall_t=2.2;
+BP_Booster_Fairing_ID=BP_Booster_Fairing_OD-BP_Booster_Fairing_Wall_t*2;
 
 BP_Body_OD=PML98Body_OD;
 BP_Body_ID=PML98Body_ID;
@@ -225,7 +228,10 @@ module Booster_E_Bay(){
 	CP_a=-5;
 	
 	// The Fairing clamps onto this. 
-	translate([0,0,TopOfTube-4]) FairingBaseLockRing(Fairing_ID=BP_Booster_Body_ID, Interface=Overlap);
+	translate([0,0,TopOfTube-4]) 
+		FairingBaseLockRing(Tube_ID=BP_Booster_Body_ID, 
+		Fairing_ID=BP_Booster_Fairing_ID, Interface=Overlap);
+	
 	difference(){
 		translate([0,0,TopOfTube-7]) cylinder(d=BP_Booster_Body_ID+1, h=3+Overlap);
 		translate([0,0,TopOfTube-7-Overlap]) 

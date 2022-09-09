@@ -40,8 +40,18 @@
 // FairingCone();
 // NoseLockRing();
 //
-// F54_FairingHalf(IsLeftHalf=true);
-// F54_FairingHalf(IsLeftHalf=false);
+/*
+F54_FairingHalf(IsLeftHalf=true, 
+				Fairing_OD=Fairing_OD,
+				Wall_T=FairingWall_T,
+				Len=Fairing_Len);
+/**/
+/*
+F54_FairingHalf(IsLeftHalf=false, 
+				Fairing_OD=Fairing_OD,
+				Wall_T=FairingWall_T,
+				Len=Fairing_Len);
+/**/
 //
 // rotate([180,0,0]) FairingBase(); // Pring w/ support
 // FairingBaseLockRing();
@@ -79,6 +89,7 @@ F54_SpringEndCap_OD=F54_Spring_OD+3;
 Fairing_OD=PML54Body_OD;
 FairingWall_T=2.2;
 Fairing_ID=Fairing_OD-FairingWall_T*2;
+Fairing_Len=130;
 
 NC_Len=90;
 NC_Tip_r=7;
@@ -89,8 +100,6 @@ function NC_Lock_OD(Fairing_ID) = Fairing_ID; // Nosecone locking ring.
 function NC_Lock_ID(Fairing_ID) = Fairing_ID-6;
 //NC_Lock_OD=Fairing_ID; 
 //NC_Lock_ID=NC_Lock_OD-6;
-
-Fairing_Len=130; // Body of the fairing. Overall len is Fairing_Len
 
 //echo(Fairing_OD=Fairing_OD);
 
@@ -263,14 +272,14 @@ module FairingBase(BaseXtra=0, Fairing_OD=Fairing_OD, Fairing_ID=Fairing_ID,
 
 //translate([0,0,-10]) FairingBase();
 
-module FairingBaseLockRing(Fairing_ID=Fairing_ID, Interface=-IDXtra){
+module FairingBaseLockRing(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, Interface=-IDXtra){
 	Base_h=4;
 	OA_h=9;
 	
 	difference(){
 		union(){
 			// glue flange
-			cylinder(d=Fairing_ID+Interface, h=Base_h, $fn=$preview? 90:360);
+			cylinder(d=Tube_ID+Interface, h=Base_h, $fn=$preview? 90:360);
 			
 			// Backbone
 			cylinder(d=Fairing_ID-4-IDXtra*2, h=OA_h, $fn=$preview? 90:360);
@@ -293,7 +302,7 @@ module FairingBaseLockRing(Fairing_ID=Fairing_ID, Interface=-IDXtra){
 		translate([0,0,OA_h-3]) 
 				cylinder(d1=Fairing_ID-8, d2=Fairing_ID-6, h=3+Overlap, $fn=$preview? 90:360);
 		translate([0,0,-Overlap]) 
-				cylinder(d2=Fairing_ID-8, d1=Fairing_ID-4, h=Base_h, $fn=$preview? 90:360);
+				cylinder(d2=Fairing_ID-8, d1=Tube_ID-4, h=Base_h, $fn=$preview? 90:360);
 	} // difference
 } // FairingBaseLockRing
 
