@@ -32,7 +32,8 @@
 //
 // LighteningHole(H=10, W=8, L=50);
 // BB_ThrustPoint_Hole(BodyTube_OD=PML98Body_OD);
-// BB_LTP_Hole(BodyTube_OD=PML98Body_OD)
+// BB_LTP_Hole(BodyTube_OD=PML98Body_OD);
+// BB_Gear();
 //
 // ***********************************
 
@@ -130,6 +131,7 @@ module BB_ThrustPoint_Hole(Swell=-Overlap){
 } // BB_ThrustPoint_Hole
 
 //BB_ThrustPoint_Hole();
+//BB_ThrustPoint_Hole(Swell=IDXtra*2);
 
 module BB_ThrustPoint(BodyTube_OD=PML98Body_OD, BoosterBody_OD=PML54Body_OD){
 	Ramp_h=12;
@@ -206,8 +208,8 @@ module BB_LTP_Hole(){
 	
 	Race_OD=BB_Lock_BallCircle_d+BB_Lock_Ball_d+Bolt4Inset*4;
 	
-	BB_ThrustPoint_Hole(Swell=IDXtra*2);
-	translate([0,0,TopOfRace-BB_Lock_Race_w-IDXtra*2]) cylinder(d=Race_OD+IDXtra*2, h=BB_Lock_Race_w+17);
+	BB_ThrustPoint_Hole(Swell=IDXtra*3);
+	translate([0,0,TopOfRace-BB_Lock_Race_w-IDXtra*3]) cylinder(d=Race_OD+IDXtra*3, h=BB_Lock_Race_w+17);
 	BB_LTP_BoltPattern() Bolt4Hole(depth=24);
 } // BB_LTP_Hole
 
@@ -335,6 +337,24 @@ module BB_LockingThrustPoint(){
 
 //BB_LockingThrustPoint();
 
+module BB_Gear(nTeeth=24){
+	Pitch=300;
+	PressureAngle=20;
+	Clearance=0.4;
+	Thickness=8;
+	Backlash=0.2;
+	
+	
+	gear(number_of_teeth=nTeeth, circular_pitch=Pitch, diametral_pitch=false,
+				pressure_angle=PressureAngle, clearance = Clearance,
+				gear_thickness=Thickness, rim_thickness=Thickness, rim_width=3,
+				hub_thickness=Thickness, hub_diameter=15, bore_diameter=5, circles=0, 
+				backlash=Backlash, twist=0, 
+				involute_facets=0, flat=false);
+} // BB_Gear
+
+//BB_Gear();
+
 module BB_LockShaft(Len=50){
 	nBolts=3;
 	Race_ID=BB_Lock_BallCircle_d-BB_Lock_Ball_d-Bolt4Inset*4;
@@ -348,11 +368,7 @@ module BB_LockShaft(Len=50){
 	difference(){
 		union(){
 			translate([0,0,Len/2-Gear_z])
-			gear(number_of_teeth=24, circular_pitch=300, diametral_pitch=false,
-				pressure_angle=20, clearance = 0.2, gear_thickness=8, rim_thickness=8, rim_width=3,
-				hub_thickness=8, hub_diameter=15, bore_diameter=5, circles=0, 
-				backlash=0, twist=0, 
-				involute_facets=0, flat=false);
+				BB_Gear(nTeeth=24);
 
 			cylinder(d=Race_ID+6, h=Len, center=true);
 			

@@ -57,6 +57,7 @@ FairingCone(Fairing_OD=BP_Booster_Body_OD,
 //
 // rotate([180,0,0]) FairingBase(); // Pring w/ support
 // FairingBaseLockRing();
+//  rotate([180,0,0]) BB_LockShaft(Len=LockShaftLen);
 //
 // SpringEndCap();
 //
@@ -81,6 +82,7 @@ FairingCone(Fairing_OD=BP_Booster_Body_OD,
 //
 // ***********************************
 
+include<LD-20MGServoLib.scad>
 include<Fairing54.scad>
 include<BoosterDropperLib.scad>
 include<FinCan.scad>
@@ -142,6 +144,12 @@ echo(BP_BoosterTubeLen=BP_BoosterTubeLen);
 BP_BoosterMotorTubeLen=BP_BoosterButtonSpacing+ThrustRing_h+BP_BoosterTailConeLen-10;
 echo(BP_BoosterMotorTubeLen=BP_BoosterMotorTubeLen);
 
+LockShaftLen=48.5;
+
+//NoseLockRing(Fairing_ID =BP_Booster_Fairing_ID);
+//FairingBaseLockRing(Tube_ID=BP_Booster_Body_ID, Fairing_ID=BP_Booster_Fairing_ID, Interface=Overlap);
+//mirror([0,0,1])F54_Retainer(IsLeftHalf=true, Fairing_OD=BP_Booster_Fairing_OD, Wall_T=BP_Booster_Fairing_Wall_t);
+
 module ShowBooster(){
 	
 	// Booster nosecone
@@ -187,7 +195,7 @@ module ShowBooster(){
 
 module ShowBoosterPooper(){
 	
-	translate([0,0,BP_BoosterButton2_z+Overlap*2]) rotate([0,0,45]) rotate([0,90,0]) BB_LockShaft(Len=50);
+	translate([0,0,BP_BoosterButton2_z+Overlap*2]) rotate([0,0,45]) rotate([0,90,0]) BB_LockShaft(Len=LockShaftLen);
 	
 	
 	//*
@@ -230,6 +238,9 @@ module ShowBoosterPooper(){
 } // ShowBoosterPooper
 
 //ShowBoosterPooper();
+
+//FairingBaseLockRing(Tube_ID=BP_Booster_Body_ID, 
+//	Fairing_ID=BP_Booster_Fairing_ID, Interface=Overlap);
 
 module Booster_E_Bay(){
 	// Z=0 center of Booster button
@@ -414,6 +425,12 @@ module ForwardBoosterLock(){
 		translate([-BP_Body_OD/2,-CentralCavity2_Y/2,Bottom_Z-Overlap]) 
 			cube([BP_Body_OD,CentralCavity2_Y,OAL_Z+Overlap*2]);
 		
+		// Servo
+		G_a=22.5;
+		rotate([0,G_a,0]) translate([0,-8,24*300/180]) rotate([0,90-G_a,0]) 
+			rotate([-90,0,0]) Servo_HX5010(BottomMount=false,TopAccess=false,Xtra_w=1.2, Xtra_h=1);
+		
+		
 		/*
 		translate([0,0,27]) cylinder(d1=CentralCavity2_Y, d2=BP_Body_OD-2, h=8+Overlap);
 		hull(){
@@ -429,7 +446,15 @@ module ForwardBoosterLock(){
 	
 } // ForwardBoosterLock
 
+//G_a=30;
 //ForwardBoosterLock();
+
+//translate([0,0,0]) rotate([-90,0,0]) BB_LockShaft(Len=LockShaftLen);
+//rotate([0,G_a,0]) translate([0,11,24*300/180]) rotate([-90,0,0]) 
+//rotate([0,0,180/24]) 
+//BB_Gear();
+
+
 
 module UpperFinCan(){
 	// Upper Half of Fin Can

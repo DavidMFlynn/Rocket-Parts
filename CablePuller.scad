@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: CablePuller.scad
 // Created: 8/21/2022 
-// Revision: 0.9.4  9/6/2022
+// Revision: 1.0  9/11/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,6 +12,8 @@
 //
 //  ***** History *****
 //
+// 1.0    9/11/2022	  It works OK. 
+// 0.9.5  9/10/2022   A tighter cage with spring centering. 
 // 0.9.4  9/6/2022    Small fixes. 
 // 0.9.3  8/30/2022   It jammed! Need a second bearing for stability. 
 // 0.9.2  8/25/2022   Added CablePullerBoltPattern()
@@ -178,9 +180,12 @@ module CR_Cage(){
 	Bolt_X1=-1;
 	Cage_YZ=CP_SpringBody_YZ+5;
 	SpB_Hole_YZ=CP_SpringBody_YZ+LooseFit;
+	SpB_Bearing_YZ=CP_SpringBody_YZ+IDXtra;
 	Cage_PX=ArmLen+CP_Bearing_OD*1.5+CP_Spring_CBL+CableEnd_h+4+4;
 	BoltOffset=2;
 	TO_a=45;
+	
+	echo(SpB_Hole_YZ=SpB_Hole_YZ);
 	
 	module Bolt1(){
 		translate([0,0,Cage_YZ/2]){
@@ -252,9 +257,26 @@ module CR_Cage(){
 				rotate([90,0,0]) cylinder(d=6, h=Cage_YZ+10, center=true);
 		} // hull 
 		
+		// Hold the end of the spring centered
+		translate([CP_Bearing_OD/2+Cage_PX-6-CP_Bearing_OD/2,0,0])
+			rotate([0,90,0]) cylinder(d=CP_Spring_OD+IDXtra*2, h=3);
+		
 		// Body cutout
-		translate([CP_Bearing_OD/2,0,0]) 
-			rotate([0,90,0]) RoundRect(X=SpB_Hole_YZ,Y=SpB_Hole_YZ,Z=Cage_PX-3-CP_Bearing_OD/2,R=1);
+		difference(){
+			translate([CP_Bearing_OD/2,0,0]) 
+				rotate([0,90,0]) RoundRect(X=SpB_Hole_YZ, Y=SpB_Hole_YZ, Z=Cage_PX-4-CP_Bearing_OD/2, R=1);
+			//translate([CP_Bearing_OD/2+ArmLen+Overlap,0,0]) 
+				//rotate([0,90,0]) RoundRect(X=8, Y=SpB_Hole_YZ+Overlap, Z=25-Overlap*2, R=0.5);
+			translate([CP_Bearing_OD/2+ArmLen+Overlap,0,0]) 
+				rotate([0,90,0]) RoundRect(Y=8, X=SpB_Hole_YZ+Overlap, Z=25-Overlap*2, R=0.5);
+		} // difference
+		
+		translate([CP_Bearing_OD/2+ArmLen,0,0]) 
+			rotate([0,90,0]) RoundRect(X=SpB_Bearing_YZ, Y=SpB_Bearing_YZ, Z=25, R=0.5);
+		//translate([CP_Bearing_OD/2+ArmLen,0,0]) 
+			//rotate([0,90,0]) RoundRect(X=6, Y=SpB_Hole_YZ, Z=25, R=0.1);
+		//translate([CP_Bearing_OD/2+ArmLen,0,0]) 
+		//	rotate([0,90,0]) RoundRect(X=SpB_Hole_YZ, Y=6, Z=25, R=0.1);
 		
 		/*
 		translate([0,0,Cage_YZ/2]){
@@ -348,17 +370,33 @@ module BellCrank(Len=38){
 module SpringBody(){
 
 	AO_YZ=CP_SpringBody_YZ;
-	Body_L=CP_Spring_CBL+CableEnd_h+3;
+	Body_L=CP_Spring_CBL+CableEnd_h+1.5;
+	ArmingBlock_w=6.5;
 	
 	difference(){
+		union(){
+			// Body
 			hull(){
 				cylinder(d=CP_Bearing_OD-1, h=AO_YZ, center=true);
 				translate([CP_Bearing_OD/2+1,0,0]) 
 					rotate([0,90,0]) RoundRect(X=AO_YZ,Y=AO_YZ,Z=Body_L,R=1);
 			} // hull
+			
+			// Arming ears
+			hull(){
+				translate([CP_Bearing_OD/2+1,-ArmingBlock_w/2,-AO_YZ/2-2]) cube([2,ArmingBlock_w,AO_YZ+4]);
+				translate([CP_Bearing_OD/2+5,-ArmingBlock_w/2,-AO_YZ/2]) cube([2,ArmingBlock_w,AO_YZ]);
+			} // hull
+			
+			// Arming ears/guide posts
+			hull(){
+				translate([CP_Bearing_OD/2+Body_L-8,-ArmingBlock_w/2,-AO_YZ/2-2]) cube([2,ArmingBlock_w,AO_YZ+4]);
+				translate([CP_Bearing_OD/2+Body_L-4,-ArmingBlock_w/2,-AO_YZ/2]) cube([2,ArmingBlock_w,AO_YZ]);
+			} // hull
+		} // union
 		
 		// Bearing
-		cylinder(d=CP_Bearing_OD+1, h=CP_Bearing_H+IDXtra*2, center=true);
+		cylinder(d=CP_Bearing_OD+2, h=CP_Bearing_H+IDXtra*3, center=true);
 		
 		// Spring and retainer
 		translate([CP_Bearing_OD/2+1+Body_L+Overlap,0,0]){

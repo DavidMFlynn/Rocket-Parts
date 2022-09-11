@@ -38,7 +38,7 @@
 //  ***** for STL output *****
 //
 // FairingCone();
-// NoseLockRing();
+// NoseLockRing(Fairing_ID =Fairing_ID);
 //
 /*
 F54_FairingHalf(IsLeftHalf=true, 
@@ -96,8 +96,8 @@ NC_Tip_r=7;
 NC_Base=5;
 NC_Wall_t=2.2;
 NC_Lock_H=5;
-function NC_Lock_OD(Fairing_ID) = Fairing_ID; // Nosecone locking ring.
-function NC_Lock_ID(Fairing_ID) = Fairing_ID-6;
+function NC_Lock_OD(ID) = ID-IDXtra*2; // Nosecone locking ring.
+function NC_Lock_ID(ID) = ID-6-IDXtra*2;
 //NC_Lock_OD=Fairing_ID; 
 //NC_Lock_ID=NC_Lock_OD-6;
 
@@ -216,24 +216,33 @@ FairingCone(Fairing_OD=PML98Body_OD,
 					NC_Tip_r=5);
 /**/
 
-module NoseLockRing(NC_Lock_OD=NC_Lock_OD(Fairing_ID), NC_Lock_ID=NC_Lock_ID(Fairing_ID)){
+module NoseLockRing(Fairing_ID =Fairing_ID){
+	
+	NC_Lock_ID=NC_Lock_ID(Fairing_ID);
+	NC_Lock_OD=NC_Lock_OD(Fairing_ID);
+	NC_Lock_H=NC_Lock_H;
+	
 	difference(){
 		union(){
+			// end stiffener
 			cylinder(d=NC_Lock_OD, h=1, $fn=$preview? 90:360);
+			
+			
 			translate([0,0,1-Overlap]) 
-				cylinder(d1=NC_Lock_OD, d2=NC_Lock_ID-IDXtra*2, h=4+Overlap*2, $fn=$preview? 90:360);
-			cylinder(d=NC_Lock_ID-IDXtra*2, h=10, $fn=$preview? 90:360);
-			//cylinder(d=NC_Lock_ID-IDXtra, h=8+4, $fn=$preview? 90:360);
+				cylinder(d1=NC_Lock_OD, d2=NC_Lock_ID, h=NC_Lock_H-1+Overlap*2, $fn=$preview? 90:360);
+			cylinder(d=NC_Lock_ID, h=10, $fn=$preview? 90:360);
 		} // union
 		
 		translate([0,0,-Overlap]) 
-			cylinder(d1=NC_Lock_ID-IDXtra*2,d2=NC_Lock_ID-IDXtra*2-4, h=4, $fn=$preview? 90:360);
+			cylinder(d1=NC_Lock_ID-IDXtra*2, d2=NC_Lock_ID-IDXtra*2-4, h=4, $fn=$preview? 90:360);
 		
 		translate([0,0,-Overlap]) cylinder(d=NC_Lock_ID-IDXtra*2-4, h=20, $fn=$preview? 90:360);
 	} // difference
 } // NoseLockRing
 
-//translate([0,0,Fairing_Len]) NoseLockRing();
+//translate([0,0,Fairing_Len-NC_Lock_H])
+//NoseLockRing(Fairing_ID =Fairing_ID);
+//translate([0,0,5])mirror([0,0,1])translate([0,0,5]) F54_Retainer(IsLeftHalf=true, NC_Lock_H=NC_Lock_H, Fairing_OD=Fairing_OD, Wall_T=FairingWall_T);
 
 
 module FairingBase(BaseXtra=0, Fairing_OD=Fairing_OD, Fairing_ID=Fairing_ID,
@@ -273,41 +282,40 @@ module FairingBase(BaseXtra=0, Fairing_OD=Fairing_OD, Fairing_ID=Fairing_ID,
 //translate([0,0,-10]) FairingBase();
 
 module FairingBaseLockRing(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, Interface=-IDXtra){
-	Base_h=4;
-	OA_h=9;
+				
+	NC_Lock_OD=NC_Lock_OD(Fairing_ID);
+	NC_Lock_ID=NC_Lock_ID(Fairing_ID);
+	NC_Lock_H=NC_Lock_H;
+					
+	Base_h=5;
+	OA_h=10;
+	
+	
 	
 	difference(){
 		union(){
 			// glue flange
 			cylinder(d=Tube_ID+Interface, h=Base_h, $fn=$preview? 90:360);
 			
-			// Backbone
-			cylinder(d=Fairing_ID-4-IDXtra*2, h=OA_h, $fn=$preview? 90:360);
-			
-			// 45° locking face
-			translate([0,0,OA_h-4+Overlap]) 
-				cylinder(d1=Fairing_ID-4-IDXtra*2,d2=Fairing_ID-IDXtra*2, h=2, $fn=$preview? 90:360);
-			
-			// 2mm top stiffener
-			translate([0,0,OA_h-2]) 
-				cylinder(d=Fairing_ID-IDXtra*2, h=2, $fn=$preview? 90:360);
-			
-			
+			translate([0,0,OA_h]) mirror([0,0,1])
+				NoseLockRing(Fairing_ID=Fairing_ID);
 		} // union
+			
 		
 		// center hole
-		translate([0,0,-Overlap]) cylinder(d=Fairing_ID-8, h=OA_h+Overlap*2);
+		translate([0,0,-Overlap]) cylinder(d=NC_Lock_ID-IDXtra*2-4, h=OA_h+Overlap*2);
 		
 		// Chamfer
-		translate([0,0,OA_h-3]) 
-				cylinder(d1=Fairing_ID-8, d2=Fairing_ID-6, h=3+Overlap, $fn=$preview? 90:360);
 		translate([0,0,-Overlap]) 
-				cylinder(d2=Fairing_ID-8, d1=Tube_ID-4, h=Base_h, $fn=$preview? 90:360);
+				cylinder(d2=NC_Lock_ID-IDXtra*2-4, d1=Tube_ID-4, h=Base_h, $fn=$preview? 90:360);
 	} // difference
 } // FairingBaseLockRing
 
-//translate([0,0,-4]) color("Tan") FairingBaseLockRing(Fairing_ID=Fairing_ID, Interface=Overlap);
-
+//translate([0,0,0]) mirror([0,0,1]) F54_Retainer(IsLeftHalf=true, NC_Lock_H=NC_Lock_H, Fairing_OD=Fairing_OD, Wall_T=FairingWall_T);
+//translate([0,0,-5]) color("Tan") FairingBaseLockRing(Tube_ID=PML54Body_ID, Fairing_ID=Fairing_ID, Interface=Overlap);
+//FairingBaseLockRing(Tube_ID=BP_Booster_Body_ID, 
+//		Fairing_ID=BP_Booster_Fairing_ID, Interface=Overlap);
+//translate([0,0,10]) NoseLockRing(Fairing_ID=Fairing_ID);
 
 module F54_SpringHole(){
 	cylinder(d=F54_Spring_OD, h=F54_Spring_FL, center=true);
@@ -391,6 +399,38 @@ module BatteryHolder(){
 
 //BatteryHolder();
 
+// This is the female half
+module F54_Retainer(IsLeftHalf=true, Fairing_OD=Fairing_OD, Wall_T=FairingWall_T){
+	NC_Lock_H=NC_Lock_H;
+	Fairing_ID=Fairing_OD-Wall_T*2;		
+	
+	difference(){	
+			// Nosecone retention
+			translate([0,0,-NC_Lock_H])
+			difference(){
+				cylinder(d=Fairing_OD-1, h=NC_Lock_H, $fn=$preview? 90:360);
+				
+				translate([0,0,-Overlap]) 
+					cylinder(d=NC_Lock_ID(Fairing_ID)+1, h=NC_Lock_H+Overlap*2, $fn=$preview? 90:360);
+				translate([0,0,-Overlap]) 
+					cylinder(d=Fairing_ID, h=1+Overlap*2, $fn=$preview? 90:360);
+				translate([0,0,1]) 
+					cylinder(d1=NC_Lock_OD(Fairing_ID), d2=NC_Lock_ID(Fairing_ID), h=NC_Lock_H-1+Overlap, $fn=$preview? 90:360);
+			} // difference
+
+		
+		if (IsLeftHalf){
+			translate([-Fairing_OD/2-1, 0, -NC_Lock_H-Overlap]) 
+				mirror([0,1,0]) cube([Fairing_OD+2, Fairing_OD/2+2, NC_Lock_H+Overlap*2]);
+		} else {
+			translate([-Fairing_OD/2-1, 0, -NC_Lock_H-Overlap]) 
+				cube([Fairing_OD+2, Fairing_OD/2+2, NC_Lock_H+Overlap*2]);
+		}
+	} // difference
+} // F54_Retainer
+
+//mirror([0,0,1])F54_Retainer(IsLeftHalf=true, Fairing_OD=Fairing_OD, Wall_T=FairingWall_T);
+
 module F54_FairingHalf(IsLeftHalf=true, 
 				Fairing_OD=Fairing_OD,
 				Wall_T=FairingWall_T,
@@ -404,30 +444,13 @@ module F54_FairingHalf(IsLeftHalf=true,
 	PJ_Spacing=(Len-25)/4;
 	
 	
-	difference(){	
-			// Nosecone retention
-			translate([0,0,Len-NC_Lock_H])
-			difference(){
-				cylinder(d=Fairing_OD-1, h=NC_Lock_H, $fn=$preview? 90:360);
-				
-				translate([0,0,-Overlap]) 
-					cylinder(d=NC_Lock_ID(Fairing_ID)+1, h=NC_Lock_H+Overlap*2, $fn=$preview? 90:360);
-				translate([0,0,-Overlap]) 
-					cylinder(d=NC_Lock_OD(Fairing_ID), h=1+Overlap*2, $fn=$preview? 90:360);
-				translate([0,0,1]) 
-					cylinder(d1=Fairing_ID, d2=NC_Lock_ID(Fairing_ID), h=NC_Lock_H-1+Overlap, $fn=$preview? 90:360);
-			} // difference
-
-		
-		if (IsLeftHalf){
-			translate([-Fairing_OD/2-1, 0, Len-NC_Lock_H-Overlap]) 
-				mirror([0,1,0]) cube([Fairing_OD+2, Fairing_OD/2+2, NC_Lock_H+Overlap*2]);
-		} else {
-			translate([-Fairing_OD/2-1, 0, Len-NC_Lock_H-Overlap]) 
-				cube([Fairing_OD+2, Fairing_OD/2+2, NC_Lock_H+Overlap*2]);
-		}
-	} // difference
+	translate([0,0,Len])			
+		F54_Retainer(IsLeftHalf=IsLeftHalf, NC_Lock_H=NC_Lock_H, Fairing_OD=Fairing_OD, Wall_T=Wall_T);
 	
+	// Fairing base interface
+	mirror([0,0,1])
+		F54_Retainer(IsLeftHalf=IsLeftHalf, NC_Lock_H=NC_Lock_H, Fairing_OD=Fairing_OD, Wall_T=Wall_T);
+				
 	// half a tube w/ stiffeners
 	difference(){
 		union(){
@@ -442,15 +465,10 @@ module F54_FairingHalf(IsLeftHalf=true,
 			
 			
 			// Fairing base interface
-			cylinder(d=Fairing_ID+Overlap, h=3);
+			//cylinder(d=Fairing_ID+Overlap, h=3);
 		} // union
 	
 		translate([0,0,6]) PJ_CCW_Slot(Fairing_OD=Fairing_OD, Len=Len-NC_Lock_H-7);
-		
-		// Fairing base interface
-		translate([0,0,-Overlap]) cylinder(d=Fairing_ID-6, h=3+Overlap);
-		translate([0,0,1]) cylinder(d1=Fairing_ID-6, d2=Fairing_ID-2, h=2+Overlap);
-		translate([0,0,3]) cylinder(d=Fairing_ID-1, h=2+Overlap);
 		
 		// cut in half
 		if (IsLeftHalf){
@@ -537,14 +555,19 @@ module F54_FairingHalf(IsLeftHalf=true,
 	} // difference
 	
 	if (IsLeftHalf) {
-		translate([0,0,20]) rotate([0,0,135]) LanyardToTube(ID=Fairing_ID);
+		translate([0,0,25]) rotate([0,0,135]) LanyardToTube(ID=Fairing_ID);
 	} else {
-		translate([0,0,20]) rotate([0,0,135+180]) LanyardToTube(ID=Fairing_ID);
+		translate([0,0,25]) rotate([0,0,135+180]) LanyardToTube(ID=Fairing_ID);
 	}
 	
 } // F54_FairingHalf
 
-//F54_FairingHalf(IsLeftHalf=true, Len=Fairing_Len, Wall_T=FairingWall_T);
+/*
+F54_FairingHalf(IsLeftHalf=true,  
+				Fairing_OD=Fairing_OD,
+				Wall_T=FairingWall_T,
+				Len=Fairing_Len);
+/**/
 
 //F54_FairingHalf(IsLeftHalf=false);
 
