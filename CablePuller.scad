@@ -10,9 +10,16 @@
 // Uses the release of a strong spring to pull on a cable. 
 // Needs a servo or something to push on the StopAdjuster. 
 //
+// Bearing MR84-2RS, 4ea
+// Undersize 4mm x 10mm steel dowel, 2ea
+// Undersize 4mm x 12mm steel dowel
+// #8-32 x 1/4" Set Screw
+// #4-40 x 1/2" Socket Head Cap Screws, optionally 3/4" to attach to Electronics Bay, 4ea
+// SG90 Servo
+//
 //  ***** History *****
 //
-// 1.0    9/11/2022	  It works OK. 
+// 1.0    9/11/2022	  It works OK. Changed set screw hole to Bolt8Hole(), Added notes. 
 // 0.9.5  9/10/2022   A tighter cage with spring centering. 
 // 0.9.4  9/6/2022    Small fixes. 
 // 0.9.3  8/30/2022   It jammed! Need a second bearing for stability. 
@@ -40,7 +47,7 @@
 // ***********************************
 //  ***** for Viewing *****
 //
-// ShowCableRelease();
+// ShowCablePuller();
 //
 // ***********************************
 
@@ -76,12 +83,13 @@ module Bearing(){
 
 // Bearing();
 
-module ShowCableRelease(){
+module ShowCablePuller(){
 	//TO_a=-45;
 	TO_a=0;
 	
 	rotate([0,0,TO_a]) ThroughOut();
-	Bearing();
+	translate([0,0,-CP_Bearing_H/2]) Bearing();
+	translate([0,0,CP_Bearing_H/2]) Bearing();
 	color("Silver") Dowel(Len=CP_SpringBody_YZ+5.05);
 	rotate([0,0,TO_a]) {
 	translate([ArmLen,0,0]) Bearing();
@@ -99,9 +107,9 @@ module ShowCableRelease(){
 	translate([ArmLen,CP_SpringBody_YZ/2+LooseFit/2+0.4,0]) rotate([-90,0,0]) color("Tan") StopAdjuster();
 	
 	//translate([10,10,15]) translate([0,0,Overlap]) CageTop();
-} // ShowCableRelease
+} // ShowCablePuller
 
-//ShowCableRelease();
+//ShowCablePuller();
 
 module ServoMount(){
 	Servo_X=12;
@@ -139,7 +147,7 @@ module StopAdjuster(){
 			}
 		} // union
 		
-		translate([0,0,OA_h]) Bolt6Hole();
+		translate([0,0,OA_h]) Bolt8Hole();
 	} // 
 } // StopAdjuster
 
