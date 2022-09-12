@@ -67,7 +67,7 @@ include<AltBay.scad>
  //include<FairingJointLib.scad>
  //include<RailGuide.scad>
  //include<Fins.scad>
- include<TubesLib.scad>
+ //include<TubesLib.scad>
  //include<BearingLib.scad>
  //include<CommonStuffSAEmm.scad>
 
@@ -117,7 +117,11 @@ module ShowRocket54(){
 		NoseLockRing();
 	}
 	
-	translate([0,0,340+BodyTubeLen+EBay_Len+Overlap*2]) Sample(IsLeftHalf=true);
+	translate([0,0,340+BodyTubeLen+EBay_Len+Overlap*2]) 
+		F54_FairingHalf(IsLeftHalf=true, 
+				Fairing_OD=Fairing_OD,
+				Wall_T=FairingWall_T,
+				Len=Fairing_Len);
 	
 	translate([0,0,340+BodyTubeLen+Overlap]) rotate([0,0,180/nFins]) R54_Electronics_Bay();
 	
@@ -136,113 +140,14 @@ module ShowRocket54(){
 //ShowRocket54();
 
 module R54_Electronics_Bay(){
-	Electronics_Bay(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID);
-	translate([0,0,-20]) rotate([0,0,-45]) UpperRailButtonPost();
+	Electronics_Bay(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Fairing_ID=Fairing_ID);
+	translate([0,0,-20]) 
+		UpperRailButtonPost(Body_OD=R54_Body_OD, Body_ID=R54_Body_ID, MtrTube_OD=R54_MtrTube_OD);
 } // R54_Electronics_Bay
 
 //R54_Electronics_Bay();
 
-module UpperRailButtonPost(){
-	rotate([0,0,-180/nFins]) 
-			RailButtonPost(OD=R54_Body_OD, MtrTube_OD=R54_MtrTube_OD, H=R54_Body_OD/2+5, Len=40);
-	translate([0,0,-20]) CenteringRing(OD=R54_Body_OD, ID=R54_MtrTube_OD+1, Thickness=8);
-	// Lower Coupler Tube Socket
-	translate([0,0,-40])
-		Tube(OD=R54_Body_OD, ID=R54_Body_ID, 
-			Len=20+Overlap, myfn=$preview? 90:360);
-} // UpperRailButtonPost
-
-//translate([0,0,400-50]) UpperRailButtonPost();
-
-module Electronics_Bay(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID){
-	// Z=0 center of Booster button
-	TopOfTube=EBay_Len;
-	CablePullerInset=-1;
-	CP_a=-5;
-	
-	// The Fairing clamps onto this. 
-	translate([0,0,TopOfTube-4]) FairingBaseLockRing(Fairing_ID=Tube_ID, Interface=Overlap);
-	difference(){
-		translate([0,0,TopOfTube-7]) cylinder(d=Tube_ID+1, h=3+Overlap);
-		translate([0,0,TopOfTube-7-Overlap]) 
-				cylinder(d2=Tube_ID-4.2, d1=Tube_ID, h=3+Overlap*3, $fn=$preview? 90:360);
-	} // difference
-	
-	// Standard E-Bay module
-	difference(){
-		translate([0,0,-Overlap]) rotate([0,0,90])
-			AltBay54(Tube_OD=Tube_OD, Tube_ID=Tube_ID, Tube_Len=EBay_Len);
-		
-		// Cable Puller Bolt Holes
-		translate([0,0,TopOfTube-12]) rotate([0,90,135]) 
-			translate([0,0,Tube_ID/2-CablePullerInset]) 
-				rotate([CP_a,0,0]) CablePullerBoltPattern() Bolt4Hole();
-	} // difference
-	
-	// Lower Coupler Tube Socket
-	translate([0,0,-20])
-		Tube(OD=Tube_OD, ID=Tube_ID, 
-			Len=20+Overlap, myfn=$preview? 90:360);
-	
-	// Shock code path, keep it out of the way. 
-	
-	rotate([0,0,10])
-	difference(){
-		Y1=30;
-		Y2=65;
-		Y3=110;
-		H=6;
-		
-		union(){
-			translate([0,-Tube_OD/2+4.4,Y1]) 
-				ShockCordHole(X=NylonTube9_w+4.4, Y=NylonTube9_h+4.4, Len=H);
-			translate([0,-Tube_OD/2+4.4,Y2]) 
-				ShockCordHole(X=NylonTube9_w+4.4, Y=NylonTube9_h+4.4, Len=H);
-			translate([0,-Tube_OD/2+4.4,Y3]) 
-				ShockCordHole(X=NylonTube9_w+4.4, Y=NylonTube9_h+4.4, Len=H);
-		}// union
-		
-		translate([0,-Tube_OD/2+4.4,Y1-Overlap]) 
-			ShockCordHole(X=NylonTube9_w, Y=NylonTube9_h, Len=H+Overlap*2);
-		
-		translate([0,-Tube_OD/2+4.4,Y2-Overlap]) 
-			ShockCordHole(X=NylonTube9_w, Y=NylonTube9_h, Len=H+Overlap*2);
-		
-		translate([0,-Tube_OD/2+4.4,Y3-Overlap]) 
-			ShockCordHole(X=NylonTube9_w, Y=NylonTube9_h, Len=H+Overlap*2);
-		
-		// Conform to OD of E-Bay
-		
-		difference(){
-			cylinder(d=Tube_ID+20, h=200);
-			translate([0,0,-Overlap]) cylinder(d=Tube_ID+1, h=200+Overlap*2);
-		} // difference
-	} // difference
-	
-	translate([0,0,TopOfTube-12]) rotate([0,90,135]) 
-	difference(){
-		// Cable Puller Bolt Bosses
-		translate([0,0,Tube_ID/2-CablePullerInset]) 
-			rotate([CP_a,0,0]) CablePullerBoltPattern() 
-				hull(){
-					rotate([180,0,0]) cylinder(d=8, h=8);
-					translate([12,0,0]) rotate([180,0,0]) cylinder(d=3, h=Overlap);
-				} // hull
-		
-		// Cable Puller Bolt Holes
-		translate([0,0,Tube_ID/2-CablePullerInset]) 
-			rotate([CP_a,0,0]) CablePullerBoltPattern() Bolt4Hole();
-		
-		// Conform to OD of E-Bay
-		rotate([0,90,0]) translate([0,0,-10])
-		difference(){
-			cylinder(d=Tube_ID+20, h=100);
-			translate([0,0,-Overlap]) cylinder(d=Tube_ID+1, h=100+Overlap*2);
-		} // difference
-	} // difference
-} // Electronics_Bay
-
-//Electronics_Bay(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID);
+//Electronics_Bay(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Fairing_ID=Fairing_ID);
 //AltDoor54(Tube_OD=BP_Booster_Body_OD);
 
 module UpperFinCan(){

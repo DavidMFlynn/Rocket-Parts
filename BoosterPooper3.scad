@@ -144,7 +144,7 @@ echo(BP_BoosterTubeLen=BP_BoosterTubeLen);
 BP_BoosterMotorTubeLen=BP_BoosterButtonSpacing+ThrustRing_h+BP_BoosterTailConeLen-10;
 echo(BP_BoosterMotorTubeLen=BP_BoosterMotorTubeLen);
 
-LockShaftLen=48.5;
+LockShaftLen=48.0; // Changed -0.5mm 9/11/2022
 
 //NoseLockRing(Fairing_ID =BP_Booster_Fairing_ID);
 //FairingBaseLockRing(Tube_ID=BP_Booster_Body_ID, Fairing_ID=BP_Booster_Fairing_ID, Interface=Overlap);

@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: AltBay.scad
 // Created: 6/23/2022 
-// Revision: 0.9.7  9/6/2022
+// Revision: 0.9.8  9/11/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -11,6 +11,7 @@
 //
 //  ***** History *****
 //
+// 0.9.8  9/11/2022 Moved UpperRailButtonPost and Electronics_Bay to here
 // 0.9.7  9/6/2022  Fixes to 54mm altimeter bay.
 // 0.9.6  9/5/2022  Added 54mm altimeter bay.
 // 0.9.5  8/30/2022 Lighter and thinner moved holes down 5mm. 
@@ -41,6 +42,9 @@
 //  AltDoorHole54(Tube_OD=PML54Body_OD);
 //  AltBay54(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Tube_Len=120);
 //  AltDoor54(Tube_OD=PML54Body_OD);
+//
+//  UpperRailButtonPost(Body_OD=PML54Body_OD, Body_ID=PML54Body_ID, MtrTube_OD=PML38Body_OD, Extend=5);
+//  Electronics_Bay(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Fairing_ID=Fairing_ID, HasCablePuller=true);
 //
 //  TubeSocket(L=10, Wall_T=1.2, HasBoltGuide=false);
 //  ShockCordHole(X=NylonTube9_w, Y=NylonTube9_h, Len=10);
@@ -234,6 +238,103 @@ module AltDoor54(Tube_OD=PML54Body_OD){
 } // AltDoor54
 
 //rotate([90,0,0]) AltDoor54();
+
+module UpperRailButtonPost(Body_OD=PML54Body_OD, Body_ID=PML54Body_ID, MtrTube_OD=PML38Body_OD, Extend=5){
+		
+	rotate([0,0,-90]) 
+			RailButtonPost(OD=Body_OD, MtrTube_OD=MtrTube_OD, H=Body_OD/2+Extend, Len=40);
+	translate([0,0,-20]) CenteringRing(OD=Body_OD, ID=MtrTube_OD+1, Thickness=8);
+	// Lower Coupler Tube Socket
+	translate([0,0,-40])
+		Tube(OD=Body_OD, ID=Body_ID, 
+			Len=20+Overlap, myfn=$preview? 90:360);
+} // UpperRailButtonPost
+
+module Electronics_Bay(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Fairing_ID=Fairing_ID, HasCablePuller=true){
+	
+	TopOfTube=EBay_Len;
+	CablePullerInset=-1;
+	CP_a=-5;
+	
+	// The Fairing clamps onto this. 
+	translate([0,0,TopOfTube-5]) FairingBaseLockRing(Tube_ID=Tube_ID, Fairing_ID=Fairing_ID, Interface=Overlap);
+	
+	// Standard E-Bay module
+	difference(){
+		translate([0,0,-Overlap]) rotate([0,0,90])
+			AltBay54(Tube_OD=Tube_OD, Tube_ID=Tube_ID, Tube_Len=EBay_Len);
+		
+		// Cable Puller Bolt Holes
+		if (HasCablePuller) translate([0,0,TopOfTube-12]) rotate([0,90,135]) 
+			translate([0,0,Tube_ID/2-CablePullerInset]) 
+				rotate([CP_a,0,0]) CablePullerBoltPattern() Bolt4Hole();
+	} // difference
+	
+	// Lower Coupler Tube Socket
+	translate([0,0,-20])
+		Tube(OD=Tube_OD, ID=Tube_ID, 
+			Len=20+Overlap, myfn=$preview? 90:360);
+	
+	// Shock code path, keep it out of the way. 
+	
+	if (HasCablePuller)
+	rotate([0,0,10])
+	difference(){
+		Y1=30;
+		Y2=65;
+		Y3=110;
+		H=6;
+		
+		union(){
+			translate([0,-Tube_OD/2+4.4,Y1]) 
+				ShockCordHole(X=NylonTube9_w+4.4, Y=NylonTube9_h+4.4, Len=H);
+			translate([0,-Tube_OD/2+4.4,Y2]) 
+				ShockCordHole(X=NylonTube9_w+4.4, Y=NylonTube9_h+4.4, Len=H);
+			translate([0,-Tube_OD/2+4.4,Y3]) 
+				ShockCordHole(X=NylonTube9_w+4.4, Y=NylonTube9_h+4.4, Len=H);
+		}// union
+		
+		translate([0,-Tube_OD/2+4.4,Y1-Overlap]) 
+			ShockCordHole(X=NylonTube9_w, Y=NylonTube9_h, Len=H+Overlap*2);
+		
+		translate([0,-Tube_OD/2+4.4,Y2-Overlap]) 
+			ShockCordHole(X=NylonTube9_w, Y=NylonTube9_h, Len=H+Overlap*2);
+		
+		translate([0,-Tube_OD/2+4.4,Y3-Overlap]) 
+			ShockCordHole(X=NylonTube9_w, Y=NylonTube9_h, Len=H+Overlap*2);
+		
+		// Conform to OD of E-Bay
+		
+		difference(){
+			cylinder(d=Tube_ID+20, h=200);
+			translate([0,0,-Overlap]) cylinder(d=Tube_ID+1, h=200+Overlap*2);
+		} // difference
+	} // difference
+	
+	if (HasCablePuller)
+	translate([0,0,TopOfTube-12]) rotate([0,90,135]) 
+	difference(){
+		// Cable Puller Bolt Bosses
+		translate([0,0,Tube_ID/2-CablePullerInset]) 
+			rotate([CP_a,0,0]) CablePullerBoltPattern() 
+				hull(){
+					rotate([180,0,0]) cylinder(d=8, h=8);
+					translate([12,0,0]) rotate([180,0,0]) cylinder(d=3, h=Overlap);
+				} // hull
+		
+		// Cable Puller Bolt Holes
+		translate([0,0,Tube_ID/2-CablePullerInset]) 
+			rotate([CP_a,0,0]) CablePullerBoltPattern() Bolt4Hole();
+		
+		// Conform to OD of E-Bay
+		rotate([0,90,0]) translate([0,0,-10])
+		difference(){
+			cylinder(d=Tube_ID+20, h=100);
+			translate([0,0,-Overlap]) cylinder(d=Tube_ID+1, h=100+Overlap*2);
+		} // difference
+	} // difference
+} // Electronics_Bay
+
 
 module AltPCB(){
 	difference(){

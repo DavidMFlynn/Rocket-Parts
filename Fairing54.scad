@@ -156,6 +156,14 @@ module FairingConeOGive(Fairing_OD=Fairing_OD,
 
 //translate([0,0,Fairing_Len+Overlap]) FairingConeOGive(); 
 /*
+FairingConeOGive(Fairing_OD=PML75Body_OD, 
+					FairingWall_T=FairingWall_T,
+					NC_Base=NC_Base, 
+					NC_Len=190, 
+					NC_Wall_t=NC_Wall_t,
+					NC_Tip_r=5);
+/**/
+/*
 FairingConeOGive(Fairing_OD=PML54Body_OD, 
 					FairingWall_T=2.2,
 					NC_Base=5, 
@@ -438,19 +446,40 @@ module F54_FairingHalf(IsLeftHalf=true,
 				
 	Fairing_ID=Fairing_OD-Wall_T*2;		
 	M_H=12;
-	Z1=15;
+	Z1=16;
 	Z2=Len-Z1;
 	SpringInset=2.5;
 	PJ_Spacing=(Len-25)/4;
 	
 	
 	translate([0,0,Len])			
-		F54_Retainer(IsLeftHalf=IsLeftHalf, NC_Lock_H=NC_Lock_H, Fairing_OD=Fairing_OD, Wall_T=Wall_T);
+		F54_Retainer(IsLeftHalf=IsLeftHalf, Fairing_OD=Fairing_OD, Wall_T=Wall_T);
 	
 	// Fairing base interface
 	mirror([0,0,1])
-		F54_Retainer(IsLeftHalf=IsLeftHalf, NC_Lock_H=NC_Lock_H, Fairing_OD=Fairing_OD, Wall_T=Wall_T);
+		F54_Retainer(IsLeftHalf=IsLeftHalf, Fairing_OD=Fairing_OD, Wall_T=Wall_T);
 				
+	// Ball Tube
+	difference(){
+		BallHole_X=-Fairing_OD/2+9.5;
+		M_H2=16;
+		
+		translate([BallHole_X,6.5-Overlap,Z1+M_H2/2]) 
+			cylinder(d=JointPin_d+5, h=Z2-Z1-M_H2);
+		
+		// Tube ID
+		translate([BallHole_X,6.5-Overlap,Z1+M_H2/2-Overlap]) 
+			cylinder(d=JointPin_d+IDXtra*3, h=Z2-Z1-M_H2+Overlap*2);
+		
+		// Access hole
+		translate([BallHole_X,6.5-Overlap,Z2-M_H2/2]) rotate([0,0,22.5])
+		hull(){
+			rotate([90,0,0]) cylinder(d=5, h=JointPin_d);
+			translate([0,0,-7]) rotate([90,0,0]) cylinder(d=5, h=JointPin_d);
+		}
+	} // difference
+			
+			
 	// half a tube w/ stiffeners
 	difference(){
 		union(){

@@ -55,7 +55,7 @@ CableEnd_d=3.0;
 CableEnd_h=6.9;
 Cable_d=1.0;
 
-JointPin_d=7.92;
+JointPin_d=7.92; // 5/16" Delrin Ball
 
 Tenon_h=5;
 Tenon_Y=JointPin_d/2-1+2;
