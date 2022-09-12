@@ -115,6 +115,13 @@ Fairing_Len=150; // Body of the fairing. Overall len is Fairing_Len + NC_Base + 
 
 BodyTubeLen=300;
 
+// Overrides
+F54_Spring_OD=5/16*25.4;
+F54_Spring_FL=1.25*25.4;
+F54_Spring_CBL=0.7*25.4;
+F54_SpringEndCap_OD=F54_Spring_OD+3;
+
+
 
 module ShowRocket75(){
 	
@@ -153,7 +160,8 @@ module ShowRocket75(){
 //ShowRocket75();
 
 module R75_Electronics_Bay(){
-	Electronics_Bay(Tube_OD=PML75Body_OD, Tube_ID=PML75Body_ID, Fairing_ID=PML75Body_OD-4.4, HasCablePuller=false);
+	Electronics_Bay(Tube_OD=PML75Body_OD, Tube_ID=PML75Body_ID, Fairing_ID=PML75Body_OD-4.4, 
+				EBay_Len=EBay_Len, HasCablePuller=true);
 	
 	translate([0,0,-20]) UpperRailButtonPost(Body_OD=PML75Body_OD, Body_ID=PML75Body_ID, MtrTube_OD=PML54Body_OD);
 } // R75_Electronics_Bay

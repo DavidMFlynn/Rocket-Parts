@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: FairingJointLib.scad
 // Created: 8/5/2022 
-// Revision: 0.9.7  9/9/2022
+// Revision: 0.9.8  9/12/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -11,6 +11,7 @@
 //
 //  ***** History *****
 //
+// 0.9.8  9/12/2022  Fairing 75 is OK but changes will need to be tested with other sizes.
 // 0.9.7  9/9/2022   Finding size for Fairing98
 // 0.9.6  9/5/2022   Adjustments for 54mm BT
 // 0.9.5  9/3/2022   PJ bug fixes
@@ -205,8 +206,10 @@ module PJ_Clip(Fairing_OD=100, FairingWall_t=2.2){
 	// 
 	//LockXtra=-0.3; // Cheet for BigFairing_OD Fairing, -0.3 is Loose but usable, -0.6 was too loose
 	
+	//LockXtra=-0.2; // Cheet for Fairing98 Fairing
+	
 	//
-	LockXtra=-0.2; // Cheet for Fairing98 Fairing, 
+	LockXtra=-0.2; // Cheet for Fairing75 Fairing, works well just a little cleanup
 	
 	LockTip_X=Fairing_OD/2-FairingWall_t-PJ_Jointer_d/2;
 	Back_Face_X=LockTip_X-PJ_Jointer_d*1.5;
@@ -261,6 +264,10 @@ module PJ_Clip(Fairing_OD=100, FairingWall_t=2.2){
 //rotate([0,0,-0.2]) PJ_CW(Fairing_OD=BigFairing_OD, FairingWall_T=2.2, Len=10);
 //PJ_CCW(Fairing_OD=BigFairing_OD, FairingWall_T=2.2, Len=10);
 
+//PJ_Clip(Fairing_OD=PML75Body_OD, FairingWall_t=2.2);
+//rotate([0,0,-0.4]) PJ_CW(Fairing_OD=PML75Body_OD, FairingWall_T=2.2, Len=10);
+//PJ_CCW(Fairing_OD=PML75Body_OD, FairingWall_T=2.2, Len=10);
+
 module PJ_CW(Fairing_OD=100, FairingWall_T=2.2, Len=30){
 	Clip_L=PJ_Clip_L;
 	Clip_a=BigFairing_OD/Fairing_OD*PJ_Clip_a;
@@ -272,9 +279,15 @@ module PJ_CW(Fairing_OD=100, FairingWall_T=2.2, Len=30){
 		rotate([0,0,-j-1]) translate([Fairing_OD/2-FairingWall_T-Clip_L,0,0])
 			cube([Clip_L+FairingWall_T-Overlap,Overlap,Len]);
 	} // hull
+	// Fairing half seam
 	translate([Fairing_OD/2-PJ_Jointer_d/2-Overlap,0,0]) cylinder(d=PJ_Jointer_d, h=Len);
 	translate([Fairing_OD/2-PJ_Jointer_d*2.25-Overlap,0,0]) cylinder(d=PJ_Jointer_d, h=Len);
-	rotate([0,0,-Clip_a]) translate([Fairing_OD/2-PJ_Jointer_d*2.25-Overlap,IDXtra,0]) cylinder(d=PJ_Jointer_d, h=Len);
+	
+	//Lock lump
+	rotate([0,0,-Clip_a]) hull(){
+		translate([Fairing_OD/2-PJ_Jointer_d*2.25-Overlap,IDXtra,0]) cylinder(d=PJ_Jointer_d, h=Len);
+		translate([Fairing_OD/2-PJ_Jointer_d-Overlap,IDXtra*2,0]) cylinder(d=PJ_Jointer_d, h=Len);
+	} // hull
 } // PJ_CW
 
 //rotate([0,0,-0.2]) PJ_CW(Fairing_OD=BigFairing_OD, FairingWall_T=2.2, Len=30);
@@ -302,7 +315,11 @@ module PJ_CCW(Fairing_OD=100, FairingWall_T=2.2, Len=30){
 		PJ_CCW_Slot(Fairing_OD=Fairing_OD, Len=Len);
 		
 	} // difference
-	rotate([0,0,Clip_a]) translate([Fairing_OD/2-PJ_Jointer_d*2.25-Overlap,-IDXtra,0]) cylinder(d=PJ_Jointer_d, h=Len);
+	//Lock lump
+	rotate([0,0,Clip_a]) hull(){
+		translate([Fairing_OD/2-PJ_Jointer_d*2.25-Overlap,-IDXtra,0]) cylinder(d=PJ_Jointer_d, h=Len);
+		translate([Fairing_OD/2-PJ_Jointer_d-Overlap,-IDXtra*2,0]) cylinder(d=PJ_Jointer_d, h=Len);
+	} // hull
 } // PJ_CCW
 
 //PJ_CCW(Fairing_OD=BigFairing_OD, FairingWall_T=2.2, Len=30);
@@ -311,7 +328,8 @@ module Test_PJ(){
 	// Test the fit of the passive joint
 	FairingWall_T=2.2;
 	//Fairing_OD=5.5 * 25.4;
-	Fairing_OD=PML98Body_OD;
+	//Fairing_OD=PML98Body_OD;
+	Fairing_OD=PML75Body_OD;
 	//Fairing_OD=PML54Body_OD;
 	Fairing_ID=Fairing_OD-FairingWall_T*2;
 	

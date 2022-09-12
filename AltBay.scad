@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: AltBay.scad
 // Created: 6/23/2022 
-// Revision: 0.9.8  9/11/2022
+// Revision: 0.9.9  9/12/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -11,6 +11,7 @@
 //
 //  ***** History *****
 //
+// 0.9.9  9/12/2022 Fixes. 
 // 0.9.8  9/11/2022 Moved UpperRailButtonPost and Electronics_Bay to here
 // 0.9.7  9/6/2022  Fixes to 54mm altimeter bay.
 // 0.9.6  9/5/2022  Added 54mm altimeter bay.
@@ -57,7 +58,8 @@
 // 
 // ***********************************
 
-include<TubesLib.scad>
+include<Fairing54.scad>
+//include<TubesLib.scad>
 include<ChargeHolder.scad>
 //include<CommonStuffSAEmm.scad>
 
@@ -250,11 +252,14 @@ module UpperRailButtonPost(Body_OD=PML54Body_OD, Body_ID=PML54Body_ID, MtrTube_O
 			Len=20+Overlap, myfn=$preview? 90:360);
 } // UpperRailButtonPost
 
-module Electronics_Bay(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Fairing_ID=Fairing_ID, HasCablePuller=true){
+module Electronics_Bay(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Fairing_ID=PML54Body_OD-4.4,
+						EBay_Len=130, HasCablePuller=true){
 	
 	TopOfTube=EBay_Len;
 	CablePullerInset=-1;
-	CP_a=-5;
+	CablePuller_Z=TopOfTube-30;
+	CP_a=(Tube_OD<PML75Body_OD)? -5:0;
+	CP_Za=(Tube_OD<PML75Body_OD)? 135:180;
 	
 	// The Fairing clamps onto this. 
 	translate([0,0,TopOfTube-5]) FairingBaseLockRing(Tube_ID=Tube_ID, Fairing_ID=Fairing_ID, Interface=Overlap);
@@ -265,7 +270,7 @@ module Electronics_Bay(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Fairing_ID=Fa
 			AltBay54(Tube_OD=Tube_OD, Tube_ID=Tube_ID, Tube_Len=EBay_Len);
 		
 		// Cable Puller Bolt Holes
-		if (HasCablePuller) translate([0,0,TopOfTube-12]) rotate([0,90,135]) 
+		if (HasCablePuller) translate([0,0,CablePuller_Z]) rotate([0,90,CP_Za]) 
 			translate([0,0,Tube_ID/2-CablePullerInset]) 
 				rotate([CP_a,0,0]) CablePullerBoltPattern() Bolt4Hole();
 	} // difference
@@ -312,7 +317,7 @@ module Electronics_Bay(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Fairing_ID=Fa
 	} // difference
 	
 	if (HasCablePuller)
-	translate([0,0,TopOfTube-12]) rotate([0,90,135]) 
+	translate([0,0,CablePuller_Z]) rotate([0,90,CP_Za]) 
 	difference(){
 		// Cable Puller Bolt Bosses
 		translate([0,0,Tube_ID/2-CablePullerInset]) 
@@ -335,6 +340,15 @@ module Electronics_Bay(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Fairing_ID=Fa
 	} // difference
 } // Electronics_Bay
 
+/*
+Electronics_Bay(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Fairing_ID=PML54Body_OD-4.4,
+						EBay_Len=130, HasCablePuller=true);
+/**/
+
+/*
+Electronics_Bay(Tube_OD=PML75Body_OD, Tube_ID=PML75Body_ID, Fairing_ID=PML75Body_OD-4.4,
+						EBay_Len=130, HasCablePuller=true);
+/**/
 
 module AltPCB(){
 	difference(){

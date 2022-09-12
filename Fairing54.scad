@@ -460,6 +460,7 @@ module F54_FairingHalf(IsLeftHalf=true,
 		F54_Retainer(IsLeftHalf=IsLeftHalf, Fairing_OD=Fairing_OD, Wall_T=Wall_T);
 				
 	// Ball Tube
+	if (IsLeftHalf)
 	difference(){
 		BallHole_X=-Fairing_OD/2+9.5;
 		M_H2=16;
