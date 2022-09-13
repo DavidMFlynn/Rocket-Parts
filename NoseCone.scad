@@ -160,7 +160,7 @@ module BluntOgiveShape(L=150, D=50, Base_L=10, Tip_R=5){
 //rotate_extrude() 
 //offset(-3) BluntOgiveShape();
 
-module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3){
+module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3, Cut_Z=0, LowerPortion=false){
 	R=OD/2;
 	p=(R*R+L*L)/(2*R);
 	X0 = L-sqrt((p-Tip_R)*(p-Tip_R)-(p-R)*(p-R));
@@ -169,10 +169,12 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3){
 		rotate_extrude($fn=$preview? 90:720) 
 			BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
 		
-		// Skirt
+		// Make Skirt fit coupler tube
 		translate([0,0,-Overlap]) cylinder(d=ID, h=Base_L+Overlap*2, $fn=$preview? 90:720);
+		// Taper so no support is needed
 		translate([0,0,Base_L]) cylinder(d1=ID, d2=OD-Wall_T*2, h=Wall_T, $fn=$preview? 90:720);
 		
+		// Remove inside
 		rotate_extrude($fn=$preview? 90:720) 
 			offset(-Wall_T) BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
 		cylinder(d=Wall_T*3, h=Base_L+L-X0+Tip_R-Wall_T*2);
@@ -182,13 +184,38 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3){
 			RivetPattern(BT_Dia=OD, nRivets=3, Dia=5/32*25.4);
 		
 		if ($preview==true) translate([0,-100,-1]) cube([100,100,200]);
+			
+		if (Cut_Z!=0 && LowerPortion==false)
+			translate([0,0, -Overlap]) cylinder(d=OD+1, h=Cut_Z+Overlap);
+		
+		if (Cut_Z!=0 && LowerPortion)
+			translate([0,0,Cut_Z]) cylinder(d=OD+1, h=L-Cut_Z+Overlap);
+		
 	} // difference
+	
+	if (Cut_Z!=0 && LowerPortion)
+		difference(){
+			rotate_extrude($fn=$preview? 90:360) 
+				offset(-Wall_T+Overlap) BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
+			
+			translate([0,0, -Overlap]) cylinder(d=OD+1, h=Cut_Z-4);
+			translate([0,0,Cut_Z+5]) cylinder(d=OD+1, h=L-Cut_Z+Overlap);
+			translate([0,0,Cut_Z-5]) cylinder(d=OD/2, h=12);
+			
+			// this needs fixed
+			translate([0,0,Cut_Z-4.5]) cylinder(d1=OD*0.7, d2=OD/2, h=OD/7);
+			
+			rotate_extrude($fn=$preview? 90:360) 
+				offset(-Wall_T*2) BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
+		} // difference
 	
 } // BluntOgiveNoseCone
 
 //BluntOgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=180, Base_L=21, Tip_R=23, Wall_T=3);
 
 //BluntOgiveNoseCone(ID=PML75Body_ID, OD=PML75Body_OD, L=180, Base_L=21, Tip_R=10, Wall_T=2.2);
+//BluntOgiveNoseCone(ID=PML75Body_ID, OD=PML75Body_OD, L=280, Base_L=5, Tip_R=5, Wall_T=2.2, 
+		Cut_Z=150, LowerPortion=true);
 
 //BluntOgiveNoseCone(ID=PML54Body_ID, OD=PML54Body_OD, L=160, Base_L=10, Tip_R=7, Wall_T=3);
 
