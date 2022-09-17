@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: CablePuller.scad
 // Created: 8/21/2022 
-// Revision: 1.0  9/11/2022
+// Revision: 1.0.1  9/17/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -19,6 +19,7 @@
 //
 //  ***** History *****
 //
+// 1.0.1  9/17/2022   Fixed SpingBody guide width. 
 // 1.0    9/11/2022	  It works OK. Changed set screw hole to Bolt8Hole(), Added notes. 
 // 0.9.5  9/10/2022   A tighter cage with spring centering. 
 // 0.9.4  9/6/2022    Small fixes. 
@@ -379,7 +380,7 @@ module SpringBody(){
 
 	AO_YZ=CP_SpringBody_YZ;
 	Body_L=CP_Spring_CBL+CableEnd_h+1.5;
-	ArmingBlock_w=6.5;
+	ArmingBlock_w=5.5; // fits the 6mm slots
 	
 	difference(){
 		union(){
@@ -392,13 +393,13 @@ module SpringBody(){
 			
 			// Arming ears
 			hull(){
-				translate([CP_Bearing_OD/2+1,-ArmingBlock_w/2,-AO_YZ/2-2]) cube([2,ArmingBlock_w,AO_YZ+4]);
+				translate([CP_Bearing_OD/2+1,-ArmingBlock_w/2,-AO_YZ/2-2.5]) cube([2,ArmingBlock_w,AO_YZ+5]);
 				translate([CP_Bearing_OD/2+5,-ArmingBlock_w/2,-AO_YZ/2]) cube([2,ArmingBlock_w,AO_YZ]);
 			} // hull
 			
 			// Arming ears/guide posts
 			hull(){
-				translate([CP_Bearing_OD/2+Body_L-8,-ArmingBlock_w/2,-AO_YZ/2-2]) cube([2,ArmingBlock_w,AO_YZ+4]);
+				translate([CP_Bearing_OD/2+Body_L-8,-ArmingBlock_w/2,-AO_YZ/2-2.5]) cube([2,ArmingBlock_w,AO_YZ+5]);
 				translate([CP_Bearing_OD/2+Body_L-4,-ArmingBlock_w/2,-AO_YZ/2]) cube([2,ArmingBlock_w,AO_YZ]);
 			} // hull
 		} // union
