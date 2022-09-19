@@ -22,7 +22,44 @@
 // ***********************************
 //  ***** for STL output *****
 //
-// ForwardBoosterLock(); // not ready to print
+/*
+FairingCone(Fairing_OD=BP_Fairing_OD, 
+					FairingWall_T=BP_FairingWall_T,
+					NC_Base=BP_FairingConeBase, 
+					NC_Len=BP_FairingCone_Len,
+					NC_Wall_t=BP_FairingConeWall_T,
+					NC_Tip_r=BP_FairingConeTip_r);
+/**/
+
+//NoseLockRing(Fairing_ID =BP_Fairing_ID);
+
+/*
+// *** >>>Enable override for larger main fairing spring<<< ***
+
+F54_FairingHalf(IsLeftHalf=true, 
+				Fairing_OD=BP_Fairing_OD,
+				Wall_T=BP_FairingWall_T,
+				Len=BP_Fairing_Len,
+				HasArmingHole=true);
+/**/
+
+/*
+F54_FairingHalf(IsLeftHalf=false, 
+				Fairing_OD=BP_Fairing_OD,
+				Wall_T=BP_FairingWall_T,
+				Len=BP_Fairing_Len,
+				HasArmingHole=true);
+/**/
+/*
+FairingBase(BaseXtra=10, Fairing_OD=BP_Fairing_OD, Fairing_ID=BP_Fairing_ID,
+					BodyTubeOD=BP_Body_OD, 
+					CouplerTube_OD=BP_BobyCoupler_OD, CouplerTube_ID=BP_BobyCoupler_ID);
+/**/				
+// FairingBaseLockRing(Tube_ID=BP_Fairing_ID, Fairing_ID=BP_Fairing_ID, Interface=-IDXtra);
+
+		
+// 
+// ForwardBoosterLock();
 // BB_Lock();
 //
 // BP_Fin();
@@ -42,6 +79,8 @@ FairingCone(Fairing_OD=BP_Booster_Body_OD,
 // NoseLockRing();
 //
 /*
+// *** >>>Enable override for smaller booster fairing spring<<< ***
+
  F54_FairingHalf(IsLeftHalf=true, 
 				Fairing_OD=BP_Booster_Fairing_OD,
 				Wall_T=BP_Booster_Fairing_Wall_t,
@@ -111,15 +150,46 @@ BP_Booster_Body_ID=PML54Body_ID;
 BP_Booster_MtrTube_OD=PML38Body_OD;
 BP_Booster_MtrTube_ID=PML38Body_ID;
 BP_Booster_MtrRtr_OD=PML38Body_OD+6;
+
 BP_Booster_Fairing_Len=130;
 BP_Booster_Fairing_OD=BP_Booster_Body_OD;
 BP_Booster_Fairing_Wall_t=2.2;
 BP_Booster_Fairing_ID=BP_Booster_Fairing_OD-BP_Booster_Fairing_Wall_t*2;
 
+/*
+// *** Override, Smaller Booster Fairing Spring ***
+F54_Spring_OD=5/16*25.4;
+F54_Spring_FL=1.00*25.4;
+F54_Spring_CBL=0.55*25.4;
+F54_SpringEndCap_OD=F54_Spring_OD+3;
+/**/
+
+//*
+// *** Override, Larger Main Fairing Spring ***
+F54_Spring_OD=5/16*25.4;
+F54_Spring_FL=1.25*25.4;
+F54_Spring_CBL=0.7*25.4;
+F54_SpringEndCap_OD=F54_Spring_OD+3;
+/**/
+
 BP_Body_OD=PML98Body_OD;
 BP_Body_ID=PML98Body_ID;
+BP_BobyCoupler_OD=PML98Coupler_OD;
+BP_BobyCoupler_ID=PML98Coupler_ID;
 BP_MtrTube_OD=BT54Mtr_OD; //PML54Body_OD;
 
+			
+BP_Fairing_OD=5.5*25.4;
+BP_Fairing_Len=150;
+BP_FairingWall_T=2.2;
+BP_Fairing_ID=BP_Fairing_OD-BP_FairingWall_T*2;
+BP_FairingConeBase=10;
+BP_FairingCone_Len=190;
+BP_FairingConeWall_T=2.2; // may need to be thicker
+BP_FairingConeTip_r=7.5;
+
+BP_ElectronicsBay_Len=140;
+BP_BodyTube_Len=300;
 
 BP_Fin_Post_h=10;
 BP_Fin_Root_L=240;
@@ -195,8 +265,43 @@ module ShowBooster(){
 
 module ShowBoosterPooper(){
 	
-	translate([0,0,BP_BoosterButton2_z+Overlap*2]) rotate([0,0,45]) rotate([0,90,0]) BB_LockShaft(Len=LockShaftLen);
+	/*
+	// Nosecone and Fairing
+	translate([0,0,BP_BoosterButton2_z+50+Overlap*2+BP_BodyTube_Len+BP_ElectronicsBay_Len+BP_Fairing_Len]){
+		FairingCone(Fairing_OD=BP_Fairing_OD, 
+					FairingWall_T=BP_FairingWall_T,
+					NC_Base=BP_FairingConeBase, 
+					NC_Len=BP_FairingCone_Len,
+					NC_Wall_t=BP_FairingConeWall_T,
+					NC_Tip_r=BP_FairingConeTip_r);
+		translate([0,0,-5]) NoseLockRing(Fairing_ID =BP_Fairing_ID);
+	}
 	
+	translate([0,0,BP_BoosterButton2_z+50+Overlap*2+BP_BodyTube_Len+BP_ElectronicsBay_Len])
+		F54_FairingHalf(IsLeftHalf=true, 
+				Fairing_OD=BP_Fairing_OD,
+				Wall_T=BP_FairingWall_T,
+				Len=BP_Fairing_Len,
+				HasArmingHole=true);
+	
+	translate([0,0,BP_BoosterButton2_z+50+Overlap*2+BP_BodyTube_Len+BP_ElectronicsBay_Len-10]){
+		FairingBase(BaseXtra=10, Fairing_OD=BP_Fairing_OD, Fairing_ID=BP_Fairing_ID,
+					BodyTubeOD=BP_Body_OD, 
+					CouplerTube_OD=BP_BobyCoupler_OD, CouplerTube_ID=BP_BobyCoupler_ID);
+			
+		translate([0,0,5])
+			FairingBaseLockRing(Tube_ID=BP_Fairing_ID, Fairing_ID=BP_Fairing_ID, Interface=-IDXtra);
+	}
+	/**/
+	
+	/*
+	translate([0,0,BP_BoosterButton2_z+50+Overlap*2+Overlap]) color("LightBlue")
+		Tube(OD=BP_Body_OD, ID=BP_Body_ID, Len=BP_BodyTube_Len, myfn=$preview? 36:360);
+	/**/
+	
+	//translate([0,0,BP_BoosterButton2_z+Overlap*2]) rotate([0,0,45]) rotate([0,90,0]) BB_LockShaft(Len=LockShaftLen);
+	
+
 	
 	//*
 	translate([0,0,BP_BoosterButton2_z+Overlap*2])
@@ -213,21 +318,21 @@ module ShowBoosterPooper(){
 	} /**/
 	
 	
-	translate([0,0,BP_BoosterButton2_z+Overlap*2]) rotate([0,0,-45]) ForwardBoosterLock();
+	//translate([0,0,BP_BoosterButton2_z+Overlap*2]) rotate([0,0,-45]) ForwardBoosterLock();
 	
-	/*
+	//*
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j])
 		translate([BP_Body_OD/2-BP_Fin_Post_h,0,BP_Fin_Root_L/2+50]) 
 			rotate([0,90,0]) color("Yellow") BP_Fin();
 	/**/
 	
-	/*  // Motor Tube
+	//*  // Motor Tube
 	translate([0,0,17]) color("Blue") Tube(OD=BP_MtrTube_OD, ID=54, 
 			Len=BP_MtrTubeLen, myfn=$preview? 90:360);
 	/**/
 	 
-	//translate([0,0,BP_Fin_Root_L+100+Overlap]) color("White") UpperFinCan();
-	//color("LightGreen") LowerFinCan();
+	translate([0,0,BP_Fin_Root_L+100+Overlap]) color("White") UpperFinCan();
+		color("LightGreen") LowerFinCan();
 	
 	// Boosters 
 	/*

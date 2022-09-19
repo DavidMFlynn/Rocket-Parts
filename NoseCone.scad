@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: NoseCone.scad
 // Created: 6/13/2022 
-// Revision: 0.9.3  9/8/2022
+// Revision: 0.9.4  9/18/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -11,6 +11,7 @@
 //
 //  ***** History *****
 //
+// 0.9.4  9/18/2022 More fixes, optioned HasRivets
 // 0.9.3  9/8/2022  Added base radius to BluntConeNoseCone. 
 // 0.9.2  7/25/2022 Using offset for nosecone wall. Added BluntConeNoseCone and OgiveNoseCone. 
 // 0.9.1  6/24/2022 Thinner wall nosecone, added Wall_T
@@ -61,7 +62,7 @@ module BluntConeShape(L=100, D=50, Base_L=2, Tip_R=5){
 
 // BluntConeShape(L=100, D=50, Base_L=15, Tip_R=10);
 
-module BluntConeNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3){
+module BluntConeNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3, HasRivets=true){
 	
 	difference(){
 		rotate_extrude($fn=$preview? 90:720) 
@@ -76,7 +77,7 @@ module BluntConeNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3){
 		cylinder(d=Wall_T*3, h=L-Tip_R);
 		translate([0,0,L-Tip_R]) sphere(r=Tip_R-Wall_T,$fn=$preview? 36:360);
 		
-		if (Base_L>12) translate([0,0,Base_L/2])
+		if (Base_L>12 && HasRivets) translate([0,0,Base_L/2])
 			RivetPattern(BT_Dia=OD, nRivets=3, Dia=5/32*25.4);
 		
 		if ($preview==true) translate([0,-100,-1]) cube([100,100,200]);
@@ -86,6 +87,10 @@ module BluntConeNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3){
 
 //BluntConeNoseCone(ID=PML54Body_ID, OD=PML54Body_OD, L=120, Base_L=5, Tip_R=7, Wall_T=2.2);
 //BluntConeNoseCone();
+/*
+Fairing55_OD=5.5*25.4;
+BluntConeNoseCone(ID=Fairing55_OD-4.4, OD=Fairing55_OD, L=190, Base_L=15, Tip_R=7, Wall_T=2.2, HasRivets=false);
+/**/
 
 module OgiveShape(L=100, D=50, Base_L=2){
 	// tangent ogive
@@ -215,7 +220,7 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3, Cut
 
 //BluntOgiveNoseCone(ID=PML75Body_ID, OD=PML75Body_OD, L=180, Base_L=21, Tip_R=10, Wall_T=2.2);
 //BluntOgiveNoseCone(ID=PML75Body_ID, OD=PML75Body_OD, L=280, Base_L=5, Tip_R=5, Wall_T=2.2, 
-		Cut_Z=150, LowerPortion=true);
+//		Cut_Z=150, LowerPortion=true);
 
 //BluntOgiveNoseCone(ID=PML54Body_ID, OD=PML54Body_OD, L=160, Base_L=10, Tip_R=7, Wall_T=3);
 
