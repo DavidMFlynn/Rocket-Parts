@@ -57,7 +57,7 @@ FairingBase(BaseXtra=10, Fairing_OD=BP_Fairing_OD, Fairing_ID=BP_Fairing_ID,
 /**/				
 // FairingBaseLockRing(Tube_ID=BP_Fairing_ID, Fairing_ID=BP_Fairing_ID, Interface=-IDXtra);
 
-		
+//	Electronics_Bay();	
 // 
 // ForwardBoosterLock();
 // BB_Lock();
@@ -189,7 +189,9 @@ BP_FairingConeWall_T=2.2; // may need to be thicker
 BP_FairingConeTip_r=7.5;
 
 BP_ElectronicsBay_Len=140;
-BP_BodyTube_Len=300;
+BP_LowerBodyTube_Len=236;
+BP_UpperBodyTube_Len=200;
+
 
 BP_Fin_Post_h=10;
 BP_Fin_Root_L=240;
@@ -201,12 +203,13 @@ BP_Fin_TipOffset=40;
 BP_Fin_Chamfer_L=24;
 
 ThrustRing_h=BoosterButtonMinor_d+6;
-EBay_Len=120;
+BP_EBay_Len=170;
+BP_Booster_EBay_Len=120;
 BP_BoosterTailConeLen=70;
-BP_MtrTubeLen=BP_Fin_Root_L+140;
+BP_MtrTubeLen=24*25.4;
 
 BP_BoosterButton1_z=100;
-BP_BoosterButtonSpacing=BP_Fin_Root_L+85;
+BP_BoosterButtonSpacing=BP_Fin_Root_L+85+BP_LowerBodyTube_Len;
 BP_BoosterButton2_z=BP_BoosterButton1_z+BP_BoosterButtonSpacing;
 
 BP_BoosterTubeLen=BP_BoosterButtonSpacing-ThrustRing_h-40;
@@ -223,13 +226,13 @@ LockShaftLen=48.0; // Changed -0.5mm 9/11/2022
 module ShowBooster(){
 	
 	// Booster nosecone
-	translate([0,0,BP_BoosterButton2_z+EBay_Len+ThrustRing_h/2+Fairing_Len+Overlap*3]){
+	translate([0,0,BP_BoosterButton2_z+BP_Booster_EBay_Len+ThrustRing_h/2+Fairing_Len+Overlap*3]){
 		color("Green") FairingCone();
 		color("Tan") NoseLockRing();
 	}
 
 	// Booster fairing
-	translate([0,0,BP_BoosterButton2_z+EBay_Len+ThrustRing_h/2+Overlap*3]) 
+	translate([0,0,BP_BoosterButton2_z+BP_Booster_EBay_Len+ThrustRing_h/2+Overlap*3]) 
 		F54_FairingHalf(IsLeftHalf=true, 
 				Fairing_OD=BP_Booster_Body_OD,
 				Wall_T=BP_Booster_Fairing_Wall_t,
@@ -265,9 +268,9 @@ module ShowBooster(){
 
 module ShowBoosterPooper(){
 	
-	/*
+	//*
 	// Nosecone and Fairing
-	translate([0,0,BP_BoosterButton2_z+50+Overlap*2+BP_BodyTube_Len+BP_ElectronicsBay_Len+BP_Fairing_Len]){
+	translate([0,0,BP_BoosterButton2_z+50+Overlap*2+BP_UpperBodyTube_Len+BP_ElectronicsBay_Len+BP_Fairing_Len+65]){
 		FairingCone(Fairing_OD=BP_Fairing_OD, 
 					FairingWall_T=BP_FairingWall_T,
 					NC_Base=BP_FairingConeBase, 
@@ -277,14 +280,14 @@ module ShowBoosterPooper(){
 		translate([0,0,-5]) NoseLockRing(Fairing_ID =BP_Fairing_ID);
 	}
 	
-	translate([0,0,BP_BoosterButton2_z+50+Overlap*2+BP_BodyTube_Len+BP_ElectronicsBay_Len])
+	translate([0,0,BP_BoosterButton2_z+50+Overlap*2+BP_UpperBodyTube_Len+BP_ElectronicsBay_Len+65])
 		F54_FairingHalf(IsLeftHalf=true, 
 				Fairing_OD=BP_Fairing_OD,
 				Wall_T=BP_FairingWall_T,
 				Len=BP_Fairing_Len,
 				HasArmingHole=true);
 	
-	translate([0,0,BP_BoosterButton2_z+50+Overlap*2+BP_BodyTube_Len+BP_ElectronicsBay_Len-10]){
+	translate([0,0,BP_BoosterButton2_z+50+Overlap*2+BP_UpperBodyTube_Len+BP_ElectronicsBay_Len+55]){
 		FairingBase(BaseXtra=10, Fairing_OD=BP_Fairing_OD, Fairing_ID=BP_Fairing_ID,
 					BodyTubeOD=BP_Body_OD, 
 					CouplerTube_OD=BP_BobyCoupler_OD, CouplerTube_ID=BP_BobyCoupler_ID);
@@ -294,16 +297,18 @@ module ShowBoosterPooper(){
 	}
 	/**/
 	
-	/*
+	translate([0,0,BP_BoosterButton2_z+40+BP_UpperBodyTube_Len+Overlap*2]) Electronics_Bay();
+	
+	//*
 	translate([0,0,BP_BoosterButton2_z+50+Overlap*2+Overlap]) color("LightBlue")
-		Tube(OD=BP_Body_OD, ID=BP_Body_ID, Len=BP_BodyTube_Len, myfn=$preview? 36:360);
+		Tube(OD=BP_Body_OD, ID=BP_Body_ID, Len=BP_UpperBodyTube_Len-Overlap*2, myfn=$preview? 36:360);
 	/**/
 	
 	//translate([0,0,BP_BoosterButton2_z+Overlap*2]) rotate([0,0,45]) rotate([0,90,0]) BB_LockShaft(Len=LockShaftLen);
 	
 
 	
-	//*
+	/*
 	translate([0,0,BP_BoosterButton2_z+Overlap*2])
 		rotate([0,0,-45]) {
 			translate([0,BP_Body_OD/2-BoosterButtonOA_h,0]) rotate([-90,0,0]){
@@ -318,7 +323,12 @@ module ShowBoosterPooper(){
 	} /**/
 	
 	
-	//translate([0,0,BP_BoosterButton2_z+Overlap*2]) rotate([0,0,-45]) ForwardBoosterLock();
+	translate([0,0,BP_BoosterButton2_z+Overlap*2]) rotate([0,0,-45]) ForwardBoosterLock();
+	
+	//*
+	translate([0,0,BP_BoosterButton1_z+BP_Fin_Root_L+Overlap]) color("LightBlue")
+		Tube(OD=BP_Body_OD, ID=BP_Body_ID, Len=BP_LowerBodyTube_Len-Overlap*2, myfn=$preview? 36:360);
+	/**/
 	
 	//*
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j])
@@ -335,7 +345,7 @@ module ShowBoosterPooper(){
 		color("LightGreen") LowerFinCan();
 	
 	// Boosters 
-	/*
+	//*
 	rotate([0,0,45]) translate([BP_Booster_Body_OD/2+BP_Body_OD/2,0,0]) ShowBooster();
 	rotate([0,0,45+180]) translate([BP_Booster_Body_OD/2+BP_Body_OD/2,0,0]) ShowBooster();
 	/**/
@@ -344,12 +354,68 @@ module ShowBoosterPooper(){
 
 //ShowBoosterPooper();
 
-//FairingBaseLockRing(Tube_ID=BP_Booster_Body_ID, 
-//	Fairing_ID=BP_Booster_Fairing_ID, Interface=Overlap);
+module Electronics_Bay(){
+	// Z=0 center of Booster button
+	TopOfTube=BP_EBay_Len+ThrustRing_h/2;
+	CablePullerInset=-1;
+	CP_a=0;
+	CP_z=-40;
+	
+	CT_z=30;
+		
+	difference(){
+		translate([0,0,TopOfTube-CT_z]) cylinder(d=BP_Body_ID+1, h=3+Overlap);
+		translate([0,0,TopOfTube-CT_z-Overlap]) 
+				cylinder(d2=BP_Body_ID-4.2, d1=BP_Body_ID, h=3+Overlap*3, $fn=$preview? 90:360);
+	} // difference
+	
+	difference(){
+		translate([0,0,CT_z]) cylinder(d=BP_Body_ID+1, h=3+Overlap);
+		translate([0,0,CT_z-Overlap]) 
+				cylinder(d1=BP_Body_ID-4.2, d2=BP_Body_ID, h=3+Overlap*3, $fn=$preview? 90:360);
+	} // difference
+	
+	// Standard E-Bay module
+	difference(){
+		translate([0,0,ThrustRing_h/2-Overlap]) rotate([0,0,90])
+			AltBay54(Tube_OD=BP_Body_OD, Tube_ID=BP_Body_ID, Tube_Len=BP_EBay_Len);
+		
+		// Cable Puller Bolt Holes
+		translate([0,0,TopOfTube+CP_z]) rotate([0,90,180]) 
+			translate([0,0,BP_Body_ID/2-CablePullerInset]) 
+				rotate([CP_a,0,0]) CablePullerBoltPattern() Bolt4Hole();
+	} // difference
+		
+	
+	translate([0,0,TopOfTube+CP_z]) rotate([0,90,180]) 
+	difference(){
+		// Cable Puller Bolt Bosses
+		translate([0,0,BP_Body_ID/2-CablePullerInset]) 
+			rotate([CP_a,0,0]) CablePullerBoltPattern() 
+				hull(){
+					rotate([180,0,0]) cylinder(d=8, h=8);
+					translate([12,0,0]) rotate([180,0,0]) cylinder(d=3, h=Overlap);
+				} // hull
+		
+		// Cable Puller Bolt Holes
+		translate([0,0,BP_Body_ID/2-CablePullerInset]) 
+			rotate([CP_a,0,0]) CablePullerBoltPattern() Bolt4Hole();
+		
+		// Conform to OD of E-Bay
+		rotate([0,90,0]) translate([0,0,-10])
+		difference(){
+			cylinder(d=BP_Body_ID+20, h=100);
+			translate([0,0,-Overlap]) cylinder(d=BP_Body_ID+1, h=100+Overlap*2);
+		} // difference
+	} // difference
+} // Electronics_Bay
+
+//Electronics_Bay();
+
 
 module Booster_E_Bay(){
 	// Z=0 center of Booster button
-	TopOfTube=EBay_Len+ThrustRing_h/2;
+	TopOfTube=BP_Booster_EBay_Len+ThrustRing_h/2;
 	CablePullerInset=-1;
 	CP_a=-5;
 	
@@ -367,7 +433,7 @@ module Booster_E_Bay(){
 	// Standard E-Bay module
 	difference(){
 		translate([0,0,ThrustRing_h/2-Overlap]) rotate([0,0,90])
-			AltBay54(Tube_OD=BP_Booster_Body_OD, Tube_ID=BP_Booster_Body_ID, Tube_Len=EBay_Len);
+			AltBay54(Tube_OD=BP_Booster_Body_OD, Tube_ID=BP_Booster_Body_ID, Tube_Len=BP_Booster_EBay_Len);
 		
 		// Cable Puller Bolt Holes
 		translate([0,0,TopOfTube-12]) rotate([0,90,135]) 
@@ -444,7 +510,7 @@ module Booster_E_Bay(){
 
 //Booster_E_Bay();
 //AltDoor54(Tube_OD=BP_Booster_Body_OD);
-//translate([0,0,EBay_Len+ThrustRing_h/2-12]) rotate([0,90,135]) translate([0,0,BP_Booster_Body_ID/2+1]) 
+//translate([0,0,BP_Booster_EBay_Len+ThrustRing_h/2-12]) rotate([0,90,135]) translate([0,0,BP_Booster_Body_ID/2+1]) 
 	//		rotate([-5,0,0]) translate([0,0,-20]) CR_Cage();
 
 module TailCone5438(OD=BP_Booster_Body_OD, ID=BP_Booster_MtrTube_OD, Len=50){
