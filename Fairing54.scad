@@ -473,10 +473,15 @@ module F54_Retainer(IsLeftHalf=true, Fairing_OD=Fairing_OD, Wall_T=FairingWall_T
 			difference(){
 				cylinder(d=Fairing_OD-1, h=NC_Lock_H, $fn=$preview? 90:360);
 				
+				// Center hole
 				translate([0,0,-Overlap]) 
 					cylinder(d=NC_Lock_ID(Fairing_ID)+1, h=NC_Lock_H+Overlap*2, $fn=$preview? 90:360);
+				
+				// Blend into fairing
 				translate([0,0,-Overlap]) 
-					cylinder(d=Fairing_ID, h=1+Overlap*2, $fn=$preview? 90:360);
+					cylinder(d1=Fairing_ID, d2=NC_Lock_OD(Fairing_ID), h=1+Overlap*2, $fn=$preview? 90:360);
+				
+				// Gripping surface
 				translate([0,0,1]) 
 					cylinder(d1=NC_Lock_OD(Fairing_ID), d2=NC_Lock_ID(Fairing_ID), h=NC_Lock_H-1+Overlap, $fn=$preview? 90:360);
 			} // difference
