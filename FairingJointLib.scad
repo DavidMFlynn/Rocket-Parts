@@ -46,7 +46,7 @@
 // ***********************************
 
 include<TubesLib.scad>
-//include<CommonStuffSAEmm.scad>
+include<CommonStuffSAEmm.scad>
 
 Overlap=0.05;
 IDXtra=0.2; // Add to ID for tight fit, x2 for loose fit
@@ -199,17 +199,52 @@ BigFairing_OD=5.5 * 25.4;
 SmallFairing_OD=PML54Body_OD;
 PJ_Clip_a=6;
 
+module Bolt_On_PJ_Clip(Fairing_OD=100, FairingWall_t=2.2){
+	Fairing_ID=Fairing_OD-FairingWall_t*2;
+	PJ_Clip_a=BigFairing_OD/Fairing_OD*PJ_Clip_a;
+	
+	difference(){
+		union(){
+			PJ_Clip(Fairing_OD=Fairing_OD, FairingWall_t=FairingWall_t);
+			
+			hull(){
+				rotate([0,0,PJ_Clip_a*1.7]) translate([Fairing_ID/2-5,0,0]) 
+					rotate([0,90,0]) cylinder(d=7, h=6);
+				rotate([0,0,PJ_Clip_a/1.7]) translate([Fairing_ID/2-8,0,0]) 
+					rotate([0,90,0]) cylinder(d=7, h=8);
+			} // hull
+		} // union
+	
+		rotate([0,0,PJ_Clip_a/10]) translate([0,0,-5]) 
+			PJ_CW(Fairing_OD=Fairing_OD, FairingWall_T=FairingWall_t, Len=10);
+		translate([0,0,-5]) PJ_CCW(Fairing_OD=Fairing_OD, FairingWall_T=FairingWall_t, Len=10);
+		
+		// Bolt holes
+		rotate([0,0,PJ_Clip_a/1.7]) translate([Fairing_ID/2-12,0,0]) rotate([0,-90,0]) Bolt4Hole(depth=20);
+		rotate([0,0,PJ_Clip_a*1.7]) translate([Fairing_ID/2-9,0,0]) rotate([0,-90,0]) Bolt4Hole(depth=20);
+		
+		translate([0,0,-5])
+		difference(){
+			cylinder(d=Fairing_ID+10, h=10);
+			translate([0,0,-Overlap]) cylinder(d=Fairing_ID, h=10+Overlap*2, $fn=$preview? 90:360);
+		} // difference
+	} // difference
+	
+} // Bolt_On_PJ_Clip
+
+//Bolt_On_PJ_Clip(Fairing_OD=PML75Body_OD, FairingWall_t=2.2);
+
 module PJ_Clip(Fairing_OD=100, FairingWall_t=2.2){
 	PJ_Clip_a=BigFairing_OD/Fairing_OD*PJ_Clip_a;
 	
 	// LockXtra=-0.6; // Cheet for Fairing54 -0.4 was still too tight, -0.6 work perfectly
-	// 
-	//LockXtra=-0.3; // Cheet for BigFairing_OD Fairing, -0.3 is Loose but usable, -0.6 was too loose
+
+	//
+	LockXtra=-0.3; // Cheet for BigFairing_OD Fairing, -0.3 is Loose but usable, -0.6 was too loose
 	
 	//LockXtra=-0.2; // Cheet for Fairing98 Fairing
 	
-	//
-	LockXtra=-0.2; // Cheet for Fairing75 Fairing, works well just a little cleanup
+	//LockXtra=-0.2; // Cheet for Fairing75 Fairing, works well just a little cleanup
 	
 	LockTip_X=Fairing_OD/2-FairingWall_t-PJ_Jointer_d/2;
 	Back_Face_X=LockTip_X-PJ_Jointer_d*1.5;

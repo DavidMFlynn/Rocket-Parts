@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: BoosterPooper3.scad
 // Created: 9/3/2022 
-// Revision: 0.9.2  9/9/2022
+// Revision: 0.9.3  9/18/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -15,6 +15,7 @@
 //
 //  ***** History *****
 // 
+// 0.9.3  9/18/2022 Added some missing parts.
 // 0.9.2  9/9/2022  Still working on ForwardBoosterLock
 // 0.9.1  9/8/2022  Booster is ready to print, still working on ForwardBoosterLock and parts. 
 // 0.9.0  9/3/2022  First code.
@@ -51,13 +52,15 @@ F54_FairingHalf(IsLeftHalf=false,
 				HasArmingHole=true);
 /**/
 /*
-FairingBase(BaseXtra=10, Fairing_OD=BP_Fairing_OD, Fairing_ID=BP_Fairing_ID,
+rotate([180,0,0])
+	FairingBase(BaseXtra=10, Fairing_OD=BP_Fairing_OD, Fairing_ID=BP_Fairing_ID,
 					BodyTubeOD=BP_Body_OD, 
 					CouplerTube_OD=BP_BobyCoupler_OD, CouplerTube_ID=BP_BobyCoupler_ID);
 /**/				
 // FairingBaseLockRing(Tube_ID=BP_Fairing_ID, Fairing_ID=BP_Fairing_ID, Interface=-IDXtra);
 
 //	Electronics_Bay();	
+// AltDoor54(Tube_OD=BP_Body_OD);
 // 
 // ForwardBoosterLock();
 // BB_Lock();
@@ -214,7 +217,7 @@ BP_BoosterButton2_z=BP_BoosterButton1_z+BP_BoosterButtonSpacing;
 
 BP_BoosterTubeLen=BP_BoosterButtonSpacing-ThrustRing_h-40;
 echo(BP_BoosterTubeLen=BP_BoosterTubeLen);
-BP_BoosterMotorTubeLen=BP_BoosterButtonSpacing+ThrustRing_h+BP_BoosterTailConeLen-10;
+BP_BoosterMotorTubeLen=BP_BoosterButtonSpacing+ThrustRing_h+BP_BoosterTailConeLen-7;
 echo(BP_BoosterMotorTubeLen=BP_BoosterMotorTubeLen);
 
 LockShaftLen=48.0; // Changed -0.5mm 9/11/2022
@@ -224,7 +227,7 @@ LockShaftLen=48.0; // Changed -0.5mm 9/11/2022
 //mirror([0,0,1])F54_Retainer(IsLeftHalf=true, Fairing_OD=BP_Booster_Fairing_OD, Wall_T=BP_Booster_Fairing_Wall_t);
 
 module ShowBooster(){
-	
+	//*
 	// Booster nosecone
 	translate([0,0,BP_BoosterButton2_z+BP_Booster_EBay_Len+ThrustRing_h/2+Fairing_Len+Overlap*3]){
 		color("Green") FairingCone();
@@ -240,20 +243,22 @@ module ShowBooster(){
 	
 	// Booster electronics bay
 	translate([0,0,BP_BoosterButton2_z+Overlap*2]) rotate([0,0,-90]) color("Orange") Booster_E_Bay();
+	/**/
 	
 	// Booster body tube
+	//*
 	color("LightBlue")
 	translate([0,0,BP_BoosterButton1_z+ThrustRing_h/2+20+Overlap])
 		Tube(OD=BP_Booster_Body_OD, ID=BP_Booster_Body_ID, 
 			Len=BP_BoosterTubeLen-Overlap*2, myfn=$preview? 90:360);
-	
+	/**/
 	// Booster tail
 	translate([0,0,BP_BoosterButton1_z]) 
 		rotate([0,0,-90]) color("Orange") BoosterTail();
 	
 	// Booster motor tube
 	color("LightBlue")
-	translate([0,0,BP_BoosterButton1_z-ThrustRing_h/2-60])
+	translate([0,0,BP_BoosterButton1_z-ThrustRing_h/2-62])
 		Tube(OD=BP_Booster_MtrTube_OD, ID=BP_Booster_MtrTube_ID, 
 			Len=BP_BoosterMotorTubeLen, myfn=$preview? 90:360);
 			
@@ -299,7 +304,7 @@ module ShowBoosterPooper(){
 	
 	translate([0,0,BP_BoosterButton2_z+40+BP_UpperBodyTube_Len+Overlap*2]) Electronics_Bay();
 	
-	//*
+	/*
 	translate([0,0,BP_BoosterButton2_z+50+Overlap*2+Overlap]) color("LightBlue")
 		Tube(OD=BP_Body_OD, ID=BP_Body_ID, Len=BP_UpperBodyTube_Len-Overlap*2, myfn=$preview? 36:360);
 	/**/
@@ -323,29 +328,29 @@ module ShowBoosterPooper(){
 	} /**/
 	
 	
-	translate([0,0,BP_BoosterButton2_z+Overlap*2]) rotate([0,0,-45]) ForwardBoosterLock();
+	//translate([0,0,BP_BoosterButton2_z+Overlap*2]) rotate([0,0,-45]) ForwardBoosterLock();
 	
-	//*
+	/*
 	translate([0,0,BP_BoosterButton1_z+BP_Fin_Root_L+Overlap]) color("LightBlue")
 		Tube(OD=BP_Body_OD, ID=BP_Body_ID, Len=BP_LowerBodyTube_Len-Overlap*2, myfn=$preview? 36:360);
 	/**/
 	
-	//*
+	/*
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j])
 		translate([BP_Body_OD/2-BP_Fin_Post_h,0,BP_Fin_Root_L/2+50]) 
 			rotate([0,90,0]) color("Yellow") BP_Fin();
 	/**/
 	
-	//*  // Motor Tube
+	/*  // Motor Tube
 	translate([0,0,17]) color("Blue") Tube(OD=BP_MtrTube_OD, ID=54, 
 			Len=BP_MtrTubeLen, myfn=$preview? 90:360);
 	/**/
 	 
-	translate([0,0,BP_Fin_Root_L+100+Overlap]) color("White") UpperFinCan();
-		color("LightGreen") LowerFinCan();
+	//translate([0,0,BP_Fin_Root_L+100+Overlap]) color("White") UpperFinCan();
+	//	color("LightGreen") LowerFinCan();
 	
 	// Boosters 
-	//*
+	/*
 	rotate([0,0,45]) translate([BP_Booster_Body_OD/2+BP_Body_OD/2,0,0]) ShowBooster();
 	rotate([0,0,45+180]) translate([BP_Booster_Body_OD/2+BP_Body_OD/2,0,0]) ShowBooster();
 	/**/
