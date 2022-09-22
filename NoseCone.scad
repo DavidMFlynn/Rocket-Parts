@@ -224,6 +224,39 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3, Cut
 
 //BluntOgiveNoseCone(ID=PML54Body_ID, OD=PML54Body_OD, L=160, Base_L=10, Tip_R=7, Wall_T=3);
 
+
+module BluntOgiveWeight(OD=58, L=160, Tip_R=5, Wall_T=3){
+	R=OD/2;
+	p=(R*R+L*L)/(2*R);
+	X0 = L-sqrt((p-Tip_R)*(p-Tip_R)-(p-R)*(p-R));
+	
+	Weight_d=20;
+	
+	difference(){
+		// inside
+		rotate_extrude($fn=$preview? 90:360) 
+			offset(-Wall_T) BluntOgiveShape(L=L, D=OD, Base_L=0, Tip_R=Tip_R);
+		
+		translate([0,0,55+42]) cylinder(d=Weight_d, h=L/2);
+		
+		translate([0,0,55])
+		#for (j=[0:4]) rotate([0,0,360/5*j]) translate([Weight_d*0.9,0,0]) 
+			cylinder(d=Weight_d, h=40);
+		
+		// cut off bottom
+		cylinder(d=200,h=55+Overlap);
+		
+		//cylinder(d=Wall_T*3, h=L-X0+Tip_R-Wall_T*2);
+		//translate([0,0,L-X0]) sphere(r=Tip_R-Wall_T,$fn=$preview? 36:360);
+		
+		if ($preview==true) translate([0,-100,-1]) cube([100,100,200]);
+				
+	} // difference
+	
+} // BluntOgiveWeight
+
+//BluntOgiveWeight(OD=PML75Body_OD, L=195, Tip_R=7, Wall_T=2.2);
+
 module NoseconeBase(OD=PML98Body_ID, L=60, NC_Base=21){
 	Wall_T=2;
 	UBolt_X=25.4;
@@ -243,6 +276,7 @@ module NoseconeBase(OD=PML98Body_ID, L=60, NC_Base=21){
 		if ($preview==true) translate([0,-100,-100]) cube([100,100,200]);
 	} // difference
 } // NoseconeBase
+
 
 //translate([0,0,-60]) NoseconeBase(OD=PML75Coupler_OD, L=60, NC_Base=21);
 

@@ -43,7 +43,7 @@ F54_FairingHalf(IsLeftHalf=true,
 				Len=BP_Fairing_Len,
 				HasArmingHole=true);
 /**/
-
+// F54_SpringEndCap();
 /*
 F54_FairingHalf(IsLeftHalf=false, 
 				Fairing_OD=BP_Fairing_OD,
@@ -101,7 +101,7 @@ FairingCone(Fairing_OD=BP_Booster_Body_OD,
 // FairingBaseLockRing();
 //  rotate([180,0,0]) BB_LockShaft(Len=LockShaftLen);
 //
-// SpringEndCap();
+// F54_SpringEndCap();
 //
 // Booster_E_Bay();
 // AltDoor54(Tube_OD=BP_Booster_Body_OD);
@@ -159,7 +159,7 @@ BP_Booster_Fairing_OD=BP_Booster_Body_OD;
 BP_Booster_Fairing_Wall_t=2.2;
 BP_Booster_Fairing_ID=BP_Booster_Fairing_OD-BP_Booster_Fairing_Wall_t*2;
 
-/*
+//*
 // *** Override, Smaller Booster Fairing Spring ***
 F54_Spring_OD=5/16*25.4;
 F54_Spring_FL=1.00*25.4;
@@ -167,7 +167,7 @@ F54_Spring_CBL=0.55*25.4;
 F54_SpringEndCap_OD=F54_Spring_OD+3;
 /**/
 
-//*
+/*
 // *** Override, Larger Main Fairing Spring ***
 F54_Spring_OD=5/16*25.4;
 F54_Spring_FL=1.25*25.4;

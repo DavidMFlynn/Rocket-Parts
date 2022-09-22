@@ -26,7 +26,9 @@ FairingConeOGive(Fairing_OD=R75_Body_OD,
 					NC_Tip_r=NC_Tip_r);
 /**/
 // NoseLockRing(Fairing_ID =Fairing_ID);
-//
+
+// BluntOgiveWeight(OD=R75_Body_OD, L=NC_Len, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t);
+
 // *** Fairing ***
 /*
 F54_FairingHalf(IsLeftHalf=true, 

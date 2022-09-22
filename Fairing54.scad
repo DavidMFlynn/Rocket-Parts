@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: Fairing54.scad
 // Created: 8/5/2022 
-// Revision: 1.0.5  9/18/2022
+// Revision: 1.0.6  9/21/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -25,6 +25,7 @@
 //
 //  ***** History *****
 //
+// 1.0.6  9/21/2022  Fix: Added 1mm to FairingBaseLockRing
 // 1.0.5  9/18/2022  Standardizing FairingConeBaseRing
 // 1.0.4  9/8/2022   Made more parametric and renamed with F54_ prefix
 // 1.0.3  9/3/2022   Copied from Fairing.scad
@@ -335,12 +336,13 @@ module FairingBaseLockRing(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, Interface=
 	Base_h=5;
 	OA_h=10;
 	
+	Adjustment=0.6;
 	
 	
 	difference(){
 		union(){
 			// glue flange
-			cylinder(d=Tube_ID+Interface, h=Base_h, $fn=$preview? 90:360);
+			cylinder(d=Tube_ID+Interface, h=Base_h-Adjustment, $fn=$preview? 90:360);
 			
 			translate([0,0,OA_h]) mirror([0,0,1])
 				NoseLockRing(Fairing_ID=Fairing_ID);
@@ -356,7 +358,7 @@ module FairingBaseLockRing(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, Interface=
 	} // difference
 } // FairingBaseLockRing
 
-//translate([0,0,0]) mirror([0,0,1]) F54_Retainer(IsLeftHalf=true, NC_Lock_H=NC_Lock_H, Fairing_OD=Fairing_OD, Wall_T=FairingWall_T);
+//translate([0,0,0]) mirror([0,0,1]) F54_Retainer(IsLeftHalf=true, Fairing_OD=Fairing_OD, Wall_T=FairingWall_T);
 //translate([0,0,-5]) color("Tan") FairingBaseLockRing(Tube_ID=PML54Body_ID, Fairing_ID=Fairing_ID, Interface=Overlap);
 //FairingBaseLockRing(Tube_ID=BP_Booster_Body_ID, 
 //		Fairing_ID=BP_Booster_Fairing_ID, Interface=Overlap);
