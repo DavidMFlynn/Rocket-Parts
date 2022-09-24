@@ -79,7 +79,7 @@ FairingCone(Fairing_OD=BP_Booster_Body_OD,
 					NC_Wall_t=2,
 					NC_Tip_r=5);
 /**/
-// NoseLockRing();
+// NoseLockRing(Fairing_ID =BP_Booster_Fairing_ID);
 //
 /*
 // *** >>>Enable override for smaller booster fairing spring<<< ***
@@ -159,7 +159,7 @@ BP_Booster_Fairing_OD=BP_Booster_Body_OD;
 BP_Booster_Fairing_Wall_t=2.2;
 BP_Booster_Fairing_ID=BP_Booster_Fairing_OD-BP_Booster_Fairing_Wall_t*2;
 
-//*
+/*
 // *** Override, Smaller Booster Fairing Spring ***
 F54_Spring_OD=5/16*25.4;
 F54_Spring_FL=1.00*25.4;
