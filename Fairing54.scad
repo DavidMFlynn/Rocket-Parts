@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: Fairing54.scad
 // Created: 8/5/2022 
-// Revision: 1.0.8  9/23/2022
+// Revision: 1.0.9  9/24/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -25,6 +25,7 @@
 //
 //  ***** History *****
 //
+// 1.0.9  9/24/2022  Small improvements.
 // 1.0.8  9/23/2022  Reworked the spring parts. Yet another try to fix the coupler.
 // 1.0.7  9/22/2022  Spring hole made 1.5mm deeper. 
 // 1.0.6  9/21/2022  Fix: Added 1mm to FairingBaseLockRing
@@ -565,7 +566,7 @@ module F54_FairingHalf(IsLeftHalf=true,
 		
 		// Tube ID
 		translate([BallHole_X,6.5-Overlap,Z1+M_H2/2-Overlap]) 
-			cylinder(d=JointPin_d+IDXtra*3, h=Z2-Z1-M_H2+Overlap*2);
+			cylinder(d=JointPin_d+IDXtra*4, h=Z2-Z1-M_H2+Overlap*2);
 		
 		// Access hole
 		translate([BallHole_X,6.5-Overlap,Z2-M_H2/2])
@@ -627,16 +628,17 @@ module F54_FairingHalf(IsLeftHalf=true,
 				translate([-Fairing_OD/2+8.5,6.5,Z1]) rotate([0,0,90]) Socket(H=M_H);
 				translate([-Fairing_OD/2+8.5,6.5,Z2]) rotate([0,0,90]) Socket(H=M_H);
 				
-				SpringStop_Len=13;
+				SpringStop_Len=7;
+				// The spring pushes on this. Fixed 9/24/2022
 				mirror([1,0,0]) 
-					translate([Fairing_ID/2-F54_SpringEndCap_OD/2-2,SpringStop_Len,Len/2])
+					translate([Fairing_ID/2-F54_SpringEndCap_OD/2-2,0,Len/2])
 						hull(){
-							rotate([90,0,0]) cylinder(d=F54_SpringEndCap_OD+4, h=SpringStop_Len);
-							sphere(d=F54_SpringEndCap_OD+4);
+							rotate([-90,0,0]) cylinder(d=F54_SpringEndCap_OD+4, h=1);
+							translate([0,SpringStop_Len,0]) sphere(d=F54_SpringEndCap_OD);
 							
 							translate([7,0,0]){
-								rotate([90,0,0]) cylinder(d=F54_SpringEndCap_OD+10,h=SpringStop_Len);
-								sphere(d=F54_SpringEndCap_OD+10);}
+								rotate([-90,0,0]) cylinder(d=F54_SpringEndCap_OD+10,h=1);
+								translate([0,SpringStop_Len+4,0]) sphere(d=F54_SpringEndCap_OD+4);}
 						} // hull
 						
 				translate([0,0,12.5+PJ_Spacing]) PJ_Clip(Fairing_OD=Fairing_OD);
@@ -649,15 +651,16 @@ module F54_FairingHalf(IsLeftHalf=true,
 				rotate([0,0,180]) SkirtedTenon(Tube_OD=Fairing_OD, Z=Z1);
 				rotate([0,0,180]) SkirtedTenon(Tube_OD=Fairing_OD, Z=Z2);
 				
+				// Spring and SpringCap go in this. 
 				rotate([0,0,180])
-					translate([Fairing_ID/2-F54_SpringEndCap_OD/2-3,F54_Spring_FL/2+SpringInset,Len/2])
+					translate([Fairing_ID/2-F54_SpringEndCap_OD/2-3,0, Len/2])
 						hull(){
-							rotate([90,0,0]) cylinder(d=F54_SpringEndCap_OD+4, h=F54_Spring_FL/2+SpringInset);
-							sphere(d=F54_SpringEndCap_OD+4);
+							#rotate([-90,0,0]) cylinder(d=F54_SpringEndCap_OD+4, h=1);
+							translate([0,F54_Spring_FL/2+SpringInset,0]) sphere(d=F54_SpringEndCap_OD+4);
 							
 							translate([7,0,0]){
-							rotate([90,0,0]) cylinder(d=F54_SpringEndCap_OD+10,h=F54_Spring_FL/2+SpringInset);
-							sphere(d=F54_SpringEndCap_OD+10);}
+							rotate([-90,0,0]) cylinder(d=F54_SpringEndCap_OD+10,h=1);
+							translate([0,F54_Spring_FL/2+4+SpringInset,0]) sphere(d=F54_SpringEndCap_OD+10);}
 						} // hull	
 						
 				translate([0,0,12.5]) rotate([180,0,0]) PJ_Clip(Fairing_OD=Fairing_OD);
@@ -697,11 +700,6 @@ F54_FairingHalf(IsLeftHalf=true,
 				Len=Fairing_Len);
 /**/
 /*
-// *** Override, Larger Main Fairing Spring ***
-F54_Spring_OD=5/16*25.4;
-F54_Spring_FL=1.25*25.4;
-F54_Spring_CBL=0.7*25.4;
-F54_SpringEndCap_OD=F54_Spring_OD+3;
 
 F54_FairingHalf(IsLeftHalf=false,  
 				Fairing_OD=PML98Body_OD,
