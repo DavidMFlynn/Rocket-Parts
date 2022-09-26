@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: BoosterPooper3.scad
 // Created: 9/3/2022 
-// Revision: 0.9.3  9/18/2022
+// Revision: 0.9.4  9/25/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -14,7 +14,8 @@
 // See Fairing54.scad for booster fairing
 //
 //  ***** History *****
-// 
+//
+// 0.9.4  9/25/2022 Work on ForwardBoosterLock parts. 
 // 0.9.3  9/18/2022 Added some missing parts.
 // 0.9.2  9/9/2022  Still working on ForwardBoosterLock
 // 0.9.1  9/8/2022  Booster is ready to print, still working on ForwardBoosterLock and parts. 
@@ -62,8 +63,14 @@ rotate([180,0,0])
 //	Electronics_Bay();	
 // AltDoor54(Tube_OD=BP_Body_OD);
 // 
+// 
 // ForwardBoosterLock();
-// BB_Lock();
+// BB_LockingThrustPoint(); // Print 2, bolts into ForwardBoosterLock
+// BB_Lock(); // Print 2, Rotating lock
+// BB_BearingStop(); // Print 2, Only used with ball bearing
+// rotate([180,0,0]) BB_LockShaft(Len=LockShaftLen, nTeeth=nLockShaftTeeth);
+// rotate([180,0,0]) ServoGear(nTeeth=nServoGearTeeth);
+// rotate([180,0,0]) ServoMount();
 //
 // BP_Fin();
 // rotate([180,0,0]) LowerFinCan();
@@ -99,7 +106,6 @@ FairingCone(Fairing_OD=BP_Booster_Body_OD,
 //
 // rotate([180,0,0]) FairingBase(); // Pring w/ support
 // FairingBaseLockRing();
-//  rotate([180,0,0]) BB_LockShaft(Len=LockShaftLen);
 //
 // F54_SpringEndCap();
 //
@@ -221,6 +227,8 @@ BP_BoosterMotorTubeLen=BP_BoosterButtonSpacing+ThrustRing_h+BP_BoosterTailConeLe
 echo(BP_BoosterMotorTubeLen=BP_BoosterMotorTubeLen);
 
 LockShaftLen=48.0; // Changed -0.5mm 9/11/2022
+nLockShaftTeeth=24;
+nServoGearTeeth=24;
 
 //NoseLockRing(Fairing_ID =BP_Booster_Fairing_ID);
 //FairingBaseLockRing(Tube_ID=BP_Booster_Body_ID, Fairing_ID=BP_Booster_Fairing_ID, Interface=Overlap);
@@ -554,6 +562,43 @@ module BoosterTail(){
 
 //rotate([0,0,45]) translate([BP_Booster_Body_OD/2+BP_Body_OD/2,0,100]) rotate([0,0,-90]) BoosterTail();
 
+module ServoMountAdaptor(){
+	G_a=22.5;
+	CentralCavity_Y=58;
+	CentralCavity2_Y=44;
+	Bottom_Z=-85;
+	OAL_Z=135;
+	ServoMount_Y=-8;
+	
+	difference(){
+		// Servo bolt bosses
+			rotate([0,G_a,0]) translate([0,ServoMount_Y,24*300/180]) rotate([0,-G_a,0]) 
+				 rotate([0,90,90]) hull() ServoMountHolePattern() {
+					 translate([0,0,0.9]) rotate([180,0,0]) cylinder(d=10,h=1);
+					 translate([0,0,-6]) sphere(d=10);
+				 }
+				 
+		// Servo
+		rotate([0,G_a,0]) translate([0,ServoMount_Y,24*300/180]) rotate([0,90-G_a,0]) 
+			rotate([-90,0,0]) Servo_HX5010(BottomMount=false,TopAccess=false,Xtra_w=1.2, Xtra_h=1);
+				 
+		difference(){
+			translate([0,0,Bottom_Z+20]) cylinder(d=BP_Body_OD-1, h=OAL_Z-40, $fn=$preview? 90:360);
+			
+		
+			translate([-BP_Body_OD/2,-CentralCavity2_Y/2,Bottom_Z-Overlap]) 
+				cube([BP_Body_OD,CentralCavity2_Y,OAL_Z+Overlap*2]);
+			
+			
+		} // difference
+				 
+		// Servo mounting bolts
+		rotate([0,G_a,0]) translate([0,ServoMount_Y,24*300/180]) rotate([0,-G_a,0]) 
+				rotate([0,90,90]) ServoMountHolePattern() translate([0,0,2]) Bolt4Hole();
+	} // difference
+} // ServoMountAdaptor
+
+//rotate([180,0,0]) ServoMountAdaptor();
 
 module ForwardBoosterLock(){
 	// Z=0, BoosterButton center line
@@ -561,6 +606,7 @@ module ForwardBoosterLock(){
 	OAL_Z=135;
 	CentralCavity_Y=58;
 	CentralCavity2_Y=44;
+	ServoMount_Y=-8;
 	
 	module BD_Holes(){
 		translate([0,BP_Body_OD/2-BoosterButtonOA_h,0]) rotate([-90,0,0]) BB_LTP_Hole();
@@ -594,17 +640,45 @@ module ForwardBoosterLock(){
 	} // difference
 	
 	difference(){
-		translate([0,0,Bottom_Z+20]) cylinder(d=BP_Body_OD-1, h=OAL_Z-40, $fn=$preview? 90:360);
+		G_a=22.5;
+		
+		union(){
+			translate([0,0,Bottom_Z+20]) cylinder(d=BP_Body_OD-1, h=OAL_Z-40, $fn=$preview? 90:360);
 			
+			// Servo bolt bosses
+			rotate([0,G_a,0]) translate([0,ServoMount_Y,24*300/180]) rotate([0,-G_a,0]) 
+				 rotate([0,90,90]) hull() ServoMountHolePattern() {
+					 translate([0,0,0.9]) rotate([180,0,0]) cylinder(d=10,h=1);
+					 translate([0,0,-6]) sphere(d=10);
+				 }
+		} // union
+			
+		// Servo mounting bolts
+		rotate([0,G_a,0]) translate([0,ServoMount_Y,24*300/180]) rotate([0,-G_a,0]) 
+				rotate([0,90,90]) ServoMountHolePattern() translate([0,0,2]) Bolt4Hole();
+		
 		// Clean up base below centering ring
 		translate([0,0,Bottom_Z+15-Overlap]) cylinder(d1=BP_Body_OD, d2=BP_Body_OD-50, h=25);
-		translate([-BP_Body_OD/2,-CentralCavity2_Y/2,Bottom_Z-Overlap]) 
-			cube([BP_Body_OD,CentralCavity2_Y,OAL_Z+Overlap*2]);
+		difference(){
+			translate([-BP_Body_OD/2,-CentralCavity2_Y/2,Bottom_Z-Overlap]) 
+				cube([BP_Body_OD,CentralCavity2_Y,OAL_Z+Overlap*2]);
+			
+			// Servo bolt bosses
+			rotate([0,G_a,0]) translate([0,ServoMount_Y,24*300/180]) rotate([0,-G_a,0]) 
+				 rotate([0,90,90]) hull() ServoMountHolePattern() {
+					 translate([0,0,2]) rotate([180,0,0]) cylinder(d=10,h=1);
+					 translate([0,0,-6]) sphere(d=10);
+				 }
+		} // difference
 		
 		// Servo
-		G_a=22.5;
-		rotate([0,G_a,0]) translate([0,-8,24*300/180]) rotate([0,90-G_a,0]) 
+		rotate([0,G_a,0]) translate([0,ServoMount_Y,24*300/180]) rotate([0,90-G_a,0]) 
 			rotate([-90,0,0]) Servo_HX5010(BottomMount=false,TopAccess=false,Xtra_w=1.2, Xtra_h=1);
+		// Servo wires
+		translate([16,ServoMount_Y-8,25]) hull(){
+			rotate([90,0,0]) cylinder(d=6, h=18);
+			translate([0,0,5]) rotate([90,0,0]) cylinder(d=6, h=18);
+		} // hull
 		
 		
 		/*
@@ -622,7 +696,7 @@ module ForwardBoosterLock(){
 	
 } // ForwardBoosterLock
 
-//G_a=30;
+//G_a=22.5;
 //ForwardBoosterLock();
 
 //translate([0,0,0]) rotate([-90,0,0]) BB_LockShaft(Len=LockShaftLen);
@@ -630,6 +704,58 @@ module ForwardBoosterLock(){
 //rotate([0,0,180/24]) 
 //BB_Gear();
 
+module ServoMountHolePattern(){
+	Tray_W=30;
+	MountFace_X=6;
+	MountFace_H=28;
+	
+	translate([MountFace_X,-Tray_W/2,-MountFace_H+4]) rotate([0,-90,0]) children();
+	translate([MountFace_X,Tray_W/2,-MountFace_H+4]) rotate([0,-90,0]) children();
+	translate([MountFace_X,-Tray_W/2,-MountFace_H+12]) rotate([0,-90,0]) children();
+	translate([MountFace_X,Tray_W/2,-MountFace_H+12]) rotate([0,-90,0]) children();
+} // ServoMountHolePattern
+
+
+module ServoMount(){
+	Tray_L=57;
+	Tray_W=30;
+	Tray_H=8;
+	TrayOffset_X=-38+Tray_L/2;
+	MountFace_X=6;
+	MountFace_H=28;
+	
+	difference(){
+		union(){
+			//translate([TrayOffset_X,-Tray_W/2,-Tray_H]) cube([Tray_L,Tray_W,Tray_H]);
+			translate([TrayOffset_X,0,-Tray_H]) 
+			RoundRect(X=Tray_L, Y=Tray_W, Z=Tray_H, R=8);
+			
+			hull(){
+				translate([MountFace_X-3,-Tray_W/2,-MountFace_H]) cube([3,Tray_W,MountFace_H-2]);
+				translate([-20,-Tray_W/2,-Tray_H]) cube([Overlap,Tray_W,Tray_H-2]);
+				
+				ServoMountHolePattern() cylinder(d=8,h=6);
+				
+			} // hull
+		} // union
+		
+		Servo_HX5010(BottomMount=false,TopAccess=false,Xtra_w=1.2, Xtra_h=1);
+		
+		ServoMountHolePattern() translate([0,0,8]) Bolt4HeadHole(lHead=20);
+		
+		// Wire path
+		translate([-TrayOffset_X+1,0,-Tray_H-Overlap]) cylinder(d=6, h=Tray_H+Overlap*2);
+	} // difference
+} // ServoMount
+
+//ServoMount();
+/*
+G_a=22.5;
+ForwardBoosterLock();
+translate([0,0,Overlap])
+rotate([0,G_a,0]) translate([0,-8,24*300/180]) rotate([0,-G_a,0]) 
+rotate([0,90,90]) ServoMount();
+/**/
 
 
 module UpperFinCan(){

@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: BoosterDropperLib.scad
 // Created: 9/2/2022 
-// Revision: 0.9.4  9/9/2022
+// Revision: 0.9.5  9/25/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -11,6 +11,7 @@
 //
 //  ***** History *****
 //
+// 0.9.5  9/25/2022 Added ServoGear. 
 // 0.9.4  9/9/2022  Modified for 6805 ball bearing.
 // 0.9.3  9/8/2022  Added XtraLen to BoosterButton.
 // 0.9.2  9/4/2022  Nearly ready to test. 
@@ -26,6 +27,8 @@
 // BB_LockingThrustPoint(); // Print 1 per booster, incorperate into rocket body
 // BB_Lock(); // Print 1 per booster
 // BB_BearingStop(); // Only used with ball bearing
+// rotate([180,0,0]) BB_LockShaft(Len=50, nTeeth=24);
+// rotate([180,0,0]) ServoGear(nTeeth=24);
 //
 // ***********************************
 //  ***** Routines *****
@@ -34,6 +37,7 @@
 // BB_ThrustPoint_Hole(BodyTube_OD=PML98Body_OD);
 // BB_LTP_Hole(BodyTube_OD=PML98Body_OD);
 // BB_Gear();
+// BB_LockStop(Len=50, Extra_H=2);
 //
 // ***********************************
 
@@ -348,14 +352,62 @@ module BB_Gear(nTeeth=24){
 	gear(number_of_teeth=nTeeth, circular_pitch=Pitch, diametral_pitch=false,
 				pressure_angle=PressureAngle, clearance = Clearance,
 				gear_thickness=Thickness, rim_thickness=Thickness, rim_width=3,
-				hub_thickness=Thickness, hub_diameter=15, bore_diameter=5, circles=0, 
+				hub_thickness=Thickness, hub_diameter=15, bore_diameter=7.5, circles=0, 
 				backlash=Backlash, twist=0, 
 				involute_facets=0, flat=false);
 } // BB_Gear
 
 //BB_Gear();
 
-module BB_LockShaft(Len=50){
+// TL Torque Limiter, WIP
+
+module TLClutchPlate(){
+	ClutchPlate_d=32;
+	
+	difference(){
+		union(){
+			cylinder(d=ClutchPlate_d, h=2.1);
+			for (j=[0:5]) rotate([0,0,60*j]) translate([ClutchPlate_d/2-3,0,0]) cylinder(d=6, h=7);
+		} // union
+		
+		translate([0,0,8]) // gear thickness
+			for (j=[0:5]) rotate([0,0,60*j]) translate([ClutchPlate_d/2-3,0,0]) Bolt4Hole();
+				
+		translate([0,0,-Overlap]) cylinder(d=22, h=13);
+	} // difference
+} // TLClutchPlate
+
+//TLClutchPlate();
+
+module TLServoGear(nTeeth=24){
+	ClutchPlate_d=32;
+	
+	difference(){
+		BB_Gear(nTeeth=nTeeth);
+		
+		translate([0,0,-Overlap]) cylinder(d=ClutchPlate_d+IDXtra*2, h=6.8);
+		translate([0,0,8]) // gear thickness
+			for (j=[0:5]) rotate([0,0,60*j]) translate([ClutchPlate_d/2-3,0,0]) Bolt4ClearHole();
+	} // difference
+} // TLServoGear
+
+//TLServoGear();
+
+module ServoGear(nTeeth=24){
+	ServoWheel_d=20.84+IDXtra;
+	
+	difference(){
+		BB_Gear(nTeeth=nTeeth);
+		
+		translate([0,0,-Overlap]) cylinder(d=ServoWheel_d, h=2.7);
+		translate([0,0,8]) // gear thickness
+			for (j=[0:3]) rotate([0,0,90*j]) translate([8,0,0]) Bolt4HeadHole();
+	} // difference
+} // ServoGear
+
+//ServoGear();
+
+module BB_LockShaft(Len=50, nTeeth=24){
 	nBolts=3;
 	Race_ID=BB_Lock_BallCircle_d-BB_Lock_Ball_d-Bolt4Inset*4;
 	End_h=8;
@@ -368,7 +420,7 @@ module BB_LockShaft(Len=50){
 	difference(){
 		union(){
 			translate([0,0,Len/2-Gear_z])
-				BB_Gear(nTeeth=24);
+				BB_Gear(nTeeth=nTeeth);
 
 			cylinder(d=Race_ID+6, h=Len, center=true);
 			
@@ -417,7 +469,7 @@ module BB_LockStop(Len=50, Extra_H=2){
 	
 } // BB_LockStop
 
-//BB_LockStop(Len=50, Extra_H=2)
+//BB_LockStop(Len=50, Extra_H=2);
 
 module BB_Lock(){
 	nBolts=3;
