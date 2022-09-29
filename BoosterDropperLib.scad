@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: BoosterDropperLib.scad
 // Created: 9/2/2022 
-// Revision: 0.9.5  9/25/2022
+// Revision: 0.9.6  9/26/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -11,6 +11,7 @@
 //
 //  ***** History *****
 //
+// 0.9.6  9/26/2022 Modified for HS5645MG servo
 // 0.9.5  9/25/2022 Added ServoGear. 
 // 0.9.4  9/9/2022  Modified for 6805 ball bearing.
 // 0.9.3  9/8/2022  Added XtraLen to BoosterButton.
@@ -394,14 +395,22 @@ module TLServoGear(nTeeth=24){
 //TLServoGear();
 
 module ServoGear(nTeeth=24){
-	ServoWheel_d=20.84+IDXtra;
+	//ServoWheel_d=20.84+IDXtra; // MG996R
+	//ServoWheel_h=2.7;
+	//ServoBC_r=8;
+	ServoWheel_d=23.75+IDXtra; // HS5645MG
+	ServoWheel_h=2.0;
+	ServoBC_r=17/2;
+	ServoBC2_r=20/2;
 	
 	difference(){
 		BB_Gear(nTeeth=nTeeth);
 		
-		translate([0,0,-Overlap]) cylinder(d=ServoWheel_d, h=2.7);
-		translate([0,0,8]) // gear thickness
-			for (j=[0:3]) rotate([0,0,90*j]) translate([8,0,0]) Bolt4HeadHole();
+		translate([0,0,-Overlap]) cylinder(d=ServoWheel_d, h=ServoWheel_h);
+		translate([0,0,8]){ // gear thickness
+			for (j=[0:1]) rotate([0,0,180*j]) translate([ServoBC_r,0,0]) Bolt4HeadHole();
+			for (j=[0:1]) rotate([0,0,180*j+90]) translate([ServoBC2_r,0,0]) Bolt4HeadHole();
+			}
 	} // difference
 } // ServoGear
 

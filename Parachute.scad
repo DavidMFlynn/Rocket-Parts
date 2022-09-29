@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: Parachute.scad
 // Created: 9/13/2022 
-// Revision: 0.9.1  9/24/2022
+// Revision: 0.9.2  9/28/2022
 // Units: mm
 // *******************************************
 //  ***** Notes *****
@@ -17,6 +17,7 @@
 // 
 //  ***** History *****
 //
+// 0.9.2  9/28/2022 20" 'chute worked well, 63" is next. 
 // 0.9.1  9/24/2022 Didn't work, starting over. 
 // 0.9.0  9/13/2022 First code, working out the geometry
 //
@@ -25,10 +26,12 @@
 //
 // *******************************************
 
-$fn=90;
+$fn=360;
 
-Pointyness=0.4; // Works for 8 Panels
-Panel_Y=2;
+//Pointyness=0.4; // Works for 8 Panels
+//Panel_Y=2;
+PrintingOffset_Y=0;
+PrintingOffset_X=0;
 
 //Pointyness=0.45; // Works for 10 Panels 
 //Panel_Y=2.7;
@@ -39,19 +42,36 @@ Panel_Y=2;
 // Make 8 Panels
 //Arc_r=800; //160mm x 200mm, 16"
 //
+// --------------------------------------------------------------
 // *** First Article Test ***
-Arc_r=500; Apex_Y=310; Hole_X=30;  // 200mm x 320mm, 20"
-PrintingOffset_X=0; PrintingOffset_Y=-130;// Page 1
-//PrintingOffset_X=0; PrintingOffset_Y=-130-260;// Page 2
+// Make 8 panels
+// This worked well made a nice 20 inch 8 panel parachute. 
+// 1.4oz Rip-Stop Nylon, 2mm Polypropylene rope (knit, cheep from Amazon)
+/*
+Pointyness=0.4; Panel_Y=2; SeamAllowance=7;
+Arc_r=500; Apex_Y=310; Hole_X=30;  // 8 Panels 200mm x 310mm, 20"
+/**/
+//PrintingOffset_X=100; PrintingOffset_Y=-130;// Page 1
+//PrintingOffset_X=100-200; PrintingOffset_Y=-130;// Page 2
+//PrintingOffset_X=0; PrintingOffset_Y=-130-260;// Page 3
+// --------------------------------------------------------------------------
 
-//Arc_r=600; // 240mm x 300mm, 24"
-//Arc_r=800; // 320mm x 400mm, 32"
-
+// *** Next one to try 9/28/2022 ***
 // Make 14 Panels
-//
-//Arc_r=1000; // 14 Panels, 120mm, 21"
-//Arc_r=1000; // 10 Panels, 200mm, 25"
-
+// 1.4oz Rip-Stop Nylon, 3mm Polypropylene rope (knit, cheep from Amazon)
+//*
+Pointyness=0.4; Panel_Y=2; SeamAllowance=7;
+Arc_r=900; Apex_Y=855; Hole_X=40; //14 Panels 360mm x 855mm, 63" Dia., 7" Center Hole
+/**/
+// Page 200x260
+//PrintingOffset_X=100; PrintingOffset_Y=-130; // Pg 1
+//PrintingOffset_X=100-200; PrintingOffset_Y=-130; // Pg 2
+//PrintingOffset_X=100; PrintingOffset_Y=-130-260; // Pg 3
+//PrintingOffset_X=100-200; PrintingOffset_Y=-130-260; // Pg 4
+//PrintingOffset_X=100; PrintingOffset_Y=-130-260-260; // Pg 5
+//PrintingOffset_X=100-200; PrintingOffset_Y=-130-260-260; // Pg 6
+//PrintingOffset_X=0; PrintingOffset_Y=-130-260-260-260; // Pg 7
+// ---------------------------------------------------------------------------
 //
 //Arc_r=2000; //14 Panels 240mm, 42"
 //Arc_r=2500; //14 Panels 300mm x 715mm, 52"
@@ -67,7 +87,7 @@ PrintingOffset_X=0; PrintingOffset_Y=-130;// Page 1
 
 
 
-translate([PrintingOffset_X,PrintingOffset_Y,0]) 
+translate([PrintingOffset_X,PrintingOffset_Y+SeamAllowance,0]) offset(delta=SeamAllowance)
 P_Shape();
 
 
@@ -81,9 +101,9 @@ module P_Shape(){
 	
 	hull(){
 		intersection(){
-			translate([-Arc_r*2*Pointyness,0,0]) circle(r=Arc_r);
-			translate([Arc_r*2*Pointyness,0,0]) circle(r=Arc_r);
-			translate([-Arc_r,0,0]) square([Arc_r*2,Arc_r/Panel_Y]);
+			translate([-Arc_r*2*Pointyness, 0, 0]) circle(r=Arc_r);
+			translate([Arc_r*2*Pointyness, 0, 0]) circle(r=Arc_r);
+			translate([-Arc_r/4,0,0]) square([Arc_r/2, Arc_r/Panel_Y]);
 		}
 		
 		translate([-Hole_X/2,Apex_Y,0]) square([Hole_X,1]);
