@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: Fairing.scad
 // Created: 8/5/2022 
-// Revision: 1.0.2  9/2/2022
+// Revision: 1.0.3  9/30/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -25,6 +25,7 @@
 //
 //  ***** History *****
 //
+// 1.0.3  9/30/2022  Removed BatteryHolder() see BatteryHolderLib.scad
 // 1.0.2  9/2/2022   Added a glue in BatteryHolder();
 // 1.0.1  8/31/2022  Code cleanup, more parametric. 
 // 1.0.0  8/28/2022  It works. Needs a little cleanup. 
@@ -267,34 +268,6 @@ module LanyardToTube(ID=PML98Coupler_ID){
 } // LanyardToTube
 
 // LanyardToTube();
-
-module BatteryHolder(){
-	// glues to the inside of the fairing
-	
-	Batt_h=45;
-	Batt_X=27;
-	Batt_Y=17;
-	
-	difference(){
-		cylinder(d=Fairing_ID, h=Batt_h+6);
-		
-		translate([Batt_X/2+3,-Fairing_ID/2-1,-Overlap]) cube([Fairing_ID/2,Fairing_ID+2,Batt_h+6+Overlap*2]);
-		mirror([1,0,0])
-		translate([Batt_X/2+3,-Fairing_ID/2-1,-Overlap]) cube([Fairing_ID/2,Fairing_ID+2,Batt_h+6+Overlap*2]);
-		translate([-Fairing_ID/2,-Fairing_ID/2-1,-Overlap]) 
-			cube([Fairing_ID,Fairing_ID+1-Batt_Y*0.75-5,Batt_h+6+Overlap*2]);
-		
-		translate([0,Fairing_ID/2-5-Batt_Y/2,6]) RoundRect(X=Batt_X, Y=Batt_Y, Z=Batt_h+Overlap, R=3);
-		
-		//ty-wraps
-		translate([0,Fairing_ID/2-1,-Overlap]) cylinder(d=3.5, h=Batt_h+6+Overlap*2);
-		translate([-Batt_X/2-10,Fairing_ID/2-4,18]) rotate([0,90,0]) cylinder(d=3.5, h=Batt_h+6+Overlap*2);
-		translate([-Batt_X/2-10,Fairing_ID/2-4,6+Batt_h-12]) rotate([0,90,0]) cylinder(d=3.5, h=Batt_h+6+Overlap*2);
-	} // difference
-	
-} // BatteryHolder
-
-//BatteryHolder();
 
 module Sample(IsLeftHalf=true){
 	M_H=12;

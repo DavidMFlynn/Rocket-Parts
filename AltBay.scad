@@ -44,7 +44,6 @@
 //  AltBay54(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Tube_Len=120);
 //  AltDoor54(Tube_OD=PML54Body_OD);
 //
-//  DoubleBatteryHolder(Tube_ID=PML75Body_ID);
 //  UpperRailButtonPost(Body_OD=PML54Body_OD, Body_ID=PML54Body_ID, MtrTube_OD=PML38Body_OD, Extend=5);
 //  Electronics_Bay(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Fairing_ID=Fairing_ID, HasCablePuller=true);
 //
@@ -253,74 +252,6 @@ module UpperRailButtonPost(Body_OD=PML54Body_OD, Body_ID=PML54Body_ID, MtrTube_O
 			Len=20+Overlap, myfn=$preview? 90:360);
 } // UpperRailButtonPost
 
-
-module SingleBatteryHolder(Tube_ID=PML75Body_ID){
-	// glues to the inside of the E-Bay
-	
-	Batt_h=45;
-	Batt_X=27;
-	Batt_Y=17;
-	
-	difference(){
-		cylinder(d=Tube_ID, h=Batt_h+6);
-		
-		translate([Batt_X/2+3,-Tube_ID/2-1,-Overlap]) cube([Tube_ID/2,Tube_ID+2,Batt_h+6+Overlap*2]);
-		mirror([1,0,0])
-		translate([Batt_X/2+3,-Tube_ID/2-1,-Overlap]) cube([Tube_ID/2,Tube_ID+2,Batt_h+6+Overlap*2]);
-		translate([-Tube_ID/2,-Tube_ID/2-1,-Overlap]) 
-			cube([Tube_ID,Tube_ID+1-Batt_Y*0.75-5,Batt_h+6+Overlap*2]);
-		
-		translate([0,Tube_ID/2-5-Batt_Y/2,6]) RoundRect(X=Batt_X, Y=Batt_Y, Z=Batt_h+Overlap, R=3);
-		
-		//ty-wraps
-		translate([0,Tube_ID/2-1,-Overlap]) cylinder(d=3.5, h=Batt_h+6+Overlap*2);
-		translate([-Batt_X/2-10,Tube_ID/2-4,18]) rotate([0,90,0]) cylinder(d=3.5, h=Batt_h+6+Overlap*2);
-		translate([-Batt_X/2-10,Tube_ID/2-4,6+Batt_h-12]) rotate([0,90,0]) cylinder(d=3.5, h=Batt_h+6+Overlap*2);
-	} // difference
-	
-} // SingleBatteryHolder
-
-//SingleBatteryHolder();
-
-module DoubleBatteryHolder(Tube_ID=PML75Body_ID){
-	// glues to the inside of the E-Bay
-	
-	Batt_h=45;
-	Batt_X=27;
-	Batt_Y=17;
-	
-	difference(){
-		cylinder(d=Tube_ID, h=Batt_h+3, $fn=$preview? 90:360);
-		
-		// Trim sides
-		translate([Batt_Y+3,-Tube_ID/2-1,-Overlap]) cube([Tube_ID/2,Tube_ID+2,Batt_h+6+Overlap*2]);
-		mirror([1,0,0])
-		translate([Batt_Y+3,-Tube_ID/2-1,-Overlap]) cube([Tube_ID/2,Tube_ID+2,Batt_h+6+Overlap*2]);
-		
-		// Trim front
-		translate([-Tube_ID/2,-Tube_ID/2-1,-Overlap]) 
-			cube([Tube_ID,Tube_ID+1-Batt_X*0.75-5,Batt_h+6+Overlap*2]);
-		
-		// Batteries
-		translate([0,Tube_ID/2-6-Batt_X/2,3]) RoundRect(X=Batt_Y*2, Y=Batt_X, Z=Batt_h+Overlap, R=3);
-		
-		//ty-wraps
-		translate([Batt_Y+3,Tube_ID/2-6-Batt_X/2,-Overlap]) cylinder(d=3.5, h=Batt_h+6+Overlap*2);
-		translate([-Batt_Y-3,Tube_ID/2-6-Batt_X/2,-Overlap]) cylinder(d=3.5, h=Batt_h+6+Overlap*2);
-		hull(){
-			translate([0,Tube_ID/2-6,18]) rotate([0,90,0]) cylinder(d=3.5, h=Batt_Y*2+6+Overlap*2, center=true);
-			translate([0,Tube_ID/2,18]) rotate([0,90,0]) cylinder(d=3.5, h=Batt_Y*2+Overlap*2, center=true);
-		}
-		hull(){
-			translate([0,Tube_ID/2-6,4+Batt_h-12]) rotate([0,90,0]) cylinder(d=3.5, h=Batt_Y*2+6+Overlap*2, center=true);
-			translate([0,Tube_ID/2,4+Batt_h-12]) rotate([0,90,0]) cylinder(d=3.5, h=Batt_Y*2+Overlap*2, center=true);
-		}
-		
-	} // difference
-	
-} // DoubleBatteryHolder
-
-//DoubleBatteryHolder(Tube_ID=PML75Body_ID);
 
 module Electronics_Bay(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Fairing_ID=PML54Body_OD-4.4,
 						EBay_Len=130, HasCablePuller=true){

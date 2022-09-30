@@ -48,7 +48,6 @@ F54_FairingHalf(IsLeftHalf=false,
 // *** Electronics Bay ***
 // FairingBaseBulkPlate(Tube_ID=R75_Body_ID, Fairing_ID=Fairing_ID);
 // R75_Electronics_Bay();
-// DoubleBatteryHolder(Tube_ID=R75_Body_ID);
 // AltDoor54(Tube_OD=R75_Body_OD);
 //
 // *** Fin Can ***
@@ -168,7 +167,7 @@ module R75_Electronics_Bay(){
 	Electronics_Bay(Tube_OD=PML75Body_OD, Tube_ID=PML75Body_ID, Fairing_ID=PML75Body_OD-4.4, 
 				EBay_Len=EBay_Len, HasCablePuller=true);
 	
-	translate([0,0,-20]) UpperRailButtonPost(Body_OD=PML75Body_OD, Body_ID=PML75Body_ID, MtrTube_OD=PML54Body_OD);
+	translate([0,0,-20]) UpperRailButtonPost(Body_OD=PML75Body_OD, Body_ID=PML75Body_ID, MtrTube_OD=PML54Body_OD+IDXtra);
 } // R75_Electronics_Bay
 
 //R75_Electronics_Bay();
