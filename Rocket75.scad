@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: Rocket75.scad
 // Created: 9/11/2022 
-// Revision: 0.9.0  9/11/2022
+// Revision: 0.9.1  9/28/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -11,6 +11,7 @@
 //
 //  ***** History *****
 // 
+// 0.9.1  9/28/2022  Adding last couple of parts.
 // 0.9.0  9/11/2022  First code.
 //
 // ***********************************
@@ -45,7 +46,9 @@ F54_FairingHalf(IsLeftHalf=false,
 // SpringEndCap();
 //
 // *** Electronics Bay ***
+// FairingBaseBulkPlate(Tube_ID=R75_Body_ID, Fairing_ID=Fairing_ID);
 // R75_Electronics_Bay();
+// DoubleBatteryHolder(Tube_ID=R75_Body_ID);
 // AltDoor54(Tube_OD=R75_Body_OD);
 //
 // *** Fin Can ***

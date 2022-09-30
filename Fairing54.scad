@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: Fairing54.scad
 // Created: 8/5/2022 
-// Revision: 1.0.9  9/24/2022
+// Revision: 1.0.10  9/29/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -25,6 +25,7 @@
 //
 //  ***** History *****
 //
+// 1.0.10  9/29/2022 Added FairingBaseBulkPlate. 
 // 1.0.9  9/24/2022  Small improvements.
 // 1.0.8  9/23/2022  Reworked the spring parts. Yet another try to fix the coupler.
 // 1.0.7  9/22/2022  Spring hole made 1.5mm deeper. 
@@ -59,7 +60,8 @@ F54_FairingHalf(IsLeftHalf=false,
 /**/
 //
 // rotate([180,0,0]) FairingBase(); // Pring w/ support
-// FairingBaseLockRing();
+// FairingBaseLockRing(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, Interface=-IDXtra);
+// FairingBaseBulkPlate(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID);
 //
 // F54_SpringEndCap();
 //
@@ -341,6 +343,43 @@ module FairingBase(BaseXtra=0, Fairing_OD=Fairing_OD, Fairing_ID=Fairing_ID,
 
 //translate([0,0,-10]) FairingBase();
 
+module FairingBaseBulkPlate(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID){
+	// Stops the parchute from falling into the E-Bay
+	
+	NC_Lock_OD=NC_Lock_OD(Fairing_ID);
+	NC_Lock_ID=NC_Lock_ID(Fairing_ID);
+	NC_Lock_H=NC_Lock_H;
+	Base_h=5;
+
+	difference(){
+		union(){
+			difference(){
+				translate([0,0,5]) 
+					cylinder(d1=NC_Lock_ID-IDXtra*5-4, d2=Tube_ID-IDXtra*3-4, h=Base_h, $fn=$preview? 90:360);
+				translate([0,0,6]) cylinder(d=Tube_ID, h=10);
+			} // difference
+			cylinder(d=NC_Lock_ID-IDXtra*5-4, h=5, $fn=$preview? 90:360);
+			cylinder(d1=NC_Lock_ID-IDXtra*5, d2=NC_Lock_ID-IDXtra*5-4, h=4, $fn=$preview? 90:360);
+			translate([0,0,6-Overlap]) cylinder(d=NC_Lock_ID-IDXtra*5-2.4, h=1, $fn=$preview? 90:360);
+		} // union
+		
+		// Center
+		translate([0,0,2]) cylinder(d=NC_Lock_ID-IDXtra*5-8,h=10, $fn=$preview? 90:360);
+		
+		// Shock cord
+		translate([NC_Lock_ID/2,0,-Overlap]) RoundRect(X=15, Y=20, Z=20, R=4);
+		
+		// Cable Path
+		translate([0,NC_Lock_ID/2,-Overlap]) RoundRect(X=10, Y=12, Z=20, R=5);
+		
+		// Make it snap in
+		for (j=[0:9]) rotate([0,0,360/10*j]) translate([0,0,2.3]) cube([NC_Lock_ID/2,1.5,10]);
+	} // difference
+	
+} // FairingBaseBulkPlate
+
+//FairingBaseBulkPlate(Tube_ID=PML75Body_ID, Fairing_ID=PML75Body_OD-4.4);
+
 module FairingBaseLockRing(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, Interface=-IDXtra){
 				
 	NC_Lock_OD=NC_Lock_OD(Fairing_ID);
@@ -372,6 +411,7 @@ module FairingBaseLockRing(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, Interface=
 	} // difference
 } // FairingBaseLockRing
 
+//FairingBaseLockRing(Tube_ID=PML75Body_ID, Fairing_ID=PML75Body_OD-4.4, Interface=Overlap);
 //translate([0,0,0]) mirror([0,0,1]) F54_Retainer(IsLeftHalf=true, Fairing_OD=Fairing_OD, Wall_T=FairingWall_T);
 //translate([0,0,-5]) color("Tan") FairingBaseLockRing(Tube_ID=PML54Body_ID, Fairing_ID=Fairing_ID, Interface=Overlap);
 //FairingBaseLockRing(Tube_ID=BP_Booster_Body_ID, 
