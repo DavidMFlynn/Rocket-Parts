@@ -61,7 +61,7 @@ F54_FairingHalf(IsLeftHalf=false,
 //
 // rotate([180,0,0]) FairingBase(); // Pring w/ support
 // FairingBaseLockRing(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, Interface=-IDXtra);
-// FairingBaseBulkPlate(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID);
+// FairingBaseBulkPlate(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, ShockCord_a=-90);
 //
 // F54_SpringEndCap();
 //
@@ -343,7 +343,7 @@ module FairingBase(BaseXtra=0, Fairing_OD=Fairing_OD, Fairing_ID=Fairing_ID,
 
 //translate([0,0,-10]) FairingBase();
 
-module FairingBaseBulkPlate(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID){
+module FairingBaseBulkPlate(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, ShockCord_a=-90){
 	// Stops the parchute from falling into the E-Bay
 	
 	NC_Lock_OD=NC_Lock_OD(Fairing_ID);
@@ -367,10 +367,10 @@ module FairingBaseBulkPlate(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID){
 		translate([0,0,2]) cylinder(d=NC_Lock_ID-IDXtra*5-8,h=10, $fn=$preview? 90:360);
 		
 		// Shock cord
-		translate([NC_Lock_ID/2,0,-Overlap]) RoundRect(X=15, Y=20, Z=20, R=4);
+		rotate([0,0,ShockCord_a]) translate([NC_Lock_ID/2,0,-Overlap]) RoundRect(X=15, Y=20, Z=20, R=4);
 		
 		// Cable Path
-		translate([0,NC_Lock_ID/2,-Overlap]) RoundRect(X=10, Y=12, Z=20, R=5);
+		translate([NC_Lock_ID/2,0,-Overlap]) RoundRect(X=10, Y=12, Z=20, R=5);
 		
 		// Make it snap in
 		for (j=[0:9]) rotate([0,0,360/10*j]) translate([0,0,2.3]) cube([NC_Lock_ID/2,1.5,10]);
@@ -378,7 +378,7 @@ module FairingBaseBulkPlate(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID){
 	
 } // FairingBaseBulkPlate
 
-//FairingBaseBulkPlate(Tube_ID=PML75Body_ID, Fairing_ID=PML75Body_OD-4.4);
+//FairingBaseBulkPlate(Tube_ID=PML75Body_ID, Fairing_ID=PML75Body_OD-4.4, ShockCord_a=-135);
 
 module FairingBaseLockRing(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, Interface=-IDXtra){
 				

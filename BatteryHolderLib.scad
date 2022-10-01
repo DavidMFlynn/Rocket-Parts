@@ -16,8 +16,8 @@
 // ***********************************
 //  ***** for STL output *****
 //
-//  
-//  rotate([180,0,0]) TubeEndDoubleBatteryHolder();
+//  rotate([180,0,0]) TubeEndStackedDoubleBatteryHolder(); // Fits 38mm motor tube
+//  rotate([180,0,0]) TubeEndDoubleBatteryHolder(); // Fits 54mm motor tube
 //  SingleBatteryHolder(Tube_ID=PML75Body_ID);
 //  DoubleBatteryHolder(Tube_ID=PML75Body_ID);
 //
@@ -40,17 +40,23 @@ Overlap=0.05;
 IDXtra=0.2; 
 $fn=$preview? 24:90;
 
-module TubeEndDoubleBatteryHolder(){
+module TubeEndStackedDoubleBatteryHolder(){
 	// Sits in the E-Bay in the top of the motor tube. 
 	
 	Batt_h=45;
+	BattConn_h=8;
 	Batt_X=27;
 	Batt_Y=17;
 	Batt_r=3;
 	
-	TubeID=PML54Body_ID; // motor tube
-	TubeOD=PML54Body_OD;
-	Base_h=Batt_h/2+5;
+	TubeID=PML38Body_ID; // motor tube
+	TubeOD=PML38Body_OD;
+	Base_h=Batt_h+Batt_h+BattConn_h-5;
+	OAH=Base_h+5;
+	
+	module BatteryCase(){
+		color("Orange") RoundRect(Y=Batt_X, X=Batt_Y, Z=Batt_h*2+BattConn_h, R=Batt_r);
+	} // BatteryCase
 	
 	difference(){
 		union(){
@@ -58,15 +64,92 @@ module TubeEndDoubleBatteryHolder(){
 			translate([0,0,Base_h-Overlap]) cylinder(d=TubeOD, h=5);
 		} // union
 		
-		translate([0,0,3]) RoundRect(X=Batt_X+IDXtra*2, Y=Batt_Y*2+IDXtra*2, Z=Batt_h, R=Batt_r);
+		//Clamp Bolts
+		translate([-Batt_Y/2-4,4,OAH]) Bolt4Hole();
+		translate([-Batt_Y/2-4,-4,OAH]) Bolt4Hole();
 		
-		// Trim sides
-		translate([Batt_X/2+3, -TubeOD/2, -Overlap]) cube([TubeOD/2, TubeOD, Batt_h]);
-		mirror([1,0,0])
-			translate([Batt_X/2+3, -TubeOD/2, -Overlap]) cube([TubeOD/2, TubeOD, Batt_h]);
+		// Batteries
+		translate([0,0,3]) RoundRect(X=Batt_Y+IDXtra*2, Y=Batt_X+IDXtra*2, Z=OAH, R=Batt_r);
+		
+		// Wire path
+		translate([0,Batt_X/2,Batt_h-2]) RoundRect(X=7, Y=9, Z=OAH, R=2);
+		
+		// Trim side, Shockcord path
+		translate([Batt_Y/2+3, -TubeOD/2, -Overlap]) cube([TubeOD/2, TubeOD, OAH+Overlap*2]);
+		
+		
+		// Push holes
+		translate([0,0,-Overlap]) cylinder(d=12, h=4);
 		
 	} // difference
+	//if ($preview) translate([0,0,3]) BatteryCase();
+} // TubeEndStackedDoubleBatteryHolder
+
+//TubeEndStackedDoubleBatteryHolder();
+
+module BoltDown(){
+	Width=14;
 	
+	difference(){
+		union(){
+			translate([-Width/2,0,0]) cube([Width,8,3]);
+			translate([-Width/2,0,0]) cube([Width,3,5]);
+			translate([-Width/2,-3,3]) cube([Width,6,3]);
+		} // union
+		translate([4,4,3+3]) Bolt4HeadHole();
+		translate([-4,4,3+3]) Bolt4HeadHole();
+	} // difference
+} // BoltDown
+
+//BoltDown();
+
+module TubeEndDoubleBatteryHolder(){
+	// Sits in the E-Bay in the top of the motor tube. 
+	
+	Batt_h=45; // Case only
+	Batt_X=27;
+	Batt_Y=17;
+	Batt_r=3;
+	
+	TubeID=PML54Body_ID; // motor tube
+	TubeOD=PML54Body_OD;
+	Base_h=Batt_h-5;
+	OAH=Base_h+5;
+	
+	module BatteryCase(){
+		color("Orange") RoundRect(X=Batt_X, Y=Batt_Y, Z=Batt_h, R=Batt_r);
+	} // BatteryCase
+	
+	module BClip(){
+		translate([-6,0,-Overlap]) cube([12,3,5]);
+		translate([-6,-3,3]) cube([12,6,3]);
+	} // BClip
+	
+	difference(){
+		union(){
+			cylinder(d=TubeID-IDXtra*2, h=Base_h);
+			translate([0,0,Base_h-Overlap]) cylinder(d=TubeOD, h=5);
+			translate([0,Batt_Y,OAH]) BClip();
+		} // union
+		
+		//Clamp Bolts
+		translate([-4,-Batt_Y-4,OAH]) Bolt4Hole();
+		translate([4,-Batt_Y-4,OAH]) Bolt4Hole();
+		
+		// Batteries
+		translate([0,0,3]) RoundRect(X=Batt_X, Y=Batt_Y*2, Z=Batt_h, R=Batt_r);
+		
+		// Trim sides
+		translate([Batt_X/2+3, -TubeOD/2, -Overlap]) cube([TubeOD/2, TubeOD, OAH+Overlap*2]);
+		mirror([1,0,0])
+			translate([Batt_X/2+3, -TubeOD/2, -Overlap]) cube([TubeOD/2, TubeOD, OAH+Overlap*2]);
+		
+		// Push holes
+		translate([0,-Batt_Y/2,-Overlap]) cylinder(d=12, h=4);
+		translate([0,Batt_Y/2,-Overlap]) cylinder(d=12, h=4);
+	} // difference
+	
+	if ($preview) translate([0,-Batt_Y/2,3]) BatteryCase();
 } // TubeEndBatteryHolder
 
 //TubeEndDoubleBatteryHolder();

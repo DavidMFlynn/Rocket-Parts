@@ -61,7 +61,8 @@ rotate([180,0,0])
 // FairingBaseLockRing(Tube_ID=BP_Fairing_ID, Fairing_ID=BP_Fairing_ID, Interface=-IDXtra);
 
 //	Electronics_Bay();	
-// AltDoor54(Tube_OD=BP_Body_OD);
+//  AltDoor54(Tube_OD=BP_Body_OD);
+//  FairingBaseBulkPlate(Tube_ID=BP_Booster_Body_ID, Fairing_ID=BP_Booster_Fairing_ID, ShockCord_a=-135);
 // 
 // 
 // ForwardBoosterLock();
