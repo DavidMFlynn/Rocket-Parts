@@ -62,7 +62,6 @@ rotate([180,0,0])
 
 //	Electronics_Bay();	
 //  AltDoor54(Tube_OD=BP_Body_OD);
-//  FairingBaseBulkPlate(Tube_ID=BP_Booster_Body_ID, Fairing_ID=BP_Booster_Fairing_ID, ShockCord_a=-135);
 // 
 // 
 // ForwardBoosterLock();
@@ -77,7 +76,8 @@ rotate([180,0,0])
 // rotate([180,0,0]) LowerFinCan();
 // UpperFinCan();
 //
-// *** Strap-On Booster Parts ***
+// ************************************************
+//  *** Strap-On Booster Parts ***
 // 
 /*
 FairingCone(Fairing_OD=BP_Booster_Body_OD, 
@@ -111,7 +111,9 @@ FairingCone(Fairing_OD=BP_Booster_Body_OD,
 // F54_SpringEndCap();
 //
 // Booster_E_Bay();
-// AltDoor54(Tube_OD=BP_Booster_Body_OD);
+//  AltDoor54(Tube_OD=BP_Booster_Body_OD);
+//  FairingBaseBulkPlate(Tube_ID=BP_Booster_Body_ID, Fairing_ID=BP_Booster_Fairing_ID, ShockCord_a=-135);
+//
 // rotate([180,0,0]) BoosterTail();
 // BoosterButton();
 //
