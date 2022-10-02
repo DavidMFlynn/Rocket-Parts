@@ -11,6 +11,7 @@
 //
 //  ***** History *****
 //
+echo("BatteryHolderLib 0.9.0");
 // 0.9.0  9/30/2022 First code. Moved stuff to this file. 
 //
 // ***********************************
@@ -51,8 +52,9 @@ module TubeEndStackedDoubleBatteryHolder(){
 	
 	TubeID=PML38Body_ID; // motor tube
 	TubeOD=PML38Body_OD;
-	Base_h=Batt_h+Batt_h+BattConn_h-5;
+	Base_h=Batt_h+Batt_h+BattConn_h-1;
 	OAH=Base_h+5;
+	Offset_Y=-1;
 	
 	module BatteryCase(){
 		color("Orange") RoundRect(Y=Batt_X, X=Batt_Y, Z=Batt_h*2+BattConn_h, R=Batt_r);
@@ -65,21 +67,21 @@ module TubeEndStackedDoubleBatteryHolder(){
 		} // union
 		
 		//Clamp Bolts
-		translate([-Batt_Y/2-4,4,OAH]) Bolt4Hole();
-		translate([-Batt_Y/2-4,-4,OAH]) Bolt4Hole();
+		translate([-Batt_Y/2-4,4+Offset_Y,OAH]) Bolt4Hole();
+		translate([-Batt_Y/2-4,-4+Offset_Y,OAH]) Bolt4Hole();
 		
 		// Batteries
-		translate([0,0,3]) RoundRect(X=Batt_Y+IDXtra*2, Y=Batt_X+IDXtra*2, Z=OAH, R=Batt_r);
+		translate([0,Offset_Y,3]) RoundRect(X=Batt_Y+IDXtra*2, Y=Batt_X+IDXtra*2, Z=OAH, R=Batt_r);
 		
 		// Wire path
-		translate([0,Batt_X/2,Batt_h-2]) RoundRect(X=7, Y=9, Z=OAH, R=2);
+		translate([0,Batt_X/2+Offset_Y,Batt_h-2]) RoundRect(X=7, Y=9, Z=OAH, R=2);
 		
 		// Trim side, Shockcord path
 		translate([Batt_Y/2+3, -TubeOD/2, -Overlap]) cube([TubeOD/2, TubeOD, OAH+Overlap*2]);
 		
 		
 		// Push holes
-		translate([0,0,-Overlap]) cylinder(d=12, h=4);
+		translate([0,Offset_Y,-Overlap]) cylinder(d=12, h=4);
 		
 	} // difference
 	//if ($preview) translate([0,0,3]) BatteryCase();
@@ -194,6 +196,10 @@ module DoubleBatteryHolder(Tube_ID=PML75Body_ID){
 	difference(){
 		cylinder(d=Tube_ID, h=Batt_h+3, $fn=$preview? 90:360);
 		
+		// Bolts
+		translate([0,Tube_ID/2-6,Batt_h+3-4.5]) rotate([90,0,0]) Bolt4ButtonHeadHole();
+		translate([0,Tube_ID/2-6,3+4.5]) rotate([90,0,0]) Bolt4ButtonHeadHole();
+		
 		// Trim sides
 		translate([Batt_Y+3,-Tube_ID/2-1,-Overlap]) cube([Tube_ID/2,Tube_ID+2,Batt_h+6+Overlap*2]);
 		mirror([1,0,0])
@@ -222,7 +228,7 @@ module DoubleBatteryHolder(Tube_ID=PML75Body_ID){
 	
 } // DoubleBatteryHolder
 
-//DoubleBatteryHolder(Tube_ID=PML75Body_ID);
+//DoubleBatteryHolder(Tube_ID=PML98Body_ID);
 
 
 

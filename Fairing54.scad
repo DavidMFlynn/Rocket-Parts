@@ -25,6 +25,7 @@
 //
 //  ***** History *****
 //
+echo("Fairing54 1.0.10");
 // 1.0.10  9/29/2022 Added FairingBaseBulkPlate. 
 // 1.0.9  9/24/2022  Small improvements.
 // 1.0.8  9/23/2022  Reworked the spring parts. Yet another try to fix the coupler.
@@ -346,6 +347,8 @@ module FairingBase(BaseXtra=0, Fairing_OD=Fairing_OD, Fairing_ID=Fairing_ID,
 module FairingBaseBulkPlate(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, ShockCord_a=-90){
 	// Stops the parchute from falling into the E-Bay
 	
+	nTabs=(Fairing_ID>90)? 16:10;
+	Plate_h=(Fairing_ID>90)? 2.5:2;
 	NC_Lock_OD=NC_Lock_OD(Fairing_ID);
 	NC_Lock_ID=NC_Lock_ID(Fairing_ID);
 	NC_Lock_H=NC_Lock_H;
@@ -364,16 +367,16 @@ module FairingBaseBulkPlate(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, ShockCord
 		} // union
 		
 		// Center
-		translate([0,0,2]) cylinder(d=NC_Lock_ID-IDXtra*5-8,h=10, $fn=$preview? 90:360);
+		translate([0,0,Plate_h]) cylinder(d=NC_Lock_ID-IDXtra*5-8,h=10, $fn=$preview? 90:360);
 		
 		// Shock cord
 		rotate([0,0,ShockCord_a]) translate([NC_Lock_ID/2,0,-Overlap]) RoundRect(X=15, Y=20, Z=20, R=4);
 		
 		// Cable Path
-		translate([NC_Lock_ID/2,0,-Overlap]) RoundRect(X=10, Y=12, Z=20, R=5);
+		translate([NC_Lock_ID/2,0,-Overlap]) RoundRect(X=14, Y=12, Z=20, R=5);
 		
 		// Make it snap in
-		for (j=[0:9]) rotate([0,0,360/10*j]) translate([0,0,2.3]) cube([NC_Lock_ID/2,1.5,10]);
+		for (j=[0:nTabs-1]) rotate([0,0,360/nTabs*j]) translate([0,0,Plate_h+0.3]) cube([NC_Lock_ID/2,1.5,10]);
 	} // difference
 	
 } // FairingBaseBulkPlate

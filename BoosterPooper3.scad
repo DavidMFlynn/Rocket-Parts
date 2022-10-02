@@ -7,6 +7,7 @@
 // ***********************************
 //  ***** Notes *****
 //
+//  Booster Pooper 3 is the 3rd rocket I've built w/ strap-on boosters. 
 //  Rocket with 2 strap-on boosters. 
 //  Boosters have 38mm motors w/ 54mm body
 //  Sustainer has 54mm motor w/ 98mm body
@@ -27,7 +28,7 @@
 /*
 FairingCone(Fairing_OD=BP_Fairing_OD, 
 					FairingWall_T=BP_FairingWall_T,
-					NC_Base=BP_FairingConeBase, 
+					NC_Base=5, 
 					NC_Len=BP_FairingCone_Len,
 					NC_Wall_t=BP_FairingConeWall_T,
 					NC_Tip_r=BP_FairingConeTip_r);
@@ -61,7 +62,8 @@ rotate([180,0,0])
 // FairingBaseLockRing(Tube_ID=BP_Fairing_ID, Fairing_ID=BP_Fairing_ID, Interface=-IDXtra);
 
 //	Electronics_Bay();	
-//  AltDoor54(Tube_OD=BP_Body_OD);
+//   AltDoor54(Tube_OD=BP_Body_OD);
+//   FairingBaseBulkPlate(Tube_ID=BP_Fairing_OD, Fairing_ID=BP_Fairing_ID, ShockCord_a=90);
 // 
 // 
 // ForwardBoosterLock();
@@ -80,8 +82,18 @@ rotate([180,0,0])
 //  *** Strap-On Booster Parts ***
 // 
 /*
+// More room for shock cord
+FairingConeOGive(Fairing_OD=BP_Booster_Body_OD, 
+					FairingWall_T=BP_Booster_Fairing_Wall_t,
+					NC_Base=5, 
+					NC_Len=150, 
+					NC_Wall_t=2,
+					NC_Tip_r=5)
+/**/
+/*
+// Alt. small
 FairingCone(Fairing_OD=BP_Booster_Body_OD, 
-					FairingWall_T=2.2,
+					FairingWall_T=BP_Booster_Fairing_Wall_t,
 					NC_Base=5, 
 					NC_Len=95, 
 					NC_Wall_t=2,
@@ -112,7 +124,8 @@ FairingCone(Fairing_OD=BP_Booster_Body_OD,
 //
 // Booster_E_Bay();
 //  AltDoor54(Tube_OD=BP_Booster_Body_OD);
-//  FairingBaseBulkPlate(Tube_ID=BP_Booster_Body_ID, Fairing_ID=BP_Booster_Fairing_ID, ShockCord_a=-135);
+//  FairingBaseBulkPlate(Tube_ID=BP_Booster_Body_ID, Fairing_ID=BP_Booster_Fairing_ID, ShockCord_a=-140);
+//  rotate([180,0,0]) TubeEndStackedDoubleBatteryHolder(); // Fits 38mm motor tube
 //
 // rotate([180,0,0]) BoosterTail();
 // BoosterButton();
@@ -137,6 +150,7 @@ include<LD-20MGServoLib.scad>
 include<Fairing54.scad>
 include<BoosterDropperLib.scad>
 include<FinCan.scad>
+include<BatteryHolderLib.scad>
 include<AltBay.scad>
 
 //also included
@@ -379,6 +393,8 @@ module Electronics_Bay(){
 	
 	CT_z=30;
 		
+	translate([0,0,30]) rotate([0,0,180]) DoubleBatteryHolder(Tube_ID=BP_Body_ID);
+	
 	difference(){
 		translate([0,0,TopOfTube-CT_z]) cylinder(d=BP_Body_ID+1, h=3+Overlap);
 		translate([0,0,TopOfTube-CT_z-Overlap]) 
@@ -427,7 +443,8 @@ module Electronics_Bay(){
 } // Electronics_Bay
 
 //Electronics_Bay();
-
+// Retrofit Battery holder
+//DoubleBatteryHolder(Tube_ID=BP_Body_ID);
 
 module Booster_E_Bay(){
 	// Z=0 center of Booster button
@@ -436,7 +453,7 @@ module Booster_E_Bay(){
 	CP_a=-5;
 	
 	// The Fairing clamps onto this. 
-	translate([0,0,TopOfTube-4]) 
+	translate([0,0,TopOfTube-4.5]) 
 		FairingBaseLockRing(Tube_ID=BP_Booster_Body_ID, 
 		Fairing_ID=BP_Booster_Fairing_ID, Interface=Overlap);
 	
