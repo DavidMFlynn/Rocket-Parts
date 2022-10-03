@@ -60,7 +60,9 @@ F54_FairingHalf(IsLeftHalf=false,
 				Len=Fairing_Len);
 /**/
 //
-// rotate([180,0,0]) FairingBase(); // Pring w/ support
+// rotate([180,0,0]) FairingBase(BaseXtra=0, Fairing_OD=Fairing_OD, Fairing_ID=Fairing_ID,
+//					BodyTubeOD=PML54Body_OD, 
+//					CouplerTube_OD=PML54Coupler_OD, CouplerTube_ID=PML54Coupler_ID); // Pring w/ support
 // FairingBaseLockRing(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, Interface=-IDXtra);
 // FairingBaseBulkPlate(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, ShockCord_a=-90);
 //
@@ -200,15 +202,18 @@ module FairingConeOGive(Fairing_OD=Fairing_OD,
 					NC_Base=NC_Base, 
 					NC_Len=130, 
 					NC_Wall_t=NC_Wall_t,
-					NC_Tip_r=NC_Tip_r){
+					NC_Tip_r=NC_Tip_r,
+					Cut_Z=0, LowerPortion=false){
 	
 	Fairing_ID=Fairing_OD-FairingWall_T*2;
 						
 	difference(){
 		union(){
 			BluntOgiveNoseCone(ID=Fairing_ID, OD=Fairing_OD, L=NC_Len, 
-						Base_L=NC_Base, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t);
+						Base_L=NC_Base, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t,
+						Cut_Z=Cut_Z, LowerPortion=LowerPortion);
 			
+			if (LowerPortion||(Cut_Z==0))
 			// coupler ring
 			FairingConeBaseRing(Fairing_OD=Fairing_OD, FairingWall_T=FairingWall_T,
 					NC_Base=NC_Base, NC_Wall_t=NC_Wall_t);
@@ -220,7 +225,8 @@ module FairingConeOGive(Fairing_OD=Fairing_OD,
 		
 	} // difference
 	
-	translate([0,0,NC_Base+18]) rotate([-4,0,0]) LanyardToTube(ID=Fairing_ID);
+	if (LowerPortion||(Cut_Z==0))
+	translate([0,0,NC_Base+18]) rotate([-3.5,0,0]) LanyardToTube(ID=Fairing_ID);
 } // FairingConeOGive
 
 //translate([0,0,Fairing_Len+Overlap]) FairingConeOGive(); 

@@ -2,15 +2,17 @@
 // Project: 3D Printed Rocket
 // Filename: Rocket54.scad
 // Created: 9/6/2022 
-// Revision: 0.9.1  9/8/2022
+// Revision: 0.9.2  10/2/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 //
 //  Rocket with 54mm Body and 38mm motor. 
+//  This is just something I'm playing around with. 
 //
 //  ***** History *****
 // 
+// 0.9.2  10/2/2022 75mm Fairing and E-Bay
 // 0.9.1  9/8/2022  Shalower fin slots. 
 // 0.9.0  9/6/2022  First code.
 //
@@ -18,8 +20,16 @@
 //  ***** for STL output *****
 //
 // *** Nosecode ***
-// FairingConeOGive();
-// NoseLockRing();
+/*
+ FairingConeOGive(Fairing_OD=Fairing_OD, 
+					FairingWall_T=FairingWall_T,
+					NC_Base=5, 
+					NC_Len=270, 
+					NC_Wall_t=2,
+					NC_Tip_r=NC_Tip_r, 
+					Cut_Z=150, LowerPortion=false); // Print 2 halves
+					/**/
+// NoseLockRing(Fairing_ID =Fairing_ID);
 //
 // *** Fairing ***
 /*
@@ -39,6 +49,15 @@ F54_FairingHalf(IsLeftHalf=false,
 // *** Electronics Bay ***
 // R54_Electronics_Bay();
 // AltDoor54(Tube_OD=R54_Body_OD);
+//
+/*
+ rotate([180,0,0]) 
+FairingBase(BaseXtra=10, Fairing_OD=Fairing_OD, Fairing_ID=PML75Body_ID,
+				BodyTubeOD=R54_Body_OD, 
+					CouplerTube_OD=PML54Coupler_OD, CouplerTube_ID=PML54Coupler_ID);
+/**/
+
+//Electronics_Bay(Tube_OD=PML75Body_OD, Tube_ID=PML75Body_ID, Fairing_ID=Fairing_ID);
 //
 // *** Fin Can ***
 // UpperFinCan();
@@ -93,7 +112,7 @@ R54_MtrTube_ID=PML38Body_ID;
 EBay_Len=130;
 
 // Fairing Overrides
-Fairing_OD=PML54Body_OD;
+Fairing_OD=PML75Body_OD;
 FairingWall_T=2.2;
 Fairing_ID=Fairing_OD-FairingWall_T*2;
 
@@ -138,6 +157,7 @@ module ShowRocket54(){
 } // ShowRocket54
 
 //ShowRocket54();
+
 
 module R54_Electronics_Bay(){
 	Electronics_Bay(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Fairing_ID=Fairing_ID);

@@ -86,7 +86,7 @@ rotate([180,0,0])
 FairingConeOGive(Fairing_OD=BP_Booster_Body_OD, 
 					FairingWall_T=BP_Booster_Fairing_Wall_t,
 					NC_Base=5, 
-					NC_Len=150, 
+					NC_Len=155, // Actual lenth is 150, blunted OGive. 
 					NC_Wall_t=2,
 					NC_Tip_r=5)
 /**/
