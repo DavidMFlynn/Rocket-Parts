@@ -11,6 +11,7 @@
 //
 //  ***** History *****
 //
+echo("NoseCone 0.9.4");
 // 0.9.4  9/18/2022 More fixes, optioned HasRivets
 // 0.9.3  9/8/2022  Added base radius to BluntConeNoseCone. 
 // 0.9.2  7/25/2022 Using offset for nosecone wall. Added BluntConeNoseCone and OgiveNoseCone. 

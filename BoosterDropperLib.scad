@@ -11,6 +11,7 @@
 //
 //  ***** History *****
 //
+echo("BoosterDropperLib 0.9.6");
 // 0.9.6  9/26/2022 Modified for HS5645MG servo
 // 0.9.5  9/25/2022 Added ServoGear. 
 // 0.9.4  9/9/2022  Modified for 6805 ball bearing.

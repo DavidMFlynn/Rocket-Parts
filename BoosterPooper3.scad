@@ -12,7 +12,6 @@
 //  Boosters have 38mm motors w/ 54mm body
 //  Sustainer has 54mm motor w/ 98mm body
 //
-// See Fairing54.scad for booster fairing
 //
 //  ***** History *****
 //

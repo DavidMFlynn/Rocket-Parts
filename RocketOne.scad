@@ -7,6 +7,8 @@
 // ***********************************
 //  ***** Notes *****
 //
+// My first 3d printed rocket. 
+// Many things have changed, this may not work any more. 
 //
 //  ***** History *****
 //

@@ -14,6 +14,7 @@
 //
 //  ***** History *****
 //
+echo("CableRelease 1.0.0");
 // 1.0.0  6/19/2022 Looser spring hole in locking pin. Ready Testing.
 // 0.9.3  6/18/2022 Small fixes.
 // 0.9.2  6/17/2022 Fixed LockPlateStop. First working version.

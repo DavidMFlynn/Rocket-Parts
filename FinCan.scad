@@ -11,6 +11,7 @@
 //
 //  ***** History *****
 //
+echo("FinCan 0.9.4");
 // 0.9.4  9/6/2022  Cleaned up RailButtonPost()
 // 0.9.3  8/29/2022 Fixed motor tube clearance in FinCan3. 
 // 0.9.2  8/27/2022 New Fin Can and TailCone. 

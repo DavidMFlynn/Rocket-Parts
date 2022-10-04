@@ -7,6 +7,8 @@
 // ***********************************
 //  ***** Notes *****
 //
+// **** This file is obsolete. Use Fairing54.scad ****
+//
 // I printed and tested this.
 // It will get refined when another one gets built.
 // 

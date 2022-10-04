@@ -9,6 +9,7 @@
 //
 //  ***** History *****
 //
+echo("Fins 0.9.5");
 // 0.9.5  8/31/2022 Added TipOffset to TrapFin2.
 // 0.9.4  8/27/2022 TrapFin2 and Co. 
 // 0.9.3  6/30/2022 Worked on Fillet

@@ -11,6 +11,7 @@
 //
 //  ***** History *****
 //
+echo("FairingJointLib 0.9.8");
 // 0.9.8  9/12/2022  Fairing 75 is OK but changes will need to be tested with other sizes.
 // 0.9.7  9/9/2022   Finding size for Fairing98
 // 0.9.6  9/5/2022   Adjustments for 54mm BT
