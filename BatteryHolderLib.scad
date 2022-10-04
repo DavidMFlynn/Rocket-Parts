@@ -18,7 +18,7 @@ echo("BatteryHolderLib 0.9.0");
 //  ***** for STL output *****
 //
 //  rotate([180,0,0]) TubeEndStackedDoubleBatteryHolder(); // Fits 38mm motor tube
-//  rotate([180,0,0]) TubeEndDoubleBatteryHolder(); // Fits 54mm motor tube
+//  rotate([180,0,0]) TubeEndDoubleBatteryHolder(TubeID=PML54Body_ID, TubeOD=PML54Body_OD); // Fits 54mm motor tube
 //  SingleBatteryHolder(Tube_ID=PML75Body_ID);
 //  DoubleBatteryHolder(Tube_ID=PML75Body_ID);
 //
@@ -105,7 +105,7 @@ module BoltDown(){
 
 //BoltDown();
 
-module TubeEndDoubleBatteryHolder(){
+module TubeEndDoubleBatteryHolder(TubeID=PML54Body_ID, TubeOD=PML54Body_OD){
 	// Sits in the E-Bay in the top of the motor tube. 
 	
 	Batt_h=45; // Case only
@@ -113,8 +113,8 @@ module TubeEndDoubleBatteryHolder(){
 	Batt_Y=17;
 	Batt_r=3;
 	
-	TubeID=PML54Body_ID; // motor tube
-	TubeOD=PML54Body_OD;
+	//TubeID=PML54Body_ID; // motor tube
+	//TubeOD=PML54Body_OD;
 	Base_h=Batt_h-5;
 	OAH=Base_h+5;
 	

@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: Fairing54.scad
 // Created: 8/5/2022 
-// Revision: 1.0.10  9/29/2022
+// Revision: 1.0.11  10/3/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -25,7 +25,8 @@
 //
 //  ***** History *****
 //
-echo("Fairing54 1.0.10");
+echo("Fairing54 1.0.11");
+// 1.0.11  10/3/2022 Fairing locks moved to 18mm from ends. 
 // 1.0.10  9/29/2022 Added FairingBaseBulkPlate. 
 // 1.0.9  9/24/2022  Small improvements.
 // 1.0.8  9/23/2022  Reworked the spring parts. Yet another try to fix the coupler.
@@ -363,13 +364,16 @@ module FairingBaseBulkPlate(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, ShockCord
 	difference(){
 		union(){
 			difference(){
-				translate([0,0,5]) 
+				translate([0,0,Base_h+0.3]) 
 					cylinder(d1=NC_Lock_ID-IDXtra*5-4, d2=Tube_ID-IDXtra*3-4, h=Base_h, $fn=$preview? 90:360);
-				translate([0,0,6]) cylinder(d=Tube_ID, h=10);
+				translate([0,0,6.3]) cylinder(d=Tube_ID, h=10);
 			} // difference
-			cylinder(d=NC_Lock_ID-IDXtra*5-4, h=5, $fn=$preview? 90:360);
+			
+			cylinder(d=NC_Lock_ID-IDXtra*5-4, h=7, $fn=$preview? 90:360);
+			
 			cylinder(d1=NC_Lock_ID-IDXtra*5, d2=NC_Lock_ID-IDXtra*5-4, h=4, $fn=$preview? 90:360);
-			translate([0,0,6-Overlap]) cylinder(d=NC_Lock_ID-IDXtra*5-2.4, h=1, $fn=$preview? 90:360);
+			
+			translate([0,0,6.3-Overlap]) cylinder(d=NC_Lock_ID-IDXtra*5-2.4, h=1, $fn=$preview? 90:360);
 		} // union
 		
 		// Center
@@ -387,7 +391,7 @@ module FairingBaseBulkPlate(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, ShockCord
 	
 } // FairingBaseBulkPlate
 
-//FairingBaseBulkPlate(Tube_ID=PML75Body_ID, Fairing_ID=PML75Body_OD-4.4, ShockCord_a=-135);
+//FairingBaBoltDown();
 
 module FairingBaseLockRing(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, Interface=-IDXtra){
 				
@@ -549,7 +553,7 @@ module F54_FairingHalf(IsLeftHalf=true,
 				
 	Fairing_ID=Fairing_OD-Wall_T*2;		
 	M_H=12;
-	Z1=16;
+	Z1=18; // was 16
 	Z2=Len-Z1;
 	SpringInset=0.0;
 	PJ_Spacing=(Len-25)/4;

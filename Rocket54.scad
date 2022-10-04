@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: Rocket54.scad
 // Created: 9/6/2022 
-// Revision: 0.9.2  10/2/2022
+// Revision: 0.9.3  10/3/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,6 +12,7 @@
 //
 //  ***** History *****
 // 
+// 0.9.3  10/3/2022 Battery Holder
 // 0.9.2  10/2/2022 75mm Fairing and E-Bay
 // 0.9.1  9/8/2022  Shalower fin slots. 
 // 0.9.0  9/6/2022  First code.
@@ -44,8 +45,8 @@ F54_FairingHalf(IsLeftHalf=false,
 				Wall_T=FairingWall_T,
 				Len=Fairing_Len);
 /**/
-// SpringEndCap();
-//
+// F54_SpringEndCap();
+
 // *** Electronics Bay ***
 // R54_Electronics_Bay();
 // AltDoor54(Tube_OD=R54_Body_OD);
@@ -54,10 +55,15 @@ F54_FairingHalf(IsLeftHalf=false,
  rotate([180,0,0]) 
 FairingBase(BaseXtra=10, Fairing_OD=Fairing_OD, Fairing_ID=PML75Body_ID,
 				BodyTubeOD=R54_Body_OD, 
-					CouplerTube_OD=PML54Coupler_OD, CouplerTube_ID=PML54Coupler_ID);
+					CouplerTube_OD=PML54Coupler_OD+IDXtra*2, CouplerTube_ID=PML54Coupler_ID);
 /**/
 
-//Electronics_Bay(Tube_OD=PML75Body_OD, Tube_ID=PML75Body_ID, Fairing_ID=Fairing_ID);
+// TubeEndDoubleBatteryHolder(TubeID=PML54Coupler_ID, TubeOD=PML54Coupler_OD);
+// BoltDown();
+
+// R54_Electronics_Bay75();
+// AltDoor54(Tube_OD=Fairing_OD);
+// FairingBaseBulkPlate(Tube_ID=PML75Body_ID, Fairing_ID=Fairing_ID, ShockCord_a=-89);
 //
 // *** Fin Can ***
 // UpperFinCan();
@@ -75,6 +81,7 @@ FairingBase(BaseXtra=10, Fairing_OD=Fairing_OD, Fairing_ID=PML75Body_ID,
 //
 // ***********************************
 
+include<BatteryHolderLib.scad>
 include<Fairing54.scad>
 include<FinCan.scad>
 include<AltBay.scad>
@@ -124,7 +131,7 @@ NC_Lock_OD=Fairing_ID; // Nosecone locking ring.
 NC_Lock_ID=NC_Lock_OD-6;
 
 
-Fairing_Len=130; // Body of the fairing. Overall len is Fairing_Len + NC_Base + NoseconeSep_Z
+Fairing_Len=150; // Body of the fairing. Overall len is Fairing_Len + NC_Base + NoseconeSep_Z
 
 BodyTubeLen=300;
 
@@ -158,6 +165,15 @@ module ShowRocket54(){
 
 //ShowRocket54();
 
+module R54_Electronics_Bay75(){
+	
+	Electronics_Bay(Tube_OD=PML75Body_OD, Tube_ID=PML75Body_ID, Fairing_ID=Fairing_ID);
+	
+	TubeStop(InnerTubeID=PML75Coupler_ID, OuterTubeOD=PML75Body_OD, myfn=$preview? 36:360);
+	
+} // R54_Electronics_Bay75
+
+//R54_Electronics_Bay75();
 
 module R54_Electronics_Bay(){
 	Electronics_Bay(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Fairing_ID=Fairing_ID);

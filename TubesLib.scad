@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: TubesLib.scad
 // Created: 6/13/2022 
-// Revision: 0.9.1  6/24/2022
+// Revision: 0.9.2  10/3/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -11,6 +11,7 @@
 //
 //  ***** History *****
 //
+// 0.9.2  10/3/2022 Added TubeStop()
 // 0.9.1  6/24/2022 Moved rivet stuff here.
 // 0.9.0  6/13/2022 First code.
 //
@@ -26,6 +27,7 @@
 //  ***** Routines *****
 //
 // Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=300, myfn=$preview? 36:360);
+// TubeStop(InnerTubeID=PML54Coupler_ID, OuterTubeOD=PML54Body_OD, myfn=$preview? 36:360);
 // CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5);
 // LanyardToTube(ID=PML98Coupler_ID); // Attatch a lanyard to the inside of a tube.
 // Piston(OD=PML98Coupler_OD, ID=PML98Coupler_ID, Len=75, BP_Thickness=5);
@@ -94,6 +96,22 @@ module Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=300, myfn=$preview? 36:360){
 } // Tube
 
 //Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=300, myfn=$preview? 36:360);
+
+module TubeStop(InnerTubeID=PML54Coupler_ID, OuterTubeOD=PML54Body_OD, myfn=$preview? 36:360){
+	
+	Base_h=2;
+	OAH=Base_h+(OuterTubeOD-InnerTubeID)/2; // force to 45° to remove support matterial. 
+	//echo(OAH=OAH);
+	
+	difference(){
+		cylinder(d=OuterTubeOD-1, h=OAH, $fn=myfn);
+		
+		translate([0,0,-Overlap]) cylinder(d=InnerTubeID, h=OAH+Overlap*2, $fn=myfn);
+		translate([0,0,Base_h]) cylinder(d1=InnerTubeID, d2=OuterTubeOD-2, h=OAH-Base_h+Overlap, $fn=myfn);
+	} // difference
+} // TubeStop
+
+//TubeStop();
 
 module Piston(OD=PML98Coupler_OD, ID=PML98Coupler_ID, Len=75, BP_Thickness=5){
 	Tube(OD=OD-IDXtra*2, ID=ID-IDXtra*2, Len=Len, myfn=$preview? 36:360);
