@@ -88,8 +88,10 @@ module FinCan3(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, MtrTube_OD=PML54Body_
 	
 	difference(){
 		union(){
-			translate([0,0,40]) CenteringRing(OD=Tube_OD-1, ID=MtrTube_OD+IDXtra*2, Thickness=5);
-			translate([0,0,Root_L/2+50-5]) CenteringRing(OD=Tube_OD-1, ID=MtrTube_OD+IDXtra*2, Thickness=5);
+			translate([0,0,40]) rotate([0,0,180/nFins])
+				CenteringRing(OD=Tube_OD-1, ID=MtrTube_OD+IDXtra*2, Thickness=5, nHoles=nFins);
+			translate([0,0,Root_L/2+50-5]) rotate([0,0,180/nFins])
+				CenteringRing(OD=Tube_OD-1, ID=MtrTube_OD+IDXtra*2, Thickness=5, nHoles=nFins);
 			
 			if (HasTailCone){
 				TailCone(OD=Tube_OD, ID=MtrTube_OD, Len=50+Overlap,

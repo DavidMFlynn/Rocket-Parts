@@ -24,7 +24,7 @@ FairingConeOGive(Fairing_OD=R98_Body_OD,
 					NC_Len=NC_Len, 
 					NC_Wall_t=NC_Wall_t,
 					NC_Tip_r=NC_Tip_r,
-					Cut_Z=180, LowerPortion=true);
+					Cut_Z=180, LowerPortion=false);
 /**/
 // NoseLockRing(Fairing_ID =Fairing_ID);
 
@@ -43,7 +43,6 @@ F54_FairingHalf(IsLeftHalf=false,
 				Wall_T=FairingWall_T,
 				Len=Fairing_Len);
 /**/
-// SpringEndCap();
 //
 // *** Electronics Bay ***
 // FairingBaseBulkPlate(Tube_ID=R98_Body_ID, Fairing_ID=Fairing_ID);
@@ -185,18 +184,19 @@ module LowerFinCan(){
 			Chamfer_L=R98_Fin_Chamfer_L, 
 			HasTailCone=true,
 					MtrRetainer_OD=R98_MtrTube_OD+5,
-					MtrRetainer_L=16,
-					MtrRetainer_Inset=5); // Lower Half of Fin Can
+					MtrRetainer_L=20,
+					MtrRetainer_Inset=7); // Lower Half of Fin Can
 		
-		translate([0,0,40]) rotate([0,0,-180/nFins]) 
-			translate([R98_Body_OD/2+5,0,0]) rotate([0,90,0]) Bolt8Hole(depth=30);
+		translate([0,0,80]) rotate([0,0,-90-180/nFins]) 
+			translate([0,R98_Body_OD/2+2,0]) RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
 	} // difference
 		
 
 
 	difference(){
-		translate([0,0,40]) rotate([0,0,-180/nFins]) 
-			RailButtonPost(OD=R98_Body_OD, MtrTube_OD=R98_MtrTube_OD, H=R98_Body_OD/2+5, Len=30);
+		translate([0,0,80]) rotate([0,0,-90-180/nFins]) 
+			//RailButtonPost(OD=R98_Body_OD, MtrTube_OD=R98_MtrTube_OD, H=R98_Body_OD/2+5, Len=30);
+			RailGuidePost(OD=R98_Body_OD, MtrTube_OD=R98_MtrTube_OD+IDXtra*2, H=R98_Body_OD/2+2, TubeLen=70, Length = 40, BoltSpace=12.7);
 		translate([0,0,50]) TrapFin2Slots(Tube_OD=R98_Body_OD, nFins=nFins, 	
 			Post_h=R98_Fin_Post_h, Root_L=R98_Fin_Root_L, Root_W=R98_Fin_Root_W, Chamfer_L=R98_Fin_Chamfer_L);
 	} // difference

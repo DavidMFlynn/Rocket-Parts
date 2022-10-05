@@ -28,7 +28,7 @@
 //
 // Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=300, myfn=$preview? 36:360);
 // TubeStop(InnerTubeID=PML54Coupler_ID, OuterTubeOD=PML54Body_OD, myfn=$preview? 36:360);
-// CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5);
+// CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0);
 // LanyardToTube(ID=PML98Coupler_ID); // Attatch a lanyard to the inside of a tube.
 // Piston(OD=PML98Coupler_OD, ID=PML98Coupler_ID, Len=75, BP_Thickness=5);
 // RivetPattern(BT_Dia=PML98Body_OD, nRivets=3, Dia=5/32*25.4);
