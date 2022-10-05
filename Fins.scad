@@ -198,6 +198,8 @@ module TrapFin2(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100,
 	Rib_a=40; // 45 worked well
 	Rib_Slot_w=0.1;
 	
+	nCuts=(Root_L+TipOffset)/Rib_Spacing*2;
+					
 	difference(){
 		TrapFin2Shape(Post_h=Post_h, Root_L=Root_L, Tip_L=Tip_L, 
 						Root_W=Root_W, Tip_W=Tip_W, Span=Span, Chamfer_L=Chamfer_L,
@@ -205,10 +207,10 @@ module TrapFin2(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100,
 		
 		difference(){
 			union(){
-				for (j=[0:Root_L/Rib_Spacing*2])
+				for (j=[0:nCuts])
 					translate([-Root_L+j*Rib_Spacing,-Root_W,-Overlap]) 
 						rotate([0,Rib_a,0]) cube([Rib_Slot_w,Root_W*2,Span*2]);
-				for (j=[0:Root_L/Rib_Spacing*2])
+				for (j=[0:nCuts])
 					translate([-Root_L+j*Rib_Spacing,-Root_W,-Overlap]) 
 						rotate([0,-Rib_a,0]) cube([Rib_Slot_w,Root_W*2,Span*2]);
 			} // union
