@@ -242,10 +242,11 @@ module PJ_Clip(Fairing_OD=100, FairingWall_t=2.2){
 
 	//LockXtra=-0.3; // Cheet for BigFairing_OD Fairing, -0.3 is Loose but usable, -0.6 was too loose
 	
-	//LockXtra=-0.4; // Cheet for Fairing98 Fairing
-	
 	//
-	LockXtra=-0.4; // Cheet for Fairing75 Fairing, -0.2 works well just a little cleanup
+	LockXtra=-0.6; // Cheet for Fairing98 Fairing
+	
+	//LockXtra=-0.6; // Cheet for Fairing75 Fairing, -0.2 works well just a little cleanup,
+		//-0.4 is same trim required
 	
 	LockTip_X=Fairing_OD/2-FairingWall_t-PJ_Jointer_d/2;
 	Back_Face_X=LockTip_X-PJ_Jointer_d*1.5;

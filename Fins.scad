@@ -2,14 +2,17 @@
 // Project: 3D Printed Rocket
 // Filename: Fins.scad
 // Created: 6/11/2022 
-// Revision: 0.9.5  8/31/2022
+// Revision: 0.9.6  10/4/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 //
+// Rocket Fins. 
+//
 //  ***** History *****
 //
-echo("Fins 0.9.5");
+echo("Fins 0.9.6");
+// 0.9.6  10/4/2022 Fixed the Post of TrapFin2Shape so TipOffset can be bigger.
 // 0.9.5  8/31/2022 Added TipOffset to TrapFin2.
 // 0.9.4  8/27/2022 TrapFin2 and Co. 
 // 0.9.3  6/30/2022 Worked on Fillet
@@ -25,7 +28,13 @@ echo("Fins 0.9.5");
 //
 // Fin2(Root_L=150, Root_W=5.5, Tip_W=3.5, Span=70, Chamfer=10);
 //
-// TrapFin2(Post_h=10, Root_L=180, Tip_L=120, Root_W=10, Tip_W=5.0, Span=120, Chamfer_L=18);
+// TrapFin2(Post_h=10, Root_L=180, Tip_L=120, Root_W=10, Tip_W=5.0, Span=120, Chamfer_L=18, TipOffset=0, Bisect=false, Bisect_X=0);
+
+// *** Examples ***
+// TrapFin2(Post_h=10, Root_L=240, Tip_L=50, Root_W=12, Tip_W=7.0, Span=150, Chamfer_L=24, TipOffset=60);
+//
+// OAL = Root_L + (-Root_L/2 + TipOffset + Tip_L/2) = 260mm
+// TrapFin2(Post_h=10, Root_L=200, Tip_L=80, Root_W=14, Tip_W=5.0, Span=180, Chamfer_L=32, TipOffset=120);
 //
 // ***********************************
 //  ***** Routines *****
@@ -33,7 +42,6 @@ echo("Fins 0.9.5");
 // Chamfer(Len=200, Flat=0.5, Chamfer_a=10);
 //
 // Fin(Root_L=150, Root_W=5, Tip_W=2.5, Span=70, Chamfer_a=15);
-// Fin2(Root_L=150, Root_W=5, Tip_W=2.5, Chamfer=10);
 //
 // TrapFin2Tail(Post_h=5, Root_L=150, Root_W=10, Chamfer_L=18);
 // TrapFin2Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18);
@@ -85,44 +93,6 @@ module Fin(Root_L=150, Root_W=5, Tip_W=2.5, Span=70, Chamfer_a=15){
 //Fin(Root_L=150, Root_W=5, Tip_W=2.5, Span=70, Chamfer_a=15);
 //Fin(Root_L=200, Root_W=6, Tip_W=2.5, Span=90, Chamfer_a=15);
 
-module Fin2(Root_L=150, Root_W=5, Tip_W=2.5, Chamfer=10){
-	A1=30;
-	A2=15;
-	RootEmbed=2;
-	
-	module Edge(){
-		sphere(d=1, $fn=24);
-	}
-	module Tip(){
-		sphere(d=Tip_W, $fn=36);
-	}
-	module Root(){
-		sphere(d=Root_W, $fn=90);
-	}
-	
-	hull(){
-		Edge();
-		translate([0,-RootEmbed,0]) Edge();
-		translate([0,0,Chamfer+Root_W]) Root();
-		translate([0,-RootEmbed,Chamfer+Root_W]) Root();
-		translate([0,0,Root_L-Chamfer-Root_W]) Root();
-		translate([0,-RootEmbed,Root_L-Chamfer-Root_W]) Root();
-		translate([0,0,Root_L]) Edge();
-		translate([0,-RootEmbed,Root_L]) Edge();
-		
-		translate([0,0,Root_L]) rotate([A1,0,0]) translate([0,0,-Root_L*0.9]){
-			Edge();
-			rotate([90-A2,0,0]) translate([0,0,Chamfer]) Tip();
-			
-			rotate([-A2-A1,0,0]) translate([0,0,-Root_L/6]){
-				Edge();
-				rotate([90-A1,0,0]) translate([0,0,Chamfer]) Tip();
-			}
-		}
-	} // hull
-} // Fin2
-
-//Fin2(Root_L=150, Root_W=5.5, Tip_W=3.5, Chamfer=10);
 
 // *************************************************************************
 
@@ -153,11 +123,19 @@ module TrapFin2Shape(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span
 	Edge_r=1;
 	Tip_Chamfer=Chamfer_L-(Root_W-Tip_W);
 	
+	// Post, embeds into fin can
 	hull(){
 		translate([-Root_L/2+Edge_r,0,0]) cylinder(r=Edge_r, h=Post_h);
 		translate([-Root_L/2+Chamfer_L,0,0]) cylinder(d=Root_W, h=Post_h);
 		translate([Root_L/2-Chamfer_L,0,0]) cylinder(d=Root_W, h=Post_h);
 		translate([Root_L/2-Edge_r,0,0]) cylinder(r=Edge_r, h=Post_h);
+	} // hull
+	
+	hull(){
+		translate([-Root_L/2+Edge_r,0,Post_h-Overlap]) cylinder(r=Edge_r, h=Overlap);
+		translate([-Root_L/2+Chamfer_L,0,Post_h-Overlap]) cylinder(d=Root_W, h=Overlap);
+		translate([Root_L/2-Chamfer_L,0,Post_h-Overlap]) cylinder(d=Root_W, h=Overlap);
+		translate([Root_L/2-Edge_r,0,Post_h-Overlap]) cylinder(r=Edge_r, h=Overlap);
 		
 		translate([-Tip_L/2+Edge_r+TipOffset,0,Span-Chamfer_L]) cylinder(r=Edge_r, h=Overlap);
 		translate([-Tip_L/2+Tip_Chamfer+TipOffset,0,Span-Tip_Chamfer]) cylinder(d=Tip_W, h=Overlap);
@@ -168,6 +146,8 @@ module TrapFin2Shape(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span
 		translate([Tip_L/2-Edge_r+TipOffset,0,Span-Edge_r]) sphere(r=Edge_r);
 		} // hull
 } // TrapFin2Shape
+
+//TrapFin2Shape();
 
 module CutZone(X_Offset=0, Y=10, Z=100){
 	Cut_r=1;

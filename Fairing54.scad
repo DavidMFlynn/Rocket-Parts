@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: Fairing54.scad
 // Created: 8/5/2022 
-// Revision: 1.0.11  10/3/2022
+// Revision: 1.0.12  10/4/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -25,7 +25,8 @@
 //
 //  ***** History *****
 //
-echo("Fairing54 1.0.11");
+echo("Fairing54 1.0.12");
+// 1.0.12  10/4/2022 Added IDXtra to ID of Nosecone ring. 
 // 1.0.11  10/3/2022 Fairing locks moved to 18mm from ends. 
 // 1.0.10  9/29/2022 Added FairingBaseBulkPlate. 
 // 1.0.9  9/24/2022  Small improvements.
@@ -146,7 +147,7 @@ module FairingConeBaseRing(Fairing_OD=Fairing_OD,
 		cylinder(d=Fairing_OD-NC_Wall_t*2+Overlap, h=NC_Base+3, $fn=$preview? 90:360);
 				
 		translate([0,0,-Overlap]) 
-			cylinder(d=NC_Lock_ID(Fairing_ID), h=NC_Base+Overlap*2, $fn=$preview? 90:360);
+			cylinder(d=NC_Lock_ID(Fairing_ID)+IDXtra, h=NC_Base+Overlap*2, $fn=$preview? 90:360);
 		translate([0,0,NC_Base-Overlap]) 
 			cylinder(d1=NC_Lock_ID(Fairing_ID), d2=Fairing_ID,h=3+Overlap*2, $fn=$preview? 90:360);
 			} // difference

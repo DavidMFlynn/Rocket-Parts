@@ -7,7 +7,8 @@
 // ***********************************
 //  ***** Notes *****
 //
-//  Booster Dropper for strap on boosters
+//  Booster Dropper for strap on boosters. 
+//  This is the mechanism for retaining and dropping strap-on boosters.
 //
 //  ***** History *****
 //
