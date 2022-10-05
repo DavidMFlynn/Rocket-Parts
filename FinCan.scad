@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: FinCan.scad
 // Created: 6/14/2022 
-// Revision: 0.9.4  9/6/2022
+// Revision: 0.9.5  10/4/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -11,7 +11,8 @@
 //
 //  ***** History *****
 //
-echo("FinCan 0.9.4");
+echo("FinCan 0.9.5");
+// 0.9.5  10/4/2022 Moved rail button posts to RailGuide.scad 
 // 0.9.4  9/6/2022  Cleaned up RailButtonPost()
 // 0.9.3  8/29/2022 Fixed motor tube clearance in FinCan3. 
 // 0.9.2  8/27/2022 New Fin Can and TailCone. 
@@ -36,12 +37,10 @@ rotate([180,0,0]){
 // FinCan2(BodyOD=PML98Body_OD, BodyID=PML98Body_ID, Len=400, nFins=5, HasForwardRG=true);
 // rotate([180,0,0]) FinCan2(BodyOD=PML75Body_OD, BodyID=PML75Body_ID, Len=190, nFins=5, HasForwardRG=true);
 //
-// BoltOnRailButtonPost();
 //
 // ***********************************
 //  ***** Routines *****
 //
-// RailButtonPost(OD=PML98Body_OD, MtrTube_OD=PML54Body_OD, H=5.5*25.4/2, Len=50);
 //
 // ***********************************
 
@@ -129,68 +128,11 @@ FinCan3(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, MtrTube_OD=PML54Body_OD, nFi
 					HasTailCone=false);
 */
 
-module RailButtonPost(OD=PML98Body_OD, MtrTube_OD=PML54Body_OD, H=5.5*25.4/2, Len=50){
-	Size_Z=Len;
-	
-	translate([0,0,-Size_Z/2]) Tube(OD=MtrTube_OD+4.4+IDXtra*3, ID=MtrTube_OD+IDXtra*3, Len=Size_Z, myfn=$preview? 36:360);
-	
-	difference(){
-		union(){
-			translate([0,0,-Size_Z/2]) Tube(OD=OD, ID=OD-4.4, Len=Size_Z, myfn=$preview? 36:360);
-			hull(){
-				translate([MtrTube_OD/2+IDXtra,0,Size_Z/2-1]) 
-					rotate([0,90,0]) cylinder(d=2, h=OD/2-MtrTube_OD/2);
-				translate([MtrTube_OD/2+IDXtra,0,-Size_Z/2+1]) 
-					rotate([0,90,0]) cylinder(d=2, h=OD/2-MtrTube_OD/2);
-				translate([MtrTube_OD/2+IDXtra,0,0]) 
-					rotate([0,90,0]) cylinder(d=16, h=OD/2-MtrTube_OD/2);
-				translate([MtrTube_OD/2+IDXtra,0,0]) 
-					rotate([0,90,0]) cylinder(d=10, h=H-MtrTube_OD/2-IDXtra);
-			} // hull
-		} // union
-		
-		translate([H,0,0]) rotate([0,90,0]) Bolt8Hole();
-	} // difference
-} // RailButtonPost
 
-//translate([0,0,60]) rotate([0,0,-360/10]) RailButtonPost(OD=PML98Body_OD, MtrTube_OD=PML54Body_OD, H=5.5*25.4/2);
 
 //rotate([180,0,0]) FinCan3(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, MtrTube_OD=PML54Body_OD, nFins=5, Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18, HasTailCone=false); // UpperFinCan
 //FinCan3(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, MtrTube_OD=PML54Body_OD, nFins=5, Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18, HasTailCone=true);
 
-module BoltOnRailButtonPost(OD=PML98Body_OD, H=5.5*25.4/2){
-	Size_Z=50;
-	
-	
-	
-	difference(){
-		union(){
-			translate([0,0,-Size_Z/2]) Tube(OD=OD+4.4, ID=OD+IDXtra*2, Len=Size_Z, myfn=$preview? 36:360);
-			
-			hull(){
-				translate([OD/2+IDXtra,0,Size_Z/2-1]) rotate([0,90,0]) cylinder(d=2, h=2);
-				translate([OD/2+IDXtra,0,-Size_Z/2+1]) rotate([0,90,0]) cylinder(d=2, h=2);
-				translate([OD/2+IDXtra,0,0]) rotate([0,90,0]) cylinder(d=16, h=2);
-				translate([OD/2+IDXtra,0,0]) rotate([0,90,0]) cylinder(d=10, h=H-OD/2-IDXtra);
-			} // hull
-			
-		} // union
-		
-		translate([-OD/2-5,-OD/2-5,-Size_Z/2-Overlap]) cube([OD*0.75,OD+10,Size_Z+Overlap*2]);
-		translate([0,15,-Size_Z/2-Overlap]) cube([OD*0.75,OD+10,Size_Z+Overlap*2]);
-		translate([0,-15,-Size_Z/2-Overlap]) mirror([0,1,0]) cube([OD*0.75,OD+10,Size_Z+Overlap*2]);
-		
-		rotate([0,0,10]) translate([OD/2+3,0,Size_Z/3]) rotate([0,90,0]) Bolt8Hole();
-		rotate([0,0,-10]) translate([OD/2+3,0,Size_Z/3]) rotate([0,90,0]) Bolt8Hole();
-		rotate([0,0,10]) translate([OD/2+3,0,-Size_Z/3]) rotate([0,90,0]) Bolt8Hole();
-		rotate([0,0,-10]) translate([OD/2+3,0,-Size_Z/3]) rotate([0,90,0]) Bolt8Hole();
-		
-		translate([H,0,0]) rotate([0,90,0]) Bolt8Hole();
-	} // difference
-	
-} // BoltOnRailButtonPost
-
-// BoltOnRailButtonPost();
 
 module FinCan1(Len=180, nFins=4){
 	
