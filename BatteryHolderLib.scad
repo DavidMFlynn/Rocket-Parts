@@ -186,7 +186,7 @@ module SingleBatteryHolder(Tube_ID=PML75Body_ID){
 
 //SingleBatteryHolder();
 
-module DoubleBatteryHolder(Tube_ID=PML75Body_ID){
+module DoubleBatteryHolder(Tube_ID=PML75Body_ID, HasBoltHoles=true){
 	// glues to the inside of the E-Bay
 	
 	Batt_h=45;
@@ -197,8 +197,9 @@ module DoubleBatteryHolder(Tube_ID=PML75Body_ID){
 		cylinder(d=Tube_ID, h=Batt_h+3, $fn=$preview? 90:360);
 		
 		// Bolts
+		if (HasBoltHoles){
 		translate([0,Tube_ID/2-6,Batt_h+3-4.5]) rotate([90,0,0]) Bolt4ButtonHeadHole();
-		translate([0,Tube_ID/2-6,3+4.5]) rotate([90,0,0]) Bolt4ButtonHeadHole();
+		translate([0,Tube_ID/2-6,3+4.5]) rotate([90,0,0]) Bolt4ButtonHeadHole();}
 		
 		// Trim sides
 		translate([Batt_Y+3,-Tube_ID/2-1,-Overlap]) cube([Tube_ID/2,Tube_ID+2,Batt_h+6+Overlap*2]);

@@ -45,8 +45,8 @@ F54_FairingHalf(IsLeftHalf=false,
 /**/
 //
 // *** Electronics Bay ***
-// FairingBaseBulkPlate(Tube_ID=R98_Body_ID, Fairing_ID=Fairing_ID);
 // R98_Electronics_Bay();
+// FairingBaseBulkPlate(Tube_ID=R98_Body_ID, Fairing_ID=Fairing_ID, ShockCord_a=-100);
 // AltDoor54(Tube_OD=R98_Body_OD);
 //
 // *** Fin Can ***
@@ -64,10 +64,10 @@ F54_FairingHalf(IsLeftHalf=false,
 // ShowRocket98();
 //
 // ***********************************
-
 include<Fairing54.scad>
 include<FinCan.scad>
 include<AltBay.scad>
+include<BatteryHolderLib.scad>
 
 //also included
  //include<NoseCone.scad>
@@ -154,11 +154,13 @@ module ShowRocket98(){
 //ShowRocket98();
 
 module R98_Electronics_Bay(){
-	Electronics_Bay(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, Fairing_ID=PML98Body_OD-4.4, 
+	Electronics_Bay(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, Fairing_ID=Fairing_ID, 
 				EBay_Len=EBay_Len, HasCablePuller=true);
 	
 	TubeStop(InnerTubeID=PML98Coupler_ID, OuterTubeOD=PML98Body_OD, myfn=$preview? 36:360);
-	//translate([0,0,-20]) UpperRailButtonPost(Body_OD=PML75Body_OD, Body_ID=PML75Body_ID, MtrTube_OD=PML54Body_OD+IDXtra);
+	
+	translate([0,0,30]) DoubleBatteryHolder(Tube_ID=Fairing_ID, HasBoltHoles=false);
+	
 } // R98_Electronics_Bay
 
 //R98_Electronics_Bay();

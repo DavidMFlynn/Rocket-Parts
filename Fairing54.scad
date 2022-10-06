@@ -26,6 +26,7 @@
 //  ***** History *****
 //
 echo("Fairing54 1.0.12");
+Fairing54=true;
 // 1.0.12  10/4/2022 Added IDXtra to ID of Nosecone ring. 
 // 1.0.11  10/3/2022 Fairing locks moved to 18mm from ends. 
 // 1.0.10  9/29/2022 Added FairingBaseBulkPlate. 
@@ -66,7 +67,7 @@ F54_FairingHalf(IsLeftHalf=false,
 //					BodyTubeOD=PML54Body_OD, 
 //					CouplerTube_OD=PML54Coupler_OD, CouplerTube_ID=PML54Coupler_ID); // Pring w/ support
 // FairingBaseLockRing(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, Interface=-IDXtra);
-// FairingBaseBulkPlate(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, ShockCord_a=-90);
+// FairingBaseBulkPlate(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, ShockCord_a=-100);
 //
 // F54_SpringEndCap();
 //

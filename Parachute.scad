@@ -2,7 +2,7 @@
 // Project: 3D Printed Rocket
 // Filename: Parachute.scad
 // Created: 9/13/2022 
-// Revision: 0.9.2  9/28/2022
+// Revision: 0.9.3  10/6/2022
 // Units: mm
 // *******************************************
 //  ***** Notes *****
@@ -17,6 +17,7 @@
 // 
 //  ***** History *****
 //
+// 0.9.3  10/6/2022 Made a 63" 'chute it is good.
 // 0.9.2  9/28/2022 20" 'chute worked well, 63" is next. 
 // 0.9.1  9/24/2022 Didn't work, starting over. 
 // 0.9.0  9/13/2022 First code, working out the geometry
@@ -86,7 +87,7 @@ Arc_r=900; Apex_Y=855; Hole_X=40; //14 Panels 360mm x 855mm, 63" Dia., 7" Center
 //PrintingOffset_X=100-200; PrintingOffset_Y=-130-260-260; // Pg 6
 
 
-
+//for (j=[0:13]) rotate([0,0,360/14*j]) translate([0,-940,0])
 translate([PrintingOffset_X,PrintingOffset_Y+SeamAllowance,0]) offset(delta=SeamAllowance)
 P_Shape();
 
