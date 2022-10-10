@@ -50,6 +50,7 @@ F54_FairingHalf(IsLeftHalf=false,
 // R98_Electronics_Bay();
 // FairingBaseBulkPlate(Tube_ID=R98_Body_ID, Fairing_ID=Fairing_ID, ShockCord_a=-100);
 // AltDoor54(Tube_OD=R98_Body_OD);
+// DoubleBatteryHolder(Tube_ID=PML98Body_ID, HasBoltHoles=true); // oops!
 //
 // *** Cable Puller ***
 // ThroughOut();
