@@ -1,6 +1,7 @@
 // ***********************************
 // Project: 3D Printed Rocket
 // Filename: BatteryHolderLib.scad
+// by David M. Flynn
 // Created: 9/30/2022 
 // Revision: 0.9.0  9/30/2022
 // Units: mm

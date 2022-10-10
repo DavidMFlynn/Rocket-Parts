@@ -1,6 +1,7 @@
 // ***********************************
 // Project: 3D Printed Rocket
 // Filename: Fairing54.scad
+// by David M. Flynn
 // Created: 8/5/2022 
 // Revision: 1.0.12  10/4/2022
 // Units: mm

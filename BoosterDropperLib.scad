@@ -1,6 +1,7 @@
 // ***********************************
 // Project: 3D Printed Rocket
 // Filename: BoosterDropperLib.scad
+// by David M. Flynn
 // Created: 9/2/2022 
 // Revision: 0.9.6  9/26/2022
 // Units: mm

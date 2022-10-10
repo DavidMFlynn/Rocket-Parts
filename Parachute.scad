@@ -1,6 +1,7 @@
 // *******************************************
 // Project: 3D Printed Rocket
 // Filename: Parachute.scad
+// by David M. Flynn
 // Created: 9/13/2022 
 // Revision: 0.9.3  10/6/2022
 // Units: mm
@@ -57,7 +58,7 @@ Arc_r=500; Apex_Y=310; Hole_X=30;  // 8 Panels 200mm x 310mm, 20"
 //PrintingOffset_X=0; PrintingOffset_Y=-130-260;// Page 3
 // --------------------------------------------------------------------------
 
-// *** Next one to try 9/28/2022 ***
+// *** Built one and it works great 10/10/2022 ***
 // Make 14 Panels
 // 1.4oz Rip-Stop Nylon, 3mm Polypropylene rope (knit, cheep from Amazon)
 //*

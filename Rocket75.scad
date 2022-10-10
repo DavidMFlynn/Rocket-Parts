@@ -1,6 +1,7 @@
 // ***********************************
 // Project: 3D Printed Rocket
 // Filename: Rocket75.scad
+// by David M. Flynn
 // Created: 9/11/2022 
 // Revision: 0.9.1  9/28/2022
 // Units: mm

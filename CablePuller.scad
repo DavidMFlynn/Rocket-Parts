@@ -1,6 +1,7 @@
 // ***********************************
 // Project: 3D Printed Rocket
 // Filename: CablePuller.scad
+// by David M. Flynn
 // Created: 8/21/2022 
 // Revision: 1.0.1  9/17/2022
 // Units: mm

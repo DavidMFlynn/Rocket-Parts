@@ -1,6 +1,7 @@
 // ***********************************
 // Project: 3D Printed Rocket
 // Filename: RailGuide.scad
+// by David M. Flynn
 // Created: 6/11/2022 
 // Revision: 1.0.0  10/4/2022
 // Units: mm

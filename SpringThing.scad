@@ -1,6 +1,7 @@
 // ***********************************
 // Project: 3D Printed Rocket
 // Filename: SpringThing.scad
+// by David M. Flynn
 // Created: 6/16/2022 
 // Revision: 0.9.3  8/6/2022
 // Units: mm

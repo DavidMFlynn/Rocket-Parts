@@ -1,6 +1,7 @@
 // ***********************************
 // Project: 3D Printed Rocket
 // Filename: Rocket98.scad
+// by David M. Flynn
 // Created: 10/4/2022 
 // Revision: 1.0.0  10/4/2022
 // Units: mm
@@ -43,11 +44,21 @@ F54_FairingHalf(IsLeftHalf=false,
 				Wall_T=FairingWall_T,
 				Len=Fairing_Len);
 /**/
+//F54_SpringEndCap();
 //
 // *** Electronics Bay ***
 // R98_Electronics_Bay();
 // FairingBaseBulkPlate(Tube_ID=R98_Body_ID, Fairing_ID=Fairing_ID, ShockCord_a=-100);
 // AltDoor54(Tube_OD=R98_Body_OD);
+//
+// *** Cable Puller ***
+// ThroughOut();
+// rotate([0,90,0]) SpringBody();
+// CableRetainer();
+// StopAdjuster();
+// CageBottom();
+// AddServo(); // CageTop w/ servo mount
+//
 //
 // *** Fin Can ***
 // UpperFinCan();

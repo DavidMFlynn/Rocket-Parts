@@ -1,6 +1,7 @@
 // ***********************************
 // Project: 3D Printed Rocket
 // Filename: CableRelease.scad
+// by David M. Flynn
 // Created: 6/15/2022 
 // Revision: 1.0.0  6/19/2022
 // Units: mm

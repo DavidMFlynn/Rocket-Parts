@@ -1,6 +1,7 @@
 // ***********************************
 // Project: 3D Printed Rocket
 // Filename: Fins.scad
+// by David M. Flynn
 // Created: 6/11/2022 
 // Revision: 0.9.6  10/4/2022
 // Units: mm

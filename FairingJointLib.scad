@@ -1,6 +1,7 @@
 // ***********************************
 // Project: 3D Printed Rocket
 // Filename: FairingJointLib.scad
+// by David M. Flynn
 // Created: 8/5/2022 
 // Revision: 0.9.8  9/12/2022
 // Units: mm

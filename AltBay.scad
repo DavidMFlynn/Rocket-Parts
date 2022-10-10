@@ -1,6 +1,7 @@
 // ***********************************
 // Project: 3D Printed Rocket
 // Filename: AltBay.scad
+// by David M. Flynn
 // Created: 6/23/2022 
 // Revision: 0.9.9  9/12/2022
 // Units: mm

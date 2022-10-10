@@ -1,6 +1,7 @@
 // ***********************************
 // Project: 3D Printed Rocket
 // Filename: TubesLib.scad
+// by David M. Flynn
 // Created: 6/13/2022 
 // Revision: 0.9.2  10/3/2022
 // Units: mm

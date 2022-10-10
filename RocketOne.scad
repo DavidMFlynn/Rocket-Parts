@@ -1,6 +1,7 @@
 // ***********************************
 // Project: 3D Printed Rocket
 // Filename: RocketOne.scad
+// by David M. Flynn
 // Created: 8/31/2022 
 // Revision: 1.0.0  8/31/2022
 // Units: mm
