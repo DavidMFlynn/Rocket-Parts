@@ -170,7 +170,7 @@ module R98_Electronics_Bay(){
 	
 	TubeStop(InnerTubeID=PML98Coupler_ID, OuterTubeOD=PML98Body_OD, myfn=$preview? 36:360);
 	
-	translate([0,0,30]) DoubleBatteryHolder(Tube_ID=Fairing_ID, HasBoltHoles=false);
+	translate([0,0,30]) DoubleBatteryHolder(Tube_ID=PML98Body_ID, HasBoltHoles=false);
 	
 } // R98_Electronics_Bay
 

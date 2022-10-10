@@ -3,7 +3,7 @@
 // Filename: TubesLib.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.2  10/3/2022
+// Revision: 0.9.3  10/10/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,6 +12,8 @@
 //
 //  ***** History *****
 //
+echo("TubesLib 0.9.3");
+// 0.9.3  10/10/2022 Added 6" PML tubing
 // 0.9.2  10/3/2022 Added TubeStop()
 // 0.9.1  6/24/2022 Moved rivet stuff here.
 // 0.9.0  6/13/2022 First code.
@@ -20,7 +22,7 @@
 //  ***** for STL output *****
 //
 // Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=300, myfn=$preview? 36:360);
-// CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5);
+// CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0);
 //
 // BT_RivetFixture(BT_Dia=PML98Body_OD, nRivets=3, Dia=5/32*25.4, Offset=25);
 //
@@ -39,6 +41,12 @@
 Overlap=0.05;
 IDXtra=0.2;
 $fn=$preview? 24:90;
+
+// 6" Airframe
+PML150Body_OD=(6.007+2*0.074)*25.4; // about 155mm
+PML150Body_ID=6.007*25.4;
+PML150Coupler_OD=6*25.4;
+PML150Coupler_ID=5.86*25.4;
 
 // ***** PML Paper Phenolic Tubes *****
 // These sizes have not been verified.

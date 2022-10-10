@@ -499,7 +499,7 @@ module BC_LockRod(){
 
 //BC_LockRod();
 
-module BC_Cup(Tube_OD=120, ID=90, nLocks=3){
+module BC_Cup(Tube_OD=100, ID=78, nLocks=2){
 	Len=3;
 	LR_X=10;
 	LR_Y=8;
@@ -522,9 +522,10 @@ module BC_Cup(Tube_OD=120, ID=90, nLocks=3){
 				color("Orange") BC_LockRod();
 } // BC_Cup
 
-//translate([0,0,Overlap]) BC_Cup();
+//
+translate([0,0,Overlap]) BC_Cup();
 
-module BC_Saucer(Tube_OD=120, nLocks=3){
+module BC_Saucer(Tube_OD=100, nLocks=2){
 	Len=6;
 	ID=Tube_OD-24;
 	LR_X=10;
