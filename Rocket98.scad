@@ -3,7 +3,7 @@
 // Filename: Rocket98.scad
 // by David M. Flynn
 // Created: 10/4/2022 
-// Revision: 1.0.0  10/4/2022
+// Revision: 1.0.1  10/11/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,6 +12,7 @@
 //
 //  ***** History *****
 // 
+// 1.0.1  10/11/2022 Added Rail Guides
 // 1.0.0  10/4/2022  First code.
 //
 // ***********************************
@@ -65,6 +66,8 @@ F54_FairingHalf(IsLeftHalf=false,
 // UpperFinCan();
 // Rocket98Fin();
 // rotate([180,0,0]) LowerFinCan();
+// rotate([90,0,0]) BoltOnRailGuide(Length = 40, BoltSpace=12.7, RoundEnds=true);
+// rotate([0,-90,0]) TubeBoltedRailGuide(TubeOD=R98_Body_OD, Length = 25, Offset = 5.5);
 //
 // ***********************************
 //  ***** Routines *****

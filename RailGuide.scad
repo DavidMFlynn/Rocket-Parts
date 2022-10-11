@@ -3,7 +3,7 @@
 // Filename: RailGuide.scad
 // by David M. Flynn
 // Created: 6/11/2022 
-// Revision: 1.0.0  10/4/2022
+// Revision: 1.0.1  10/11/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,7 +12,8 @@
 //
 //  ***** History *****
 //
-echo("RailGuide 1.0.0");
+echo("RailGuide 1.0.1");
+// 1.0.1  10/11/2022 Added TubeBoltedRailGuide
 // 1.0.0  10/4/2022 Printed and verified function.  
 // 0.9.1  10/4/2022 Added BoltOnRailGuide()
 // 0.9.0  6/11/2022 First code.
@@ -22,6 +23,8 @@ echo("RailGuide 1.0.0");
 //
 // rotate([90,0,0]) BoltOnRailGuide(Length = 40, BoltSpace=12.7, RoundEnds=true);
 // RialGuide(TubeOD = 98, Length = 40, Offset = 3);
+//
+// TubeBoltedRailGuide(TubeOD=PML98Body_OD, Length = 30, Offset = 3);
 //
 // BoltOnRailButtonPost(OD=PML98Body_OD, H=5.5*25.4/2);
 //
@@ -200,19 +203,48 @@ module RialGuide(TubeOD = 98, Length = 40, Offset = 3){
 		} // union
 		
 		//Chamfer
-		translate([-RG_Cap_w,TubeOD/2-5,-Length/2-4]) 
+		translate([-RG_Cap_w,TubeOD/2-5+Offset,-Length/2-4]) 
 			rotate([-45,0,0]) cube([RG_Cap_w*2,Offset+50,Length]);
 		mirror([0,0,1])
-		translate([-RG_Cap_w,TubeOD/2-5,-Length/2-4]) 
+		translate([-RG_Cap_w,TubeOD/2-5+Offset,-Length/2-4]) 
 			rotate([-45,0,0]) cube([RG_Cap_w*2,Offset+50,Length]);
 		
 		// Body tube
 		translate([0,0,-Length/2-Overlap]) 
-			cylinder(r=TubeOD/2-Overlap, h=Length+Overlap*2);
+			cylinder(r=TubeOD/2, h=Length+Overlap*2, $fn=$preview? 36:360);
 	} // difference
 } // RialGuide
 
 // RialGuide();
+
+
+module TubeBoltedRailGuide(TubeOD=PML98Body_OD, Length = 30, Offset = 3){
+	Size_Z=50;
+	
+	rotate([0,0,-90]) RialGuide(TubeOD = TubeOD+IDXtra*2, Length = Length, Offset = Offset-IDXtra*2);
+	
+	difference(){
+		translate([0,0,-Size_Z/2]) Tube(OD=TubeOD+4.4, ID=TubeOD+IDXtra*2, Len=Size_Z, myfn=$preview? 36:360);
+			
+		
+		// Trim Mounting Plate
+		translate([-TubeOD/2-5,-TubeOD/2-5,-Size_Z/2-Overlap]) cube([TubeOD*0.75,TubeOD+10,Size_Z+Overlap*2]);
+		translate([0,15,-Size_Z/2-Overlap]) cube([TubeOD*0.75,TubeOD+10,Size_Z+Overlap*2]);
+		translate([0,-15,-Size_Z/2-Overlap]) mirror([0,1,0]) cube([TubeOD*0.75,TubeOD+10,Size_Z+Overlap*2]);
+		
+		rotate([0,0,10]) translate([TubeOD/2+3,0,Size_Z/3]) rotate([0,90,0]) Bolt8Hole();
+		rotate([0,0,-10]) translate([TubeOD/2+3,0,Size_Z/3]) rotate([0,90,0]) Bolt8Hole();
+		rotate([0,0,10]) translate([TubeOD/2+3,0,-Size_Z/3]) rotate([0,90,0]) Bolt8Hole();
+		rotate([0,0,-10]) translate([TubeOD/2+3,0,-Size_Z/3]) rotate([0,90,0]) Bolt8Hole();
+		
+		
+	} // difference
+	
+} // TubeBoltedRailGuide
+
+// TubeBoltedRailGuide();
+
+
 
 module RailButtonPost(OD=PML98Body_OD, MtrTube_OD=PML54Body_OD, H=5.5*25.4/2, Len=50){
 	Size_Z=Len;
