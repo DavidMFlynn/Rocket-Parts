@@ -10,7 +10,7 @@
 //
 //  4" Upscale of Estes Astron Omega
 //  Two Stage Rocket with 150mm Body.
-Scale=2.45;
+Scale=102.21/41.58; // Body tube diameters
 //
 //  ***** History *****
 // 
@@ -63,23 +63,23 @@ $fn=$preview? 24:90;
 nFins=4;
 // Sustainer Fin
 ROmega_Fin_Post_h=10;
-ROmega_Fin_Root_L=180;
-ROmega_Fin_Root_W=12;
-ROmega_Fin_Tip_W=5;
+ROmega_Fin_Root_L=72*Scale;
+ROmega_Fin_Root_W=5*Scale;
+ROmega_Fin_Tip_W=2*Scale;
 ROmega_Fin_Tip_L=ROmega_Fin_Root_L*0.75;
 ROmega_Fin_Span=ROmega_Fin_Root_L*0.75;
 ROmega_Fin_TipOffset=0;
-ROmega_Fin_Chamfer_L=32;
+ROmega_Fin_Chamfer_L=ROmega_Fin_Root_W*2.5;
 
 // Booster Fin
 ROmegaBooster_Fin_Post_h=10;
-ROmegaBooster_Fin_Root_L=220;
-ROmegaBooster_Fin_Root_W=14;
-ROmegaBooster_Fin_Tip_W=5;
+ROmegaBooster_Fin_Root_L=90*Scale;
+ROmegaBooster_Fin_Root_W=5.7*Scale;
+ROmegaBooster_Fin_Tip_W=2*Scale;
 ROmegaBooster_Fin_Tip_L=ROmegaBooster_Fin_Root_L*0.75;
 ROmegaBooster_Fin_Span=ROmegaBooster_Fin_Root_L*0.75;
 ROmegaBooster_Fin_TipOffset=0;
-ROmegaBooster_Fin_Chamfer_L=40;
+ROmegaBooster_Fin_Chamfer_L=ROmegaBooster_Fin_Root_W*2.5;
 
 ROmega_Body_OD=PML98Body_OD;
 ROmega_Body_ID=PML98Body_ID;

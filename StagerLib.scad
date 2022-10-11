@@ -49,6 +49,7 @@ Stager_Spring_OD=5/16*25.4;
 Stager_Spring_FL=1.25*25.4;
 Stager_Spring_CBL=0.7*25.4;
 
+LooseFit=0.8;
 
 // ***********************************************************************************
 //  ***** Booster Clamp *****
@@ -123,7 +124,7 @@ module BC_Cup(Tube_OD=102.21, ID=78, nLocks=2){
 
 //translate([0,0,Overlap]) BC_Cup();
 
-module BC_Saucer(Tube_OD=102.21, ID=74, nLocks=2){
+module BC_Saucer(Tube_OD=102.21, ID=70, nLocks=2){
 	Len=6;
 	
 	LR_X=10;
@@ -133,6 +134,8 @@ module BC_Saucer(Tube_OD=102.21, ID=74, nLocks=2){
 	Arm_Len=10;
 	Disengage_a=25;
 	
+	Inset_Y=10.5;
+	
 	module ShowBearing(){
 		rotate([90,0,0]) color("Red") cylinder(d=CP_Bearing_OD, h=CP_Bearing_H, center=true);
 	} // ShowBearing
@@ -140,28 +143,31 @@ module BC_Saucer(Tube_OD=102.21, ID=74, nLocks=2){
 	module BackStop(){
 		Block_W=16;
 		hull(){
-				cube([10,Block_W,CP_Bearing_OD/2+1]);
-				translate([-2, 0, -2-Overlap]) cube([10, Block_W, Overlap]);
-			} // hull
-			translate([-2, 0, -2-CP_Bearing_OD-Overlap]) cube([10, Block_W, CP_Bearing_OD+Overlap]);
-			translate([-2, 0, -2-CP_Bearing_OD-3-Overlap]) cube([20+CP_Bearing_OD, Block_W, 5+Overlap]);
-			//*
-			hull(){
-				translate([22, 0, -2-CP_Bearing_OD-3-Overlap]) cube([CP_Bearing_OD/2+LR_X, Block_W, 5+4+Overlap]);
-				translate([15, 0, -2-CP_Bearing_OD-3-Overlap]) cube([CP_Bearing_OD+LR_X, Block_W, 5+Overlap]);
-			}
-			/**/
-			// Base
-			translate([-2, 0, -15]) cube([36, Block_W, 5+Overlap]);
+			cube([10,Block_W,CP_Bearing_OD/2+1]);
+			translate([-2, 0, -2-Overlap]) cube([10, Block_W, Overlap]);
+		} // hull
+		
+		translate([-2, 0, -2-CP_Bearing_OD-Overlap]) cube([10, Block_W, CP_Bearing_OD+Overlap]);
+		translate([-2, 0, -2-CP_Bearing_OD-3-Overlap]) cube([20+CP_Bearing_OD, Block_W, 5+Overlap]);
+			
+		//*
+		hull(){
+			translate([22, 0, -2-CP_Bearing_OD-3-Overlap]) cube([CP_Bearing_OD/2+LR_X, Block_W, 5+4+Overlap]);
+			translate([15, 0, -2-CP_Bearing_OD-3-Overlap]) cube([CP_Bearing_OD+LR_X, Block_W, 5+Overlap]);
+		}
+		/**/
+		
+		// Base
+		translate([-2, 0, -15]) cube([36, Block_W, 5+Overlap]);
 	} // BackStop
 	
 	module BC_LockRod_Holes(){
-		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j]) translate([0,Tube_OD/2-LR_Y/2-6.5, -Len-12-Overlap]){
+		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j]) translate([0,Tube_OD/2-Inset_Y, -Len-12-Overlap]){
 			// BC_LockRod
-			RoundRect(X=LR_X+IDXtra*2, Y=LR_Y+IDXtra*2, Z=LR_Z+12, R=1+IDXtra);
+			RoundRect(X=LR_X+LooseFit, Y=LR_Y+LooseFit, Z=LR_Z+12, R=1+LooseFit/2);
 			
 			// Spring
-			translate([0,0,-Stager_Spring_CBL]) cylinder(d=Stager_Spring_OD+IDXtra*3, h=Stager_Spring_FL);
+			translate([0,0,-Stager_Spring_CBL]) cylinder(d=Stager_Spring_OD+LooseFit, h=Stager_Spring_FL);
 		}
 	} // BC_LockRod_Holes
 	
@@ -186,10 +192,10 @@ module BC_Saucer(Tube_OD=102.21, ID=74, nLocks=2){
 	
 	difference(){
 		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j]) {
-			translate([LR_X/2-2+CP_Bearing_OD+10+Arm_Len, Tube_OD/2-LR_Y/2-12, -Len-CP_Bearing_OD/2-1+Overlap]) 
+			translate([LR_X/2-2+CP_Bearing_OD+10+Arm_Len, Tube_OD/2-Inset_Y-6, -Len-CP_Bearing_OD/2-1+Overlap]) 
 				mirror([1,0,0]) BackStop();
 			
-			translate([-LR_X/2+2-CP_Bearing_OD-Arm_Len-10, Tube_OD/2-LR_Y/2-12, -Len-CP_Bearing_OD/2-1+Overlap])
+			translate([-LR_X/2+2-CP_Bearing_OD-Arm_Len-10, Tube_OD/2-Inset_Y-6, -Len-CP_Bearing_OD/2-1+Overlap])
 			  BackStop();
 		} // for
 		
@@ -206,7 +212,7 @@ module BC_Saucer(Tube_OD=102.21, ID=74, nLocks=2){
 	} // difference
 	
 	if ($preview)
-		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j]) translate([0,Tube_OD/2-LR_Y/2-6.5,-Len-CP_Bearing_OD/2]){
+		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j]) translate([0,Tube_OD/2-Inset_Y,-Len-CP_Bearing_OD/2]){
 			
 			translate([-LR_X/2-CP_Bearing_OD/2+2-Overlap,0,0]){ 
 				ShowBearing();
