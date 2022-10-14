@@ -318,7 +318,7 @@ module Stager_InnerRace(Tube_OD=102.21, nLocks=2){
 
 		// trigger plate bolt holes
 		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j])
-			for (k=[0:nBolts-1]) rotate([0,0,-30+75/nBolts*k])
+			for (k=[0:nBolts-1]) rotate([0,0,-(75/nBolts)*1.5+75/nBolts*k])
 				translate([0,BallCircle_d/2-Ball_d/2-Bolt4Inset,Race_WXtra/2]) Bolt4Hole(depth=6);
 		
 		// Activator and Stop bolt holes
@@ -339,7 +339,6 @@ module Stager_TriggerPlate(Tube_OD=102.21){
 	Thickness=3;
 	Pin_h=7;
 	Pin_d=10;
-	Ramp_a=-8;
 	
 	LR_X=Stager_LockRod_X;
 	LR_Y=Stager_LockRod_Y;
@@ -347,38 +346,23 @@ module Stager_TriggerPlate(Tube_OD=102.21){
 	
 	difference(){
 		union(){
-			hull(){
-				translate([-LR_X/2+2+4-CP_Bearing_OD-StagerLockArmLen, 
-						Tube_OD/2-StagerLockInset_Y, 0]) 
-					cylinder(d=Pin_d, h=Pin_h);
+			translate([-LR_X/2+2+4-CP_Bearing_OD-StagerLockArmLen, Tube_OD/2-StagerLockInset_Y, 0]) 
+				cylinder(d=Pin_d, h=Pin_h);
 				
-				rotate([0,0,Ramp_a]) 
-				translate([-LR_X/2+2+4-CP_Bearing_OD-StagerLockArmLen, 
-						Tube_OD/2-StagerLockInset_Y, 0]) 
-					cylinder(d=Pin_d, h=Thickness);
-			} // hull
-			
-			hull(){
-				mirror([1,0,0]) 
-				translate([-LR_X/2+2+4-CP_Bearing_OD-StagerLockArmLen, 
-							Tube_OD/2-StagerLockInset_Y, 0])
-					cylinder(d=Pin_d, h=Pin_h);
-				
-				rotate([0,0,Ramp_a])
-				mirror([1,0,0]) 
-				translate([-LR_X/2+2+4-CP_Bearing_OD-StagerLockArmLen, 
-							Tube_OD/2-StagerLockInset_Y, 0])
-					cylinder(d=Pin_d, h=Thickness);
-			} // hull
-			
-			hull(){
-				for (k=[0:nBolts-1]) rotate([0,0,-30+75/nBolts*k])
-					translate([0,BallCircle_d/2-Ball_d/2-Bolt4Inset,0]) cylinder(d=10, h=Thickness);
-				translate([-LR_X/2+2+4-CP_Bearing_OD-StagerLockArmLen, 
-						Tube_OD/2-StagerLockInset_Y, 0]) 
-				cylinder(d=Pin_d, h=Thickness);
-			
 			mirror([1,0,0]) 
+				translate([-LR_X/2+2+4-CP_Bearing_OD-StagerLockArmLen, 
+							Tube_OD/2-StagerLockInset_Y, 0])
+					cylinder(d=Pin_d, h=Pin_h);
+				
+			hull(){
+				for (k=[0:nBolts-1]) rotate([0,0,-(75/nBolts)*1.5+75/nBolts*k])
+					translate([0,BallCircle_d/2-Ball_d/2-Bolt4Inset,0]) cylinder(d=10, h=Thickness);
+				
+				translate([-LR_X/2+2+4-CP_Bearing_OD-StagerLockArmLen, 
+						Tube_OD/2-StagerLockInset_Y, 0]) 
+					cylinder(d=Pin_d, h=Thickness);
+			
+				mirror([1,0,0]) 
 				translate([-LR_X/2+2+4-CP_Bearing_OD-StagerLockArmLen, 
 							Tube_OD/2-StagerLockInset_Y, 0])
 					cylinder(d=Pin_d, h=Thickness);
@@ -388,8 +372,14 @@ module Stager_TriggerPlate(Tube_OD=102.21){
 		// center hole
 		translate([0,0,-Overlap]) cylinder(d=Race_ID, h=Thickness+Overlap*2);
 		
+		// Arming tool space
+		difference(){
+			translate([0,0,-Overlap]) cylinder(d=Tube_OD, h=Pin_h+Overlap*2);
+			translate([0,0,-Overlap*2]) cylinder(d=BallCircle_d+2, h=Pin_h+Overlap*4);
+		} // difference
+		
 		// trigger plate bolt holes
-		for (k=[0:nBolts-1]) rotate([0,0,-30+75/nBolts*k])
+		for (k=[0:nBolts-1]) rotate([0,0,-(75/nBolts)*1.5+75/nBolts*k])
 				translate([0,BallCircle_d/2-Ball_d/2-Bolt4Inset,Thickness]) Bolt4ButtonHeadHole();
 	} // difference
 	
@@ -472,9 +462,26 @@ module Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_
 	// The Tube
 	//*
 	
+	module ArmingKeyHole(){
+		translate([0, Tube_OD/2-3,0]) 
+		 hull(){
+				translate([-3,0,0]) cube([6,6,Overlap]);
+				translate([0,0,6]) rotate([-90,0,0]) cylinder(d=6, h=6);
+			}
+	} // ArmingKeyHole
+	
 	difference(){
-		translate([0,0,-Len-Tube_Len]) cylinder(d=Tube_OD, h=Tube_Len, $fn=$preview? 90:360);
-		translate([0,0,-Len-Tube_Len-Overlap]) cylinder(d=Tube_OD-4.0, h=Tube_Len+Overlap*2, $fn=$preview? 90:360);
+		translate([0,0,-Len-Tube_Len]) 
+			cylinder(d=Tube_OD, h=Tube_Len, $fn=$preview? 90:360);
+		
+		translate([0,0,-Len-Tube_Len-Overlap]) 
+			cylinder(d=Tube_OD-4.0, h=Tube_Len+Overlap*2, $fn=$preview? 90:360);
+		
+		// Arming key ports
+		translate([0,0,Race_Z]) for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j]){
+			rotate([0,0,22.5]) ArmingKeyHole();
+			rotate([0,0,-22.5]) ArmingKeyHole();
+		}
 	}
 	/**/
 	
@@ -597,7 +604,7 @@ module Stager_PushUP_Hole(){
 module Stager_PushUP(){
 	W=5;
 	Pull_Y=3.5;
-	Oblong=-1;
+	Oblong=-1.5;
 	SpringPinHole_d=2.2+IDXtra;
 	
 	translate([0,-1,0]) RoundRect(X=CP_Bearing_OD, Y=W+2, Z=2, R=1);
@@ -609,9 +616,11 @@ module Stager_PushUP(){
 		translate([0,0,-PU_Tail_Len+SpringPinHole_d/2+2]) rotate([90,0,0]) cylinder(d=SpringPinHole_d, h=6, center=true);
 	} // difference
 	
+	translate([-CP_Bearing_OD/2,-Pull_Y-W/2,0]) cube([CP_Bearing_OD,2,2]);
+	
 	difference(){
 		hull(){
-			translate([-CP_Bearing_OD/2,-Pull_Y-W/2,0]) cube([CP_Bearing_OD,2,2]);
+			translate([-CP_Bearing_OD/2,-Pull_Y-W/2,2-Overlap]) cube([CP_Bearing_OD,2,Overlap]);
 			translate([0,-Pull_Y-W/2,CP_Bearing_OD/2+2]) 
 				rotate([-90,0,0]) cylinder(d=CP_Bearing_OD, h=2);
 			translate([Oblong,-Pull_Y-W/2,CP_Bearing_OD/2+2]) 
