@@ -3,7 +3,7 @@
 // Filename: StagerLib.scad
 // by David M. Flynn
 // Created: 10/10/2022 
-// Revision: 0.9.1  10/13/2022
+// Revision: 0.9.2  10/14/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -24,6 +24,7 @@
 //  ***** History *****
 //
 echo("StagerLib 0.9.1");
+// 0.9.2  10/14/2022   Arming key, added 1.5mm to tube length
 // 0.9.1  10/13/2022   Time to print a test article. 
 // 0.9.0  10/10/2022   First code.
 //
@@ -84,6 +85,36 @@ LooseFit=0.8;
 StagerLockInset_Y=12.5;
 StagerLockArmLen=10;
 
+module Stager_ArmingKey(Tube_OD=102.21){
+	Depth=6.5;
+	Handle_Len=15;
+	
+	difference(){
+		translate([0,-3,0]) rotate([-90,0,0]) cylinder(d=20, h=3+Handle_Len);
+		
+		translate([-3,-5-Overlap,-5.5]) cube([6,30,6.5]);
+		translate([0,3,0]) rotate([-90,0,0]) cylinder(d=13, h=15);
+		
+		// Tube outside
+		translate([0,-Tube_OD/2,0]) cylinder(d=Tube_OD, h=21, center=true, $fn=$preview? 90:360);
+	} // difference
+	
+	difference(){
+		translate([0,-Depth,2]) rotate([-90,0,0]) cylinder(d=5.5, h=6);
+		translate([-3,-Depth-Overlap,-4]) cube([6,30,5]);
+	} // difference
+} // Stager_ArmingKey
+
+//rotate([-90,0,0]) Stager_ArmingKey();
+
+module Stager_ArmingKeyLock(){
+	Depth=5;
+	
+	translate([0,3.5,0]) rotate([-90,0,0]) cylinder(d=12, h=15);
+	translate([-2.75,-Depth,-5.25]) cube([5.5,10,6]);
+} // Stager_ArmingKeyLock
+
+//rotate([-90,0,0]) Stager_ArmingKeyLock();
 
 module BearingBlock(){
 	Arm_Len=StagerLockArmLen;
@@ -240,7 +271,8 @@ Saucer_Len=6;
 Ball_d=5/16*25.4;
 Stager_PreLoadAdj=-0.35;
 Race_W=11;
-Tube_Len=43;
+Stager_PMPU_Lift=4;
+Tube_Len=44.5;
 Race_Z=-Saucer_Len-Tube_Len;
 	
 module Stager_BallSpacer(Tube_OD=102.21){
@@ -337,7 +369,7 @@ module Stager_TriggerPlate(Tube_OD=102.21){
 	Race_ID=BallCircle_d-Ball_d-Bolt4Inset*4;
 	nBolts=4;
 	Thickness=3;
-	Pin_h=7;
+	Pin_h=8.5;
 	Pin_d=10;
 	
 	LR_X=Stager_LockRod_X;
@@ -387,6 +419,8 @@ module Stager_TriggerPlate(Tube_OD=102.21){
 
 //translate([0,0,Race_Z+1]) Stager_TriggerPlate();
 
+
+
 module ShowPMPU(Tube_OD=102.21, nLocks=2){
 	
 	LR_X=Stager_LockRod_X;
@@ -395,7 +429,7 @@ module ShowPMPU(Tube_OD=102.21, nLocks=2){
 	
 			// Push me pull you
 		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j]) {
-			translate([-LR_X/2+2+4-CP_Bearing_OD-StagerLockArmLen, Tube_OD/2-StagerLockInset_Y, -Saucer_Len-CP_Bearing_OD/2-6]){
+			translate([-LR_X/2+2+4-CP_Bearing_OD-StagerLockArmLen, Tube_OD/2-StagerLockInset_Y, -Saucer_Len-CP_Bearing_OD/2-10+Stager_PMPU_Lift]){
 				color("Orange") Stager_PushUP();
 				translate([0,0,-PU_Tail_Len-1]) color("Orange") Stager_SpringStop();
 				translate([0,0,-PU_Tail_Len+6.5]) color("Silver") cylinder(d=10,h=6.5);
@@ -466,7 +500,7 @@ module Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_
 		translate([0, Tube_OD/2-3,0]) 
 		 hull(){
 				translate([-3,0,0]) cube([6,6,Overlap]);
-				translate([0,0,6]) rotate([-90,0,0]) cylinder(d=6, h=6);
+				translate([0,0,7.5]) rotate([-90,0,0]) cylinder(d=6, h=6);
 			}
 	} // ArmingKeyHole
 	
