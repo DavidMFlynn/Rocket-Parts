@@ -3,7 +3,7 @@
 // Filename: CablePuller.scad
 // by David M. Flynn
 // Created: 8/21/2022 
-// Revision: 1.0.1  9/17/2022
+// Revision: 1.1.0  10/14/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -20,7 +20,8 @@
 //
 //  ***** History *****
 //
-echo("CablePuller 1.0.1");
+echo("CablePuller 1.1.0");
+// 1.1.0  10/14/2022  Added TriggerBellCrank and BellCrankTriggerBearingHolder for CageTop. 
 // 1.0.1  9/17/2022   Fixed SpingBody guide width. 
 // 1.0    9/11/2022	  It works OK. Changed set screw hole to Bolt8Hole(), Added notes. 
 // 0.9.5  9/10/2022   A tighter cage with spring centering. 
@@ -39,6 +40,13 @@ echo("CablePuller 1.0.1");
 // StopAdjuster();
 // CageBottom();
 // AddServo(); // CageTop w/ servo mount translate([0,0,SpringBody_YZ/2+2.5]) rotate([180,0,0]) CageTop();
+//
+/*
+	translate([0,0,CP_SpringBody_YZ/2+2.5]) rotate([180,0,0]){ 
+		CageTop();
+		BellCrankTriggerBearingHolder();}
+/**/
+// rotate([180,0,0]) TriggerBellCrank();
 //
 // BellCrank(Len=38);
 //
@@ -109,7 +117,8 @@ module ShowCablePuller(){
 	
 	translate([ArmLen,CP_SpringBody_YZ/2+LooseFit/2+0.4,0]) rotate([-90,0,0]) color("Tan") StopAdjuster();
 	
-	//translate([10,10,15]) translate([0,0,Overlap]) CageTop();
+	//translate([10,10,15]) 
+	translate([0,0,Overlap]) CageTop();
 } // ShowCablePuller
 
 //ShowCablePuller();
@@ -319,6 +328,71 @@ module CageTop(){
 } // CageTop
 
 //CageTop();
+
+module BellCrankTriggerBearingHolder(){
+	// Add to CR_Cage();
+	Cage_YZ=CP_SpringBody_YZ+5;
+	B_Offset_Y=4.5; // added 0.5mm 10/14/22
+	
+	module BearingEar(){
+		translate([CP_Bearing_OD*1.5+ArmLen,Cage_YZ/2-Overlap,Cage_YZ/2-2]) hull(){
+			translate([-CP_Bearing_OD/2-2,0,0]) cube([CP_Bearing_OD+4,Overlap,2]);
+			translate([0,CP_Bearing_OD/2+B_Offset_Y,0]) cylinder(d=CP_Bearing_OD, h=2);
+		} // hull
+	} // BearingEar
+	
+	difference(){
+		union(){
+			BearingEar();
+			translate([CP_Bearing_OD+ArmLen-2, Cage_YZ/2, Cage_YZ/2-2-CP_Bearing_H-3]) 
+				cube([CP_Bearing_OD+4,2,CP_Bearing_H+5]);
+			translate([0, 0, -2-CP_Bearing_H-1]) BearingEar();
+		} // union
+		
+		translate([CP_Bearing_OD*1.5+ArmLen, Cage_YZ/2+B_Offset_Y+CP_Bearing_OD/2,
+						Cage_YZ/2-CP_Bearing_H-5-Overlap]) 
+			cylinder(d=CP_Bearing_ID+IDXtra, h=10);
+		
+		//translate([CP_Bearing_OD*1.5+ArmLen, Cage_YZ/2+B_Offset_Y+CP_Bearing_OD/2, 
+		//		Cage_YZ/2-2-CP_Bearing_H-1]) cylinder(d=CP_Bearing_OD+5, h=CP_Bearing_H+1);
+	} // difference
+	
+	if ($preview) 
+		translate([CP_Bearing_OD*1.5+ArmLen, Cage_YZ/2+B_Offset_Y+CP_Bearing_OD/2, Cage_YZ/2-2-CP_Bearing_H/2-0.5])
+		Bearing();
+	
+} // BellCrankTriggerBearingHolder
+
+// translate([0,0,Overlap]) BellCrankTriggerBearingHolder();
+
+
+module TriggerBellCrank(){
+	TriggerArm_Len=12;
+	ServoArm_Len=12;
+	
+	difference(){
+		union(){
+			cylinder(d=CP_Bearing_OD+4, h=CP_Bearing_H);
+			
+			hull(){
+				translate([-TriggerArm_Len,0,0]) cylinder(d=5, h=CP_Bearing_H);
+				translate([0,2,0]) cylinder(d=7, h=CP_Bearing_H);
+			} // hull
+			translate([-TriggerArm_Len,0,-2]) cylinder(d=5, h=3);
+			
+			hull(){
+				translate([0,ServoArm_Len,0]) cylinder(d=5, h=CP_Bearing_H);
+				cylinder(d=7, h=CP_Bearing_H);
+			} // hull
+		} // union
+		
+		translate([0,ServoArm_Len,CP_Bearing_H]) Bolt2Hole(); 
+		translate([0,0,-Overlap]) cylinder(d=CP_Bearing_OD+IDXtra, h=CP_Bearing_H+Overlap*2);
+	} // difference
+} // TriggerBellCrank
+
+//translate([CP_Bearing_OD*1.5+ArmLen, 7.5+4+CP_Bearing_OD/2, 7.5-2-CP_Bearing_H/2-1.5])
+//TriggerBellCrank();
 
 module CableRetainer(){
 	difference(){
