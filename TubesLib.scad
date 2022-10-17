@@ -3,7 +3,7 @@
 // Filename: TubesLib.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.3  10/10/2022
+// Revision: 0.9.4  10/16/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,7 +12,8 @@
 //
 //  ***** History *****
 //
-echo("TubesLib 0.9.3");
+echo("TubesLib 0.9.4");
+// 0.9.4  10/16/2022 Added Blue Tube 2.0 54mm body & coupler. 
 // 0.9.3  10/10/2022 Added 6" PML tubing
 // 0.9.2  10/3/2022 Added TubeStop()
 // 0.9.1  6/24/2022 Moved rivet stuff here.
@@ -76,9 +77,13 @@ PML54Body_ID=2.152*25.4;
 PML54Coupler_OD=(2.02+0.062*2)*25.4;
 PML54Coupler_ID=2.02*25.4;
 
-// Blue Tube
-BT54Mtr_OD=57.10;
-BT54Mtr_ID=54.10;
+// Blue Tube 2.0
+BT54Mtr_OD=57.20;
+BT54Mtr_ID=54.40;
+BT54Body_OD=57.20;
+BT54Body_ID=54.2;
+BT54Coupler_OD=53.60;
+BT54Coupler_ID=50.70;
 
 PML38Body_OD=(1.525+0.062*2)*25.4;
 PML38Body_ID=1.525*25.4;

@@ -43,6 +43,7 @@ Scale=102.21/41.58; // Body tube diameters
 include<Fairing54.scad>
 include<FinCan.scad>
 include<AltBay.scad>
+include<CablePuller.scad>
 include<BatteryHolderLib.scad>
 
 //also included
@@ -121,8 +122,7 @@ module ShowRocketOmega(){
 	/**/
 } // ShowRocketOmega
 
-//
-ShowRocketOmega();
+//ShowRocketOmega();
 
 module LowerFinCan(){
 	RailGuide_Z=110;
@@ -172,6 +172,29 @@ module RocketOmegaFin(){
 } // RocketOmegaFin
 
 // RocketOmegaFin();
+
+
+
+module BoosterUpperFinCan(){
+	// Upper Half of Fin Can
+	
+	difference(){
+		rotate([180,0,0]) 
+			FinCan3(Tube_OD=ROmega_Body_OD, Tube_ID=ROmega_Body_ID, 
+				MtrTube_OD=ROmega_MtrTube_OD+IDXtra*2, nFins=nFins,
+				Post_h=ROmegaBooster_Fin_Post_h, Root_L=ROmegaBooster_Fin_Root_L, 
+				Root_W=ROmegaBooster_Fin_Root_W, 
+				Chamfer_L=ROmegaBooster_Fin_Chamfer_L, HasTailCone=false); 
+		
+		translate([0,0,-90]) rotate([0,0,90-180/nFins]) CP_BayFrameHole(Tube_OD=ROmega_Body_OD);
+	} // difference
+	
+	// Doesn't fit with 4 fins in a 4" airframe
+	translate([0,0,-90]) rotate([0,0,90-180/nFins]) 
+		CP_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=false);
+} // BoosterUpperFinCan
+
+//BoosterUpperFinCan();
 
 
 module RocketOmegaBoosterFin(){

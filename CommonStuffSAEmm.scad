@@ -1,7 +1,7 @@
 // *************************************************
 // filename: CommondStuffSAEmm.scad
 //  by Dave Flynn 2015, GPL v2
-// Rev: 1.0.4 9/1/2022
+// Rev: 1.0.5 10/16/2022
 // Some hole sizes have not been tested.
 //
 // This file contains constants and some common routines
@@ -57,7 +57,8 @@
 // *************************************************
 //  **** History *****
 //
-echo("CommonStuffSAEmm 1.0.4");
+echo("CommonStuffSAEmm 1.0.5");
+// 1.0.5 10/16/2022 Fixed Bolt2Head_r for my Soc Hd Cap Screws
 // 1.0.4 9/1/2022   Added Bolt250FlatHeadHole
 // 1.0.3 6/21/2022  Added/Fixed Bolt6RailNut
 // 1.0.1 12/28/2021 Added points, added RoundRect
@@ -87,7 +88,7 @@ ID_Xtra=0.2;	// Added to ID to compensate for printing DMF3D
 
 Bolt2_r=0.034*25.4;
 Bolt2_Head_h=0.090*25.4;
-Bolt2_Head_r=0.060*25.4;
+Bolt2_Head_r=0.068*25.4;
 Bolt2_BtnHead_r=0.090*25.4;
 Bolt2_BtnHead_h=0.045*25.4;
 Bolt2_Clear_r=0.053*25.4;

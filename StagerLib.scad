@@ -3,7 +3,7 @@
 // Filename: StagerLib.scad
 // by David M. Flynn
 // Created: 10/10/2022 
-// Revision: 0.9.2  10/14/2022
+// Revision: 0.9.3  10/16/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -23,7 +23,8 @@
 //
 //  ***** History *****
 //
-echo("StagerLib 0.9.1");
+echo("StagerLib 0.9.3");
+// 0.9.3  10/16/2022   Adapted to booster/sustainer. 
 // 0.9.2  10/14/2022   Arming key, added 1.5mm to tube length
 // 0.9.1  10/13/2022   Time to print a test article. 
 // 0.9.0  10/10/2022   First code.
@@ -52,7 +53,8 @@ echo("StagerLib 0.9.1");
 // ***********************************
 //  ***** Routines *****
 //
-// BC_Cup(Tube_OD=102.21, ID=78, nLocks=2);
+// Stager_CupHoles(Tube_OD=102.21, ID=78, nLocks=2);
+// Stager_Cup(Tube_OD=102.21, ID=78, nLocks=2);
 // 
 //
 // ***********************************
@@ -76,6 +78,8 @@ Stager_Spring_OD=5/16*25.4;
 Stager_Spring_FL=1.25*25.4;
 Stager_Spring_CBL=0.7*25.4;
 
+
+
 Stager_LockRod_X=10;
 Stager_LockRod_Y=5;
 Stager_LockRod_Z=36;
@@ -84,6 +88,7 @@ Stager_LockRod_R=1;
 LooseFit=0.8;
 StagerLockInset_Y=12.5;
 StagerLockArmLen=10;
+
 
 module Stager_ArmingKey(Tube_OD=102.21){
 	Depth=6.5;
@@ -170,17 +175,39 @@ module Stager_LockRod(Adj=0){
 
 //Stager_LockRod(Adj=1);
 
+module Stager_CupHoles(Tube_OD=102.21, ID=78, nLocks=2){
+	Collar_h=18;
+	nBolts=8;
+	
+	
+	difference(){
+		translate([0,0,-Overlap]) cylinder(d=Tube_OD+1, h=Collar_h+Overlap, $fn=$preview? 90:360); // test
+		translate([0,0,-Overlap*2]) cylinder(d=ID-IDXtra*2, h=Collar_h+Overlap*4, $fn=$preview? 90:360); 
+	} // difference
+	
+	translate([0,0,-12]) Stager_LockRod_Holes(Tube_OD=Tube_OD, nLocks=nLocks);
+	
+	// BoltHoles
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+180/nBolts]) 
+			translate([0,Tube_OD/2-4-Bolt4Inset,Collar_h]) 
+				rotate([180,0,0]) Bolt4Hole(depth=12);
+} // Stager_CupHoles
+
+//Stager_CupHoles();
+
 module Stager_Cup(Tube_OD=102.21, ID=78, nLocks=2){
 	Len=3;
 	LR_X=Stager_LockRod_X;
 	LR_Y=Stager_LockRod_Y;
 	LR_Z=Stager_LockRod_Z;
+	nBolts=8;
+	Collar_h=18;
 	
 	
 	difference(){
 		union(){
 			difference(){
-				translate([0,0,Len-Overlap]) cylinder(d=Tube_OD, h=18, $fn=$preview? 90:360); // test
+				translate([0,0,Len-Overlap]) cylinder(d=Tube_OD, h=Collar_h, $fn=$preview? 90:360); // test
 				translate([0,0,Len-Overlap*2]) cylinder(d=ID, h=19, $fn=$preview? 90:360); 
 			} // difference
 			
@@ -190,6 +217,11 @@ module Stager_Cup(Tube_OD=102.21, ID=78, nLocks=2){
 		
 		// center hole
 		translate([0,0,-2-Overlap]) cylinder(d=ID, h=Len+2+Overlap*2, $fn=$preview? 90:360);
+		
+		// BoltHoles
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+180/nBolts]) 
+			translate([0,Tube_OD/2-4-Bolt4Inset,Collar_h-6]) 
+				rotate([180,0,0]) Bolt4HeadHole(depth=8,lHead=Collar_h);
 		
 		Stager_LockRod_Holes(Tube_OD=Tube_OD, nLocks=nLocks);
 		
