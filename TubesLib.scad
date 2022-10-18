@@ -77,6 +77,8 @@ PML54Body_ID=2.152*25.4;
 PML54Coupler_OD=(2.02+0.062*2)*25.4;
 PML54Coupler_ID=2.02*25.4;
 
+//echo(PML54Body_OD=PML54Body_OD);
+
 // Blue Tube 2.0
 BT54Mtr_OD=57.20;
 BT54Mtr_ID=54.40;

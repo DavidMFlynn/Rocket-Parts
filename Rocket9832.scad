@@ -3,7 +3,7 @@
 // Filename: Rocket9832.scad
 // by David M. Flynn
 // Created: 10/16/2022 
-// Revision: 0.9.0  10/16/2022
+// Revision: 0.9.2  10/18/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -26,6 +26,8 @@
 //
 //  ***** History *****
 // 
+// 0.9.2  10/18/2022  BoosterLowerFinCan
+// 0.9.1  10/17/2022  BoosterUpperFinCan
 // 0.9.0  10/16/2022  First code.
 //
 // ***********************************
@@ -73,14 +75,16 @@ F54_FairingHalf(IsLeftHalf=false,
 // CageBottom();
 // AddServo(); // CageTop w/ servo mount
 //
+// rotate([180,0,0]) Drogue_Cup();
+//
 // UpperFinCan();
 // Rocket9832Fin();
-// LowerFinCan();
+// rotate([180,0,0]) LowerFinCan();
 //
 // *** Booster Parts ***
 // BoosterUpperFinCan();
 // Rocket9832BoosterFin();
-// BoosterLowerFinCan();
+// rotate([180,0,0]) BoosterLowerFinCan();
 //
 // ***********************************
 //  ***** Routines *****
@@ -139,8 +143,10 @@ R9832Booster_Fin_Chamfer_L=R9832Booster_Fin_Root_W*2.5;
 
 R9832_Body_OD=PML98Body_OD;
 R9832_Body_ID=PML98Body_ID;
+R9832_Coupler_ID=PML98Coupler_ID;
 R9832_MtrTube_OD=PML54Body_OD;
 R9832_MtrTube_ID=PML54Body_ID;
+R9832_BoosterMtrTube_OD=BT54Mtr_OD;
 
 EBay_Len=130;
 //Booster_Body_Len=R9832Booster_Fin_Root_L+60+116.5; // minimum length J460T
@@ -161,6 +167,19 @@ NC_Lock_H=5;
 
 
 //BodyTubeLen=36*25.4;
+module ShowMotorK185W(){
+	Casing_Len=296+84.5;
+	
+	color("Black") cylinder(d=57, h=10);
+	translate([0,0,10]) color("Red") cylinder(d=54, h=Casing_Len);
+	translate([0,0,10+Casing_Len]) color("Black"){
+		cylinder(d=54, h=3);
+		cylinder(d=39, h=23);
+		cylinder(d=20, h=30);
+	}
+} // ShowMotorK185W
+
+// ShowMotorK185W();
 
 module ShowMotorJ800T(){
 	Casing_Len=296;
@@ -201,22 +220,8 @@ module ShowChuteTube(){
 
 //ShowChuteTube();
 
-module ShowRocket9832(){
+module ShowBooster9832(){
 	
-	
-	translate([0,0,Booster_Body_Len-40+R9832_Fin_Root_L+100]) UpperFinCan();
-	//*
-	for (j=[0:nFins]) rotate([0,0,360/nFins*j])
-		translate([R9832_Body_OD/2-R9832_Fin_Post_h, 0, Booster_Body_Len+R9832_Fin_Root_L/2+10]) 
-			rotate([0,90,0]) color("White") Rocket9832Fin();
-	/**/
-	
-	//*
-	translate([0,0,Booster_Body_Len-40]) {
-		color("Tan") LowerFinCan();
-		translate([0,0,5]) Stager_Cup(Tube_OD=R9832_Body_OD, ID=78, nLocks=2);
-	}
-	/**/
 	translate([0,0,Booster_Body_Len-35]) color("Blue") Stager_Saucer(Tube_OD=R9832_Body_OD, nLocks=2);
 	translate([0,0,Booster_Body_Len-35]) Stager_Mech(Tube_OD=R9832_Body_OD, nLocks=2, Skirt_ID=R9832_Body_ID, Skirt_Len=20);
 	
@@ -227,13 +232,42 @@ module ShowRocket9832(){
 	//*
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j])
 		translate([R9832_Body_OD/2-R9832_Fin_Post_h, 0, R9832Booster_Fin_Root_L/2+10]) 
-			rotate([0,90,0]) color("White") Rocket9832BoosterFin();
+			rotate([0,90,0]) color("Orange") Rocket9832BoosterFin();
 	/**/
 	
 	translate([0,0,-40]) color("Green") BoosterLowerFinCan();
 	
 	//translate([0,0,-40]) ShowMotorJ460T();
 	translate([0,0,-40]) ShowMotorJ800T();
+} // ShowBooster9832
+
+FinCanExTube_Len=90;
+
+module ShowRocket9832(){
+	TopOfFinCan_Z=Booster_Body_Len-40+R9832_Fin_Root_L+100+150;
+	
+	translate([0,0,TopOfFinCan_Z]) rotate([180,0,0]) Drogue_Cup();
+	translate([0,0,TopOfFinCan_Z-60]) rotate([180,0,0]) 
+		color("LightBlue") Tube(OD=R9832_Body_OD, ID=R9832_Body_ID, Len=FinCanExTube_Len, myfn=$preview? 36:360);
+	
+	translate([0,0,Booster_Body_Len-40+R9832_Fin_Root_L+100]) UpperFinCan();
+	//*
+	for (j=[0:nFins]) rotate([0,0,360/nFins*j])
+		translate([R9832_Body_OD/2-R9832_Fin_Post_h, 0, Booster_Body_Len+R9832_Fin_Root_L/2+10]) 
+			rotate([0,90,0]) color("Orange") Rocket9832Fin();
+	/**/
+	
+	//*
+	translate([0,0,Booster_Body_Len-40]) {
+		color("Tan") LowerFinCan();
+		translate([0,0,5]) Stager_Cup(Tube_OD=R9832_Body_OD, ID=78, nLocks=2);
+	}
+	/**/
+	
+	translate([0,0,Booster_Body_Len-40]) ShowMotorK185W();
+	
+	//ShowBooster9832();
+	
 } // ShowRocket9832
 
 //ShowRocket9832();
@@ -251,6 +285,33 @@ module R98_Electronics_Bay(){
 } // R98_Electronics_Bay
 
 //R98_Electronics_Bay();
+
+module Drogue_Cup(){
+	nHoles=14;
+	Hole_d=8;
+	
+	Stager_Cup(Tube_OD=R9832_Body_OD, ID=78, nLocks=2, BoltsOn=false);
+	/*
+	difference(){
+		union(){
+			Stager_Cup(Tube_OD=R9832_Body_OD, ID=78, nLocks=2, BoltsOn=false);
+			translate([0,0,21-Overlap]) cylinder(d=R9832_Body_OD-1,h=12);
+		} // union
+		
+		// holes
+		for (j=[0:nHoles-1]) rotate([0,0,180/nHoles+360/nHoles*j]) translate([0,R9832_Coupler_ID/2-Hole_d/2,3]){
+			cylinder(d1=1, d2=Hole_d, h=4);
+			translate([0,0,4-Overlap]) cylinder(d=Hole_d, h=30);
+		}
+		translate([0,0,21-Overlap*2]) cylinder(d1=78, d2=R9832_Coupler_ID-1 ,h=12+Overlap*3);
+	} // difference
+	/**/
+	
+	Tube(OD=R9832_Body_OD, ID=R9832_Body_ID, Len=60, myfn=$preview? 36:360);
+	
+} // Drogue_Cup
+
+//Drogue_Cup();
 
 module UpperFinCan(){
 	// Upper Half of Fin Can
@@ -301,7 +362,7 @@ module LowerFinCan(){
 		translate([0,0,RailGuide_Z]) rotate([0,0,-90-180/nFins]) 
 			translate([0,R9832_Body_OD/2+2,0]) RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
 		
-		// Booster attachment?
+		// Booster attachment
 		translate([0,0,8]) Stager_CupHoles(Tube_OD=R9832_Body_OD, ID=78, nLocks=2);
 	} // difference
 		
@@ -346,7 +407,7 @@ module BoosterUpperFinCan(){
 	difference(){
 		rotate([180,0,0]) 
 			FinCan3(Tube_OD=R9832_Body_OD, Tube_ID=R9832_Body_ID, 
-				MtrTube_OD=R9832_MtrTube_OD+IDXtra*2, nFins=nFins,
+				MtrTube_OD=R9832_BoosterMtrTube_OD+IDXtra*2, nFins=nFins,
 				Post_h=R9832Booster_Fin_Post_h, Root_L=R9832Booster_Fin_Root_L, 
 				Root_W=R9832Booster_Fin_Root_W, 
 				Chamfer_L=R9832Booster_Fin_Chamfer_L, HasTailCone=false); 
@@ -358,43 +419,28 @@ module BoosterUpperFinCan(){
 			CP_BayFrameHole(Tube_OD=R9832_Body_OD);
 		
 		// Altimeter
-		//translate([0,0,CablePuller_Z]) rotate([0,0,90-180/nFins+360/nFins*2]) 
-		
+		translate([0,0,CablePuller_Z]) rotate([0,0,90-180/nFins+360/nFins*2]) 
+		  Alt_BayFrameHole(Tube_OD=R9832_Body_OD);
+
 	} // difference
 	
 	// Cable Pullers
 	translate([0,0,CablePuller_Z]) rotate([0,0,90-180/nFins]) 
-		CP_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=false);
+		CP_BayDoorFrame(Tube_OD=R9832_Body_OD, Tube_ID=R9832_Body_ID, ShowDoor=false);
 	translate([0,0,CablePuller_Z]) rotate([0,0,90-180/nFins+360/nFins]) 
-		CP_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=false);
+		CP_BayDoorFrame(Tube_OD=R9832_Body_OD, Tube_ID=R9832_Body_ID, ShowDoor=false);
 	
 	// Altimeter
-		//translate([0,0,CablePuller_Z]) rotate([0,0,90-180/nFins+360/nFins*2])
+	translate([0,0,CablePuller_Z]) rotate([0,0,90-180/nFins+360/nFins*2])
+		Alt_BayDoorFrame(Tube_OD=R9832_Body_OD, Tube_ID=R9832_Body_ID, ShowDoor=false);
+	
+	// Battery holder for altimeter
+	//SingleBatteryPocket();
+
 } // BoosterUpperFinCan
 
 //BoosterUpperFinCan();
 
-
-module BoosterLowerFinCan(){
-	// Upper Half of Fin Can
-	
-	difference(){
-		
-			FinCan3(Tube_OD=R9832_Body_OD, Tube_ID=R9832_Body_ID, 
-				MtrTube_OD=R9832_MtrTube_OD+IDXtra*2, nFins=nFins,
-				Post_h=R9832Booster_Fin_Post_h, Root_L=R9832Booster_Fin_Root_L, 
-				Root_W=R9832Booster_Fin_Root_W, 
-				Chamfer_L=R9832Booster_Fin_Chamfer_L, HasTailCone=true); 
-		
-		//translate([0,0,-90]) rotate([0,0,90-180/nFins]) CP_BayFrameHole(Tube_OD=R9832_Body_OD);
-	} // difference
-	
-	
-	//translate([0,0,-90]) rotate([0,0,90-180/nFins]) 
-	//	CP_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=false);
-} // BoosterUpperFinCan
-
-//translate([0,0,-40]) BoosterLowerFinCan();
 
 module Rocket9832BoosterFin(){
 	TrapFin2(Post_h=R9832Booster_Fin_Post_h, Root_L=R9832Booster_Fin_Root_L, Tip_L=R9832Booster_Fin_Tip_L, 
@@ -411,6 +457,72 @@ module Rocket9832BoosterFin(){
 // Rocket9832BoosterFin();
 
 
+module BoosterLowerFinCan(){
+	// Upper Half of Fin Can
+	BattDoor_Z=128;
+	BattSwDoor_Z=115;
+	
+	RailGuide_Z=60;
+	
+	difference(){
+		
+		FinCan3(Tube_OD=R9832_Body_OD, Tube_ID=R9832_Body_ID, 
+			MtrTube_OD=R9832_BoosterMtrTube_OD+IDXtra*2, nFins=nFins,
+			Post_h=R9832Booster_Fin_Post_h, Root_L=R9832Booster_Fin_Root_L, 
+			Root_W=R9832Booster_Fin_Root_W, 
+			Chamfer_L=R9832Booster_Fin_Chamfer_L, HasTailCone=true,
+					MtrRetainer_OD=63,
+					MtrRetainer_L=14,
+					MtrRetainer_Inset=7); 
+		
+		// Wire Paths
+		for (j=[0:nFins-1]) rotate([0,0,360/nFins*j])
+			translate([R9832_BoosterMtrTube_OD/2+5,0,R9832Booster_Fin_Root_L/2])
+				rotate([90,0,0]) cylinder(d=7, h=22, center=true);
+		
+		translate([0,0,BattDoor_Z]) rotate([0,0,90-180/nFins]) 
+			Batt_BayFrameHole(Tube_OD=R9832_Body_OD, HasSwitch=false);
+		
+		translate([0,0,BattSwDoor_Z]) rotate([0,0,90-180/nFins+360/nFins]) 
+			Batt_BayFrameHole(Tube_OD=R9832_Body_OD, HasSwitch=true);
+		translate([0,0,BattSwDoor_Z]) rotate([0,0,90-180/nFins+360/nFins*2]) 
+			Batt_BayFrameHole(Tube_OD=R9832_Body_OD, HasSwitch=true);
+		
+		translate([0,0,RailGuide_Z]) rotate([0,0,-90-180/nFins]) 
+			translate([0,R9832_Body_OD/2+2,0]) RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
+	} // difference
+	
+	
+	translate([0,0,BattDoor_Z]) rotate([0,0,90-180/nFins]) 
+		Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, HasSwitch=false, ShowDoor=false);
+	
+	translate([0,0,BattSwDoor_Z]) rotate([0,0,90-180/nFins+360/nFins]) 
+		Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, HasSwitch=true, ShowDoor=true);
+	translate([0,0,BattSwDoor_Z]) rotate([0,0,90-180/nFins+360/nFins*2]) 
+		Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, HasSwitch=true, ShowDoor=false);
+	
+	//*
+	// Rail Guide
+	difference(){
+		translate([0,0,RailGuide_Z]) rotate([0,0,-90-180/nFins]) 
+			RailGuidePost(OD=R9832_Body_OD, MtrTube_OD=R9832_BoosterMtrTube_OD+IDXtra*2, 
+				H=R9832_Body_OD/2+2, TubeLen=40, Length = 30, BoltSpace=12.7);
+		
+		translate([0,0,RailGuide_Z]) TrapFin2Slots(Tube_OD=R9832_Body_OD, nFins=nFins, 	
+			Post_h=R9832Booster_Fin_Post_h, Root_L=R9832Booster_Fin_Root_L, 
+			Root_W=R9832Booster_Fin_Root_W, Chamfer_L=R9832_Fin_Chamfer_L);
+		
+		translate([0,0,BattSwDoor_Z]) rotate([0,0,90-180/nFins+360/nFins]) 
+			Batt_BayFrameHole(Tube_OD=R9832_Body_OD, HasSwitch=true);
+		translate([0,0,BattSwDoor_Z]) rotate([0,0,90-180/nFins+360/nFins*2]) 
+			Batt_BayFrameHole(Tube_OD=R9832_Body_OD, HasSwitch=true);
+	} // difference
+	/**/
+} // BoosterUpperFinCan
+
+//BoosterLowerFinCan();
+
+//Batt_Door(Tube_OD=PML98Body_OD, HasSwitch=false);
 
 
 
