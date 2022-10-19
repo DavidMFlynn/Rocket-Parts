@@ -3,19 +3,19 @@
 // Filename: SpringThing2.scad
 // by David M. Flynn
 // Created: 10/17/2022 
-// Revision: 0.9.0  10/17/2022
+// Revision: 0.9.1  10/18/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 // To do:
 //  Activator
-//  motor tube drilling jig
 //  centering ring w/ wire guide
 //
 // Built to deploy a parachute from a booster with a spring.
 //
 //  ***** History *****
 //
+// 0.9.1  10/18/2022 Added ST_MT_DrillingJig(TubeOD=BT54Body_OD)
 // 0.9.0  10/17/2022 Moved to here from Stager.scad.
 //
 // ***********************************
@@ -26,6 +26,8 @@
 // ST_DepBallSpacer();
 // ST_DeploymentTubeLock();
 // ST_DepTubeEnd();
+//
+// ST_MT_DrillingJig(TubeOD=BT54Body_OD);
 //
 // ***********************************
 //  ***** Routines *****
@@ -102,10 +104,26 @@ module ST_SpringGuide(){
 
 // ST_SpringGuide();
 
+module ST_MT_DrillingJig(TubeOD=BT54Body_OD){
+	H=20;
+	
+	
+	difference(){
+		cylinder(d=TubeOD+20, h=H);
+		
+		for (j=[0:2]) rotate([0,0,120*j]) translate([0,0,H/2])
+			rotate([90,0,0]) cylinder(d=DepLockBearingBall_d-2, h=TubeOD);
+		
+		translate([0,0,-Overlap]) cylinder(d=TubeOD+IDXtra*2, h=H+Overlap*2);
+	} // difference
+} // ST_MT_DrillingJig
+
+//ST_MT_DrillingJig();
 
 module ST_DepLockRing(){
 	Race_ID=DeploymentLockBC_d;
 	Race_W=10;
+	Bolt4Inset=4;
 	
 	difference(){
 		OnePieceInnerRace(BallCircle_d=DepLockRingBC, Race_ID=Race_ID, Ball_d=DepLockBearingBall_d, 
@@ -116,35 +134,39 @@ module ST_DepLockRing(){
 			for (j=[0:2]) 
 				hull(){
 					rotate([0,0,120*j+k]) translate([DeploymentLockBC_d/2,0,1+LockBall_d/2])
-						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:90);
+						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
 					rotate([0,0,120*j+k+1]) translate([DeploymentLockBC_d/2,0,1+LockBall_d/2])
-						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:90);
-				}
+						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
+				} // hull
 					
 		for (j=[0:2]) 
 				hull(){
 					rotate([0,0,120*j+8]) translate([DeploymentLockBC_d/2,0,1+LockBall_d/2])
-						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:90);
+						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
 					rotate([0,0,120*j+9]) translate([DeploymentLockBC_d/2+2.5,0,1+LockBall_d/2])
-						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:90);
-				}
+						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
+				} // hull
 				
 		for (k=[9:14])
 			for (j=[0:2]) 
 				hull(){
 					rotate([0,0,120*j+k]) translate([DeploymentLockBC_d/2+2.5,0,1+LockBall_d/2])
-						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:90);
+						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
 					rotate([0,0,120*j+k+1]) translate([DeploymentLockBC_d/2+2.5,0,1+LockBall_d/2])
-						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:90);
-				}
+						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
+				} // hull
 				
 		for (j=[0:2]) 
 				hull(){
 					rotate([0,0,120*j+15]) translate([DeploymentLockBC_d/2+2.5,0,1+LockBall_d/2])
-						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:90);
+						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
 					rotate([0,0,120*j+15]) translate([DeploymentLockBC_d/2+2.5,0,2+LockBall_d])
-						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:90);
-				}
+						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
+				} // hull
+				
+		nBolts=6;
+		for (j=[0:nBolts]) rotate([0,0,180/nBolts+10+360/nBolts*j]) 
+			translate([Race_ID/2+Bolt4Inset,0,Race_W]) Bolt4Hole();
 	} // difference
 	
 	if ($preview) for (j=[0:2]) rotate([0,0,120*j]) translate([DeploymentLockBC_d/2,0,1+LockBall_d/2])
@@ -153,7 +175,7 @@ module ST_DepLockRing(){
 
 //ST_DepLockRing();
 
-module ST_DepBallSpacer(Tube_OD=102.21){
+module ST_DepBallSpacer(Tube_OD=PML98Body_OD){
 	BallCircle_d=DepLockRingBC;
 	Thickness=1.5;
 	nBalls=12;
@@ -175,6 +197,18 @@ module ST_DepBallSpacer(Tube_OD=102.21){
 } // ST_DepBallSpacer
 
 //ST_DepBallSpacer();
+
+module ST_Frame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, InnerTube_OD=BT54Body_OD){
+	
+	Tube(OD=Tube_OD, ID=Tube_ID, Len=80, myfn=$preview? 36:360);
+	translate([0,0,20]) CenteringRing(OD=Tube_OD-1, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=6);
+	//translate([0,0,60]) CenteringRing(OD=Tube_OD-1, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=6);
+	
+	
+	translate([0,0,40]) ST_DepLockRingOuterRace(Tube_OD=Tube_OD);
+} // ST_Frame
+
+//ST_Frame();
 
 module ST_DepLockRingOuterRace(Tube_OD=PML98Body_OD){
 	Race_W=10;
