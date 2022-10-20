@@ -3,7 +3,7 @@
 // Filename: NoseCone.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.4  9/18/2022
+// Revision: 0.9.5  10/19/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,12 +12,13 @@
 //
 //  ***** History *****
 //
-echo("NoseCone 0.9.4");
-// 0.9.4  9/18/2022 More fixes, optioned HasRivets
-// 0.9.3  9/8/2022  Added base radius to BluntConeNoseCone. 
-// 0.9.2  7/25/2022 Using offset for nosecone wall. Added BluntConeNoseCone and OgiveNoseCone. 
-// 0.9.1  6/24/2022 Thinner wall nosecone, added Wall_T
-// 0.9.0  6/13/2022 First code.
+echo("NoseCone 0.9.5");
+// 0.9.5  10/19/2022 edited Transition_OD
+// 0.9.4  9/18/2022  More fixes, optioned HasRivets
+// 0.9.3  9/8/2022   Added base radius to BluntConeNoseCone. 
+// 0.9.2  7/25/2022  Using offset for nosecone wall. Added BluntConeNoseCone and OgiveNoseCone. 
+// 0.9.1  6/24/2022  Thinner wall nosecone, added Wall_T
+// 0.9.0  6/13/2022  First code.
 //
 // ***********************************
 //  ***** for STL output *****
@@ -190,7 +191,7 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3, Cut
 		if (Base_L>12) translate([0,0,Base_L/2])
 			RivetPattern(BT_Dia=OD, nRivets=3, Dia=5/32*25.4);
 		
-		if ($preview==true) translate([0,-100,-1]) cube([100,100,200]);
+		if ($preview==true) translate([0,-100,-1]) cube([100,100,L+2]);
 			
 		if (Cut_Z!=0 && LowerPortion==false)
 			translate([0,0, -Overlap]) cylinder(d=OD+1, h=Cut_Z+Overlap);
@@ -205,19 +206,30 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3, Cut
 			rotate_extrude($fn=$preview? 90:360) 
 				offset(-Wall_T+Overlap) BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
 			
-			translate([0,0, -Overlap]) cylinder(d=OD+1, h=Cut_Z-4);
+			translate([0,0, -Overlap]) cylinder(d=OD+1, h=Cut_Z-5);
 			translate([0,0,Cut_Z+5]) cylinder(d=OD+1, h=L-Cut_Z+Overlap);
 			translate([0,0,Cut_Z-5]) cylinder(d=OD/2, h=12);
 			
-			// this needs fixed
-			translate([0,0,Cut_Z-4.5]) cylinder(d1=OD*0.7, d2=OD/2, h=OD/7);
+			// this needs fixed, should be calculated, 
+			Transition_OD=OD*0.7+4.25; // works for 102mm OD x 350mm L Cut @180mm
+			translate([0,0,Cut_Z-5-Overlap*2]) cylinder(d1=Transition_OD, d2=Transition_OD-12, h=8);
 			
 			rotate_extrude($fn=$preview? 90:360) 
 				offset(-Wall_T*2) BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
+			
+			if ($preview==true) translate([0,-100,-1]) cube([100,100,L+2]);
 		} // difference
 	
 } // BluntOgiveNoseCone
 
+/*
+BluntOgiveNoseCone(ID=PML98Body_ID, 
+					OD=PML98Body_OD,
+					L=350, 
+					Wall_T=2.2,
+					Tip_R=5,
+					Cut_Z=180, LowerPortion=true);
+/**/
 //BluntOgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=180, Base_L=21, Tip_R=23, Wall_T=3);
 
 //BluntOgiveNoseCone(ID=PML75Body_ID, OD=PML75Body_OD, L=180, Base_L=21, Tip_R=10, Wall_T=2.2);
