@@ -61,7 +61,7 @@ ST_PreLoadAdj=-0.35;
 LooseFit=0.8;
 
 LockBall_d=3/8*25.4;
-DeploymentLockBC_d=BT54Coupler_OD+5;
+DeploymentLockBC_d=BT54Body_OD+2;
 
 DepLockBearingBall_d=5/16*25.4;
 DepLockRingBC=BT54Body_OD+DepLockBearingBall_d+20;
@@ -130,6 +130,7 @@ module ST_DepLockRing(){
 						Race_w=Race_W, PreLoadAdj=ST_PreLoadAdj, 
 						VOffset=0.00, BI=true, myFn=$preview? 90:720);
 		
+		// locked
 		for (k=[0:8])
 			for (j=[0:2]) 
 				hull(){
@@ -138,7 +139,8 @@ module ST_DepLockRing(){
 					rotate([0,0,120*j+k+1]) translate([DeploymentLockBC_d/2,0,1+LockBall_d/2])
 						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
 				} // hull
-					
+			
+		// Ramp to locked position		
 		for (j=[0:2]) 
 				hull(){
 					rotate([0,0,120*j+8]) translate([DeploymentLockBC_d/2,0,1+LockBall_d/2])
@@ -146,7 +148,7 @@ module ST_DepLockRing(){
 					rotate([0,0,120*j+9]) translate([DeploymentLockBC_d/2+2.5,0,1+LockBall_d/2])
 						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
 				} // hull
-				
+		// unlocked	
 		for (k=[9:14])
 			for (j=[0:2]) 
 				hull(){
@@ -155,12 +157,13 @@ module ST_DepLockRing(){
 					rotate([0,0,120*j+k+1]) translate([DeploymentLockBC_d/2+2.5,0,1+LockBall_d/2])
 						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
 				} // hull
-				
+			
+		// Ball insertion	
 		for (j=[0:2]) 
 				hull(){
-					rotate([0,0,120*j+15]) translate([DeploymentLockBC_d/2+2.5,0,1+LockBall_d/2])
+					rotate([0,0,120*j+15]) translate([DeploymentLockBC_d/2,0,1+LockBall_d/2])
 						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
-					rotate([0,0,120*j+15]) translate([DeploymentLockBC_d/2+2.5,0,2+LockBall_d])
+					rotate([0,0,120*j+15]) translate([DeploymentLockBC_d/2,0,2+LockBall_d])
 						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
 				} // hull
 				
@@ -210,12 +213,29 @@ module ST_Frame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, InnerTube_OD=BT54Bod
 
 //ST_Frame();
 
-module ST_DepLockRingOuterRace(Tube_OD=PML98Body_OD){
+module ST_DepLockRingOuterRace(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, Skirt_Len=30){
 	Race_W=10;
 	
 	OnePieceOuterRace(BallCircle_d=DepLockRingBC, Race_OD=Tube_OD-1, 
 					Ball_d=DepLockBearingBall_d, Race_w=Race_W, PreLoadAdj=ST_PreLoadAdj, 
 					VOffset=0.00, BI=true, myFn=$preview? 90:720);
+	
+	// collar
+	Tube(OD=Tube_OD, ID=Skirt_ID, Len=20, myfn=$preview? 36:360);
+	
+	if (Skirt_Len>0)
+		difference(){
+			union(){
+				translate([0,0,-Skirt_Len]) 
+					Tube(OD=Tube_OD, ID=Skirt_ID, Len=Skirt_Len+Overlap*2, myfn=$preview? 36:360);
+				translate([0,0,-13]) 
+					TubeStop(InnerTubeID=Skirt_ID-2, OuterTubeOD=Tube_OD, myfn=$preview? 36:360);
+			} // union
+			
+			// Arm / Trigger access hole
+			translate([0,DepLockRingBC/2-2,-3]) rotate([0,90,0])
+				cylinder(d=3, h=Tube_OD, center=true);
+		} // difference
 } // ST_DepLockRingOuterRace
 
 //ST_DepLockRingOuterRace();

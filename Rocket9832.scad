@@ -67,6 +67,7 @@ F54_FairingHalf(IsLeftHalf=false,
 // AltDoor54(Tube_OD=R9832_Body_OD);
 // DoubleBatteryHolder(Tube_ID=PML98Body_ID, HasBoltHoles=true); // oops!
 //
+// ------------
 // *** Cable Puller, 4 Req. ***
 // ThroughOut();
 // rotate([0,90,0]) SpringBody();
@@ -74,6 +75,13 @@ F54_FairingHalf(IsLeftHalf=false,
 // StopAdjuster();
 // CageBottom();
 // AddServo(); // CageTop w/ servo mount
+/*
+	translate([0,0,CP_SpringBody_YZ/2+2.5]) rotate([180,0,0]){ 
+		CageTop();
+		BellCrankTriggerBearingHolder();}
+/**/
+// rotate([180,0,0]) TriggerBellCrank();
+// ------------
 //
 // rotate([180,0,0]) Drogue_Cup();
 //
@@ -82,6 +90,26 @@ F54_FairingHalf(IsLeftHalf=false,
 // rotate([180,0,0]) LowerFinCan();
 //
 // *** Booster Parts ***
+//
+// --------------
+//  ** Stager Parts, top of booster **
+// rotate([180,0,0]) Stager_Cup(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true);
+// rotate([-90,0,0]) Stager_LockRod(Adj=0); // print 4
+//
+// Stager_Saucer(Tube_OD=PML98Body_OD, nLocks=2); // Bolts on
+// Stager_BearingBlock(); // print 4
+// rotate([0,90,0]) Stager_PushUP(); // print 2
+// rotate([0,-90,0]) mirror([1,0,0]) Stager_PushUP(); // print 2
+// Stager_SpringStop(); // print 4
+// 
+// Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_Len=30);
+// Stager_TriggerPlateB(Tube_OD=PML98Body_OD); // print 2
+// Stager_InnerRace(Tube_OD=PML98Body_OD, nLocks=2);
+// Stager_BallSpacer(Tube_OD=PML98Body_OD); // print 2
+// CableRedirect(Tube_OD=R9832_Body_OD, Skirt_ID=R9832_Body_ID, Tube_ID=PML98Coupler_ID, InnerTube_OD=R9832_BoosterMtrTube_OD);
+// CableEndAndStop(Tube_OD=PML98Body_OD);
+// -------------
+//
 // BoosterUpperFinCan();
 // Rocket9832BoosterFin();
 // rotate([180,0,0]) BoosterLowerFinCan();

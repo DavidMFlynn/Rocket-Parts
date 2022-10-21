@@ -35,13 +35,13 @@ echo("StagerLib 0.9.4");
 // ***********************************
 //  ***** for STL output *****
 // 
-// rotate([180,0,0]) Stager_Cup(Tube_OD=102.21, ID=78, nLocks=2, BoltsOn=true);
-// BearingBlock();
+// rotate([180,0,0]) Stager_Cup(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true);
 // rotate([-90,0,0]) Stager_LockRod(Adj=0);
 // rotate([-90,0,0]) Stager_LockRod(Adj=0.5)
 // rotate([-90,0,0]) Stager_LockRod(Adj=1.0);
-// Stager_Saucer(Tube_OD=102.21, nLocks=2); // Bolts on
+// Stager_Saucer(Tube_OD=PML98Body_OD, nLocks=2); // Bolts on
 //
+// Stager_BearingBlock();
 // rotate([0,90,0]) Stager_PushUP();
 // rotate([0,-90,0]) mirror([1,0,0]) Stager_PushUP();
 // Stager_SpringStop();
@@ -153,7 +153,10 @@ module Stager_ArmingKeyLock(){
 
 //rotate([-90,0,0]) Stager_ArmingKeyLock();
 
-module CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, Tube_ID=PML98Coupler_ID, InnerTube_OD=BT54Mtr_OD){
+module CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, 
+							Tube_ID=PML98Coupler_ID, 
+							InnerTube_OD=BT54Mtr_OD){
+								
 	BallCircle_d=Tube_OD-6-Ball_d;
 	Race_ID=BallCircle_d-Ball_d-Bolt4Inset*4;
 	
@@ -275,7 +278,7 @@ module CableEndAndStop(Tube_OD=PML98Body_OD){
 
 //CableEndAndStop();
 
-module BearingBlock(){
+module Stager_BearingBlock(){
 	//Holds 2 MR84 ball bearings
 	Arm_Len=StagerLockArmLen;
 	
@@ -294,9 +297,9 @@ module BearingBlock(){
 	} // difference
 	
 	
-} // BearingBlock
+} // Stager_BearingBlock
 
-//BearingBlock();
+//Stager_BearingBlock();
 
 module Stager_LockRodBoltPattern(){
 	// from bottom center
@@ -841,7 +844,7 @@ module Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_
 			
 			translate([-LR_X/2-CP_Bearing_OD/2+2-Overlap,0,0]){ 
 				ShowBearing();
-				rotate([90,0,0]) color("Green") BearingBlock();
+				rotate([90,0,0]) color("Green") Stager_BearingBlock();
 				translate([-Arm_Len,0,0]) ShowBearing();
 				
 			}
@@ -850,7 +853,7 @@ module Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_
 				
 				rotate([0,Disengage_a,0]) translate([Arm_Len,0,0]){
 					ShowBearing();
-					rotate([90,0,0]) color("Green") BearingBlock();}
+					rotate([90,0,0]) color("Green") Stager_BearingBlock();}
 			}
 		} // for
 		
