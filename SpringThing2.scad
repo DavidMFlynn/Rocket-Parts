@@ -3,7 +3,7 @@
 // Filename: SpringThing2.scad
 // by David M. Flynn
 // Created: 10/17/2022 
-// Revision: 0.9.1  10/18/2022
+// Revision: 0.9.2  10/21/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -14,7 +14,7 @@
 // Built to deploy a parachute from a booster with a spring.
 //
 //  ***** History *****
-//
+// 0.9.2  10/21/2022 Worked on ST_DepLockRing added ST_BallKeeper()
 // 0.9.1  10/18/2022 Added ST_MT_DrillingJig(TubeOD=BT54Body_OD)
 // 0.9.0  10/17/2022 Moved to here from Stager.scad.
 //
@@ -22,6 +22,7 @@
 //  ***** for STL output *****
 //
 // ST_SpringGuide(); // Sits on top of motor, glued to bottom of spring. 
+// ST_BallKeeper(Tube_OD=BT54Body_OD);
 // ST_DepLockRing(); // Glued to top of spring.
 // ST_DepBallSpacer();
 // ST_DeploymentTubeLock();
@@ -120,10 +121,34 @@ module ST_MT_DrillingJig(TubeOD=BT54Body_OD){
 
 //ST_MT_DrillingJig();
 
+module ST_BallKeeper(Tube_OD=BT54Body_OD){
+	nBalls=3;
+	H=15;
+	Wall_t=2;
+	
+	difference(){
+		cylinder(d=Tube_OD+Wall_t*2, h=H);
+		
+		translate([0,0,-Overlap]) cylinder(d=Tube_OD, h=H+Overlap*2);
+		
+		for (j=[0:nBalls-1]) rotate([0,0,360/nBalls*j]) translate([0,0,H/2])
+			rotate([90,0,0]) cylinder(d=LockBall_d+IDXtra*2, h=Tube_OD);
+	} // difference
+	
+} // ST_BallKeeper
+
+//ST_BallKeeper();
+
 module ST_DepLockRing(){
-	Race_ID=DeploymentLockBC_d;
-	Race_W=10;
+	Race_ID=BT54Body_OD+5; //was DeploymentLockBC_d;
+	Race_W=13;
 	Bolt4Inset=4;
+	nBalls=3;
+	BoltCircle_d=DepLockRingBC-DepLockBearingBall_d-Bolt4Inset*2;
+	
+	BallLocked_a=6;
+	BallUnlocked_a=20;
+	BallInsertion_a=22;
 	
 	difference(){
 		OnePieceInnerRace(BallCircle_d=DepLockRingBC, Race_ID=Race_ID, Ball_d=DepLockBearingBall_d, 
@@ -131,49 +156,60 @@ module ST_DepLockRing(){
 						VOffset=0.00, BI=true, myFn=$preview? 90:720);
 		
 		// locked
-		for (k=[0:8])
-			for (j=[0:2]) 
+		for (j=[0:nBalls-1]) 
+			for (k=[0:BallLocked_a-1])
 				hull(){
-					rotate([0,0,120*j+k]) translate([DeploymentLockBC_d/2,0,1+LockBall_d/2])
+					rotate([0,0,360/nBalls*j+k]) translate([DeploymentLockBC_d/2, 0, Race_W/2])
 						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
-					rotate([0,0,120*j+k+1]) translate([DeploymentLockBC_d/2,0,1+LockBall_d/2])
+					rotate([0,0,360/nBalls*j+k+1]) translate([DeploymentLockBC_d/2, 0, Race_W/2])
 						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
 				} // hull
 			
 		// Ramp to locked position		
-		for (j=[0:2]) 
+		for (j=[0:nBalls-1]) 
 				hull(){
-					rotate([0,0,120*j+8]) translate([DeploymentLockBC_d/2,0,1+LockBall_d/2])
+					rotate([0,0,360/nBalls*j+BallLocked_a]) translate([DeploymentLockBC_d/2, 0, Race_W/2])
 						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
-					rotate([0,0,120*j+9]) translate([DeploymentLockBC_d/2+2.5,0,1+LockBall_d/2])
+					rotate([0,0,360/nBalls*j+BallUnlocked_a]) translate([DeploymentLockBC_d/2+2.5, 0, Race_W/2])
+						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
+					rotate([0,0,360/nBalls*j+BallUnlocked_a]) translate([DeploymentLockBC_d/2, 0, Race_W/2])
 						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
 				} // hull
+				
 		// unlocked	
-		for (k=[9:14])
-			for (j=[0:2]) 
+		for (j=[0:nBalls-1]) 
+			for (k=[BallUnlocked_a:BallInsertion_a])
 				hull(){
-					rotate([0,0,120*j+k]) translate([DeploymentLockBC_d/2+2.5,0,1+LockBall_d/2])
+					rotate([0,0,360/nBalls*j+k]) translate([DeploymentLockBC_d/2+2.5, 0, Race_W/2])
 						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
-					rotate([0,0,120*j+k+1]) translate([DeploymentLockBC_d/2+2.5,0,1+LockBall_d/2])
+					rotate([0,0,360/nBalls*j+k]) translate([DeploymentLockBC_d/2, 0, Race_W/2])
+						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
+					rotate([0,0,360/nBalls*j+k+1]) translate([DeploymentLockBC_d/2+2.5, 0, Race_W/2])
+						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
+					rotate([0,0,360/nBalls*j+k+1]) translate([DeploymentLockBC_d/2, 0, Race_W/2])
 						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
 				} // hull
 			
 		// Ball insertion	
-		for (j=[0:2]) 
+		for (j=[0:nBalls-1]) 
 				hull(){
-					rotate([0,0,120*j+15]) translate([DeploymentLockBC_d/2,0,1+LockBall_d/2])
+					rotate([0,0,360/nBalls*j+BallInsertion_a]) translate([DeploymentLockBC_d/2+2.5, 0, Race_W/2])
 						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
-					rotate([0,0,120*j+15]) translate([DeploymentLockBC_d/2,0,2+LockBall_d])
+					rotate([0,0,360/nBalls*j+BallInsertion_a]) translate([DeploymentLockBC_d/2, 0, Race_W/2])
+						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
+					rotate([0,0,360/nBalls*j+BallInsertion_a]) translate([DeploymentLockBC_d/2+2.5, 0, Race_W+2])
+						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
+					rotate([0,0,360/nBalls*j+BallInsertion_a]) translate([DeploymentLockBC_d/2, 0, Race_W+2])
 						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
 				} // hull
 				
 		nBolts=6;
 		for (j=[0:nBolts]) rotate([0,0,180/nBolts+10+360/nBolts*j]) 
-			translate([Race_ID/2+Bolt4Inset,0,Race_W]) Bolt4Hole();
+			translate([BoltCircle_d/2,0,Race_W]) Bolt4Hole();
 	} // difference
 	
-	if ($preview) for (j=[0:2]) rotate([0,0,120*j]) translate([DeploymentLockBC_d/2,0,1+LockBall_d/2])
-		color("Red") sphere(d=LockBall_d);
+	//if ($preview) for (j=[0:2]) rotate([0,0,120*j]) translate([DeploymentLockBC_d/2,0,1+LockBall_d/2])
+	//	color("Red") sphere(d=LockBall_d);
 } // ST_DepLockRing
 
 //ST_DepLockRing();

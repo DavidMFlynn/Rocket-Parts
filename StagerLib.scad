@@ -3,7 +3,7 @@
 // Filename: StagerLib.scad
 // by David M. Flynn
 // Created: 10/10/2022 
-// Revision: 0.9.4  10/17/2022
+// Revision: 0.9.5  10/21/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -25,7 +25,8 @@
 //
 //  ***** History *****
 //
-echo("StagerLib 0.9.4");
+echo("StagerLib 0.9.5");
+// 0.9.5  10/21/2022   FC1: Worked fully assembled for the first time.
 // 0.9.4  10/17/2022   Added CableRedirect(). 
 // 0.9.3  10/16/2022   Adapted to booster/sustainer. 
 // 0.9.2  10/14/2022   Arming key, added 1.5mm to tube length
@@ -36,7 +37,7 @@ echo("StagerLib 0.9.4");
 //  ***** for STL output *****
 // 
 // rotate([180,0,0]) Stager_Cup(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true);
-// rotate([-90,0,0]) Stager_LockRod(Adj=0);
+// rotate([-90,0,0]) Stager_LockRod(Adj=0); // using this one
 // rotate([-90,0,0]) Stager_LockRod(Adj=0.5)
 // rotate([-90,0,0]) Stager_LockRod(Adj=1.0);
 // Stager_Saucer(Tube_OD=PML98Body_OD, nLocks=2); // Bolts on
@@ -52,7 +53,7 @@ echo("StagerLib 0.9.4");
 // Stager_InnerRace(Tube_OD=PML98Body_OD, nLocks=2);
 // Stager_BallSpacer(Tube_OD=PML98Body_OD);
 // CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, Tube_ID=PML98Coupler_ID, InnerTube_OD=BT54Mtr_OD);
-// CableEndAndStop(Tube_OD=PML98Body_OD);
+// mirror([0,1,0]) CableEndAndStop(Tube_OD=PML98Body_OD);
 //
 //  *** Tools ***
 // rotate([-90,0,0]) Stager_ArmingKey(Tube_OD=102.21);
@@ -86,8 +87,6 @@ Stager_Spring_OD=5/16*25.4;
 Stager_Spring_FL=1.25*25.4;
 Stager_Spring_CBL=0.7*25.4;
 
-
-
 Stager_LockRod_X=10;
 Stager_LockRod_Y=5;
 Stager_LockRod_Z=36;
@@ -96,6 +95,24 @@ Stager_LockRod_R=1;
 LooseFit=0.8;
 StagerLockInset_Y=12.5;
 StagerLockArmLen=10;
+
+
+Bolt4Inset=3.5;
+Saucer_Len=6;
+Ball_d=5/16*25.4;
+Stager_PreLoadAdj=-0.35;
+Race_W=11;
+Stager_PMPU_Lift=4;
+Tube_Len=44.5;
+Race_Z=-Saucer_Len-Tube_Len;
+	
+PU_Tail_Len=24;
+
+Stager_PushUpSpring_OD=9.75;
+Stager_PushUpSpring_ID=7.8;
+Stager_PushUpSpring_FL=28;
+Stager_PushUpSpring_CBL=6.5;
+Stager_PushUp_X=Stager_PushUpSpring_ID-0.4;
 
 module ShowStager(){
 	translate([0,0,Overlap*2]) Stager_Cup(Tube_OD=102.21, ID=78, nLocks=2);
@@ -137,7 +154,7 @@ module Stager_ArmingKey(Tube_OD=PML98Body_OD){
 	} // difference
 	
 	difference(){
-		translate([0,-Depth,2]) rotate([-90,0,0]) cylinder(d=5.5, h=6);
+		translate([0,-Depth,2]) rotate([-90,0,0]) cylinder(d=5.8, h=Depth+2);
 		translate([-3,-Depth-Overlap,-4]) cube([6,30,5]);
 	} // difference
 } // Stager_ArmingKey
@@ -152,6 +169,64 @@ module Stager_ArmingKeyLock(){
 } // Stager_ArmingKeyLock
 
 //rotate([-90,0,0]) Stager_ArmingKeyLock();
+
+module TopRing(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, InnerTube_OD=BT54Mtr_OD, nLocks=2){
+	// this is incomplete and may not be needed anyway
+	
+	Len=Saucer_Len;
+	ID=Tube_OD-StagerLockInset_Y*2-Stager_LockRod_Y-6;
+	LR_X=Stager_LockRod_X;
+	LR_Y=Stager_LockRod_Y;
+	LR_Z=Stager_LockRod_Z;
+	
+	Arm_Len=StagerLockArmLen;
+	
+	//BallCircle_d=Tube_OD-6-Ball_d;
+
+
+	module BackStop(){
+		Block_W=18;
+		
+			hull(){
+				translate([0,-5,0]) cube([10,Block_W,CP_Bearing_OD/2+1]);
+				translate([-2, -5, -2-Overlap]) cube([10, Block_W, Overlap]);
+			} // hull
+			
+		
+		translate([-2, -5, -2-CP_Bearing_OD-Overlap]) cube([35, Block_W, CP_Bearing_OD+Overlap]);
+		translate([-2, -5, -2-CP_Bearing_OD-3-Overlap]) cube([20+CP_Bearing_OD, Block_W, 5+Overlap]);
+			
+		//*
+		hull(){
+			translate([22, -5, -2-CP_Bearing_OD-3-Overlap]) cube([CP_Bearing_OD/2+LR_X, Block_W, 5+4+Overlap]);
+			translate([15, -5, -2-CP_Bearing_OD-3-Overlap]) cube([CP_Bearing_OD+LR_X, Block_W, 5+Overlap]);
+		}
+		/**/
+		
+		// Back Plate
+		translate([5,10.5,-15]) cube([30,6,20]);
+		
+		// Base
+		translate([-2, -5, -15]) cube([36, Block_W, 5+Overlap]);
+		
+		
+	} // BackStop
+	
+	difference(){
+		CenteringRing(OD=Skirt_ID-IDXtra, ID=InnerTube_OD+IDXtra*2, Thickness=8, nHoles=0);
+		
+		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j]) {
+			translate([LR_X/2-2+CP_Bearing_OD+10+Arm_Len, Tube_OD/2-StagerLockInset_Y-6, 12]) 
+				mirror([1,0,0]) BackStop();
+			
+			translate([-LR_X/2+2-CP_Bearing_OD-Arm_Len-10, Tube_OD/2-StagerLockInset_Y-6, 12])
+			  BackStop();
+		} // for
+	} // difference
+	
+} // TopRing
+
+//TopRing();
 
 module CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, 
 							Tube_ID=PML98Coupler_ID, 
@@ -460,15 +535,6 @@ module Stager_Saucer(Tube_OD=PML98Body_OD, nLocks=2){
 
 //Stager_Saucer();
 
-Bolt4Inset=3.5;
-Saucer_Len=6;
-Ball_d=5/16*25.4;
-Stager_PreLoadAdj=-0.35;
-Race_W=11;
-Stager_PMPU_Lift=4;
-Tube_Len=44.5;
-Race_Z=-Saucer_Len-Tube_Len;
-	
 module Stager_BallSpacer(Tube_OD=PML98Body_OD){
 	BallCircle_d=Tube_OD-6-Ball_d;
 	Thickness=1.5;
@@ -673,8 +739,6 @@ module Stager_TriggerPlate(Tube_OD=PML98Body_OD){
 
 //translate([0,0,Race_Z+1]) Stager_TriggerPlate();
 
-
-
 module ShowPMPU(Tube_OD=PML98Body_OD, nLocks=2){
 	
 	LR_X=Stager_LockRod_X;
@@ -698,6 +762,8 @@ module ShowPMPU(Tube_OD=PML98Body_OD, nLocks=2){
 		}
 	} // ShowPMPU
 
+//ShowPMPU();
+	
 module Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_Len=30){
 	Len=Saucer_Len;
 	ID=Tube_OD-StagerLockInset_Y*2-Stager_LockRod_Y-6;
@@ -864,14 +930,6 @@ module Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_
 
 //Stager_Mech();
 //rotate([0,0,-20]) mirror([0,1,0]) translate([0,0,Race_Z-12]) rotate([180,0,0]) CableEndAndStop();
-
-PU_Tail_Len=24;
-
-Stager_PushUpSpring_OD=9.75;
-Stager_PushUpSpring_ID=7.8;
-Stager_PushUpSpring_FL=28;
-Stager_PushUpSpring_CBL=6.5;
-Stager_PushUp_X=Stager_PushUpSpring_ID-0.4;
 
 module Stager_SpringStop(){
 	Len=7;

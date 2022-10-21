@@ -138,6 +138,81 @@ module ExplodeFairing(){
 
 // ExplodeFairing();
 
+module FairingAssemblyToolPt1(Fairing_OD=Fairing_OD){
+	H=18;
+	Thickness=10;
+	Pin_d=4;
+	
+	difference(){
+		cylinder(d=Fairing_OD+Thickness*2, h=H);
+		
+		// Cut
+		translate([-Fairing_OD/2-Thickness-1,-Fairing_OD/2-Thickness-1, -Overlap])
+			cube([Fairing_OD+Thickness*2+2,Fairing_OD/2+Thickness+1, H+Overlap*2]);
+		
+		// Center hole
+		translate([0,0,-Overlap]) cylinder(d=Fairing_OD+IDXtra*2, h=H+Overlap*2);
+		
+		translate([-Fairing_OD/2-Thickness/2, 0, -Overlap]) {
+			cylinder(d=Pin_d, h=H+Overlap*2);
+			cylinder(d=Thickness+2, h=H/3+0.5);
+			translate([0,0,H-H/3-0.5]) cylinder(d=Thickness+2, h=H/3+0.5+Overlap*2);
+		}
+		
+		translate([Fairing_OD/2+Thickness/2, 0, -Overlap]) {
+			cylinder(d=Pin_d, h=H+Overlap*2);
+			cylinder(d=Thickness+2, h=H/3+0.5);
+			translate([0,0,H-H/3-0.5]) cylinder(d=Thickness+2, h=H/3+0.5+Overlap*2);
+		}
+	} // difference
+	
+	translate([-Fairing_OD/2-Thickness/2, 0, H/3+0.5]) difference(){
+		cylinder(d=Thickness, h=H/3-1);
+		translate([0,0,-Overlap]) cylinder(d=Pin_d, h=H/3+Overlap*2);
+	} // difference
+	
+	translate([Fairing_OD/2+Thickness/2, 0, H/3+0.5]) difference(){
+		cylinder(d=Thickness, h=H/3-1);
+		translate([0,0,-Overlap]) cylinder(d=Pin_d, h=H/3+Overlap*2);
+	} // difference
+} // FairingAssemblyToolPt1
+
+//translate([0,0,18]) rotate([180,0,0]) FairingAssemblyToolPt1();
+
+module FairingAssemblyToolPt2(Fairing_OD=Fairing_OD){
+	H=18;
+	Thickness=10;
+	Pin_d=4;
+	
+	difference(){
+		cylinder(d=Fairing_OD+Thickness*2, h=H);
+		
+		// Cut
+		translate([-Fairing_OD/2-Thickness-1,-Fairing_OD/2-Thickness-1, -Overlap])
+			cube([Fairing_OD+Thickness*2+2,Fairing_OD/2+Thickness+1, H+Overlap*2]);
+		
+		// Center hole
+		translate([0,0,-Overlap]) cylinder(d=Fairing_OD+IDXtra*2, h=H+Overlap*2);
+		
+		translate([-Fairing_OD/2-Thickness/2, 0, -Overlap]) {
+			cylinder(d=Pin_d, h=H+Overlap*2);
+			translate([0,0,H/3]) cylinder(d=Thickness+2, h=H/3);
+		}
+		
+	} // difference
+	
+	translate([-Fairing_OD/2-Thickness/2, 0, 0]) difference(){
+		union(){
+			cylinder(d=Thickness, h=H/3);
+			translate([0,0,H/3*2]) cylinder(d=Thickness, h=H/3);
+		} // union
+		
+		translate([0,0,-Overlap]) cylinder(d=Pin_d, h=H+Overlap*2);
+	} // difference
+} // FairingAssemblyToolPt2
+
+FairingAssemblyToolPt2();
+
 module FairingConeBaseRing(Fairing_OD=Fairing_OD, 
 							FairingWall_T=FairingWall_T, 
 							NC_Base=NC_Base, 
