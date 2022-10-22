@@ -237,6 +237,7 @@ module CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 	
 	CablePath_Y=Race_ID/2+Bolt4Inset; //InnerTube_OD/2+10;
 	Exit_a=75;
+	Stop_a=-69;
 	
 	module CablePath(){
 		R=7;
@@ -266,7 +267,7 @@ module CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 			CenteringRing(OD=Skirt_ID, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=0);
 			
 			// Locked position stop
-			rotate([0,0,-69]) translate([0,CablePath_Y,0]) cylinder(d=8, h=10);
+			rotate([0,0,Stop_a]) translate([0,CablePath_Y,0]) cylinder(d=8, h=10);
 			
 			translate([0,0,-20]) {
 				rotate([0,0,-20]) CenteringRing(OD=Tube_ID, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=5);

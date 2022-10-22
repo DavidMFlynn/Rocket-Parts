@@ -211,7 +211,7 @@ module FairingAssemblyToolPt2(Fairing_OD=Fairing_OD){
 	} // difference
 } // FairingAssemblyToolPt2
 
-FairingAssemblyToolPt2();
+//FairingAssemblyToolPt2();
 
 module FairingConeBaseRing(Fairing_OD=Fairing_OD, 
 							FairingWall_T=FairingWall_T, 
