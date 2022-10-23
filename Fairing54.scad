@@ -3,7 +3,7 @@
 // Filename: Fairing54.scad
 // by David M. Flynn
 // Created: 8/5/2022 
-// Revision: 1.0.12  10/4/2022
+// Revision: 1.0.13  10/22/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -26,8 +26,8 @@
 //
 //  ***** History *****
 //
-echo("Fairing54 1.0.12");
-Fairing54=true;
+echo("Fairing54 1.0.13");
+// 1.0.13  10/22/2022 Added FairingAssemblyTool
 // 1.0.12  10/4/2022 Added IDXtra to ID of Nosecone ring. 
 // 1.0.11  10/3/2022 Fairing locks moved to 18mm from ends. 
 // 1.0.10  9/29/2022 Added FairingBaseBulkPlate. 
@@ -71,6 +71,12 @@ F54_FairingHalf(IsLeftHalf=false,
 // FairingBaseBulkPlate(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, ShockCord_a=-100);
 //
 // F54_SpringEndCap();
+//
+//  **** Assembly Tool ****
+// FairingAssemblyToolPt1(Fairing_OD=PML98Body_OD+IDXtra*2);
+// FairingAssemblyToolPt2(Fairing_OD=PML98Body_OD+IDXtra*2);
+// FairingAssemblyToolPt3();
+// FairingAssemblyToolPt4();
 //
 // ***********************************
 //  ***** Routines *****
@@ -138,7 +144,7 @@ module ExplodeFairing(){
 
 // ExplodeFairing();
 
-module FairingAssemblyToolPt1(Fairing_OD=Fairing_OD){
+module FairingAssemblyToolPt1(Fairing_OD=PML98Body_OD+IDXtra*2){
 	H=18;
 	Thickness=10;
 	Pin_d=4;
@@ -179,10 +185,11 @@ module FairingAssemblyToolPt1(Fairing_OD=Fairing_OD){
 
 //translate([0,0,18]) rotate([180,0,0]) FairingAssemblyToolPt1();
 
-module FairingAssemblyToolPt2(Fairing_OD=Fairing_OD){
+module FairingAssemblyToolPt2(Fairing_OD=PML98Body_OD+IDXtra*2){
 	H=18;
 	Thickness=10;
 	Pin_d=4;
+	End_a=11; // <<< calculation needed 
 	
 	difference(){
 		cylinder(d=Fairing_OD+Thickness*2, h=H);
@@ -199,6 +206,15 @@ module FairingAssemblyToolPt2(Fairing_OD=Fairing_OD){
 			translate([0,0,H/3]) cylinder(d=Thickness+2, h=H/3);
 		}
 		
+		translate([0,0,-Overlap]) rotate([0,0,End_a]) mirror([0,1,0]) 
+			cube([Fairing_OD/2+Thickness+1,Fairing_OD/2+Thickness+1,H+Overlap*2]);
+		
+		rotate([0,0,End_a])
+		translate([Fairing_OD/2+Thickness/2, 0, -Overlap]) {
+			cylinder(d=Pin_d, h=H+Overlap*2);
+			cylinder(d=Thickness+30, h=H/3+0.5);
+			translate([0,0,H-H/3-0.5]) cylinder(d=Thickness+30, h=H/3+0.5+Overlap*2);
+		}
 	} // difference
 	
 	translate([-Fairing_OD/2-Thickness/2, 0, 0]) difference(){
@@ -209,9 +225,94 @@ module FairingAssemblyToolPt2(Fairing_OD=Fairing_OD){
 		
 		translate([0,0,-Overlap]) cylinder(d=Pin_d, h=H+Overlap*2);
 	} // difference
+	
+	rotate([0,0,End_a])
+	translate([Fairing_OD/2+Thickness/2, 0, H/3+0.5]) difference(){
+		cylinder(d=Thickness, h=H/3-1);
+		translate([0,0,-Overlap]) cylinder(d=Pin_d, h=H/3+Overlap*2);
+	} // difference
 } // FairingAssemblyToolPt2
 
 //FairingAssemblyToolPt2();
+
+module FairingAssemblyToolPt3(){
+	// the lever
+	H=18;
+	Thickness=10;
+	Pin_d=4;
+	Arm_T=4;
+	
+	difference(){
+		union(){
+			translate([0,0,-Arm_T]) cylinder(d=Thickness,h=H/3+Arm_T-0.5);
+			translate([0,0,H/3*2+0.5]) cylinder(d=Thickness,h=H/3+Arm_T-0.5);
+			
+			translate([0,0,-Arm_T])
+			hull(){
+				translate([0,0,0]) cylinder(d=Thickness,h=Arm_T);
+				translate([0,60,0]) cylinder(d=Thickness,h=Arm_T);
+			} // hull
+			
+			translate([0,0,H])
+			hull(){
+				translate([0,0,0]) cylinder(d=Thickness,h=Arm_T);
+				translate([0,60,0]) cylinder(d=Thickness,h=Arm_T);
+			} // hull
+			
+			translate([0,0,-1])
+			hull(){
+				translate([0,45,0]) cylinder(d=Thickness,h=H+2);
+				translate([0,60,0]) cylinder(d=Thickness,h=H+2);
+			} // hull
+		} // union
+		
+		translate([0, 0, -Arm_T-Overlap]) 
+			cylinder(d=Pin_d, h=H+Arm_T*2+Overlap*2);
+		translate([0, 30, -Arm_T-Overlap]) 
+			cylinder(d=Pin_d, h=H+Arm_T*2+Overlap*2);
+	} // difference
+} // FairingAssemblyToolPt3
+
+//translate([PML98Body_OD/2+5,0,0]) FairingAssemblyToolPt3();
+
+
+module FairingAssemblyToolPt4(){
+	// the lever
+	H=18;
+	Thickness=10;
+	Pin_d=4;
+	Arm_T=4;
+	Arm_Len=20;
+	
+	difference(){
+		union(){
+			translate([0,0,0.5]) cylinder(d=Thickness,h=H/3-1);
+			translate([0,0,H/3*2+0.5]) cylinder(d=Thickness,h=H/3-1);
+			
+			translate([0,0,0.5])
+			hull(){
+				cylinder(d=Thickness,h=Arm_T);
+				translate([0,Arm_Len,0]) cylinder(d=Thickness,h=Arm_T);
+			} // hull
+			
+			translate([0,0,H-Arm_T-0.5])
+			hull(){
+				translate([0,0,0]) cylinder(d=Thickness,h=Arm_T);
+				translate([0,Arm_Len,0]) cylinder(d=Thickness,h=Arm_T);
+			} // hull
+			
+			translate([0,Arm_Len,0.5]) cylinder(d=Thickness, h=H-1);
+			
+		} // union
+		
+		translate([0, 0,-Overlap]) 
+			cylinder(d=Pin_d, h=H+Overlap*2);
+		translate([0, Arm_Len, -Overlap]) 
+			cylinder(d=Pin_d, h=H+Overlap*2);
+	} // difference
+} // FairingAssemblyToolPt4
+
+//rotate([0,0,11]) translate([PML98Body_OD/2+5,0,0]) FairingAssemblyToolPt4();
 
 module FairingConeBaseRing(Fairing_OD=Fairing_OD, 
 							FairingWall_T=FairingWall_T, 

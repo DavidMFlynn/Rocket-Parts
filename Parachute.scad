@@ -3,7 +3,7 @@
 // Filename: Parachute.scad
 // by David M. Flynn
 // Created: 9/13/2022 
-// Revision: 0.9.3  10/6/2022
+// Revision: 0.9.4  10/22/2022
 // Units: mm
 // *******************************************
 //  ***** Notes *****
@@ -18,6 +18,7 @@
 // 
 //  ***** History *****
 //
+// 0.9.4  10/22/2022 Making a 45" 'chute. 
 // 0.9.3  10/6/2022 Made a 63" 'chute it is good.
 // 0.9.2  9/28/2022 20" 'chute worked well, 63" is next. 
 // 0.9.1  9/24/2022 Didn't work, starting over. 
@@ -51,19 +52,44 @@ PrintingOffset_X=0;
 // 1.4oz Rip-Stop Nylon, 2mm Polypropylene rope (knit, cheep from Amazon)
 /*
 Pointyness=0.4; Panel_Y=2; SeamAllowance=7;
+nPanels=8;
 Arc_r=500; Apex_Y=310; Hole_X=30;  // 8 Panels 200mm x 310mm, 20"
+Center_r=Apex_Y+45;
 /**/
 //PrintingOffset_X=100; PrintingOffset_Y=-130;// Page 1
 //PrintingOffset_X=100-200; PrintingOffset_Y=-130;// Page 2
 //PrintingOffset_X=0; PrintingOffset_Y=-130-260;// Page 3
 // --------------------------------------------------------------------------
 
-// *** Built one and it works great 10/10/2022 ***
-// Make 14 Panels
+// --------------------------------------------------------------------------
+// *** Making one 10/22/2022 ***
+// 
+// Make 12 Panels
 // 1.4oz Rip-Stop Nylon, 3mm Polypropylene rope (knit, cheep from Amazon)
 //*
 Pointyness=0.4; Panel_Y=2; SeamAllowance=7;
+nPanels=12;
+Arc_r=750; Apex_Y=610; Hole_X=33; //12 Panels 300mm x 610mm, 45" Dia., 5" Center Hole
+Center_r=Apex_Y+63;
+/**/
+// Page 200x260
+//PrintingOffset_X=100; PrintingOffset_Y=-130; // Pg 1
+//PrintingOffset_X=100-200; PrintingOffset_Y=-130; // Pg 2
+//PrintingOffset_X=100; PrintingOffset_Y=-130-260; // Pg 3
+//PrintingOffset_X=100-200; PrintingOffset_Y=-130-260; // Pg 4
+//PrintingOffset_X=0; PrintingOffset_Y=-130-260-260; // Pg 5
+// ---------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------
+
+// *** Built one and it works great 10/10/2022 ***
+// Make 14 Panels
+// 1.4oz Rip-Stop Nylon, 3mm Polypropylene rope (knit, cheep from Amazon)
+/*
+Pointyness=0.4; Panel_Y=2; SeamAllowance=7;
+nPanels=14; 
 Arc_r=900; Apex_Y=855; Hole_X=40; //14 Panels 360mm x 855mm, 63" Dia., 7" Center Hole
+Center_r=Apex_Y+85;
 /**/
 // Page 200x260
 //PrintingOffset_X=100; PrintingOffset_Y=-130; // Pg 1
@@ -88,17 +114,12 @@ Arc_r=900; Apex_Y=855; Hole_X=40; //14 Panels 360mm x 855mm, 63" Dia., 7" Center
 //PrintingOffset_X=100-200; PrintingOffset_Y=-130-260-260; // Pg 6
 
 
-//for (j=[0:13]) rotate([0,0,360/14*j]) translate([0,-940,0])
-translate([PrintingOffset_X,PrintingOffset_Y+SeamAllowance,0]) offset(delta=SeamAllowance)
+//for (j=[0:nPanels-1]) rotate([0,0,360/nPanels*j]) translate([0,-Center_r,0]) // show full circle
+translate([PrintingOffset_X,PrintingOffset_Y+SeamAllowance,0]) // offset for pdf
+offset(delta=SeamAllowance) // comment out when showing full circle
 P_Shape();
 
-
-
-//2660mm x 1500mm 
-//for (j=[0:4]) translate([220*j,0,0]) P_Shape();
-//for (j=[0:4]) translate([220*j+110,670,0]) rotate([0,0,180]) P_Shape();
 	
-//translate([PrintingOffset_X,PrintingOffset_Y,0])
 module P_Shape(){
 	
 	hull(){
