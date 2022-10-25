@@ -3,7 +3,7 @@
 // Filename: StagerLib.scad
 // by David M. Flynn
 // Created: 10/10/2022 
-// Revision: 0.9.5  10/21/2022
+// Revision: 0.9.6  10/24/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -25,7 +25,8 @@
 //
 //  ***** History *****
 //
-echo("StagerLib 0.9.5");
+echo("StagerLib 0.9.6");
+// 0.9.6  10/24/2022   Added a key to CableRedirect and KeyOffset_a to Stager_Mech
 // 0.9.5  10/21/2022   FC1: Worked fully assembled for the first time.
 // 0.9.4  10/17/2022   Added CableRedirect(). 
 // 0.9.3  10/16/2022   Adapted to booster/sustainer. 
@@ -47,7 +48,7 @@ echo("StagerLib 0.9.5");
 // rotate([0,-90,0]) mirror([1,0,0]) Stager_PushUP();
 // Stager_SpringStop();
 //
-// Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_Len=30);
+// Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_Len=30, KeyOffset_a=90);
 //
 // Stager_TriggerPlateB(Tube_OD=PML98Body_OD);
 // Stager_InnerRace(Tube_OD=PML98Body_OD, nLocks=2);
@@ -238,6 +239,7 @@ module CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 	CablePath_Y=Race_ID/2+Bolt4Inset; //InnerTube_OD/2+10;
 	Exit_a=75;
 	Stop_a=-69;
+	Key_a=Stop_a+33;
 	
 	module CablePath(){
 		R=7;
@@ -283,7 +285,8 @@ module CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 		// vertical tube
 		translate([0,CablePath_Y,-20-Overlap]) cylinder(d=6, h=25+Overlap*2);
 		
-		
+		// Alignment Key
+		rotate([0,0,Key_a]) translate([0,Skirt_ID/2,-Overlap]) cylinder(d=5, h=5+Overlap*2);
 	} // difference
 	
 } // CableRedirect
@@ -765,7 +768,8 @@ module ShowPMPU(Tube_OD=PML98Body_OD, nLocks=2){
 
 //ShowPMPU();
 	
-module Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_Len=30){
+module Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_Len=30, KeyOffset_a=0){
+	// KeyOffset_a must be a multiple 45°
 	Len=Saucer_Len;
 	ID=Tube_OD-StagerLockInset_Y*2-Stager_LockRod_Y-6;
 	LR_X=Stager_LockRod_X;
@@ -896,13 +900,20 @@ module Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_
 			union(){
 				translate([0,0,Race_Z-Race_W-Skirt_Len]) 
 					Tube(OD=Tube_OD, ID=Skirt_ID, Len=Skirt_Len+Overlap*2, myfn=$preview? 36:360);
+				
 				translate([0,0,Race_Z-23]) 
-					TubeStop(InnerTubeID=Skirt_ID-2, OuterTubeOD=Tube_OD, myfn=$preview? 36:360);
+					TubeStop(InnerTubeID=Skirt_ID-3, OuterTubeOD=Tube_OD, myfn=$preview? 36:360);
+				
+				// Alignment key
+				intersection(){
+					rotate([0,0,KeyOffset_a]) translate([0,Skirt_ID/2,Race_Z-27]) cylinder(d=4,h=5);
+					translate([0,0,Race_Z-27]) cylinder(d=Skirt_ID+1, h=5);
+				} // intersection
 			} // union
 			
 			// Arm / Trigger access hole
-			translate([0,BallCircle_d/2-2,Race_Z-Race_W-3]) rotate([0,90,0])
-				cylinder(d=3, h=Tube_OD, center=true);
+			rotate([0,0,KeyOffset_a]) translate([0,BallCircle_d/2-2,Race_Z-Race_W-3])
+				rotate([0,90,0]) cylinder(d=3, h=Tube_OD, center=true);
 		} // difference
 	
 	if ($preview){
@@ -929,7 +940,7 @@ module Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_
 		} // if
 } // Stager_Mech
 
-//Stager_Mech();
+//Stager_Mech(KeyOffset_a=90);
 //rotate([0,0,-20]) mirror([0,1,0]) translate([0,0,Race_Z-12]) rotate([180,0,0]) CableEndAndStop();
 
 module Stager_SpringStop(){

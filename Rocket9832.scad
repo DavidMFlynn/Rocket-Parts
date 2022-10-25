@@ -102,7 +102,7 @@ F54_FairingHalf(IsLeftHalf=false,
 // rotate([0,-90,0]) mirror([1,0,0]) Stager_PushUP(); // print 2
 // Stager_SpringStop(); // print 4
 // 
-// Stager_Mech(Tube_OD=R9832_Body_OD, nLocks=2, Skirt_ID=R9832_Body_ID, Skirt_Len=30);
+// Stager_Mech(Tube_OD=R9832_Body_OD, nLocks=2, Skirt_ID=R9832_Body_ID, Skirt_Len=30, KeyOffset_a=90);
 // Stager_TriggerPlateB(Tube_OD=R9832_Body_OD); // print 2
 // Stager_InnerRace(Tube_OD=R9832_Body_OD, nLocks=2);
 // Stager_BallSpacer(Tube_OD=R9832_Body_OD); // print 2
@@ -123,7 +123,7 @@ F54_FairingHalf(IsLeftHalf=false,
 // ***********************************
 //  ***** for Viewing *****
 //
-// ShowRocket98();
+// ShowRocket9832();
 //
 // ***********************************
 include<Fairing54.scad>
@@ -271,7 +271,7 @@ module ShowBooster9832(){
 	translate([0,0,-40]) ShowMotorJ800T();
 } // ShowBooster9832
 
-FinCanExTube_Len=90;
+FinCanExTube_Len=105;
 
 module ShowRocket9832(){
 	TopOfFinCan_Z=Booster_Body_Len-40+R9832_Fin_Root_L+100+150;
@@ -296,7 +296,7 @@ module ShowRocket9832(){
 	
 	translate([0,0,Booster_Body_Len-40]) ShowMotorK185W();
 	
-	//ShowBooster9832();
+	ShowBooster9832();
 	
 } // ShowRocket9832
 
