@@ -3,7 +3,7 @@
 // Filename: Fairing54.scad
 // by David M. Flynn
 // Created: 8/5/2022 
-// Revision: 1.0.13  10/22/2022
+// Revision: 1.0.14  10/23/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -27,23 +27,24 @@
 //  ***** History *****
 //
 echo("Fairing54 1.0.13");
+// 1.0.14  10/23/2022 improved FairingAssemblyTool
 // 1.0.13  10/22/2022 Added FairingAssemblyTool
-// 1.0.12  10/4/2022 Added IDXtra to ID of Nosecone ring. 
-// 1.0.11  10/3/2022 Fairing locks moved to 18mm from ends. 
-// 1.0.10  9/29/2022 Added FairingBaseBulkPlate. 
-// 1.0.9  9/24/2022  Small improvements.
-// 1.0.8  9/23/2022  Reworked the spring parts. Yet another try to fix the coupler.
-// 1.0.7  9/22/2022  Spring hole made 1.5mm deeper. 
-// 1.0.6  9/21/2022  Fix: Added 1mm to FairingBaseLockRing
-// 1.0.5  9/18/2022  Standardizing FairingConeBaseRing
-// 1.0.4  9/8/2022   Made more parametric and renamed with F54_ prefix
-// 1.0.3  9/3/2022   Copied from Fairing.scad
-// 1.0.2  9/2/2022   Added a glue in BatteryHolder();
-// 1.0.1  8/31/2022  Code cleanup, more parametric. 
-// 1.0.0  8/28/2022  It works. Needs a little cleanup. 
-// 0.9.4  8/28/2022  Moved here from FairingJoint.scad 
-// 0.9.3  8/25/2022  Changed fairing sample to use <CablePuller.scad> and passive joint. 
-// 0.9.2  8/21/2022  Added nosecone and NoseLockRing
+// 1.0.12  10/4/2022  Added IDXtra to ID of Nosecone ring. 
+// 1.0.11  10/3/2022  Fairing locks moved to 18mm from ends. 
+// 1.0.10  9/29/2022  Added FairingBaseBulkPlate. 
+// 1.0.9  9/24/2022   Small improvements.
+// 1.0.8  9/23/2022   Reworked the spring parts. Yet another try to fix the coupler.
+// 1.0.7  9/22/2022   Spring hole made 1.5mm deeper. 
+// 1.0.6  9/21/2022   Fix: Added 1mm to FairingBaseLockRing
+// 1.0.5  9/18/2022   Standardizing FairingConeBaseRing
+// 1.0.4  9/8/2022    Made more parametric and renamed with F54_ prefix
+// 1.0.3  9/3/2022    Copied from Fairing.scad
+// 1.0.2  9/2/2022    Added a glue in BatteryHolder();
+// 1.0.1  8/31/2022   Code cleanup, more parametric. 
+// 1.0.0  8/28/2022   It works. Needs a little cleanup. 
+// 0.9.4  8/28/2022   Moved here from FairingJoint.scad 
+// 0.9.3  8/25/2022   Changed fairing sample to use <CablePuller.scad> and passive joint. 
+// 0.9.2  8/21/2022   Added nosecone and NoseLockRing
 //
 // ***********************************
 //  ***** for STL output *****
@@ -91,6 +92,7 @@ F54_FairingHalf(IsLeftHalf=false,
 //  ***** for Viewing *****
 //
 // ExplodeFairing();
+// ShowAsmTool();
 //
 // ***********************************
 
@@ -147,7 +149,7 @@ module ExplodeFairing(){
 module FairingAssemblyToolPt1(Fairing_OD=PML98Body_OD+IDXtra*2){
 	H=18;
 	Thickness=10;
-	Pin_d=4;
+	Pin_d=4+IDXtra*2;
 	
 	difference(){
 		cylinder(d=Fairing_OD+Thickness*2, h=H);
@@ -189,7 +191,8 @@ module FairingAssemblyToolPt2(Fairing_OD=PML98Body_OD+IDXtra*2){
 	H=18;
 	Thickness=10;
 	Pin_d=4;
-	End_a=11; // <<< calculation needed 
+	End_a=12; // <<< calculation needed 
+	CutBack_d=50;
 	
 	difference(){
 		cylinder(d=Fairing_OD+Thickness*2, h=H);
@@ -211,9 +214,9 @@ module FairingAssemblyToolPt2(Fairing_OD=PML98Body_OD+IDXtra*2){
 		
 		rotate([0,0,End_a])
 		translate([Fairing_OD/2+Thickness/2, 0, -Overlap]) {
-			cylinder(d=Pin_d, h=H+Overlap*2);
-			cylinder(d=Thickness+30, h=H/3+0.5);
-			translate([0,0,H-H/3-0.5]) cylinder(d=Thickness+30, h=H/3+0.5+Overlap*2);
+			cylinder(d=Pin_d+IDXtra*2, h=H+Overlap*2);
+			cylinder(d=Thickness+CutBack_d, h=H/3+0.5);
+			translate([0,0,H-H/3-0.5]) cylinder(d=Thickness+CutBack_d, h=H/3+0.5+Overlap*2);
 		}
 	} // difference
 	
@@ -241,6 +244,8 @@ module FairingAssemblyToolPt3(){
 	Thickness=10;
 	Pin_d=4;
 	Arm_T=4;
+	Handle_Len=70;
+	Pivot_Y=40;
 	
 	difference(){
 		union(){
@@ -250,25 +255,25 @@ module FairingAssemblyToolPt3(){
 			translate([0,0,-Arm_T])
 			hull(){
 				translate([0,0,0]) cylinder(d=Thickness,h=Arm_T);
-				translate([0,60,0]) cylinder(d=Thickness,h=Arm_T);
+				translate([0,Handle_Len,0]) cylinder(d=Thickness,h=Arm_T);
 			} // hull
 			
 			translate([0,0,H])
 			hull(){
 				translate([0,0,0]) cylinder(d=Thickness,h=Arm_T);
-				translate([0,60,0]) cylinder(d=Thickness,h=Arm_T);
+				translate([0,Handle_Len,0]) cylinder(d=Thickness,h=Arm_T);
 			} // hull
 			
 			translate([0,0,-1])
 			hull(){
-				translate([0,45,0]) cylinder(d=Thickness,h=H+2);
-				translate([0,60,0]) cylinder(d=Thickness,h=H+2);
+				translate([0,Handle_Len-15,0]) cylinder(d=Thickness,h=H+2);
+				translate([0,Handle_Len,0]) cylinder(d=Thickness,h=H+2);
 			} // hull
 		} // union
 		
 		translate([0, 0, -Arm_T-Overlap]) 
 			cylinder(d=Pin_d, h=H+Arm_T*2+Overlap*2);
-		translate([0, 30, -Arm_T-Overlap]) 
+		translate([0, Pivot_Y, -Arm_T-Overlap]) 
 			cylinder(d=Pin_d, h=H+Arm_T*2+Overlap*2);
 	} // difference
 } // FairingAssemblyToolPt3
@@ -282,7 +287,7 @@ module FairingAssemblyToolPt4(){
 	Thickness=10;
 	Pin_d=4;
 	Arm_T=4;
-	Arm_Len=20;
+	Arm_Len=28;
 	
 	difference(){
 		union(){
@@ -312,7 +317,16 @@ module FairingAssemblyToolPt4(){
 	} // difference
 } // FairingAssemblyToolPt4
 
-//rotate([0,0,11]) translate([PML98Body_OD/2+5,0,0]) FairingAssemblyToolPt4();
+//FairingAssemblyToolPt4();
+
+module ShowAsmTool(){
+translate([0,0,18]) rotate([180,0,0]) FairingAssemblyToolPt1();
+FairingAssemblyToolPt2();
+translate([PML98Body_OD/2+5,0,0]) rotate([0,0,4]) FairingAssemblyToolPt3();
+rotate([0,0,12]) translate([PML98Body_OD/2+5,0,0]) rotate([0,0,-9]) FairingAssemblyToolPt4();
+} // ShowAsmTool
+
+//ShowAsmTool();
 
 module FairingConeBaseRing(Fairing_OD=Fairing_OD, 
 							FairingWall_T=FairingWall_T, 
