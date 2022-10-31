@@ -3,7 +3,7 @@
 // Filename: Fairing54.scad
 // by David M. Flynn
 // Created: 8/5/2022 
-// Revision: 1.0.14  10/23/2022
+// Revision: 1.0.15  10/27/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -27,6 +27,7 @@
 //  ***** History *****
 //
 echo("Fairing54 1.0.13");
+// 1.0.15  10/27/2022 Added BlendToTube
 // 1.0.14  10/23/2022 improved FairingAssemblyTool
 // 1.0.13  10/22/2022 Added FairingAssemblyTool
 // 1.0.12  10/4/2022  Added IDXtra to ID of Nosecone ring. 
@@ -68,7 +69,7 @@ F54_FairingHalf(IsLeftHalf=false,
 // rotate([180,0,0]) FairingBase(BaseXtra=0, Fairing_OD=Fairing_OD, Fairing_ID=Fairing_ID,
 //					BodyTubeOD=PML54Body_OD, 
 //					CouplerTube_OD=PML54Coupler_OD, CouplerTube_ID=PML54Coupler_ID); // Pring w/ support
-// FairingBaseLockRing(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, Interface=-IDXtra);
+// FairingBaseLockRing(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, Interface=-IDXtra, BlendToTube=false);
 // FairingBaseBulkPlate(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, ShockCord_a=-100);
 //
 // F54_SpringEndCap();
@@ -76,6 +77,12 @@ F54_FairingHalf(IsLeftHalf=false,
 //  **** Assembly Tool ****
 // FairingAssemblyToolPt1(Fairing_OD=PML98Body_OD+IDXtra*2);
 // FairingAssemblyToolPt2(Fairing_OD=PML98Body_OD+IDXtra*2);
+// FairingAssemblyToolPt1(Fairing_OD=PML75Body_OD+IDXtra*2);
+// FairingAssemblyToolPt2(Fairing_OD=PML75Body_OD+IDXtra*2);
+// FairingAssemblyToolPt1(Fairing_OD=PML54Body_OD+IDXtra*2);
+// FairingAssemblyToolPt2(Fairing_OD=PML54Body_OD+IDXtra*2);
+// FairingAssemblyToolPt1(Fairing_OD=5.5*25.4+IDXtra*2);
+// FairingAssemblyToolPt2(Fairing_OD=5.5*25.4+IDXtra*2);
 // FairingAssemblyToolPt3();
 // FairingAssemblyToolPt4();
 //
@@ -191,7 +198,10 @@ module FairingAssemblyToolPt2(Fairing_OD=PML98Body_OD+IDXtra*2){
 	H=18;
 	Thickness=10;
 	Pin_d=4;
-	End_a=12; // <<< calculation needed 
+	End_a=19.5; // 54mm
+	//End_a=15; // 75mm
+	//End_a=12; // 98mm <<< calculation needed 
+	//End_a=9; // 5.5"
 	CutBack_d=50;
 	
 	difference(){
@@ -236,7 +246,7 @@ module FairingAssemblyToolPt2(Fairing_OD=PML98Body_OD+IDXtra*2){
 	} // difference
 } // FairingAssemblyToolPt2
 
-//FairingAssemblyToolPt2();
+//FairingAssemblyToolPt2(Fairing_OD=PML98Body_OD+IDXtra*2);
 
 module FairingAssemblyToolPt3(){
 	// the lever
@@ -319,11 +329,15 @@ module FairingAssemblyToolPt4(){
 
 //FairingAssemblyToolPt4();
 
-module ShowAsmTool(){
-translate([0,0,18]) rotate([180,0,0]) FairingAssemblyToolPt1();
-FairingAssemblyToolPt2();
-translate([PML98Body_OD/2+5,0,0]) rotate([0,0,4]) FairingAssemblyToolPt3();
-rotate([0,0,12]) translate([PML98Body_OD/2+5,0,0]) rotate([0,0,-9]) FairingAssemblyToolPt4();
+module ShowAsmTool(Fairing_OD=PML54Body_OD+IDXtra*2){
+	//a=12; // 98mm
+	// a=9; // 5.5"
+	//a=15; // 75mm
+	a=19.5; // 54mm
+	translate([0,0,18]) rotate([180,0,0]) FairingAssemblyToolPt1(Fairing_OD=Fairing_OD);
+	FairingAssemblyToolPt2(Fairing_OD=Fairing_OD);
+	translate([Fairing_OD/2+5,0,0]) rotate([0,0,4]) FairingAssemblyToolPt3();
+	rotate([0,0,a]) translate([Fairing_OD/2+5,0,0]) rotate([0,0,-a+3]) FairingAssemblyToolPt4();
 } // ShowAsmTool
 
 //ShowAsmTool();
@@ -586,12 +600,14 @@ module FairingBaseBulkPlate(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, ShockCord
 
 //FairingBaBoltDown();
 
-module FairingBaseLockRing(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, Interface=-IDXtra){
+module FairingBaseLockRing(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, Interface=-IDXtra, BlendToTube=false){
 				
 	NC_Lock_OD=NC_Lock_OD(Fairing_ID);
 	NC_Lock_ID=NC_Lock_ID(Fairing_ID);
 	NC_Lock_H=NC_Lock_H;
-					
+				
+	BlendTail_h=BlendToTube? 4+Interface:0;
+	Chanfer_OD=BlendToTube? Tube_ID+Interface:Tube_ID-4;
 	Base_h=5;
 	OA_h=10;
 	
@@ -601,7 +617,8 @@ module FairingBaseLockRing(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, Interface=
 	difference(){
 		union(){
 			// glue flange
-			cylinder(d=Tube_ID+Interface, h=Base_h-Adjustment, $fn=$preview? 90:360);
+			translate([0,0,-BlendTail_h])
+				cylinder(d=Tube_ID+Interface, h=BlendTail_h+Base_h-Adjustment, $fn=$preview? 90:360);
 			
 			translate([0,0,OA_h]) mirror([0,0,1])
 				NoseLockRing(Fairing_ID=Fairing_ID);
@@ -612,12 +629,12 @@ module FairingBaseLockRing(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, Interface=
 		translate([0,0,-Overlap]) cylinder(d=NC_Lock_ID-IDXtra*2-4, h=OA_h+Overlap*2);
 		
 		// Chamfer
-		translate([0,0,-Overlap]) 
-				cylinder(d2=NC_Lock_ID-IDXtra*2-4, d1=Tube_ID-4, h=Base_h, $fn=$preview? 90:360);
+		translate([0,0,-BlendTail_h-Overlap]) 
+				cylinder(d1=Chanfer_OD, d2=NC_Lock_ID-IDXtra*2-4, h=BlendTail_h+Base_h, $fn=$preview? 90:360);
 	} // difference
 } // FairingBaseLockRing
 
-//FairingBaseLockRing(Tube_ID=PML75Body_ID, Fairing_ID=PML75Body_OD-4.4, Interface=Overlap);
+//FairingBaseLockRing(Tube_ID=PML75Body_ID, Fairing_ID=PML75Body_OD-4.4, Interface=Overlap, BlendToTube=false);
 //translate([0,0,0]) mirror([0,0,1]) F54_Retainer(IsLeftHalf=true, Fairing_OD=Fairing_OD, Wall_T=FairingWall_T);
 //translate([0,0,-5]) color("Tan") FairingBaseLockRing(Tube_ID=PML54Body_ID, Fairing_ID=Fairing_ID, Interface=Overlap);
 //FairingBaseLockRing(Tube_ID=BP_Booster_Body_ID, 

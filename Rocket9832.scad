@@ -3,7 +3,7 @@
 // Filename: Rocket9832.scad
 // by David M. Flynn
 // Created: 10/16/2022 
-// Revision: 0.9.2  10/18/2022
+// Revision: 0.9.4  10/28/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -24,8 +24,66 @@
 //  The Booster has a Mission Control V3 for stage separation and
 //  apogee deployment using two cable pullers. Has a Stager and SpringThing.
 //
+//  ***** Where does it go? *****
+//  From top down the orientation of the main parts. 
+//
+//  Nosecone 
+//
+//  Fairing, cable at 270°
+//
+//  Electronics Bay 
+//   Altimeter Battery 0°
+//   Altimeter 90°
+//   Cable Puller Battery w/ Switch 180°
+//   Cable Puller (Fairing) 270°
+//   Wires exit 270°
+//  Drogue Mechanical Bay
+//	 Cable Puller (SpringThing, push out drogue) 0°
+//   Cable Puller Battery w/ Switch 90°
+//   Cable Puller (Stager for drogue separation) 180°
+//   Cable Puller Battery w/ Switch 270°
+//   Wires for sustainer ignition exit 270°
+// SpringThing2 (push out drogue)
+//   Cable from Drogue Mechanical Bay (SpringThing, push out drogue) 0°
+//   Cable from Drogue Mechanical Bay (Stager for drogue separation) 180°
+//   Wire passthrough 270°
+// Stager (Drogue separation)
+//   Cable from Drogue Mechanical Bay (Stager for drogue separation) 180°
+//   Wire passthrough 270°
+//
+// Drogue Cup
+//   Stager Posts 0° and 180°
+//   Rail Guide 210°
+//   Wire connection (Booster attached, Sustainer igniter) 270°
+// Upper Fin Can
+//   Wires (note: rotated 60°) 330°
+//	 Fins 30°, 150•, 270°
+// Lower Fin Can
+//   Wires 330°
+//   Rail Guide 210°
+//   Fins 30°, 150•, 270°
+//
+// Stager
+//  Stager Posts 0° and 180°
+//  Cable 330°
+// SpringThing2
+//  Cable 210°
+//  Stager Cable 330°
+// Booster Upper Fin Can
+//  Fins 30°, 150•, 270°
+//  Altimeter 90°
+//  Cable Puller (Spring thing) 210° 
+//  Cable Puller (Stager) 330°
+// Booster Lower Fin Can
+//  Fins 30°, 150•, 270°
+//  Rail Guide 210°
+//  Altimeter Battery 210°
+//  Cable Puller Battery w/ Switch 90°
+//  Cable Puller Battery w/ Switch 330°
+//
 //  ***** History *****
-// 
+// 0.9.4  10/28/2022  Notes
+// 0.9.3  10/27/2022  Drogue bays
 // 0.9.2  10/18/2022  BoosterLowerFinCan
 // 0.9.1  10/17/2022  BoosterUpperFinCan
 // 0.9.0  10/16/2022  First code.
@@ -62,10 +120,12 @@ F54_FairingHalf(IsLeftHalf=false,
 //
 //
 // *** Electronics Bay ***
-// R98_Electronics_Bay();
+// R98_Electronics_Bay2();
 // FairingBaseBulkPlate(Tube_ID=R9832_Body_ID, Fairing_ID=Fairing_ID, ShockCord_a=-100);
 // AltDoor54(Tube_OD=R9832_Body_OD);
-// DoubleBatteryHolder(Tube_ID=PML98Body_ID, HasBoltHoles=true); // oops!
+// CP_Door(Tube_OD=R9832_Body_OD);
+// Batt_Door(Tube_OD=R9832_Body_OD, HasSwitch=false);
+// Batt_Door(Tube_OD=R9832_Body_OD, HasSwitch=true);
 //
 // ------------
 // *** Cable Puller, 4 Req. ***
@@ -83,7 +143,12 @@ F54_FairingHalf(IsLeftHalf=false,
 // rotate([180,0,0]) TriggerBellCrank();
 // ------------
 //
-// rotate([180,0,0]) Drogue_Cup();
+// DrogueMechBay();
+// rotate([180,0,0]) mirror([0,0,1]) ST_LockRing();
+//
+// ------------
+//
+// Drogue_Cup();
 //
 // UpperFinCan();
 // Rocket9832Fin();
@@ -116,6 +181,11 @@ F54_FairingHalf(IsLeftHalf=false,
 // Batt_Door(Tube_OD=R9832_Body_OD, HasSwitch=false);
 // Batt_Door(Tube_OD=R9832_Body_OD, HasSwitch=true);
 //
+// *** The Rail Guides ***
+// rotate([90,0,0]) BoltOnRailGuide(Length = 35, BoltSpace=12.7, RoundEnds=true); // Drogue Cup
+// rotate([90,0,0]) BoltOnRailGuide(Length = 40, BoltSpace=12.7, RoundEnds=true); // lower fin can
+// rotate([90,0,0]) BoltOnRailGuide(Length = 30, BoltSpace=12.7, RoundEnds=true); // booster lower fin can
+//
 // ***********************************
 //  ***** Routines *****
 //
@@ -123,7 +193,9 @@ F54_FairingHalf(IsLeftHalf=false,
 // ***********************************
 //  ***** for Viewing *****
 //
+// ShowBooster9832();
 // ShowRocket9832();
+// ShowUpperBays();
 //
 // ***********************************
 include<Fairing54.scad>
@@ -132,6 +204,8 @@ include<StagerLib.scad>
 include<AltBay.scad>
 include<CablePuller.scad>
 include<BatteryHolderLib.scad>
+use<SpringThing2.scad>
+use<RacewayLib.scad>
 
 //also included
  //include<NoseCone.scad>
@@ -316,29 +390,320 @@ module R98_Electronics_Bay(){
 
 //R98_Electronics_Bay();
 
-module Drogue_Cup(){
-	nHoles=14;
-	Hole_d=8;
+
+module R98_Electronics_Bay2(){
+	Len=162;
+	CablePuller_Z=81;
+	BattSwDoor_Z=70;
+	TopSkirt_Len=15;
+	BottomSkirt_Len=15;
+	CP1_a=0;
+	Alt_a=180;
+	Batt1_a=90; // Altimeter Battery
+	Batt2_a=270; // Cable puller battery and switch
 	
-	Stager_Cup(Tube_OD=R9832_Body_OD, ID=78, nLocks=2, BoltsOn=false);
-	/*
+	// The Fairing clamps onto this. 
+	translate([0,0,Len-5]) FairingBaseLockRing(Tube_ID=R9832_Body_ID, Fairing_ID=Fairing_ID, Interface=Overlap, BlendToTube=true);
+	
 	difference(){
 		union(){
-			Stager_Cup(Tube_OD=R9832_Body_OD, ID=78, nLocks=2, BoltsOn=false);
-			translate([0,0,21-Overlap]) cylinder(d=R9832_Body_OD-1,h=12);
+			Tube(OD=R9832_Body_OD, ID=R9832_Body_ID, Len=Len, myfn=$preview? 36:360);
+			translate([0,0,BottomSkirt_Len])
+				CenteringRing(OD=R9832_Body_OD-1, ID=BT54Mtr_OD+IDXtra, Thickness=5, nHoles=4);
+			translate([0,0,Len-5-TopSkirt_Len])
+				CenteringRing(OD=R9832_Body_OD-1, ID=BT54Mtr_OD+IDXtra, Thickness=5, nHoles=4);
+	} // union
+		
+		// Altimeter
+		translate([0,0,CablePuller_Z]) rotate([0,0,Alt_a]) 
+			Alt_BayFrameHole(Tube_OD=R9832_Body_OD);
+	
+		// Cable Puller door hole
+		translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a])
+			CP_BayFrameHole(Tube_OD=R9832_Body_OD);
+		
+		// Battery and Switch door holes
+		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
+			Batt_BayFrameHole(Tube_OD=R9832_Body_OD, HasSwitch=false);
+		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
+			Batt_BayFrameHole(Tube_OD=R9832_Body_OD, HasSwitch=true);
+		
+	} // difference
+	
+	// Altimeter
+	translate([0,0,CablePuller_Z]) rotate([0,0,Alt_a])
+		Alt_BayDoorFrame(Tube_OD=R9832_Body_OD, Tube_ID=R9832_Body_ID, ShowDoor=false);
+	
+	// Cable Pullers
+	translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a])
+		CP_BayDoorFrame(Tube_OD=R9832_Body_OD, Tube_ID=R9832_Body_ID, ShowDoor=false);
+	
+	// Battery and Switch door2
+	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
+		Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, HasSwitch=false, ShowDoor=false);
+	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
+		Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, HasSwitch=true, ShowDoor=false);
+	
+} // R98_Electronics_Bay2
+
+//translate([0,0,162]) R98_Electronics_Bay2();
+
+module DrogueMechBay(){
+	Len=162;
+	CablePuller_Z=81;
+	BattSwDoor_Z=70;
+	TopSkirt_Len=15;
+	BottomSkirt_Len=15;
+	CP1_a=0;
+	CP2_a=180;
+	Batt1_a=90;
+	Batt2_a=270;
+	
+	
+	difference(){
+		union(){
+			Tube(OD=R9832_Body_OD, ID=R9832_Body_ID, Len=Len, myfn=$preview? 36:360);
+			translate([0,0,BottomSkirt_Len])
+				CenteringRing(OD=R9832_Body_OD-1, ID=BT54Mtr_OD+IDXtra, Thickness=5, nHoles=4);
+			translate([0,0,Len-5-TopSkirt_Len])
+				CenteringRing(OD=R9832_Body_OD-1, ID=BT54Mtr_OD+IDXtra, Thickness=5, nHoles=4);
 		} // union
 		
-		// holes
-		for (j=[0:nHoles-1]) rotate([0,0,180/nHoles+360/nHoles*j]) translate([0,R9832_Coupler_ID/2-Hole_d/2,3]){
-			cylinder(d1=1, d2=Hole_d, h=4);
-			translate([0,0,4-Overlap]) cylinder(d=Hole_d, h=30);
-		}
-		translate([0,0,21-Overlap*2]) cylinder(d1=78, d2=R9832_Coupler_ID-1 ,h=12+Overlap*3);
+		// Cable Puller door holes
+		translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a])
+			rotate([0,180,0]) CP_BayFrameHole(Tube_OD=R9832_Body_OD);
+		translate([0,0,CablePuller_Z]) rotate([0,0,CP2_a]) 
+			rotate([0,180,0]) CP_BayFrameHole(Tube_OD=R9832_Body_OD);
+		
+		// Battery and Switch door holes
+		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
+			Batt_BayFrameHole(Tube_OD=R9832_Body_OD, HasSwitch=true);
+		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
+			Batt_BayFrameHole(Tube_OD=R9832_Body_OD, HasSwitch=true);
+		
+	} // difference
+	
+	// Cable Pullers
+	translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a])
+		rotate([0,180,0]) CP_BayDoorFrame(Tube_OD=R9832_Body_OD, Tube_ID=R9832_Body_ID, ShowDoor=false);
+	translate([0,0,CablePuller_Z]) rotate([0,0,CP2_a]) 
+		rotate([0,180,0]) CP_BayDoorFrame(Tube_OD=R9832_Body_OD, Tube_ID=R9832_Body_ID, ShowDoor=false);
+	
+	// Battery and Switch door2
+	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
+		Batt_BayDoorFrame(Tube_OD=R9832_Body_OD, Tube_ID=R9832_Body_ID, HasSwitch=true, ShowDoor=false);
+	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
+		Batt_BayDoorFrame(Tube_OD=R9832_Body_OD, Tube_ID=R9832_Body_ID, HasSwitch=true, ShowDoor=false);
+	
+} // DrogueMechBay
+
+//DrogueMechBay();
+
+module DrogueSpringThing(){
+	// 70mm long
+	Raceway_Len=36;
+	Raceway_Z=-1;
+	
+	//*
+	difference(){
+		rotate([180,0,230]) ST_Frame(Tube_OD=R9832_Body_OD, Skirt_ID=R9832_Body_ID, Collar_Len=26, Skirt_Len=34);
+
+		translate([0,0,Raceway_Z+Raceway_Len/2]) 
+			Raceway_Exit(Tube_OD=R9832_Body_OD, Race_ID=6, Wall_t=4, Top_Len=10, Bottom_Len=10);
+		translate([0,0,Raceway_Z-Raceway_Len/2]) rotate([180,0,0]) 
+			Raceway_Exit(Tube_OD=R9832_Body_OD, Race_ID=6, Wall_t=4, Top_Len=10, Bottom_Len=10);
 	} // difference
 	/**/
+	translate([0,0,Raceway_Z+Raceway_Len/2]) 
+		Raceway_End(Tube_OD=R9832_Body_OD, Race_ID=6, Wall_t=4, Len=Raceway_Len/2); //External cover end
+	translate([0,0,Raceway_Z-Raceway_Len/2]) rotate([180,0,0]) 
+		Raceway_End(Tube_OD=R9832_Body_OD, Race_ID=6, Wall_t=4, Len=Raceway_Len/2); //External cover end
+} // DrogueSpringThing
+
+//translate([0,0,-40-Overlap]) DrogueSpringThing();
+
+module Drogue_ST_CableRedirect(){
+	difference(){
+		rotate([180,0,180]) ST_CableRedirect(Tube_OD=R9832_Body_OD, Skirt_ID=R9832_Body_ID, 
+							Tube_ID=PML98Coupler_ID, 
+							InnerTube_OD=BT54Mtr_OD, StagerCable_a=180);
+		
+		// cut out for wires
+		translate([0,0,-6]) hull(){
+			translate([R9832_Body_OD/2,0,0]) cylinder(d=6, h=40);
+			translate([R9832_Body_OD/2-6,0,0]) cylinder(d=6, h=40);
+		} // hull
+	} // difference
+} // Drogue_ST_CableRedirect
+
+//Drogue_ST_CableRedirect();
+
+//ST_DetentOnly();
+//mirror([0,0,1]) ST_LockRing();
+
+//translate([0,0,-13]) rotate([0,0,0]) 
+//mirror([0,0,1]) ST_LockBallRetainer(Tube_OD=PML98Body_OD,HasDetent=false);
+
+module Drogue_ST_UpperCenteringRing(){
+	difference(){
+		rotate([180,0,180]) ST_UpperCenteringRing(Tube_OD=R9832_Body_OD, Tube_ID=PML98Coupler_ID, 
+					Skirt_ID=R9832_Body_ID, InnerTube_OD=BT54Mtr_OD, StageCable_a=180);
+		
+		// cut out for wires
+		translate([0,0,-6]) hull(){
+			translate([R9832_Body_OD/2,0,0]) cylinder(d=6, h=40);
+			translate([R9832_Body_OD/2-6,0,0]) cylinder(d=6, h=40);
+		} // hull
+	} // difference
 	
-	Tube(OD=R9832_Body_OD, ID=R9832_Body_ID, Len=60, myfn=$preview? 36:360);
+} // Drogue_ST_UpperCenteringRing
+
+//Drogue_ST_UpperCenteringRing();
+
+module Drogue_ST_LowerCenteringRing(){
+	difference(){
+		rotate([180,0,180]) ST_UpperCenteringRing(Tube_OD=R9832_Body_OD, Tube_ID=PML98Coupler_ID, 
+					Skirt_ID=R9832_Body_ID, InnerTube_OD=BT54Mtr_OD, StageCable_a=180);
+		
+		// cut out for wires
+		translate([0,0,-6]) hull(){
+			translate([R9832_Body_OD/2,0,0]) cylinder(d=6, h=40);
+			translate([R9832_Body_OD/2-6,0,0]) cylinder(d=6, h=40);
+		} // hull
+	} // difference
+} // Drogue_ST_LowerCenteringRing
+
+//Drogue_ST_LowerCenteringRing();
+
+module ShowUpperBays(){
+	rotate([0,0,90]) translate([0,0,162]) R98_Electronics_Bay2();
+	DrogueMechBay();
 	
+	//*
+	translate([0,0,-34-Overlap]){
+		translate([0,0,19]) Drogue_ST_CableRedirect();
+		DrogueSpringThing();
+		translate([0,0,-15]) Drogue_ST_LowerCenteringRing();
+	}
+	//*
+	translate([0,0,-300]) color("Blue") Tube(OD=BT54Mtr_OD, ID=BT54Mtr_ID, Len=24*25.4, myfn=$preview? 36:360);
+	translate([90,0,-300]) color("Blue") Tube(OD=BT54Mtr_OD, ID=BT54Mtr_ID, Len=240, myfn=$preview? 36:360);
+	//*
+	translate([0,0,-34-70-124]) color("Orange") Tube(OD=R9832_Body_OD, ID=R9832_Body_ID, Len=157.5, myfn=$preview? 36:360);
+	//*
+	translate([0,0,-322]){
+		translate([0,0,78]) DrogueSep_CableRedirect();
+		DrogueSep();
+		
+	}
+	
+	// wires
+	//*
+	translate([0,0,-350]) rotate([0,0,-90]) translate([0,40,0]) cylinder(d=6, h=100);
+	//*
+	translate([0,0,-45]) ST_LockRing(); // Glued to top of spring.
+
+	translate([0,0,-16]) Drogue_ST_CableRedirect();
+	translate([0,0,-49]) Drogue_ST_UpperCenteringRing();
+
+	/**/
+} // ShowUpperBays
+
+//ShowUpperBays();
+
+module DrogueSep_CableRedirect(){
+	difference(){
+		rotate([180,0,180]) CableRedirect(Tube_OD=R9832_Body_OD, Skirt_ID=R9832_Body_ID, Tube_ID=R9832_Coupler_ID, InnerTube_OD=BT54Mtr_OD);
+		
+		// cut out for wires
+		translate([0,0,-6]) hull(){
+			translate([R9832_Body_OD/2,0,0]) cylinder(d=6, h=40);
+			translate([R9832_Body_OD/2-6,0,0]) cylinder(d=6, h=40);
+		} // hull
+	} // difference
+} // DrogueSep_CableRedirect
+
+//translate([0,0,78])DrogueSep_CableRedirect();
+
+module DrogueSep(){
+	// Length 85mm
+	Raceway_Len=50;
+	Raceway_Z=52;
+
+	difference(){
+		rotate([180,0,180]) Stager_Mech(Tube_OD=R9832_Body_OD, nLocks=2, Skirt_ID=R9832_Body_ID, Skirt_Len=32, KeyOffset_a=0);
+		
+		translate([0,0,Raceway_Z+Raceway_Len/2]) 
+			Raceway_Exit(Tube_OD=R9832_Body_OD, Race_ID=6, Wall_t=4, Top_Len=10, Bottom_Len=10);
+		translate([0,0,Raceway_Z-Raceway_Len/2]) rotate([180,0,0]) 
+			Raceway_Exit(Tube_OD=R9832_Body_OD, Race_ID=6, Wall_t=4, Top_Len=10, Bottom_Len=10);
+
+	} // difference
+	
+	translate([0,0,Raceway_Z+Raceway_Len/2]) 
+		Raceway_End(Tube_OD=R9832_Body_OD, Race_ID=6, Wall_t=4, Len=Raceway_Len/2); //External cover end
+	translate([0,0,Raceway_Z-Raceway_Len/2]) rotate([180,0,0]) 
+		Raceway_End(Tube_OD=R9832_Body_OD, Race_ID=6, Wall_t=4, Len=Raceway_Len/2); //External cover end
+
+} // DrogueSep
+
+//DrogueSep();
+
+//translate([0,0,-170]) rotate([180,0,180])
+//CableRedirect(Tube_OD=R9832_Body_OD, Skirt_ID=R9832_Body_ID, Tube_ID=PML98Coupler_ID, InnerTube_OD=BT54Mtr_OD);
+
+//
+//translate([0,0,-320]) color("Orange") DrogueSep();
+
+module Drogue_Cup(){
+	WireHole_d=5.5;
+	RailGuide_Z=-32;
+	RG_Len=35;
+	Rivet_Z=-40;
+	
+	difference(){
+		rotate([180,0,0]) Stager_Cup(Tube_OD=R9832_Body_OD, ID=76, nLocks=2, BoltsOn=false);
+	
+		//Sustainer Ignition Wire
+		rotate([0,0,-90]) translate([0,R9832_Coupler_ID/2-WireHole_d/2-3,-22]) 
+			cylinder(d=WireHole_d, h=25);
+		
+		// Rail guide bolts
+		translate([0,0,RailGuide_Z]) rotate([0,0,-90-180/nFins]) 
+			translate([0,R9832_Body_OD/2+2,0]) RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
+	} // difference
+	
+	difference(){
+		// Skirt
+		translate([0,0,-60]) Tube(OD=R9832_Body_OD, ID=R9832_Body_ID, Len=60, myfn=$preview? 36:360);
+	
+		// Rail guide bolts
+		translate([0,0,RailGuide_Z]) rotate([0,0,-90-180/nFins]) 
+			translate([0,R9832_Body_OD/2+2,0]) RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
+		
+		// Rivet holes
+		for (j=[0:2]) rotate([0,0,120*j]) translate([0,R9832_Body_OD/2+1,Rivet_Z])
+			rotate([90,0,0]) cylinder(d=4, h=5);
+	} // difference
+	
+	//*
+	difference(){
+		// Rail Guide
+		translate([0,0,RailGuide_Z]) rotate([0,0,-90-180/nFins]) 
+			//RailButtonPost(OD=R98_Body_OD, MtrTube_OD=R98_MtrTube_OD, H=R98_Body_OD/2+5, Len=30);
+			RailGuidePost(OD=R9832_Body_OD, MtrTube_OD=R9832_MtrTube_OD+IDXtra*2, H=R9832_Body_OD/2+2, 
+				TubeLen=RG_Len+10, Length = RG_Len, BoltSpace=12.7);
+		
+		translate([0,0,-80]) cylinder(d=R9832_Body_OD-1, h=80);
+		
+		// Rivet holes
+		for (j=[0:2]) rotate([0,0,120*j]) translate([0,R9832_Body_OD/2+1,Rivet_Z])
+			rotate([90,0,0]) cylinder(d=4, h=5);
+	} // difference
+		
+	/**/
+	if ($preview) rotate([0,0,-90-180/nFins])  translate([0,R9832_Body_OD/2+2,RailGuide_Z]) 
+		BoltOnRailGuide(Length = RG_Len, BoltSpace=12.7, RoundEnds=true);
 } // Drogue_Cup
 
 //Drogue_Cup();
@@ -427,6 +792,18 @@ module Rocket9832Fin(){
 
 // Rocket9832Fin();
 
+// Spring thing
+/*
+translate([0,0,-10]){
+translate([0,0,-10]) rotate([180,0,0]) ST_CableRedirect(Tube_OD=R9832_Body_OD, Skirt_ID=R9832_Body_ID, 
+							Tube_ID=PML98Coupler_ID, 
+							InnerTube_OD=BT54Mtr_OD, StageCable_a=180);
+translate([0,0,-30]) rotate([180,0,50]) ST_Frame(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, Collar_Len=20, Skirt_Len=30); // 60mm long
+
+translate([0,0,-45])
+rotate([180,0,0])
+ST_UpperCenteringRing(Tube_OD=PML98Body_OD, Tube_ID=PML98Coupler_ID, Skirt_ID=PML98Body_ID, InnerTube_OD=BT54Mtr_OD, StageCable_a=180);
+} /**/
 
 
 module BoosterUpperFinCan(){

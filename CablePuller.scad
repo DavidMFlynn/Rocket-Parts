@@ -3,7 +3,7 @@
 // Filename: CablePuller.scad
 // by David M. Flynn
 // Created: 8/21/2022 
-// Revision: 1.1.0  10/14/2022
+// Revision: 1.1.1  10/25/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -20,7 +20,8 @@
 //
 //  ***** History *****
 //
-echo("CablePuller 1.1.0");
+echo("CablePuller 1.1.1");
+// 1.1.1  10/25/2022  Wider door
 // 1.1.0  10/14/2022  Added TriggerBellCrank and BellCrankTriggerBearingHolder for CageTop. 
 // 1.0.1  9/17/2022   Fixed SpingBody guide width. 
 // 1.0    9/11/2022	  It works OK. Changed set screw hole to Bolt8Hole(), Added notes. 
@@ -87,6 +88,10 @@ CR_h=CableEnd_h+2;
 CP_SpringBody_YZ=11;
 LooseFit=0.8;
 
+Bolt4Inset=4;
+CP_Door_Y=120;
+CP_Door_X=CP_SpringBody_YZ+5+Bolt4Inset*4+20; // changed 10/25/2022, was +10
+
 module Bearing(){
 	color("Red")
 	difference(){
@@ -130,10 +135,6 @@ module ShowCablePuller(){
 
 //ShowCablePuller();
 
-Bolt4Inset=4;
-CP_Door_Y=120;
-CP_Door_X=CP_SpringBody_YZ+5+Bolt4Inset*4+10;
-
 module CPDoorHole(Tube_OD=PML98Body_OD){
 	Door_Y=CP_Door_Y+1;
 	Door_X=CP_Door_X+1;
@@ -152,7 +153,7 @@ module CPDoorHole(Tube_OD=PML98Body_OD){
 module CP_DoorBoltPattern(Tube_OD=PML98Body_OD){
 	Door_Y=CP_Door_Y;
 	Door_X=CP_Door_X;
-	DoorBolt_a=20; // calculation needed
+	DoorBolt_a=25; // changed 10/25/2022 was 20, calculation needed
 	
 	rotate([0,DoorBolt_a,0]) translate([0,Door_Y/2-4,Tube_OD/2]) children();
 	rotate([0,DoorBolt_a,0]) translate([0,-Door_Y/2+4,Tube_OD/2]) children();
@@ -201,7 +202,7 @@ module CP_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=fals
 			// Door frame
 			intersection(){
 				translate([0,0,-Door_Y/2-3]) 
-					Tube(OD=Tube_OD-1, ID=Tube_ID-8, Len=Door_Y+6, myfn=$preview? 36:360);
+					Tube(OD=Tube_OD-1, ID=Tube_ID-9, Len=Door_Y+6, myfn=$preview? 36:360);
 					
 				hull(){
 					translate([0,-Tube_ID/2+12,0]) rotate([90,0,0]) 
@@ -221,13 +222,23 @@ module CP_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=fals
 	difference(){
 		// Bolt bosses
 		intersection(){
+			// trim outside
 			translate([0,0,-Door_Y/2-3]) 
-					Tube(OD=Tube_OD-1, ID=Tube_ID-8, Len=Door_Y+6, myfn=$preview? 36:360);
+					Tube(OD=Tube_OD-1, ID=Tube_ID-9, Len=Door_Y+6, myfn=$preview? 36:360);
+				
+			// trim inside
+			hull(){
+				translate([0,-Tube_ID/2+12,0]) rotate([90,0,0]) 
+					RoundRect(X=Door_X+3, Y=Door_Y+3, Z=Tube_OD, R=4+3);
+				translate([0,-Tube_ID/2,0]) rotate([90,0,0]) 
+					RoundRect(X=Tube_ID*2, Y=Door_Y+8, Z=Tube_OD, R=4+3);
+			} // hull
+		
 			
 			rotate([90,0,0]) 
-				CP_DoorBoltPattern(Tube_OD=Tube_OD) translate([0,0,-6]) hull(){
+				CP_DoorBoltPattern(Tube_OD=Tube_OD) translate([0,0,-6.5]) hull(){
 					cylinder(d=Bolt4Inset*2, h=6);
-					translate([Bolt4Inset,0,0]) cylinder(d=Bolt4Inset*2+2, h=6);
+					translate([Bolt4Inset+2,0,0]) cylinder(d=Bolt4Inset*2+2, h=6);
 				}
 			
 		} // intersection
@@ -245,7 +256,7 @@ module CP_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=fals
 	
 } // CP_BayDoorFrame
 
-//CP_BayDoorFrame(ShowDoor=true);
+//CP_BayDoorFrame(ShowDoor=false);
 
 module CP_Door(Tube_OD=PML98Body_OD){
 	Door_Y=CP_Door_Y;

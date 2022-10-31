@@ -3,7 +3,7 @@
 // Filename: RailGuide.scad
 // by David M. Flynn
 // Created: 6/11/2022 
-// Revision: 1.0.1  10/11/2022
+// Revision: 1.0.2  10/29/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,7 +12,8 @@
 //
 //  ***** History *****
 //
-echo("RailGuide 1.0.1");
+echo("RailGuide 1.0.2");
+// 1.0.2  10/29/2022 Narrower and taller by 0.3mm.
 // 1.0.1  10/11/2022 Added TubeBoltedRailGuide
 // 1.0.0  10/4/2022 Printed and verified function.  
 // 0.9.1  10/4/2022 Added BoltOnRailGuide()
@@ -21,7 +22,8 @@ echo("RailGuide 1.0.1");
 // ***********************************
 //  ***** for STL output *****
 //
-// rotate([90,0,0]) BoltOnRailGuide(Length = 40, BoltSpace=12.7, RoundEnds=true);
+// 
+rotate([90,0,0]) BoltOnRailGuide(Length = 40, BoltSpace=12.7, RoundEnds=true);
 // RialGuide(TubeOD = 98, Length = 40, Offset = 3);
 //
 // TubeBoltedRailGuide(TubeOD=PML98Body_OD, Length = 30, Offset = 3);
@@ -55,8 +57,8 @@ $fn=$preview? 24:90;
 // ***** Verified 10/4/2022 *****
 
 RG_Back_w=0.626*25.4;
-RG_Web_w=0.250*25.4 - 0.5;
-RG_Web_t=0.125*25.4 + 0.5;
+RG_Web_w=0.250*25.4 - 0.8;
+RG_Web_t=0.125*25.4 + 0.8;
 RG_Cap_w=0.500*25.4 - 1.0;
 RG_Cap_t=0.250*25.4 - 1.0;
 
