@@ -3,7 +3,7 @@
 // Filename: SpringThing2.scad
 // by David M. Flynn
 // Created: 10/17/2022 
-// Revision: 0.9.9  10/29/2022
+// Revision: 0.9.10  10/30/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -11,6 +11,7 @@
 // Built to deploy a parachute from a booster with a spring.
 //
 //  ***** History *****
+// 0.9.10 10/30/2022 Moved the collar tube stop, FC3
 // 0.9.9  10/29/2022 Deeper ball entry on ST_LockRing, reworked drilling jig again
 // 0.9.8  10/25/2022 Added ST_SpringMiddle
 // 0.9.7  10/25/2022 Added StageCable_a to ST_CableRedirect
@@ -655,13 +656,14 @@ module ST_MT_DrillingJig(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, InnerTubeO
 
 module ST_Frame(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, Collar_Len=20, Skirt_Len=30){
 	Race_W=10;
-	StagerCable_a=69;
+	SkirtTubeStop_Z=-13;
+	CollarTubeStop_Z=16;
 	
 	difference(){
 		union(){
 			// collar
 			Tube(OD=Tube_OD, ID=Skirt_ID, Len=Collar_Len+Race_W, myfn=$preview? 36:360);
-			translate([0,0,15]) rotate([180,0,0])
+			translate([0,0,CollarTubeStop_Z]) rotate([180,0,0])
 				TubeStop(InnerTubeID=Skirt_ID-3, OuterTubeOD=Tube_OD, myfn=$preview? 36:360);
 	
 			ST_LockRingOuterRace(Tube_OD=Tube_OD);
@@ -670,15 +672,20 @@ module ST_Frame(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, Collar_Len=20, Skir
 			translate([0,0,-Skirt_Len]) 
 				Tube(OD=Tube_OD, ID=Skirt_ID, Len=Skirt_Len+Overlap*2, myfn=$preview? 36:360);
 			
-			translate([0,0,-13]) 
+			translate([0,0,SkirtTubeStop_Z]) 
 				TubeStop(InnerTubeID=Skirt_ID-3, OuterTubeOD=Tube_OD, myfn=$preview? 36:360);
 			
 			// Alignment key
 			intersection(){
 				union(){
-					translate([0,Skirt_ID/2,-16]) cylinder(d=4,h=5);
-					translate([0,Skirt_ID/2,14]) cylinder(d=4,h=5);
+					translate([0,Skirt_ID/2,SkirtTubeStop_Z-5]) cylinder(d=4,h=5);
+					translate([0,Skirt_ID/2,SkirtTubeStop_Z-Overlap]) cylinder(d2=3, d1=4, h=2+Overlap);
+					
+					translate([0,Skirt_ID/2,CollarTubeStop_Z-2]) cylinder(d1=3, d2=4, h=2+Overlap);
+					translate([0,Skirt_ID/2,CollarTubeStop_Z]) cylinder(d=4,h=5);
 				} // union
+				
+				// don't protrude
 				translate([0,0,-18]) cylinder(d=Skirt_ID+1, h=40);
 			} // intersection
 	
@@ -688,8 +695,6 @@ module ST_Frame(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, Collar_Len=20, Skir
 		translate([0,DepLockRingBC/2-2,-3]) rotate([0,90,0])
 			cylinder(d=3, h=Tube_OD, center=true);
 		
-		// didn't work too small, drill by hand
-		//rotate([0,0,StagerCable_a]) translate([0,Tube_OD/2-1.8,-5]) cylinder(d=1.2, h=20);
 	} // difference
 	
 } // ST_Frame
