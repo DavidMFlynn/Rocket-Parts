@@ -3,7 +3,7 @@
 // Filename: AltBay.scad
 // by David M. Flynn
 // Created: 6/23/2022 
-// Revision: 0.9.10 10/17/2022
+// Revision: 0.9.11 10/31/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,6 +12,7 @@
 //
 //  ***** History *****
 //
+// 0.9.11 10/31/2022  Added missing bolt bosses the Alt_BayDoorFrame
 // 0.9.10 10/17/2022  Added Alt_BayFrameHole and Alt_BayDoorFrame
 // 0.9.9  9/12/2022 Fixes. 
 // 0.9.8  9/11/2022 Moved UpperRailButtonPost and Electronics_Bay to here
@@ -165,6 +166,7 @@ module Alt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=fal
 	Door_X=Alt54Door_X;
 	Door_t=3;
 	BoltBossInset=10.5+2;
+	AltOffset_Y=7;
 	
 	difference(){
 		union(){
@@ -189,7 +191,12 @@ module Alt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=fal
 				} // hull
 			} // intersection
 		} // union
-		
+				
+		// Bolt bosses
+		rotate([90,0,0]) 
+			translate([0,Alt_Y/2-Door_Y/2+AltOffset_Y,Tube_OD/2-Door_t-BoltBossInset]) 
+						AltHoles() cylinder(d=10, h=BoltBossInset+4);
+	
 		rotate([90,0,0]) RoundRect(X=Door_X-4, Y=Door_Y-4, Z=Tube_OD, R=4-2);
 		
 		rotate([90,0,0]) AltDoorHole54(Tube_OD=Tube_OD);
@@ -290,11 +297,13 @@ module AltBay54(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Tube_Len=120, ShowDo
 //AltBay54(ShowDoor=true);
 //AltBay54(ShowDoor=false);
 
-module AltDoor54(Tube_OD=PML54Body_OD){
+module AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false){
 	Door_Y=Alt54Door_Y;
 	Door_X=Alt54Door_X;
 	Door_t=3;
-	BoltBossInset=10.5;
+	BoltBossInset=IsLoProfile? 5.5:10.5;
+	BoltDepth=IsLoProfile? BoltBossInset+2:BoltBossInset-2; // thru the door:not
+	LEDSW_Boss_H=IsLoProfile? 0:3;
 	AltOffset_Y=7;
 	
 	difference(){
@@ -311,8 +320,10 @@ module AltDoor54(Tube_OD=PML54Body_OD){
 						cylinder(d=Tube_OD-1, h=Door_Y);
 				union(){
 					// LED and Arming holes
-					translate([0,-Door_Y/2+AltOffset_Y+AltArmingScrew_Y,Tube_OD/2-Door_t-3]) cylinder(d=5+6, h=Tube_OD);
-					translate([0,-Door_Y/2+AltOffset_Y+AltLED_Y,Tube_OD/2-Door_t-3]) cylinder(d=5+6, h=Tube_OD);
+					translate([0,-Door_Y/2+AltOffset_Y+AltArmingScrew_Y,Tube_OD/2-Door_t-LEDSW_Boss_H])
+						cylinder(d=5+6, h=10);
+					translate([0,-Door_Y/2+AltOffset_Y+AltLED_Y,Tube_OD/2-Door_t-LEDSW_Boss_H]) 
+						cylinder(d=5+6, h=10);
 				
 					// Bolt bosses
 					translate([0,Alt_Y/2-Door_Y/2+AltOffset_Y,Tube_OD/2-Door_t-BoltBossInset]) 
@@ -321,10 +332,16 @@ module AltDoor54(Tube_OD=PML54Body_OD){
 			} // intersection
 		} // union
 	
+		// PCB parts
+		translate([0,-Door_Y/2+AltOffset_Y,Tube_OD/2-Door_t-BoltBossInset]) {
+			translate([-10,27,0]) cube([12,12,8],center=true);
+		}
+		
 		// Altimeter holes
 		translate([0,-Door_Y/2+AltOffset_Y,0]){
 			translate([0,Alt_Y/2,Tube_OD/2-Door_t-BoltBossInset]) 
-				AltHoles() rotate([180,0,0]) Bolt4Hole(depth=BoltBossInset-Door_t); //Bolt4ButtonHeadHole();
+				AltHoles() rotate([180,0,0]) Bolt4Hole(depth=BoltDepth); //Bolt4ButtonHeadHole();
+			
 			translate([0,AltArmingScrew_Y,0]) cylinder(d=5, h=Tube_OD);
 			translate([0,AltLED_Y,0]) cylinder(d=5, h=Tube_OD);
 		}
@@ -336,7 +353,8 @@ module AltDoor54(Tube_OD=PML54Body_OD){
 
 } // AltDoor54
 
-//rotate([90,0,0]) AltDoor54();
+//rotate([90,0,0]) AltDoor54(Tube_OD=PML98Body_OD, IsLoProfile=false);
+//rotate([180,0,0]) AltDoor54(Tube_OD=PML98Body_OD, IsLoProfile=true);
 
 module UpperRailButtonPost(Body_OD=PML54Body_OD, Body_ID=PML54Body_ID, MtrTube_OD=PML38Body_OD, Extend=5){
 		

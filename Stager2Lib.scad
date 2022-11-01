@@ -3,7 +3,7 @@
 // Filename: Stager2Lib.scad
 // by David M. Flynn
 // Created: 10/10/2022 
-// Revision: 0.9.9  10/30/2022
+// Revision: 0.9.10  10/31/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -22,7 +22,8 @@
 //
 //  ***** History *****
 //
-echo("StagerLib 0.9.9");
+echo("StagerLib 0.9.10");
+// 0.9.10  10/31/2022  Added Raceway, Increased ID by 2mm
 // 0.9.9  10/30/2022   Stager2 complete redesign, was too complex to be reliable
 // 0.9.8  10/26/2022   Realigned the keys, FC3. 
 // 0.9.7  10/25/2022   Small fixes, FC2
@@ -42,9 +43,9 @@ echo("StagerLib 0.9.9");
 // rotate([-90,0,0]) Stager_LockRod(Adj=0.5)
 // rotate([-90,0,0]) Stager_LockRod(Adj=1.0);
 // Stager_Saucer(Tube_OD=PML98Body_OD, nLocks=2); // Bolts on
+// LockRing(nLocks=2);
 //
-//
-// Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_Len=30, KeyOffset_a=0);
+// Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_Len=30, KeyOffset_a=-30, HasRaceway=true, Raceway_a=270);
 //
 // Stager_InnerRace(Tube_OD=PML98Body_OD, nLocks=2);
 // Stager_BallSpacer(Tube_OD=PML98Body_OD);
@@ -55,8 +56,8 @@ echo("StagerLib 0.9.9");
 // ***********************************
 //  ***** Routines *****
 //
-// Stager_CupHoles(Tube_OD=102.21, ID=78, nLocks=2, BoltsOn=true);
-// Stager_Cup(Tube_OD=102.21, ID=78, nLocks=2);
+// Stager_CupHoles(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true);
+// Stager_Cup(Tube_OD=PML98Body_OD, ID=78, nLocks=2);
 // 
 //
 // ***********************************
@@ -66,9 +67,9 @@ echo("StagerLib 0.9.9");
 //
 // ***********************************
 
-include<CablePuller.scad>
 include<TubesLib.scad>
 include<BearingLib.scad>
+use<RacewayLib.scad>
 //include<CommonStuffSAEmm.scad>
 
 Overlap=0.05;
@@ -84,9 +85,11 @@ Stager_LockRod_X=10;
 Stager_LockRod_Y=5;
 Stager_LockRod_Z=36;
 Stager_LockRod_R=1;
+LockBall_d=3/8 * 25.4; // 3/8" Delrin balls
+DetentBall_d=3/8 * 25.4;
 
 LooseFit=0.8;
-StagerLockInset_Y=12.5;
+StagerLockInset_Y=11.5; // was 12.5
 
 Bolt4Inset=4;
 Saucer_Len=6;
@@ -96,10 +99,12 @@ Race_W=11;
 Tube_Len=40; //44.5;
 Race_Z=-Saucer_Len-Tube_Len;
 
-Tube_OD=PML98Body_OD;
+Tube_OD=PML98Body_OD; // <<<<<<<<<<<<<<<<<
 BallCircle_d=Tube_OD-6-Ball_d;
 Race_ID=BallCircle_d-Ball_d-Bolt4Inset*4;
 BoltCircle_d=Race_ID+Bolt4Inset*2;
+Saucer_ID=Tube_OD-StagerLockInset_Y*2-Stager_LockRod_Y-6;
+CamBall_a=-25.0;// was -25.5, calculation needed
 
 module ShowStager(){
 	translate([0,0,Overlap*2]) Stager_Cup(Tube_OD=Tube_OD, ID=78, nLocks=2);
@@ -120,7 +125,6 @@ module ShowStager(){
 // ShowStager();
 
 module BallDetentBody(){
-	DetentBall_d=3/8 * 25.4;
 	DetentSpring_d=7.7;
 	DetentSpring_Len=14; // Lightly compressed
 	Body_d=14;
@@ -152,7 +156,6 @@ module BallDetentBody(){
 //ST_BallDetentBody();
 
 module BallDetentStopper(){
-	DetentBall_d=3/8 * 25.4;
 	DetentSpring_d=7.7;
 	DetentSpring_Len=14; // Lightly compressed
 	Body_d=14;
@@ -170,7 +173,7 @@ module BallDetentStopper(){
 	
 } // ST_BallDetentStopper
 
-//translate([0,0,-3]) ST_BallDetentStopper();
+//translate([0,0,-3]) BallDetentStopper();
 
 module CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, 
 							Tube_ID=PML98Coupler_ID, 
@@ -253,15 +256,15 @@ translate([0,0,1]) rotate([0,0,5]) LockRing();
 
 translate([0,0,-Race_Z]) 
 difference(){
-	Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_Len=30, KeyOffset_a=-30);
-	rotate([0,0,-45]) translate([0,0,-90]) cube([100,100,100]);
+	Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_Len=30, KeyOffset_a=0);
+	//rotate([0,0,-45]) translate([0,0,-90]) cube([100,100,100]);
 }
 
 
-translate([0,0,Tube_Len+6+0.2]) Stager_Saucer();
-rotate([0,0,-30]) translate([0,0,-Sep_Z]) CableRedirect();
+//translate([0,0,Tube_Len+6+0.2]) Stager_Saucer();
+//rotate([0,0,0]) translate([0,0,-Sep_Z]) CableRedirect();
 
-rotate([0,0,5-30]){
+rotate([0,0,5]){
 Stager_InnerRace(Tube_OD=Tube_OD, nLocks=2);
 rotate([0,0,100]) translate([0,0,-12]) rotate([180,0,0]) Stager_Detent();
 
@@ -269,15 +272,14 @@ rotate([0,0,-90]) mirror([0,1,0]) translate([0,0,-12]) rotate([180,0,0]) CableEn
 }
 /**/
 
-module LockRing(){
+module LockRing(nLocks=2){
 	nBolts=6;
-	ID=Tube_OD-StagerLockInset_Y*2-Stager_LockRod_Y-6; // saucer ID
-	LockBall_d=3/8 * 25.4; // 3/8" Delrin balls
-	CamBall_a=-25.5;
+	ID=Saucer_ID;
 	Depth=3;
 	Inset=2;
 	nSteps=15;
 	//echo(ID=ID);
+	Small_ID=ID-12;
 	
 	module BallGroove(){
 		for (j=[0:nSteps])
@@ -293,12 +295,11 @@ module LockRing(){
 			cylinder(d=ID-1, h=Tube_Len+3);
 		} // union
 		
-		translate([0,0,Tube_Len-LockBall_d/2-0.8]) {
-			rotate([0,0,CamBall_a]) BallGroove();
-			rotate([0,0,-CamBall_a]) BallGroove();
-			rotate([0,0,180+CamBall_a]) BallGroove();
-			rotate([0,0,180-CamBall_a]) BallGroove();
-		}
+		for (j=[360/nLocks-1]) rotate([0,0,360/nLocks*j])
+			translate([0,0,Tube_Len-LockBall_d/2-0.8]) {
+				rotate([0,0,CamBall_a]) BallGroove();
+				rotate([0,0,-CamBall_a]) BallGroove();
+			}
 		
 		// Top Outside
 		translate([0,0,Tube_Len-LockBall_d-6]) difference(){
@@ -309,12 +310,13 @@ module LockRing(){
 		} // difference
 		
 		// center hole
-		translate([0,0,-Overlap]) cylinder(d=ID-12, h=Tube_Len+3+Overlap*2); // top
+		translate([0,0,-Overlap]) cylinder(d=Small_ID, h=Tube_Len+3+Overlap*2); // top
 		translate([0,0,-Overlap]) cylinder(d=ID-5, h=Tube_Len-LockBall_d-9+Overlap); // bottom
-		translate([0,0,Tube_Len-LockBall_d-9-Overlap]) cylinder(d1=ID-5, d2=ID-12, h=5); // transition
+		translate([0,0,Tube_Len-LockBall_d-9-Overlap]) cylinder(d1=ID-5, d2=Small_ID, h=5); // transition
+		translate([0,0,Tube_Len-3]) cylinder(d1=Small_ID, d2=ID-6, h=6+Overlap);
 		
 		// Bolts
-		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) translate([0,BoltCircle_d/2,6]) Bolt4HeadHole();
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) translate([BoltCircle_d/2,0,6]) Bolt4HeadHole();
 	} // difference
 	
 } // LockRing
@@ -325,7 +327,7 @@ module Stager_Detent(){
 	nBottomBolts=6;
 	Plate_H=4;
 	Offset_a=10;
-	DetentBall_d=3/8*25.4;
+	
 	Detent_a=Offset_a-360/nBottomBolts;
 	DetentXtra=1.2;
 	
@@ -367,6 +369,8 @@ module Stager_Detent(){
 //Stager_Detent();
 
 module CableEndAndStop(Tube_OD=PML98Body_OD){
+	// Must be printed mirror Y
+	
 	nBottomBolts=6;
 	Plate_H=4;
 	
@@ -416,7 +420,7 @@ module CableEndAndStop(Tube_OD=PML98Body_OD){
 	} // difference
 } // CableEndAndStop
 
-//CableEndAndStop();
+//mirror([0,1,0]) CableEndAndStop();
 
 module Stager_LockRodBoltPattern(){
 	// from bottom center
@@ -440,15 +444,15 @@ module Stager_LockRod(Adj=0){
 		
 		translate([0,0,Adj]) Stager_LockRodBoltPattern() Bolt6ButtonHeadHole();
 		
-		translate([-CP_Bearing_OD/2-LR_X/2+2, 0, CP_Bearing_OD/2+2])
-			rotate([90,0,0]) cylinder(d=CP_Bearing_OD, h=LR_Y+Overlap*2, center=true);
-		translate([CP_Bearing_OD/2+LR_X/2-2, 0, CP_Bearing_OD/2+2])
-			rotate([90,0,0]) cylinder(d=CP_Bearing_OD, h=LR_Y+Overlap*2, center=true);
+		translate([-LockBall_d/2-LR_X/2+2, 0, LockBall_d/2+2])
+			rotate([90,0,0]) cylinder(d=LockBall_d-1, h=LR_Y+Overlap*2, center=true);
+		translate([LockBall_d/2+LR_X/2-2, 0, LockBall_d/2+2])
+			rotate([90,0,0]) cylinder(d=LockBall_d-1, h=LR_Y+Overlap*2, center=true);
 	} // difference
 	
 } // Stager_LockRod
 
-//Stager_LockRod(Adj=1);
+//Stager_LockRod(Adj=0);
 
 module Stager_CupHoles(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true){
 	Collar_h=18;
@@ -546,7 +550,7 @@ module Stager_LockRod_Holes(Tube_OD=PML98Body_OD, nLocks=2){
 	
 module Stager_Saucer(Tube_OD=PML98Body_OD, nLocks=2){
 	Len=Saucer_Len;
-	ID=Tube_OD-StagerLockInset_Y*2-Stager_LockRod_Y-6;
+	ID=Saucer_ID;
 	LR_X=Stager_LockRod_X;
 	LR_Y=Stager_LockRod_Y;
 	LR_Z=Stager_LockRod_Z;
@@ -562,7 +566,7 @@ module Stager_Saucer(Tube_OD=PML98Body_OD, nLocks=2){
 		// Center hole
 		translate([0,0,-Len-Overlap]) cylinder(d=ID, h=Len, $fn=$preview? 90:360);
 		
-		translate([0,0,-2]) Stager_SaucerBoltPattern() Bolt4ButtonHeadHole();
+		translate([0,0,-2]) Stager_SaucerBoltPattern(nLocks=nLocks) Bolt4ButtonHeadHole();
 		
 		Stager_LockRod_Holes(Tube_OD=Tube_OD, nLocks=nLocks);
 	} // difference
@@ -617,14 +621,17 @@ module Stager_InnerRace(Tube_OD=PML98Body_OD, nLocks=2){
 
 //translate([0,0,Race_Z]) Stager_InnerRace();
 	
-module Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_Len=30, KeyOffset_a=0){
+module Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_Len=30, KeyOffset_a=-30, HasRaceway=true,
+	Raceway_a=270){
+		
 	// KeyOffset_a must be a multiple 15°
-	LockBall_d=3/8 * 25.4; // 3/8" Delrin balls
+		
 	Len=Saucer_Len;
-	ID=Tube_OD-StagerLockInset_Y*2-Stager_LockRod_Y-6;
-	
+	ID=Saucer_ID;
+	Raceway_Len=44;
+	Raceway_Z=-49;
 
-	CamBall_a=-25.5;
+	
 	
 	module ShowBall(){
 		color("Red") sphere(d=LockBall_d, $fn=18);
@@ -664,7 +671,6 @@ module Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_
 					rotate([0,0,5]) translate([0,-10,0]) sphere(d=LockBall_d+IDXtra*2);
 			} // hull
 			
-			
 		} // BallPath
 		
 		difference(){
@@ -693,10 +699,9 @@ module Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_
 		}
 	} // BackStop
 	
-	translate([0,0,-Len]){
-		BackStop();
-		rotate([0,0,180]) BackStop();
-	}
+	for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j])
+		translate([0,0,-Len]) BackStop();
+		
 	
 	// Spring wells
 	difference(){
@@ -713,28 +718,50 @@ module Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_
 	// The Tube
 	//*
 	difference(){
-		translate([0,0,-Len-Tube_Len]) 
-			cylinder(d=Tube_OD, h=Tube_Len, $fn=$preview? 90:360);
+		union(){
+			translate([0,0,-Len-Tube_Len]) 
+				cylinder(d=Tube_OD, h=Tube_Len, $fn=$preview? 90:360);
+			
+			// Skirt
+			translate([0,0,Race_Z-Race_W-Skirt_Len]) 
+				Tube(OD=Tube_OD, ID=Skirt_ID, Len=Skirt_Len+Overlap*2, myfn=$preview? 36:360);
+			
+			translate([0,0,Race_Z-23]) 
+				TubeStop(InnerTubeID=Skirt_ID-3, OuterTubeOD=Tube_OD, myfn=$preview? 36:360);
+			
+			// Alignment key
+			intersection(){
+				rotate([0,0,KeyOffset_a]) translate([0,Skirt_ID/2,Race_Z-27]) cylinder(d=4,h=5);
+				translate([0,0,Race_Z-27]) cylinder(d=Skirt_ID+1, h=5);
+			} // intersection
+
+		} // union
 		
 		translate([0,0,-Len-Tube_Len-Overlap]) 
 			cylinder(d=Tube_OD-4.0, h=Tube_Len+Overlap*2, $fn=$preview? 90:360);
 		
-		
-	}
+		// Arm / Trigger access hole
+		rotate([0,0,-45+KeyOffset_a]) translate([0,BallCircle_d/2-2,Race_Z-Race_W-3])
+			rotate([0,90,0]) cylinder(d=3, h=Tube_OD, center=true);
+
+		if (HasRaceway){
+			translate([0,0,Raceway_Z+Raceway_Len/2]) 
+				Raceway_Exit(Tube_OD=Tube_OD, Race_ID=6, Wall_t=4, Top_Len=10, Bottom_Len=10);
+			translate([0,0,Raceway_Z-Raceway_Len/2]) rotate([180,0,0]) 
+				Raceway_Exit(Tube_OD=Tube_OD, Race_ID=6, Wall_t=4, Top_Len=10, Bottom_Len=10);
+		} // if
+
+	} // difference
+	
+	if (HasRaceway){
+		translate([0,0,Raceway_Z+Raceway_Len/2]) 
+			Raceway_End(Tube_OD=Tube_OD, Race_ID=6, Wall_t=4, Len=Raceway_Len/2); //External cover end
+		translate([0,0,Raceway_Z-Raceway_Len/2]) rotate([180,0,0]) 
+			Raceway_End(Tube_OD=Tube_OD, Race_ID=6, Wall_t=4, Len=Raceway_Len/2); //External cover end
+	} // if
+	
 	/**/
 	
-	/*
-	// Spring wells
-	difference(){
-		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j]) 
-			translate([0,Tube_OD/2-StagerLockInset_Y, -Len-Stager_Spring_FL])
-				difference(){
-					cylinder(d=Stager_Spring_OD+5, h=Stager_Spring_CBL);
-					translate([0,0,2]) cylinder(d=Stager_Spring_OD+LooseFit, h=Stager_Spring_FL);
-					// center hole
-				} // difference
-		translate([0,0,-Len-Tube_Len-Overlap]) cylinder(d=ID, h=Len+Tube_Len+Overlap*2, $fn=$preview? 90:360);
-	} // difference
 	
 	/**/
 	translate([0,0,Race_Z+Overlap]) rotate([0,0,180/nLocks]) rotate([180,0,0])
@@ -742,27 +769,7 @@ module Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_
 					Ball_d=Ball_d, Race_w=Race_W, PreLoadAdj=Stager_PreLoadAdj, 
 					VOffset=0.00, BI=true, myFn=$preview? 90:720);
 	
-	if (Skirt_Len>0)
-		difference(){
-			union(){
-				translate([0,0,Race_Z-Race_W-Skirt_Len]) 
-					Tube(OD=Tube_OD, ID=Skirt_ID, Len=Skirt_Len+Overlap*2, myfn=$preview? 36:360);
-				
-				translate([0,0,Race_Z-23]) 
-					TubeStop(InnerTubeID=Skirt_ID-3, OuterTubeOD=Tube_OD, myfn=$preview? 36:360);
-				
-				// Alignment key
-				intersection(){
-					rotate([0,0,KeyOffset_a]) translate([0,Skirt_ID/2,Race_Z-27]) cylinder(d=4,h=5);
-					translate([0,0,Race_Z-27]) cylinder(d=Skirt_ID+1, h=5);
-				} // intersection
-			} // union
-			
-			// Arm / Trigger access hole
-			rotate([0,0,-45+KeyOffset_a]) translate([0,BallCircle_d/2-2,Race_Z-Race_W-3])
-				rotate([0,90,0]) cylinder(d=3, h=Tube_OD, center=true);
-		} // difference
-	/**/
+	
 	if ($preview){
 		
 		} // if

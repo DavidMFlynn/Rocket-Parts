@@ -22,8 +22,7 @@ echo("RailGuide 1.0.2");
 // ***********************************
 //  ***** for STL output *****
 //
-// 
-rotate([90,0,0]) BoltOnRailGuide(Length = 40, BoltSpace=12.7, RoundEnds=true);
+// rotate([90,0,0]) BoltOnRailGuide(Length = 40, BoltSpace=12.7, RoundEnds=true);
 // RialGuide(TubeOD = 98, Length = 40, Offset = 3);
 //
 // TubeBoltedRailGuide(TubeOD=PML98Body_OD, Length = 30, Offset = 3);

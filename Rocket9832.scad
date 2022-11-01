@@ -200,7 +200,7 @@ F54_FairingHalf(IsLeftHalf=false,
 // ***********************************
 include<Fairing54.scad>
 include<FinCan.scad>
-include<StagerLib.scad>
+use<Stager2Lib.scad>
 include<AltBay.scad>
 include<CablePuller.scad>
 include<BatteryHolderLib.scad>
@@ -576,8 +576,8 @@ module Drogue_ST_LowerCenteringRing(){
 //Drogue_ST_LowerCenteringRing();
 
 module ShowUpperBays(){
-	rotate([0,0,90]) translate([0,0,162]) R98_Electronics_Bay2();
-	DrogueMechBay();
+	//rotate([0,0,90]) translate([0,0,162]) R98_Electronics_Bay2();
+	//DrogueMechBay();
 	
 	//*
 	translate([0,0,-34-Overlap]){
@@ -586,12 +586,13 @@ module ShowUpperBays(){
 		translate([0,0,-15]) Drogue_ST_LowerCenteringRing();
 	}
 	//*
-	translate([0,0,-300]) color("Blue") Tube(OD=BT54Mtr_OD, ID=BT54Mtr_ID, Len=24*25.4, myfn=$preview? 36:360);
-	translate([90,0,-300]) color("Blue") Tube(OD=BT54Mtr_OD, ID=BT54Mtr_ID, Len=240, myfn=$preview? 36:360);
+	//
+	translate([0,0,-295]) color("Blue") Tube(OD=BT54Mtr_OD, ID=BT54Mtr_ID, Len=23.75*25.4, myfn=$preview? 36:360);
+	//translate([90,0,-300]) color("Blue") Tube(OD=BT54Mtr_OD, ID=BT54Mtr_ID, Len=240, myfn=$preview? 36:360);
 	//*
-	translate([0,0,-34-70-124]) color("Orange") Tube(OD=R9832_Body_OD, ID=R9832_Body_ID, Len=157.5, myfn=$preview? 36:360);
+	translate([0,0,-34-70-126]) color("Orange") Tube(OD=R9832_Body_OD, ID=R9832_Body_ID, Len=159.5, myfn=$preview? 36:360);
 	//*
-	translate([0,0,-322]){
+	translate([0,0,-317.2]){
 		translate([0,0,78]) DrogueSep_CableRedirect();
 		DrogueSep();
 		
@@ -599,7 +600,7 @@ module ShowUpperBays(){
 	
 	// wires
 	//*
-	translate([0,0,-350]) rotate([0,0,-90]) translate([0,40,0]) cylinder(d=6, h=100);
+	//translate([0,0,-350]) rotate([0,0,-90]) translate([0,40,0]) cylinder(d=6, h=100);
 	//*
 	translate([0,0,-45]) ST_LockRing(); // Glued to top of spring.
 
@@ -626,24 +627,9 @@ module DrogueSep_CableRedirect(){
 //translate([0,0,78])DrogueSep_CableRedirect();
 
 module DrogueSep(){
-	// Length 85mm
-	Raceway_Len=50;
-	Raceway_Z=52;
 
-	difference(){
-		rotate([180,0,180]) Stager_Mech(Tube_OD=R9832_Body_OD, nLocks=2, Skirt_ID=R9832_Body_ID, Skirt_Len=32, KeyOffset_a=0);
+		rotate([180,0,0]) Stager_Mech(Tube_OD=R9832_Body_OD, nLocks=2, Skirt_ID=R9832_Body_ID, Skirt_Len=30, KeyOffset_a=-30, HasRaceway=true, Raceway_a=270);
 		
-		translate([0,0,Raceway_Z+Raceway_Len/2]) 
-			Raceway_Exit(Tube_OD=R9832_Body_OD, Race_ID=6, Wall_t=4, Top_Len=10, Bottom_Len=10);
-		translate([0,0,Raceway_Z-Raceway_Len/2]) rotate([180,0,0]) 
-			Raceway_Exit(Tube_OD=R9832_Body_OD, Race_ID=6, Wall_t=4, Top_Len=10, Bottom_Len=10);
-
-	} // difference
-	
-	translate([0,0,Raceway_Z+Raceway_Len/2]) 
-		Raceway_End(Tube_OD=R9832_Body_OD, Race_ID=6, Wall_t=4, Len=Raceway_Len/2); //External cover end
-	translate([0,0,Raceway_Z-Raceway_Len/2]) rotate([180,0,0]) 
-		Raceway_End(Tube_OD=R9832_Body_OD, Race_ID=6, Wall_t=4, Len=Raceway_Len/2); //External cover end
 
 } // DrogueSep
 
