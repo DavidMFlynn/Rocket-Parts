@@ -284,8 +284,10 @@ module LockRing(nLocks=2){
 	module BallGroove(){
 		for (j=[0:nSteps])
 		hull(){
-			rotate([0,0,-j]) translate([0,ID/2+LockBall_d/2-Inset-Depth/nSteps*j,0]) sphere(d=LockBall_d+IDXtra, $fn=18);
-			rotate([0,0,-j-1]) translate([0,ID/2+LockBall_d/2-Inset-Depth/nSteps*(j+1),0]) sphere(d=LockBall_d+IDXtra, $fn=18);
+			rotate([0,0,-j]) translate([0,ID/2+LockBall_d/2-Inset-Depth/nSteps*j,0])
+				sphere(d=LockBall_d+IDXtra, $fn=$preview? 18:72);
+			rotate([0,0,-j-1]) translate([0,ID/2+LockBall_d/2-Inset-Depth/nSteps*(j+1),0])
+				sphere(d=LockBall_d+IDXtra, $fn=$preview? 18:72);
 		} // hull
 	} // BallGroove
 	
@@ -295,7 +297,7 @@ module LockRing(nLocks=2){
 			cylinder(d=ID-1, h=Tube_Len+3);
 		} // union
 		
-		for (j=[360/nLocks-1]) rotate([0,0,360/nLocks*j])
+		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j])
 			translate([0,0,Tube_Len-LockBall_d/2-0.8]) {
 				rotate([0,0,CamBall_a]) BallGroove();
 				rotate([0,0,-CamBall_a]) BallGroove();
@@ -306,7 +308,7 @@ module LockRing(nLocks=2){
 				cylinder(d=ID,h=LockBall_d+9+Overlap);
 				
 				translate([0,0,-Overlap]) cylinder(d1=ID-1, d2=ID-4, h=3+Overlap*2);
-				translate([0,0,3]) cylinder(d=ID-4,h=LockBall_d+6+Overlap*3);
+				translate([0,0,3]) cylinder(d=ID-4,h=LockBall_d+6+Overlap*3, $fn=$preview? 90:360);
 		} // difference
 		
 		// center hole
