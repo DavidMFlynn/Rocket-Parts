@@ -116,8 +116,8 @@ F54_FairingHalf(IsLeftHalf=false,
 				Wall_T=FairingWall_T,
 				Len=Fairing_Len);
 /**/
-//F54_SpringEndCap();
 //
+// F54_SpringEndCap();
 //
 // *** Electronics Bay ***
 // R98_Electronics_Bay2();
@@ -158,21 +158,19 @@ F54_FairingHalf(IsLeftHalf=false,
 //
 // --------------
 //  ** Stager Parts, top of booster **
-// rotate([180,0,0]) Stager_Cup(Tube_OD=R9832_Body_OD, ID=78, nLocks=2, BoltsOn=true);
-// rotate([-90,0,0]) Stager_LockRod(Adj=0); // print 4
+// rotate([180,0,0]) Stager_Cup(Tube_OD=R9832_Body_OD, ID=78, nLocks=2, BoltsOn=true, Collar_h=18);
+// rotate([-90,0,0]) Stager_LockRod(Adj=-0.5); // print 4
 //
 // Stager_Saucer(Tube_OD=R9832_Body_OD, nLocks=2); // Bolts on
-// Stager_BearingBlock(); // print 4
-// rotate([0,90,0]) Stager_PushUP(); // print 2
-// rotate([0,-90,0]) mirror([1,0,0]) Stager_PushUP(); // print 2
-// Stager_SpringStop(); // print 4
-// 
-// Stager_Mech(Tube_OD=R9832_Body_OD, nLocks=2, Skirt_ID=R9832_Body_ID, Skirt_Len=30, KeyOffset_a=90);
-// Stager_TriggerPlateB(Tube_OD=R9832_Body_OD); // print 2
+//
+// Stager_Mech(Tube_OD=R9832_Body_OD, nLocks=2, Skirt_ID=R9832_Body_ID, Skirt_Len=30, KeyOffset_a=-30, HasRaceway=false, Raceway_a=270);
+// LockRing(nLocks=2);
 // Stager_InnerRace(Tube_OD=R9832_Body_OD, nLocks=2);
 // Stager_BallSpacer(Tube_OD=R9832_Body_OD); // print 2
 // CableRedirect(Tube_OD=R9832_Body_OD, Skirt_ID=R9832_Body_ID, Tube_ID=PML98Coupler_ID, InnerTube_OD=R9832_BoosterMtrTube_OD);
-// CableEndAndStop(Tube_OD=R9832_Body_OD);
+// mirror([0,1,0]) CableEndAndStop(Tube_OD=R9832_Body_OD);
+// Stager_Detent();
+// BallDetentStopper();
 // -------------
 //
 // BoosterUpperFinCan();
@@ -198,12 +196,12 @@ F54_FairingHalf(IsLeftHalf=false,
 // ShowUpperBays();
 //
 // ***********************************
-include<Fairing54.scad>
-include<FinCan.scad>
+use<Fairing54.scad>
+use<FinCan.scad>
 use<Stager2Lib.scad>
 include<AltBay.scad>
-include<CablePuller.scad>
-include<BatteryHolderLib.scad>
+use<CablePuller.scad>
+use<BatteryHolderLib.scad>
 use<SpringThing2.scad>
 use<RacewayLib.scad>
 
@@ -628,9 +626,10 @@ module DrogueSep_CableRedirect(){
 
 module DrogueSep(){
 
-		rotate([180,0,0]) Stager_Mech(Tube_OD=R9832_Body_OD, nLocks=2, Skirt_ID=R9832_Body_ID, Skirt_Len=30, KeyOffset_a=-30, HasRaceway=true, Raceway_a=270);
+	rotate([180,0,0]) 
+		Stager_Mech(Tube_OD=R9832_Body_OD, nLocks=2, Skirt_ID=R9832_Body_ID, 
+			Skirt_Len=30, KeyOffset_a=0, HasRaceway=true, Raceway_a=270);
 		
-
 } // DrogueSep
 
 //DrogueSep();
@@ -648,11 +647,13 @@ module Drogue_Cup(){
 	Rivet_Z=-40;
 	
 	difference(){
-		rotate([180,0,0]) Stager_Cup(Tube_OD=R9832_Body_OD, ID=76, nLocks=2, BoltsOn=false);
+		rotate([180,0,0]) Stager_Cup(Tube_OD=R9832_Body_OD, ID=76, nLocks=2, BoltsOn=false, HasElectrical=true);
 	
+		/* replace by Molex connector
 		//Sustainer Ignition Wire
 		rotate([0,0,-90]) translate([0,R9832_Coupler_ID/2-WireHole_d/2-3,-22]) 
 			cylinder(d=WireHole_d, h=25);
+		/**/
 		
 		// Rail guide bolts
 		translate([0,0,RailGuide_Z]) rotate([0,0,-90-180/nFins]) 

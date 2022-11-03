@@ -3,24 +3,28 @@
 // Filename: CablePuller.scad
 // by David M. Flynn
 // Created: 8/21/2022 
-// Revision: 1.1.1  10/25/2022
+// Revision: 1.1.2  11/2/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 //
 // Uses the release of a strong spring to pull on a cable. 
+// Used with success to release a fairing 10/22.
 // Needs a servo or something to push on the StopAdjuster. 
 //
-// Bearing MR84-2RS, 4ea
+// Bearing MR84-2RS, 5ea
 // Undersize 4mm x 10mm steel dowel, 2ea
 // Undersize 4mm x 12mm steel dowel
+// Undersize 4mm x 16mm steel dowel
 // #8-32 x 1/4" Set Screw
 // #4-40 x 1/2" Socket Head Cap Screws, optionally 3/4" to attach to Electronics Bay, 4ea
+// 5/16" Dia. x 1-1/4" long spring. 
 // SG90 Servo
 //
 //  ***** History *****
 //
-echo("CablePuller 1.1.1");
+echo("CablePuller 1.1.2");
+// 1.1.2  11/2/2022   Added calculation for CP_DoorBoltPattern
 // 1.1.1  10/25/2022  Wider door
 // 1.1.0  10/14/2022  Added TriggerBellCrank and BellCrankTriggerBearingHolder for CageTop. 
 // 1.0.1  9/17/2022   Fixed SpingBody guide width. 
@@ -57,6 +61,11 @@ echo("CablePuller 1.1.1");
 //  ***** Routines *****
 //
 // CablePullerBoltPattern() Bolt4Hole();
+//
+// CPDoorHole(Tube_OD=PML98Body_OD);
+// CP_DoorBoltPattern(Tube_OD=PML98Body_OD) Bolt4Hole();
+// CP_BayFrameHole(Tube_OD=PML98Body_OD);
+// CP_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=false);
 //
 // ***********************************
 //  ***** for Viewing *****
@@ -153,7 +162,7 @@ module CPDoorHole(Tube_OD=PML98Body_OD){
 module CP_DoorBoltPattern(Tube_OD=PML98Body_OD){
 	Door_Y=CP_Door_Y;
 	Door_X=CP_Door_X;
-	DoorBolt_a=25; // changed 10/25/2022 was 20, calculation needed
+	DoorBolt_a=asin((Door_X/2)/(Tube_OD/2))-asin(Bolt4Inset/(Tube_OD/2));
 	
 	rotate([0,DoorBolt_a,0]) translate([0,Door_Y/2-4,Tube_OD/2]) children();
 	rotate([0,DoorBolt_a,0]) translate([0,-Door_Y/2+4,Tube_OD/2]) children();
@@ -167,6 +176,7 @@ module CP_DoorBoltPattern(Tube_OD=PML98Body_OD){
 } // CP_DoorBoltPattern
 
 //CP_DoorBoltPattern(Tube_OD=PML98Body_OD) Bolt4Hole();
+//CP_Door(Tube_OD=PML98Body_OD);
 
 module CP_BayFrameHole(Tube_OD=PML98Body_OD){
 	Tube_Len=CP_Door_Y+2;
@@ -262,7 +272,7 @@ module CP_Door(Tube_OD=PML98Body_OD){
 	Door_Y=CP_Door_Y;
 	Door_X=CP_Door_X;
 	Door_t=3;
-	BoltBossInset=3;
+	BoltBossInset=2; // was 3, use 2 to clear 54mm motor tube w/ 98mm body tube
 	CP_Offset_Y=Door_Y/2-68;
 	
 	translate([9,-Door_Y/2+27,Tube_OD/2-8]) rotate([0,90,0]) ServoMount(Extend=2);
@@ -291,13 +301,14 @@ module CP_Door(Tube_OD=PML98Body_OD){
 			} // intersection
 		} // union
 	
-		// Servo mount bolt holes
 		
 		
 		// CablePuller bolt holes
 		translate([0,CP_Offset_Y,Tube_OD/2-Door_t-BoltBossInset]) 
-			rotate([0,0,90]) CablePullerBoltPattern() 
+			rotate([0,0,90]) CablePullerBoltPattern() {
 				rotate([180,0,0]) Bolt4Hole(depth=BoltBossInset+2); 
+				rotate([180,0,0]) cylinder(d=8, h=2);
+			}
 		
 
 		// Door mounting bolts
