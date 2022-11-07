@@ -9,6 +9,13 @@
 //  ***** Notes *****
 //
 // Export as PDF, Print at 100%
+// Cut Panels/2 shroud lines 3x the diameter and heat seal the ends. 
+//  Mark the center of each line and 50mm from each end. 
+//
+// Panel to panel 2mm straight stitch #1. 
+// Edge panel to panel with 5mm x 1.5mm zig-zag #2. 
+// Hem the diameter and center hole with a 2mm straight stitch #1. 
+// Attach the shroud lines with 2 passes of 5.5mm x 0.5mm "Multiple ZigZag" #3. 
 //
 // Pointyness controls how pointy the 'chute is. Range 0.40 to 0.49
 // Panel_Y controls the center hole 1.5 = no hole the higher the number the bigger the hole.
@@ -48,7 +55,7 @@ PrintingOffset_X=0;
 // --------------------------------------------------------------
 // *** First Article Test ***
 // Make 8 panels
-// This worked well made a nice 20 inch 8 panel parachute. 
+// This worked well made a nice 20 inch 8 panel parachute. (2.1 sqft)
 // 1.4oz Rip-Stop Nylon, 2mm Polypropylene rope (knit, cheep from Amazon)
 /*
 Pointyness=0.4; Panel_Y=2; SeamAllowance=7;
@@ -66,7 +73,8 @@ Center_r=Apex_Y+45;
 // 
 // Make 12 Panels
 // 1.4oz Rip-Stop Nylon, 3mm Polypropylene rope (knit, cheep from Amazon)
-//*
+// 11 sqft
+/*
 Pointyness=0.4; Panel_Y=2; SeamAllowance=7;
 nPanels=12;
 Arc_r=750; Apex_Y=610; Hole_X=33; //12 Panels 300mm x 610mm, 45" Dia., 5" Center Hole
@@ -85,6 +93,7 @@ Center_r=Apex_Y+63;
 // *** Built one and it works great 10/10/2022 ***
 // Make 14 Panels
 // 1.4oz Rip-Stop Nylon, 3mm Polypropylene rope (knit, cheep from Amazon)
+// 21.6 sqft
 /*
 Pointyness=0.4; Panel_Y=2; SeamAllowance=7;
 nPanels=14; 
@@ -100,6 +109,28 @@ Center_r=Apex_Y+85;
 //PrintingOffset_X=100-200; PrintingOffset_Y=-130-260-260; // Pg 6
 //PrintingOffset_X=0; PrintingOffset_Y=-130-260-260-260; // Pg 7
 // ---------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------
+
+// Make 16 Panels
+// 1.4oz Rip-Stop Nylon, 3mm Polypropylene rope (knit, cheep from Amazon)
+// 
+/*
+Pointyness=0.39; Panel_Y=2; SeamAllowance=0;
+nPanels=16; 
+Arc_r=887; Apex_Y=975; Hole_X=45; //16 Panels 390mm x 950mm, 63" Dia., 9" Center Hole
+Center_r=Apex_Y+114;
+/**/
+// Page 200x260
+//PrintingOffset_X=100; PrintingOffset_Y=-130; // Pg 1
+//PrintingOffset_X=100-200; PrintingOffset_Y=-130; // Pg 2
+//PrintingOffset_X=100; PrintingOffset_Y=-130-260; // Pg 3
+//PrintingOffset_X=100-200; PrintingOffset_Y=-130-260; // Pg 4
+//PrintingOffset_X=100; PrintingOffset_Y=-130-260-260; // Pg 5
+//PrintingOffset_X=100-200; PrintingOffset_Y=-130-260-260; // Pg 6
+//PrintingOffset_X=0; PrintingOffset_Y=-130-260-260-260; // Pg 7
+// ---------------------------------------------------------------------------
+//
 //
 //Arc_r=2000; //14 Panels 240mm, 42"
 //Arc_r=2500; //14 Panels 300mm x 715mm, 52"
@@ -114,7 +145,8 @@ Center_r=Apex_Y+85;
 //PrintingOffset_X=100-200; PrintingOffset_Y=-130-260-260; // Pg 6
 
 
-//for (j=[0:nPanels-1]) rotate([0,0,360/nPanels*j]) translate([0,-Center_r,0]) // show full circle
+//
+for (j=[0:nPanels-1]) rotate([0,0,360/nPanels*j]) translate([0,-Center_r,0]) // show full circle
 translate([PrintingOffset_X,PrintingOffset_Y+SeamAllowance,0]) // offset for pdf
 offset(delta=SeamAllowance) // comment out when showing full circle
 P_Shape();

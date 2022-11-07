@@ -3,7 +3,7 @@
 // Filename: Fairing54.scad
 // by David M. Flynn
 // Created: 8/5/2022 
-// Revision: 1.0.15  10/27/2022
+// Revision: 1.0.16  11/6/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -26,7 +26,8 @@
 //
 //  ***** History *****
 //
-echo("Fairing54 1.0.13");
+echo("Fairing54 1.0.16");
+// 1.0.16  11/6/2022  Added shock cord options to FairingBaseBulkPlate
 // 1.0.15  10/27/2022 Added BlendToTube
 // 1.0.14  10/23/2022 improved FairingAssemblyTool
 // 1.0.13  10/22/2022 Added FairingAssemblyTool
@@ -581,13 +582,18 @@ module FairingBaseBulkPlate(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, ShockCord
 			cylinder(d1=NC_Lock_ID-IDXtra*5, d2=NC_Lock_ID-IDXtra*5-4, h=4, $fn=$preview? 90:360);
 			
 			translate([0,0,6.3-Overlap]) cylinder(d=NC_Lock_ID-IDXtra*5-2.4, h=1, $fn=$preview? 90:360);
+			
 		} // union
 		
 		// Center
 		translate([0,0,Plate_h]) cylinder(d=NC_Lock_ID-IDXtra*5-8,h=10, $fn=$preview? 90:360);
 		
 		// Shock cord
+		if (ShockCord_a>0)
 		rotate([0,0,ShockCord_a]) translate([NC_Lock_ID/2,0,-Overlap]) RoundRect(X=15, Y=20, Z=20, R=4);
+		
+		if (ShockCord_a==-1) // center
+			translate([0,0,-Overlap]) cylinder(d=16, h=10);
 		
 		// Cable Path
 		translate([NC_Lock_ID/2,0,-Overlap]) RoundRect(X=14, Y=12, Z=20, R=5);
@@ -596,9 +602,15 @@ module FairingBaseBulkPlate(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, ShockCord
 		for (j=[0:nTabs-1]) rotate([0,0,360/nTabs*j]) translate([0,0,Plate_h+0.3]) cube([NC_Lock_ID/2,1.5,10]);
 	} // difference
 	
+	if (ShockCord_a==-1) // center
+			difference(){
+				cylinder(d=20, h=5);
+				translate([0,0,-Overlap]) cylinder(d=16, h=10);
+			} // difference
+	
 } // FairingBaseBulkPlate
 
-//FairingBaBoltDown();
+//FairingBaseBulkPlate(Tube_ID=102, Fairing_ID=102, ShockCord_a=-1);
 
 module FairingBaseLockRing(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, Interface=-IDXtra, BlendToTube=false){
 				

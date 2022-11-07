@@ -3,7 +3,7 @@
 // Filename: SpringThing2.scad
 // by David M. Flynn
 // Created: 10/17/2022 
-// Revision: 0.9.10  10/30/2022
+// Revision: 0.9.11  11/5/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -11,6 +11,7 @@
 // Built to deploy a parachute from a booster with a spring.
 //
 //  ***** History *****
+// 0.9.11  11/5/2022 Aligned all so cable is at 0°
 // 0.9.10 10/30/2022 Moved the collar tube stop, FC3
 // 0.9.9  10/29/2022 Deeper ball entry on ST_LockRing, reworked drilling jig again
 // 0.9.8  10/25/2022 Added ST_SpringMiddle
@@ -38,10 +39,10 @@
 // mirror([0,1,0]) ST_CableEndAndStop();
 // rotate([180,0,0]) ST_LockBallRetainer();
 //
-// ST_UpperCenteringRing(Tube_OD=PML98Body_OD, Tube_ID=PML98Coupler_ID, Skirt_ID=PML98Body_ID, InnerTube_OD=BT54Mtr_OD, StageCable_a=120);
+// ST_UpperCenteringRing(Tube_OD=PML98Body_OD, Tube_ID=PML98Coupler_ID, Skirt_ID=PML98Body_ID, InnerTube_OD=BT54Mtr_OD);
 // ST_Frame(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, Collar_Len=20, Skirt_Len=30); // 60mm long
 //
-// ST_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, Tube_ID=PML98Coupler_ID, InnerTube_OD=BT54Mtr_OD, StagerCable_a=120);
+// ST_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, Tube_ID=PML98Coupler_ID, InnerTube_OD=BT54Mtr_OD);
 // ST_BallDetentStopper();
 //
 // ST_MT_DrillingJig(TubeOD=BT54Body_OD);
@@ -233,16 +234,13 @@ module ST_BallDetentStopper(){
 
 //translate([0,0,-3]) ST_BallDetentStopper();
 
-module ST_UpperCenteringRing(Tube_OD=PML98Body_OD, Tube_ID=PML98Coupler_ID, Skirt_ID=PML98Body_ID, InnerTube_OD=BT54Mtr_OD, StageCable_a=120){
+module ST_UpperCenteringRing(Tube_OD=PML98Body_OD, Tube_ID=PML98Coupler_ID, Skirt_ID=PML98Body_ID, InnerTube_OD=BT54Mtr_OD){
 	
 	Stop_a=-84;
 	Key_a=Stop_a+33;
 	
 	difference(){
-		CenteringRing(OD=Skirt_ID-IDXtra, ID=InnerTube_OD+IDXtra, Thickness=5, nHoles=6);
-		
-		// Stage Cable Path
-		rotate([0,0,StageCable_a]) translate([0,Tube_ID/2-2.0,-Overlap]) cylinder(d=4, h=5+Overlap*2);
+		rotate([0,0,22.5]) CenteringRing(OD=Skirt_ID-IDXtra, ID=InnerTube_OD+IDXtra, Thickness=5, nHoles=8);
 		
 		// Alignment Key
 		rotate([0,0,Key_a]) translate([0,Skirt_ID/2,-Overlap]) cylinder(d=5, h=5+Overlap*2);
@@ -254,7 +252,7 @@ module ST_UpperCenteringRing(Tube_OD=PML98Body_OD, Tube_ID=PML98Coupler_ID, Skir
 
 module ST_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, 
 							Tube_ID=PML98Coupler_ID, 
-							InnerTube_OD=BT54Mtr_OD, StagerCable_a=120){
+							InnerTube_OD=BT54Mtr_OD){
 								
 	BallCircle_d=Tube_OD-6-Ball_d;
 	Race_ID=BallCircle_d-Ball_d-Bolt4Inset*4;
@@ -263,6 +261,7 @@ module ST_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 	Exit_a=75;
 	Stop_a=-84;
 	Key_a=Stop_a+33;
+	//echo(Key_a=Key_a);
 	
 	module CablePath(){
 		R=7;
@@ -291,21 +290,19 @@ module ST_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 	
 	difference(){
 		union(){
-			CenteringRing(OD=Skirt_ID-IDXtra, ID=InnerTube_OD+IDXtra, Thickness=5, nHoles=0);
+			rotate([0,0,-22.5]) CenteringRing(OD=Skirt_ID-IDXtra, ID=InnerTube_OD+IDXtra, Thickness=5, nHoles=8);
 			
 			// Locked position stop
 			rotate([0,0,Stop_a]) translate([0,CablePath_Y,0]) cylinder(d=8, h=10);
 			
 			translate([0,0,-20]) {
-				rotate([0,0,-20]) CenteringRing(OD=Tube_ID-IDXtra, ID=InnerTube_OD+IDXtra, Thickness=5, nHoles=5);
+				rotate([0,0,-22.5]) CenteringRing(OD=Tube_ID-IDXtra, ID=InnerTube_OD+IDXtra, Thickness=5, nHoles=8);
 				Tube(OD=InnerTube_OD+4.4, ID=InnerTube_OD+IDXtra*2, Len=21, myfn=$preview? 36:360);
 			}
 			
 			// vertical tube for cable
 			translate([0,CablePath_Y,-20]) cylinder(d=10, h=25);
 			
-			// Stage Cable Path
-			rotate([0,0,StagerCable_a]) translate([0,Tube_ID/2-3.7,-20]) cylinder(d=6.4, h=25);
 		} // union
 		
 		// Ball Detent
@@ -319,8 +316,6 @@ module ST_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 		// vertical tube for cable
 		translate([0,CablePath_Y,-20-Overlap]) cylinder(d=6, h=25+Overlap*2);
 		
-		// Stage Cable Path
-		rotate([0,0,StagerCable_a]) translate([0,Tube_ID/2-3.7,-20-Overlap]) cylinder(d=4, h=25+Overlap*2);
 	} // difference
 	
 } // ST_CableRedirect
@@ -330,17 +325,27 @@ module ST_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 /*
 Sep_Z=29; // 23 down from bearing
 BoltCircle_d=DepLockRingBC-DepLockBearingBall_d-Bolt4Inset*2;
-//translate([0,0,-12]) rotate([0,0,-27]) ST_LockRingOuterRace();
-//
-rotate([180,0,12.5]) ST_LockRing();
-//translate([-BoltCircle_d/2-3,0,-44.5]) rotate([0,0,180]) ST_BallDetentBody();
+
+
+difference(){
+	translate([0,0,-10-1.5]) ST_Frame(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, Collar_Len=20, Skirt_Len=30);
+	
+	rotate([0,0,-51]) // Key_a
+		translate([0,0,-50]) cube([100,100,100]);
+}
 
 //
-rotate([0,0,24]) translate([0,0,-Sep_Z]) ST_CableRedirect();
-rotate([0,0,132.5]) translate([0,0,-13]) rotate([180,0,0]) ST_LockBallRetainer(Tube_OD=PML98Body_OD);
+translate([0,0,5.5]) ST_UpperCenteringRing();
 
-rotate([0,0,-67.5]) mirror([0,1,0]) translate([0,0,-13]) rotate([180,0,0]) ST_CableEndAndStop();
+//
+translate([0,0,-Sep_Z]) ST_CableRedirect();
 
+rotate([0,0,-35]){
+ST_LockBallRetainer(Tube_OD=PML98Body_OD, HasDetent=false);
+rotate([0,0,-60]) mirror([0,1,0]) translate([0,0,-13]) rotate([180,0,0]) ST_CableEndAndStop();
+translate([0,0,-13]) ST_LockRing();
+rotate([0,0,-100-120]) translate([0,0,-13]) rotate([180,0,0]) ST_DetentOnly();
+}
 /**/
 
 
@@ -655,9 +660,13 @@ module ST_MT_DrillingJig(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, InnerTubeO
 //ST_MT_DrillingJig();
 
 module ST_Frame(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, Collar_Len=20, Skirt_Len=30){
+	
 	Race_W=10;
 	SkirtTubeStop_Z=-13;
-	CollarTubeStop_Z=16;
+	CollarTubeStop_Z=17; // added 1 11/5/22
+	
+	Stop_a=-84;
+	Key_a=Stop_a+33;
 	
 	difference(){
 		union(){
@@ -676,6 +685,7 @@ module ST_Frame(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, Collar_Len=20, Skir
 				TubeStop(InnerTubeID=Skirt_ID-3, OuterTubeOD=Tube_OD, myfn=$preview? 36:360);
 			
 			// Alignment key
+			rotate([0,0,Key_a])
 			intersection(){
 				union(){
 					translate([0,Skirt_ID/2,SkirtTubeStop_Z-5]) cylinder(d=4,h=5);
@@ -692,6 +702,7 @@ module ST_Frame(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, Collar_Len=20, Skir
 		} // union
 		
 		// Arm / Trigger access hole
+		rotate([0,0,Key_a])
 		translate([0,DepLockRingBC/2-2,-3]) rotate([0,90,0])
 			cylinder(d=3, h=Tube_OD, center=true);
 		

@@ -3,7 +3,7 @@
 // Filename: RailGuide.scad
 // by David M. Flynn
 // Created: 6/11/2022 
-// Revision: 1.0.2  10/29/2022
+// Revision: 1.0.3  11/7/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,7 +12,8 @@
 //
 //  ***** History *****
 //
-echo("RailGuide 1.0.2");
+echo("RailGuide 1.0.3");
+// 1.0.3  11/7/2022 Shorter cap to clear 8020-1010 rail better. 
 // 1.0.2  10/29/2022 Narrower and taller by 0.3mm.
 // 1.0.1  10/11/2022 Added TubeBoltedRailGuide
 // 1.0.0  10/4/2022 Printed and verified function.  
@@ -59,7 +60,28 @@ RG_Back_w=0.626*25.4;
 RG_Web_w=0.250*25.4 - 0.8;
 RG_Web_t=0.125*25.4 + 0.8;
 RG_Cap_w=0.500*25.4 - 1.0;
-RG_Cap_t=0.250*25.4 - 1.0;
+RG_Cap_t=4; //was 0.250*25.4 - 1.0;
+
+
+module RailButton(){
+	OD=10;
+	ID=4.2+IDXtra*2;
+	Slot_OD=6.3;
+	Slot_w=3.8;
+	Flange_h=2;
+	
+	difference(){
+		union(){
+			cylinder(d=OD, h=Flange_h);
+			cylinder(d=Slot_OD, h=Flange_h+Slot_w/2);
+			//translate([0,0,Flange_h+Slot_w]) cylinder(d=OD, h=Flange_h);
+		} // union
+		
+		translate([0,0,-Overlap]) cylinder(d=ID, h=Flange_h*2+Slot_w+Overlap*2);
+	} // difference
+} // RailButton
+
+//RailButton();
 
 module RailGuideBoltPattern(BoltSpace=12.7){
 	translate([0,0,BoltSpace/2]) rotate([-90,0,0]) children();
