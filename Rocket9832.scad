@@ -123,7 +123,8 @@ F54_FairingHalf(IsLeftHalf=false,
 // *** Electronics Bay ***
 // R98_Electronics_Bay2();
 // FairingBaseBulkPlate(Tube_ID=R9832_Body_ID, Fairing_ID=Fairing_ID, ShockCord_a=-1);
-// AltDoor54(Tube_OD=R9832_Body_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
+// rotate([0,180,0]) AltDoor54(Tube_OD=R9832_Body_OD, IsLoProfile=true, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
+// rotate([0,180,0]) AltDoor54(Tube_OD=R9832_Body_OD, IsLoProfile=true, DoorXtra_X=0, DoorXtra_Y=0); // old
 // rotate([0,180,0]) CP_Door(Tube_OD=R9832_Body_OD);
 // Batt_Door(Tube_OD=R9832_Body_OD, HasSwitch=false);
 // Batt_Door(Tube_OD=R9832_Body_OD, HasSwitch=true);
@@ -145,8 +146,23 @@ F54_FairingHalf(IsLeftHalf=false,
 // ------------
 //
 // DrogueMechBay();
-// rotate([180,0,0]) mirror([0,0,1]) ST_LockRing();
 //
+//  *** SpringThing parts for dual deploy ***
+// ST_TubeEnd(Tube_OD=R9832_DualDepTube_OD, Tube_ID=R9832_DualDepTube_ID);
+// ST_TubeLock(Tube_OD=R9832_DualDepTube_OD, Tube_ID=R9832_DualDepTube_ID);
+// ST_SpringMiddle(Tube_ID=R9832_DualDepTube_ID);
+// ST_SpringGuide(Tube_ID=R9832_DualDepTube_ID);
+// DrogueSpringThing();
+// rotate([0,180,0]) Drogue_ST_CableRedirect();
+// ST_BallKeeper(Tube_OD=R9832_DualDepTube_OD);
+// ST_BallSpacer(Tube_OD=R9832_Body_OD, InnerTube_OD=R9832_DualDepTube_OD);
+// mirror([0,0,1]) ST_LockBallRetainer(Tube_OD=R9832_Body_OD, HasDetent=false);
+// rotate([180,0,0]) mirror([0,0,1]) ST_LockRing(InnerTube_OD=R9832_MtrTube_OD);
+// ST_DetentOnly(InnerTube_OD=R9832_MtrTube_OD);
+// mirror([0,1,0]) ST_CableEndAndStop(Tube_OD=R9832_Body_OD, InnerTube_OD=R9832_DualDepTube_OD);
+// Drogue_ST_LowerCenteringRing();
+//
+//  *** Stager parts for dual deploy ***
 // BallDetentStopper();
 // rotate([0,180,0]) DrogueSep_CableRedirect();
 // Stager_Detent();
@@ -262,6 +278,8 @@ R9832_Coupler_ID=PML98Coupler_ID;
 R9832_MtrTube_OD=PML54Body_OD;
 R9832_MtrTube_ID=PML54Body_ID;
 R9832_BoosterMtrTube_OD=BT54Mtr_OD;
+R9832_DualDepTube_OD=BT54Body_OD;
+R9832_DualDepTube_ID=BT54Body_ID;
 
 EBay_Len=130;
 //Booster_Body_Len=R9832Booster_Fin_Root_L+60+116.5; // minimum length J460T
@@ -568,8 +586,8 @@ module Drogue_ST_CableRedirect(){
 	
 	difference(){
 		rotate([0,180,0]) ST_CableRedirect(Tube_OD=R9832_Body_OD, Skirt_ID=R9832_Body_ID, 
-							Tube_ID=PML98Coupler_ID, 
-							InnerTube_OD=BT54Mtr_OD);
+							Tube_ID=R9832_Coupler_ID, 
+							InnerTube_OD=R9832_DualDepTube_OD);
 		
 		// cut out for wires
 		WireCut();
@@ -599,7 +617,7 @@ module Drogue_ST_LowerCenteringRing(){
 	
 	difference(){
 		rotate([0,180,0]) ST_UpperCenteringRing(Tube_OD=R9832_Body_OD, Tube_ID=PML98Coupler_ID, 
-					Skirt_ID=R9832_Body_ID, InnerTube_OD=BT54Mtr_OD);
+					Skirt_ID=R9832_Body_ID, InnerTube_OD=R9832_DualDepTube_OD);
 		
 		// cut out for wires
 		WireCut();

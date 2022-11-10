@@ -3,7 +3,7 @@
 // Filename: AltBay.scad
 // by David M. Flynn
 // Created: 6/23/2022 
-// Revision: 0.9.12 11/4/2022
+// Revision: 0.9.13 11/9/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,6 +12,7 @@
 //
 //  ***** History *****
 //
+// 0.9.13 11/9/2022   Made low profile door 2mm not so much. 
 // 0.9.12 11/4/2022   Added options to make door bigger. 
 // 0.9.11 10/31/2022  Added missing bolt bosses the Alt_BayDoorFrame
 // 0.9.10 10/17/2022  Added Alt_BayFrameHole and Alt_BayDoorFrame
@@ -29,7 +30,7 @@
 // ***********************************
 //  ***** for STL output *****
 //
-// AltDoor54(Tube_OD=PML54Body_OD);
+// AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false, DoorXtra_X=0, DoorXtra_Y=0);
 //
 // rotate([90,0,0]) AltHolder();
 // AltBayBottom(CT_Len=75);
@@ -301,9 +302,9 @@ module AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false, DoorXtra_X=0, DoorXtra
 	Door_Y=Alt54Door_Y+DoorXtra_Y;
 	Door_X=Alt54Door_X+DoorXtra_X;
 	Door_t=3;
-	BoltBossInset=IsLoProfile? 5.5:10.5;
-	BoltDepth=IsLoProfile? BoltBossInset+2:BoltBossInset-2; // thru the door:not
-	LEDSW_Boss_H=IsLoProfile? 0:3;
+	BoltBossInset=IsLoProfile? 7.5:10.5;
+	BoltDepth=IsLoProfile? BoltBossInset:BoltBossInset-2; // thru the door:not
+	LEDSW_Boss_H=IsLoProfile? 2:3;
 	AltOffset_Y=7;
 	
 	difference(){
@@ -333,8 +334,10 @@ module AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false, DoorXtra_X=0, DoorXtra
 		} // union
 	
 		// PCB parts
+		
+		// Pressure transducer
 		translate([0,-Door_Y/2+AltOffset_Y,Tube_OD/2-Door_t-BoltBossInset]) {
-			translate([-10,27,0]) cube([12,12,8],center=true);
+			translate([-11,27,0]) cube([12,14,11],center=true);
 		}
 		
 		// Altimeter holes
