@@ -3,7 +3,7 @@
 // Filename: Fins.scad
 // by David M. Flynn
 // Created: 6/11/2022 
-// Revision: 0.9.6  10/4/2022
+// Revision: 0.9.7  11/10/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,14 +12,15 @@
 //
 //  ***** History *****
 //
-echo("Fins 0.9.6");
-// 0.9.6  10/4/2022 Fixed the Post of TrapFin2Shape so TipOffset can be bigger.
-// 0.9.5  8/31/2022 Added TipOffset to TrapFin2.
-// 0.9.4  8/27/2022 TrapFin2 and Co. 
-// 0.9.3  6/30/2022 Worked on Fillet
-// 0.9.2  6/27/2022 Added Fin2.
-// 0.9.1  6/14/2022 Added TrapFin.
-// 0.9.0  6/11/2022 First code.
+echo("Fins 0.9.7");
+// 0.9.7  11/10/2022 A solid root edge. 
+// 0.9.6  10/4/2022  Fixed the Post of TrapFin2Shape so TipOffset can be bigger.
+// 0.9.5  8/31/2022  Added TipOffset to TrapFin2.
+// 0.9.4  8/27/2022  TrapFin2 and Co. 
+// 0.9.3  6/30/2022  Worked on Fillet
+// 0.9.2  6/27/2022  Added Fin2.
+// 0.9.1  6/14/2022  Added TrapFin.
+// 0.9.0  6/11/2022  First code.
 //
 // ***********************************
 //  ***** for STL output *****
@@ -198,6 +199,7 @@ module TrapFin2(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100,
 	Perimeter=0.8;
 	Rib_a=40; // 45 worked well
 	Rib_Slot_w=0.1;
+	BaseTrim=0.9; // 3 layers
 	
 	nCuts=(Root_L+TipOffset)/Rib_Spacing*2;
 					
@@ -216,7 +218,12 @@ module TrapFin2(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100,
 						rotate([0,-Rib_a,0]) cube([Rib_Slot_w,Root_W*2,Span*2]);
 			} // union
 			
+			// cut out middle
 			translate([-Root_L-Overlap,-Perimeter,-1]) cube([Root_L*2+Overlap*2, Perimeter*2, Span*2]);
+			
+			// Leave an intact foot
+			translate([-Root_L-Overlap, -Root_W, -1]) cube([Root_L*2+Overlap*2, Root_W*2, 1+BaseTrim]);
+			
 			if (Bisect)
 				translate([Bisect_X,0,-1])	CutZone(X_Offset=0, Y=Root_W, Z=Span*2+2);
 		} // difference

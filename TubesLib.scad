@@ -72,7 +72,7 @@ PML75Coupler_ID=PML75Coupler_OD-4.4;
 //echo(PML75Coupler_OD=PML75Coupler_OD);
 //echo(PML75Coupler_ID=PML75Coupler_ID);
 
-PML54Body_OD=(2.152+0.062*2)*25.4;
+PML54Body_OD=57.9; // actual measured from LOC/PML tube
 PML54Body_ID=2.152*25.4;
 PML54Coupler_OD=(2.02+0.062*2)*25.4;
 PML54Coupler_ID=2.02*25.4;

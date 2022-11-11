@@ -193,6 +193,7 @@ NC_Len=350;
 NC_Tip_r=5;
 NC_Base=5;
 NC_Lock_H=5;
+NC_Wall_t=2.2;
 
 Alt_DoorXtra_X=2;
 Alt_DoorXtra_Y=2;

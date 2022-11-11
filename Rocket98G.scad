@@ -19,6 +19,15 @@
 // ***********************************
 //  ***** for STL output *****
 //
+/*
+FairingConeOGive(Fairing_OD=R98_Body_OD, 
+					FairingWall_T=FairingWall_T,
+					NC_Base=NC_Base, 
+					NC_Len=NC_Len, 
+					NC_Wall_t=NC_Wall_t,
+					NC_Tip_r=NC_Tip_r,
+					Cut_Z=160, LowerPortion=true);
+/**/
 // *** Fin Can ***
 // UpperFinCan();
 // Rocket98Fin();
@@ -48,7 +57,7 @@ Overlap=0.05;
 IDXtra=0.2;
 $fn=$preview? 24:90;
 
-nFins=3;
+nFins=5;
 R98_Fin_Post_h=10;
 R98_Fin_Root_L=240;
 R98_Fin_Root_W=14;
@@ -65,12 +74,28 @@ R98_MtrTube_ID=PML54Body_ID;
 
 BodyTubeLen=12*25.4;
 
+// Fairing Overrides
+Fairing_OD=PML98Body_OD;
+FairingWall_T=2.2;
+Fairing_ID=Fairing_OD-FairingWall_T*2;
+Fairing_Len=180; // Body of the fairing.
+
+NoseconeSep_Z=0; // This much of the nosecone becomes part of the fairing.
+NC_Len=320;
+NC_Tip_r=10;
+NC_Base=5;
+NC_Lock_H=5;
+NC_Wall_t=2.2;
+
 module ShowRocket98(){
 	
-	translate([0,0,R98_Fin_Root_L+100+BodyTubeLen+1]) ShowUpperBays();
+	//translate([0,0,R98_Fin_Root_L+100+BodyTubeLen+1]) ShowUpperBays();
 	
 	translate([0,0,R98_Fin_Root_L+100+Overlap]) color("LightBlue") Tube(OD=R98_Body_OD, ID=R98_Body_ID, 
 			Len=BodyTubeLen-Overlap*2, myfn=$preview? 90:360);
+	
+	translate([0,0,10]) color("Tan") Tube(OD=R98_MtrTube_OD, ID=R98_MtrTube_ID, 
+			Len=18*25.4, myfn=$preview? 90:360);
 	
 	translate([0,0,R98_Fin_Root_L+100+Overlap]) color("White") UpperFinCan();
 	color("LightGreen") LowerFinCan();
