@@ -3,7 +3,7 @@
 // Filename: Fins.scad
 // by David M. Flynn
 // Created: 6/11/2022 
-// Revision: 0.9.7  11/10/2022
+// Revision: 1.0  11/10/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,7 +12,8 @@
 //
 //  ***** History *****
 //
-echo("Fins 0.9.7");
+echo("Fins 1.0");
+// 1.0    11/10/2022 Good enough. 
 // 0.9.7  11/10/2022 A solid root edge. 
 // 0.9.6  10/4/2022  Fixed the Post of TrapFin2Shape so TipOffset can be bigger.
 // 0.9.5  8/31/2022  Added TipOffset to TrapFin2.
@@ -28,10 +29,9 @@ echo("Fins 0.9.7");
 // Fin(Root_L=150, Root_W=5, Tip_W=2.5, Span=70, Chamfer_a=15);
 // Fin(Root_L=200, Root_W=6, Tip_W=2.5, Span=90, Chamfer_a=15);
 //
-// Fin2(Root_L=150, Root_W=5.5, Tip_W=3.5, Span=70, Chamfer=10);
 //
 // TrapFin2(Post_h=10, Root_L=180, Tip_L=120, Root_W=10, Tip_W=5.0, Span=120, Chamfer_L=18, TipOffset=0, Bisect=false, Bisect_X=0);
-
+//
 // *** Examples ***
 // TrapFin2(Post_h=10, Root_L=240, Tip_L=50, Root_W=12, Tip_W=7.0, Span=150, Chamfer_L=24, TipOffset=60);
 //
@@ -49,9 +49,6 @@ echo("Fins 0.9.7");
 // TrapFin2Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18);
 // TrapFin2Shape(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100, Chamfer_L=18);
 // 
-//
-// Fillet(Tube_OD=50, Len=50, W=4);
-//
 // ***********************************
 
 include<TubesLib.scad>
@@ -259,48 +256,6 @@ module TooBigFin(KeepNegXHalf=false){
 //TooBigFin(KeepNegXHalf=true);
 
 // **********************************************************************************
-
-
-module Fillet(Tube_OD=50, Len=50, W=4){
-	difference(){
-		hull(){
-			translate([0,Tube_OD/2,W/2]) sphere(d=W);
-			translate([0,Tube_OD/2-W/2,W/2]) sphere(d=W);
-			
-			translate([0,Tube_OD/2,Len-W/2]) sphere(d=W);
-			translate([0,Tube_OD/2-W/2,Len-W/2]) sphere(d=W);
-			
-			translate([0,Tube_OD/2+W*0.40,W]) rotate([0,0,-30]) 
-				cylinder(d=W*2*1.4, h=Len-W*2, $fn=3);
-		} // hull
-		
-		// Tube
-		translate([0,0,-Overlap]) 
-			cylinder(d=Tube_OD-Overlap, h=Len+Overlap*2, $fn=$preview? 60:180);
-		
-		Fillet_r=W*0.7;
-		Fillet_a=asin((Fillet_r+W/2)/(Tube_OD/2+Fillet_r));
-		
-		rotate([0,0,Fillet_a]) translate([0,Tube_OD/2+Fillet_r,-Overlap])
-			cylinder(r=Fillet_r, h=Len+Overlap*2);
-		rotate([0,0,-Fillet_a]) translate([0,Tube_OD/2+Fillet_r,-Overlap])
-			cylinder(r=Fillet_r+Overlap, h=Len+Overlap*2);
-		
-		rotate([0,0,Fillet_a]) translate([-W,Tube_OD/2+Fillet_r,-Overlap])
-			cube([W*2.5,W*2,Len+Overlap*2]);
-		rotate([0,0,-Fillet_a]) translate([-W*1.5,Tube_OD/2+Fillet_r,-Overlap])
-			cube([W*2,W*2,Len+Overlap*2]);
-	} // difference
-	
-	//if ($preview==true) translate([0,Tube_OD/2,Len/2]) cube([W,20,Len],center=true);
-} // Fillet
-
-//Fillet(Tube_OD=50, Len=50, W=4);
-//cylinder(d=50, h=100, $fn=$preview? 60:180);
-
-//Fillet(Tube_OD=98, Len=50, W=10);
-//cylinder(d=98, h=100, $fn=$preview? 60:180);
-
 
 
 
