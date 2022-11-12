@@ -3,7 +3,7 @@
 // Filename: Parachute.scad
 // by David M. Flynn
 // Created: 9/13/2022 
-// Revision: 0.9.4  10/22/2022
+// Revision: 0.9.5  11/11/2022
 // Units: mm
 // *******************************************
 //  ***** Notes *****
@@ -25,6 +25,7 @@
 // 
 //  ***** History *****
 //
+// 0.9.5  11/11/2022 Making a 32" 'chute. 
 // 0.9.4  10/22/2022 Making a 45" 'chute. 
 // 0.9.3  10/6/2022 Made a 63" 'chute it is good.
 // 0.9.2  9/28/2022 20" 'chute worked well, 63" is next. 
@@ -69,7 +70,24 @@ Center_r=Apex_Y+45;
 // --------------------------------------------------------------------------
 
 // --------------------------------------------------------------------------
-// *** Making one 10/22/2022 ***
+// Make 10 Panels
+// 1.4oz Rip-Stop Nylon, 3mm Polypropylene rope (knit, cheep from Amazon)
+// 5.6 sqft
+//*
+Pointyness=0.4; Panel_Y=2; SeamAllowance=7;
+nPanels=10;
+Arc_r=630; Apex_Y=460; Hole_X=32; //10 Panels 255mm x 460mm, 32" Dia., 4" Center Hole
+Center_r=Apex_Y+52;
+/**/
+// Page 200x260
+//PrintingOffset_X=100; PrintingOffset_Y=-130; // Pg 1
+//PrintingOffset_X=100-200; PrintingOffset_Y=-130; // Pg 2
+//PrintingOffset_X=100; PrintingOffset_Y=-130-260; // Pg 3
+//PrintingOffset_X=100-200; PrintingOffset_Y=-130-260; // Pg 4
+// --------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------
+// *** Built one and it is good 11/2/2022 ***
 // 
 // Make 12 Panels
 // 1.4oz Rip-Stop Nylon, 3mm Polypropylene rope (knit, cheep from Amazon)
@@ -118,7 +136,7 @@ Center_r=Apex_Y+85;
 /*
 Pointyness=0.39; Panel_Y=2; SeamAllowance=0;
 nPanels=16; 
-Arc_r=887; Apex_Y=975; Hole_X=45; //16 Panels 390mm x 950mm, 63" Dia., 9" Center Hole
+Arc_r=887; Apex_Y=975; Hole_X=45; //16 Panels 390mm x 950mm, 78" Dia., 9" Center Hole
 Center_r=Apex_Y+114;
 /**/
 // Page 200x260
@@ -131,26 +149,14 @@ Center_r=Apex_Y+114;
 //PrintingOffset_X=0; PrintingOffset_Y=-130-260-260-260; // Pg 7
 // ---------------------------------------------------------------------------
 //
-//
-//Arc_r=2000; //14 Panels 240mm, 42"
-//Arc_r=2500; //14 Panels 300mm x 715mm, 52"
-//Arc_r=3000; //14 Panels 360mm x 855mm, 63"
-//PrintingOffset_X=0; PrintingOffset_Y=0;
-// Page 200x260
-//PrintingOffset_X=100; PrintingOffset_Y=-130; // Pg 1
-//PrintingOffset_X=100-200; PrintingOffset_Y=-130; // Pg 2
-//PrintingOffset_X=100; PrintingOffset_Y=-130-260; // Pg 3
-//PrintingOffset_X=100-200; PrintingOffset_Y=-130-260; // Pg 4
-//PrintingOffset_X=100; PrintingOffset_Y=-130-260-260; // Pg 5
-//PrintingOffset_X=100-200; PrintingOffset_Y=-130-260-260; // Pg 6
 
-
+//*
+//for (j=[0:nPanels-1]) rotate([0,0,360/nPanels*j]) translate([0,-Center_r,0]) // show full circle
 //
-for (j=[0:nPanels-1]) rotate([0,0,360/nPanels*j]) translate([0,-Center_r,0]) // show full circle
 translate([PrintingOffset_X,PrintingOffset_Y+SeamAllowance,0]) // offset for pdf
 offset(delta=SeamAllowance) // comment out when showing full circle
 P_Shape();
-
+/**/
 	
 module P_Shape(){
 	
@@ -166,4 +172,39 @@ module P_Shape(){
 	
 } // P_Shape
 	
+// ******************************************************************
+// *** Parameter test ***
+/*
+nPanels=8;
+Diameter=20*25.4; // 63 inches in diameter
+CenterHole_d=3.0*25.4;
+echo(Diameter=Diameter);
+
+SeamAllowance=7;
+Panel_w=Diameter*PI/nPanels;
+Apex_w=CenterHole_d*PI/nPanels;
+Arc_r=Diameter/2*1.73;
+echo(Arc_r=Arc_r);
+Apex_Y=(Diameter/2-CenterHole_d/2)*1.4;
+echo(Apex_Y=Apex_Y);
+
+//for (j=[0:nPanels-1]) rotate([0,0,360/nPanels*j]) translate([0,-Diameter/1.825,0]) // show full circle
+//translate([PrintingOffset_X,PrintingOffset_Y+SeamAllowance,0]) // offset for pdf
+//offset(delta=SeamAllowance) // comment out when showing full circle
+P_ShapeTest();
 	
+module P_ShapeTest(){
+	
+	hull(){
+		intersection(){
+			translate([-Arc_r+Panel_w/2, 0, 0]) circle(r=Arc_r);
+			translate([Arc_r-Panel_w/2, 0, 0]) circle(r=Arc_r);
+			translate([-Panel_w/2,0,0]) square([Panel_w, Apex_Y/2]);
+		}
+		
+		translate([-Apex_w/2,Apex_Y-1,0]) square([Apex_w,1]);
+	} // hull
+	
+} // P_Shape
+
+/**/

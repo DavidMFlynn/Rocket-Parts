@@ -728,15 +728,15 @@ module LanyardA(){
 	
 	difference(){
 		hull(){
-			translate([-LTY_w/2,0,-LTY_h/2]) cube([LTY_w,1,LTY_h]);
+			translate([-LTY_w/2,-1,-LTY_h/2]) cube([LTY_w,2,LTY_h]);
 			translate([-LTY_w/2,LTY_y,-LTY_h/2+LTY_y])
 				cube([LTY_w,Overlap,LTY_h-LTY_y*2]);
 		} // hull
 		
 		translate([0,-Overlap,0])
 		hull(){
-			translate([-LTY_w/2-Overlap,0,-Slot_h/2-Slot_y]) 
-				cube([LTY_w+Overlap*2,1,Slot_h+Slot_y*2]);
+			translate([-LTY_w/2-Overlap,-1,-Slot_h/2-Slot_y]) 
+				cube([LTY_w+Overlap*2,2,Slot_h+Slot_y*2]);
 			translate([-LTY_w/2-Overlap,LTY_y-3,-Slot_h/2])
 				cube([LTY_w+Overlap*2,Overlap,Slot_h]);
 		} // hull
@@ -749,10 +749,6 @@ module LanyardA(){
 
 module LanyardToTube(ID=PML98Coupler_ID){
 	LTY_h=30;
-	LTY_w=6;
-	LTY_y=7;
-	Slot_h=10;
-	Slot_y=3;
 	
 	difference(){
 		translate([0,-ID/2-Overlap,0]) LanyardA();

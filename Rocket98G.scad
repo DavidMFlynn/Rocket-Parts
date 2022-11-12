@@ -19,7 +19,7 @@
 // ***********************************
 //  ***** for STL output *****
 //
-/*
+//*
 FairingConeOGive(Fairing_OD=R98_Body_OD, 
 					FairingWall_T=FairingWall_T,
 					NC_Base=NC_Base, 
