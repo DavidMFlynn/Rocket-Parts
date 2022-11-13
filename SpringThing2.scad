@@ -3,7 +3,7 @@
 // Filename: SpringThing2.scad
 // by David M. Flynn
 // Created: 10/17/2022 
-// Revision: 0.9.13  11/11/2022
+// Revision: 0.9.14  11/12/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -11,6 +11,7 @@
 // Built to deploy a parachute from a booster with a spring.
 //
 //  ***** History *****
+// 0.9.14  11/12/2022 Working to a 5.5" version
 // 0.9.13  11/11/2022 Code cleanup, prep for making a 6 inch version. 
 // 0.9.12  11/8/2022 More parametric
 // 0.9.11  11/5/2022 Aligned all so cable is at 0°
@@ -30,17 +31,17 @@
 //  ***** for STL output *****
 //
 // ST_TubeEnd(Tube_OD=BT54Coupler_OD, Tube_ID=BT54Coupler_ID); // print 2, glued to half section of coupler tube
-// ST_SpringGuide(Tube_ID=BT54Body_ID); // Sits on top of motor, glued to bottom of spring. 
+// ST_SpringGuide(InnerTube_ID=BT54Body_ID); // Sits on top of motor, glued to bottom of spring. 
 // ST_SpringMiddle(Tube_ID=BT54Coupler_OD); // optional double spring slider
 // ST_TubeLock(Tube_OD=BT54Coupler_OD, Tube_ID=BT54Coupler_ID); // Glued to top of spring.
 //
 // ST_BallSpacer(Tube_OD=PML98Body_OD, InnerTube_OD=BT54Body_OD); // print 2, spaces balls in bearing
-// ST_BallKeeper(Tube_OD=BT54Body_OD); // ball alignment, glue to tube
+// ST_BallKeeper(InnerTube_OD=BT54Body_OD); // ball alignment, glue to tube
 // 
-// ST_LockRing(InnerTube_OD=BT54Body_OD); 
+// ST_LockRing(Tube_OD=PML98Body_OD, InnerTube_OD=BT54Body_OD); 
 // ST_DetentOnly(InnerTube_OD=BT54Body_OD);
 // mirror([0,1,0]) ST_CableEndAndStop(Tube_OD=PML98Body_OD, InnerTube_OD=BT54Body_OD);
-// rotate([180,0,0]) ST_LockBallRetainer(Tube_OD=PML98Body_OD, HasDetent=false);
+// rotate([180,0,0]) ST_LockBallRetainer(Tube_OD=PML98Body_OD, InnerTube_OD=BT54Body_OD, HasDetent=false);
 //
 // ST_UpperCenteringRing(Tube_OD=PML98Body_OD, Tube_ID=PML98Coupler_ID, Skirt_ID=PML98Body_ID, InnerTube_OD=BT54Mtr_OD);
 // ST_Frame(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, Collar_Len=20, Skirt_Len=30); // 60mm long
@@ -58,7 +59,7 @@
 // ***********************************
 //  ***** for Viewing *****
 //
-// ShowSpringThing();
+// ShowSpringThing(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, InnerTube_OD=BT54Mtr_OD, InnerTube_ID=BT54Body_ID, InnerCouplerTube_OD=BT54Coupler_OD, InnerCouplerTube_ID=BT54Coupler_ID);
 //
 // ***********************************
 
@@ -107,35 +108,39 @@ Key_a=Stop_a+33;
 nLockBalls=3;
 nInnerRaceBolts=6;
 	
-module ShowSpringThing(){
-	translate([0,0,-110]) color("Tan") ST_SpringGuide();
+module ShowSpringThing(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, 
+						CouplerTube_OD=PML98Coupler_OD, CouplerTube_ID=PML98Coupler_ID,
+						InnerTube_OD=BT54Mtr_OD, InnerTube_ID=BT54Body_ID, 
+						InnerCouplerTube_OD=BT54Coupler_OD, InnerCouplerTube_ID=BT54Coupler_ID){
+	
+	translate([0,0,-110]) color("Tan") ST_SpringGuide(InnerTube_ID=InnerTube_ID);
 	
 	color("Silver") translate([0,0,-70]) {
-		ST_CableRedirect();
+		ST_CableRedirect(Tube_OD=Tube_OD, Skirt_ID=Tube_ID, Tube_ID=CouplerTube_ID, InnerTube_OD=InnerTube_OD);
 		translate([-40,10,-40]) ST_BallDetentStopper();
 	}
 	
-	translate([0,0,-60]) ST_BallKeeper(Tube_OD=BT54Body_OD);
+	translate([0,0,-60]) ST_BallKeeper(InnerTube_OD=InnerTube_OD);
 	
 	translate([0,0,-30]) {
-		rotate([180,0,0]) rotate([0,0,68]) mirror([0,1,0]) ST_CableEndAndStop();
-		rotate([180,0,135]) color("Green") ST_LockBallRetainer();
+		rotate([180,0,0]) rotate([0,0,68]) mirror([0,1,0]) ST_CableEndAndStop(Tube_OD=Tube_OD, InnerTube_OD=InnerTube_OD);
+		rotate([180,0,135]) color("Green") ST_LockBallRetainer(Tube_OD=Tube_OD, InnerTube_OD=InnerTube_OD, HasDetent=false);
 	}
 	
 	color("Orange") translate([0,0,50]){
-		ST_LockRing();
-		translate([0,0,-40]) ST_Frame();
+		ST_LockRing(Tube_OD=Tube_OD, InnerTube_OD=InnerTube_OD);
+		translate([0,0,-40]) ST_Frame(Tube_OD=Tube_OD, Skirt_ID=Tube_ID, Collar_Len=20, Skirt_Len=30);
 		}
 	
 	color("Green") translate([0,0,45]) {
-		ST_BallSpacer();
-		translate([0,0,25]) rotate([180,0,0]) ST_BallSpacer();
+		ST_BallSpacer(Tube_OD=Tube_OD, InnerTube_OD=InnerTube_OD);
+		translate([0,0,25]) rotate([180,0,0]) ST_BallSpacer(Tube_OD=Tube_OD, InnerTube_OD=InnerTube_OD);
 	}
-	translate([0,0,80]) color("Tan") ST_TubeLock();
+	translate([0,0,80]) color("Tan") ST_TubeLock(Tube_OD=InnerCouplerTube_OD, Tube_ID=InnerCouplerTube_ID);
 	
 	color("LightBlue") translate([0,0,100]) {
-		translate([0,-10,0]) ST_TubeEnd();
-		translate([0,10,0]) rotate([0,0,180]) ST_TubeEnd();
+		translate([0,-10,0]) ST_TubeEnd(Tube_OD=InnerCouplerTube_OD, Tube_ID=InnerCouplerTube_ID);
+		translate([0,10,0]) rotate([0,0,180]) ST_TubeEnd(Tube_OD=InnerCouplerTube_OD, Tube_ID=InnerCouplerTube_ID);
 	}
 } // ShowSpringThing
 
@@ -164,14 +169,14 @@ module ST_SpringMiddle(Tube_ID=BT54Coupler_OD){
 
 //ST_SpringMiddle();
 
-module ST_SpringGuide(Tube_ID=BT54Body_ID){
+module ST_SpringGuide(InnerTube_ID=BT54Body_ID){
 	Tail_Len=22;
 	MotorTopDepth=Tail_Len-7;
 	
 	difference(){
 		union(){
 			cylinder(d=ST_DSpring_ID-1, h=ST_DSpring_CBL);
-			translate([0,0,-Tail_Len+Overlap]) cylinder(d=Tube_ID-IDXtra, h=Tail_Len);
+			translate([0,0,-Tail_Len+Overlap]) cylinder(d=InnerTube_ID-IDXtra, h=Tail_Len);
 		} // union
 		
 		translate([0,0,-Tail_Len]) cylinder(d=39, h=MotorTopDepth);
@@ -181,18 +186,18 @@ module ST_SpringGuide(Tube_ID=BT54Body_ID){
 
 // ST_SpringGuide();
 
-module ST_BallKeeper(Tube_OD=BT54Body_OD){
+module ST_BallKeeper(InnerTube_OD=BT54Body_OD){
 	nBalls=nLockBalls;
 	H=16;
 	Wall_t=2;
 	
 	difference(){
-		cylinder(d=Tube_OD+Wall_t*2, h=H);
+		cylinder(d=InnerTube_OD+Wall_t*2, h=H);
 		
-		translate([0,0,-Overlap]) cylinder(d=Tube_OD+IDXtra*2, h=H+Overlap*2);
+		translate([0,0,-Overlap]) cylinder(d=InnerTube_OD+IDXtra*2, h=H+Overlap*2);
 		
 		for (j=[0:nBalls-1]) rotate([0,0,360/nBalls*j]) translate([0,0,H/2])
-			rotate([90,0,0]) cylinder(d=LockBall_d+IDXtra*2, h=Tube_OD);
+			rotate([90,0,0]) cylinder(d=LockBall_d+IDXtra*2, h=InnerTube_OD);
 	} // difference
 	
 } // ST_BallKeeper
@@ -273,7 +278,9 @@ module ST_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 	CablePath_Y=BoltCircle_d(Tube_OD=Tube_OD)/2; 
 	Exit_a=75;
 	
-	
+	//echo(Tube_OD=Tube_OD);
+	//echo(Skirt_ID=Skirt_ID);
+								
 	module CablePath(){
 		R=7;
 		translate([0,-R,0]) rotate([0,-90,0])			

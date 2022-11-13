@@ -9,8 +9,7 @@
 //  ***** Notes *****
 //
 //  4" Upscale of Estes Astron Omega
-//  Two Stage Rocket with 150mm Body.
-Scale=102.21/41.58; // Body tube diameters
+//  Two Stage Rocket with 137mm Body.
 //
 //  ***** History *****
 // 
@@ -40,11 +39,13 @@ Scale=102.21/41.58; // Body tube diameters
 // ShowRocket98();
 //
 // ***********************************
-include<Fairing54.scad>
-include<FinCan.scad>
-include<AltBay.scad>
-include<CablePuller.scad>
-include<BatteryHolderLib.scad>
+include<TubesLib.scad>
+use<SpringThing2.scad>
+use<Fairing54.scad>
+use<FinCan.scad>
+use<AltBay.scad>
+use<CablePuller.scad>
+use<BatteryHolderLib.scad>
 
 //also included
  //include<NoseCone.scad>
@@ -60,6 +61,9 @@ include<BatteryHolderLib.scad>
 Overlap=0.05;
 IDXtra=0.2;
 $fn=$preview? 24:90;
+
+Scale=BT137Body_OD/41.58; // Body tube diameters
+echo(Scale=Scale);
 
 nFins=4;
 // Sustainer Fin
@@ -82,10 +86,15 @@ ROmegaBooster_Fin_Span=ROmegaBooster_Fin_Root_L*0.75;
 ROmegaBooster_Fin_TipOffset=0;
 ROmegaBooster_Fin_Chamfer_L=ROmegaBooster_Fin_Root_W*2.5;
 
-ROmega_Body_OD=PML98Body_OD;
-ROmega_Body_ID=PML98Body_ID;
-ROmega_MtrTube_OD=PML54Body_OD;
-ROmega_MtrTube_ID=PML54Body_ID;
+ROmega_Body_OD=BT137Body_OD;
+ROmega_Body_ID=BT137Body_ID;
+ROmega_Coupler_OD=BT137Coupler_OD;
+ROmega_Coupler_ID=BT137Coupler_ID;
+ROmega_MtrTube_OD=PML75Body_OD;
+ROmega_MtrTube_ID=PML75Body_ID;
+ROmega_MtrCoupleTube_OD=PML75Coupler_OD;
+ROmega_MtrCoupleTube_ID=PML75Coupler_ID;
+
 
 EBay_Len=130;
 Booster_Body_Len=5*25.4*Scale;
@@ -123,6 +132,11 @@ module ShowRocketOmega(){
 } // ShowRocketOmega
 
 //ShowRocketOmega();
+
+ShowSpringThing(Tube_OD=ROmega_Body_OD, Tube_ID=ROmega_Body_ID, 
+				CouplerTube_OD=ROmega_Coupler_OD, CouplerTube_ID=ROmega_Coupler_ID,
+				InnerTube_OD=ROmega_MtrTube_OD, InnerTube_ID=ROmega_MtrTube_ID, 
+				InnerCouplerTube_OD=ROmega_MtrCoupleTube_OD, InnerCouplerTube_ID=ROmega_MtrCoupleTube_ID);
 
 module LowerFinCan(){
 	RailGuide_Z=110;
