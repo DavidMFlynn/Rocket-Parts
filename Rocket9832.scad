@@ -3,7 +3,7 @@
 // Filename: Rocket9832.scad
 // by David M. Flynn
 // Created: 10/16/2022 
-// Revision: 0.9.5  11/5/2022
+// Revision: 0.9.6  11/13/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -82,6 +82,7 @@
 //  Cable Puller Battery w/ Switch 330°
 //
 //  ***** History *****
+// 0.9.6  11/13/2022  Added PhantomSustainer()
 // 0.9.5  11/5/2022   Alt Door changed. Fixes to Drogue Springthing. 
 // 0.9.4  10/28/2022  Notes
 // 0.9.3  10/27/2022  Drogue bays
@@ -740,6 +741,28 @@ module Drogue_Cup(){
 } // Drogue_Cup
 
 //Drogue_Cup();
+
+module PhantomSustainer(){
+	// Combine with a Drogue_Cup to launch w/o the sustainer
+	Rivet_Z=35;
+	
+	Stager_Cup(Tube_OD=R9832_Body_OD, ID=78, nLocks=2, BoltsOn=false, Collar_h=16, HasElectrical=true);
+	
+	difference(){
+		// Skirt
+		Tube(OD=R9832_Body_OD, ID=R9832_Body_ID, Len=50, myfn=$preview? 36:360);
+	
+		// Rail guide bolts
+		//translate([0,0,RailGuide_Z]) rotate([0,0,-90-180/nFins]) 
+		//	translate([0,R9832_Body_OD/2+2,0]) RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
+		
+		// Rivet holes
+		for (j=[0:2]) rotate([0,0,120*j]) translate([0,R9832_Body_OD/2+1,Rivet_Z])
+			rotate([90,0,0]) cylinder(d=4, h=5);
+	} // difference
+} // PhantomSustainer
+
+//rotate([180,0,0]) PhantomSustainer();
 
 module UpperFinCan(){
 	// Upper Half of Fin Can
