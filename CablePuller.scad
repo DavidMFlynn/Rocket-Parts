@@ -3,7 +3,7 @@
 // Filename: CablePuller.scad
 // by David M. Flynn
 // Created: 8/21/2022 
-// Revision: 1.1.2  11/2/2022
+// Revision: 1.1.3  11/14/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -23,7 +23,8 @@
 //
 //  ***** History *****
 //
-echo("CablePuller 1.1.2");
+echo("CablePuller 1.1.3");
+// 1.1.3  11/14/2022  Moved end bolts 1mm, changed to 16mm arm. 14mm travel
 // 1.1.2  11/2/2022   Added calculation for CP_DoorBoltPattern
 // 1.1.1  10/25/2022  Wider door
 // 1.1.0  10/14/2022  Added TriggerBellCrank and BellCrankTriggerBearingHolder for CageTop. 
@@ -39,7 +40,7 @@ echo("CablePuller 1.1.2");
 // ***********************************
 //  ***** for STL output *****
 // 
-// CP_Door(Tube_OD=PML98Body_OD);
+// rotate([0,180,0]) CP_Door(Tube_OD=PML98Body_OD);
 //
 // ThroughOut();
 // rotate([0,90,0]) SpringBody();
@@ -92,7 +93,8 @@ CP_Spring_CBL=0.7*25.4;
 CP_Bearing_ID=4;
 CP_Bearing_OD=8;
 CP_Bearing_H=3;
-ArmLen=14;
+ArmLen=16; // extended version 13mm pull (weak at end of travel)
+//ArmLen=14; // original more compact 11mm pull
 CR_h=CableEnd_h+2;
 CP_SpringBody_YZ=11;
 LooseFit=0.8;
@@ -375,7 +377,7 @@ module AddServo(){
 //AddServo();
 
 module CablePullerBoltPattern(){
-	Bolt_X1=-1;
+	Bolt_X1=-2;
 	Cage_YZ=CP_SpringBody_YZ+5;
 	Cage_PX=ArmLen+CP_Bearing_OD*1.5+CP_Spring_CBL+CableEnd_h+4+4;
 	BoltOffset=2;
@@ -393,7 +395,7 @@ module CablePullerBoltPattern(){
 //CablePullerBoltPattern() Bolt4Hole();
 
 module CR_Cage(){
-	Bolt_X1=-1;
+	Bolt_X1=-2;
 	Cage_YZ=CP_SpringBody_YZ+5;
 	SpB_Hole_YZ=CP_SpringBody_YZ+LooseFit;
 	SpB_Bearing_YZ=CP_SpringBody_YZ+IDXtra;
