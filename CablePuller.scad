@@ -184,10 +184,10 @@ module CP_BayFrameHole(Tube_OD=PML98Body_OD){
 	Door_X=CP_Door_X;
 	
 	translate([0,-Tube_OD/2+10,0]) rotate([90,0,0]) 
-			RoundRect(X=Door_X+5, Y=Tube_Len-1, Z=30, R=0.1);
+			RoundRect(X=Door_X+5, Y=Tube_Len-1, Z=15, R=0.1);
 	
-	translate([0,-Tube_OD/2+35,0]) rotate([90,0,0]) 
-			RoundRect(X=Door_X-2, Y=Tube_Len-1, Z=30, R=0.1);
+	translate([0,-Tube_OD/2+20,0]) rotate([90,0,0]) 
+			RoundRect(X=Door_X-2, Y=Tube_Len-1, Z=20, R=0.1);
 } // CP_BayFrameHole
 
 //CP_BayFrameHole();
@@ -261,7 +261,7 @@ module CP_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=fals
 		
 	} // difference
 	
-	if ($preview&&ShowDoor){ rotate([90,0,0]) CP_Door();
+	if ($preview&&ShowDoor){ rotate([90,0,0]) CP_Door(Tube_OD=Tube_OD);
 		translate([0,-Tube_OD/2+14,-8]) rotate([0,0,-90]) rotate([0,-90,0]) ShowCablePuller();}
 	
 } // CP_BayDoorFrame

@@ -3,7 +3,7 @@
 // Filename: Fins.scad
 // by David M. Flynn
 // Created: 6/11/2022 
-// Revision: 1.0  11/10/2022
+// Revision: 1.0.1  11/14/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -13,6 +13,7 @@
 //  ***** History *****
 //
 echo("Fins 1.0");
+// 1.0.1  11/14/2022 Span should be in addition to Post_h. 
 // 1.0    11/10/2022 Good enough. 
 // 0.9.7  11/10/2022 A solid root edge. 
 // 0.9.6  10/4/2022  Fixed the Post of TrapFin2Shape so TipOffset can be bigger.
@@ -131,18 +132,18 @@ module TrapFin2Shape(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span
 	} // hull
 	
 	hull(){
-		translate([-Root_L/2+Edge_r,0,Post_h-Overlap]) cylinder(r=Edge_r, h=Overlap);
-		translate([-Root_L/2+Chamfer_L,0,Post_h-Overlap]) cylinder(d=Root_W, h=Overlap);
-		translate([Root_L/2-Chamfer_L,0,Post_h-Overlap]) cylinder(d=Root_W, h=Overlap);
-		translate([Root_L/2-Edge_r,0,Post_h-Overlap]) cylinder(r=Edge_r, h=Overlap);
+		translate([-Root_L/2+Edge_r, 0, Post_h-Overlap]) cylinder(r=Edge_r, h=Overlap);
+		translate([-Root_L/2+Chamfer_L, 0, Post_h-Overlap]) cylinder(d=Root_W, h=Overlap);
+		translate([Root_L/2-Chamfer_L, 0, Post_h-Overlap]) cylinder(d=Root_W, h=Overlap);
+		translate([Root_L/2-Edge_r, 0, Post_h-Overlap]) cylinder(r=Edge_r, h=Overlap);
 		
-		translate([-Tip_L/2+Edge_r+TipOffset,0,Span-Chamfer_L]) cylinder(r=Edge_r, h=Overlap);
-		translate([-Tip_L/2+Tip_Chamfer+TipOffset,0,Span-Tip_Chamfer]) cylinder(d=Tip_W, h=Overlap);
-		translate([Tip_L/2-Tip_Chamfer+TipOffset,0,Span-Tip_Chamfer]) cylinder(d=Tip_W, h=Overlap);
-		translate([Tip_L/2-Edge_r+TipOffset,0,Span-Chamfer_L]) cylinder(r=Edge_r, h=Overlap);
+		translate([-Tip_L/2+Edge_r+TipOffset, 0, Post_h+Span-Chamfer_L]) cylinder(r=Edge_r, h=Overlap);
+		translate([-Tip_L/2+Tip_Chamfer+TipOffset, 0, Post_h+Span-Tip_Chamfer]) cylinder(d=Tip_W, h=Overlap);
+		translate([Tip_L/2-Tip_Chamfer+TipOffset, 0, Post_h+Span-Tip_Chamfer]) cylinder(d=Tip_W, h=Overlap);
+		translate([Tip_L/2-Edge_r+TipOffset, 0, Post_h+Span-Chamfer_L]) cylinder(r=Edge_r, h=Overlap);
 		
-		translate([-Tip_L/2+Edge_r+TipOffset,0,Span-Edge_r]) sphere(r=Edge_r);
-		translate([Tip_L/2-Edge_r+TipOffset,0,Span-Edge_r]) sphere(r=Edge_r);
+		translate([-Tip_L/2+Edge_r+TipOffset, 0, Post_h+Span-Edge_r]) sphere(r=Edge_r);
+		translate([Tip_L/2-Edge_r+TipOffset, 0, Post_h+Span-Edge_r]) sphere(r=Edge_r);
 		} // hull
 } // TrapFin2Shape
 

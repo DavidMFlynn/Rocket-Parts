@@ -3,16 +3,16 @@
 // Filename: RocketOmega.scad
 // by David M. Flynn
 // Created: 10/10/2022 
-// Revision: 0.9.0  10/10/2022
+// Revision: 0.9.1  11/14/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 //
-//  4" Upscale of Estes Astron Omega
+//  5.5" Upscale of Estes Astron Omega
 //  Two Stage Rocket with 137mm Body.
 //
 //  ***** History *****
-// 
+// 0.9.1  11/14/2022  Worked on booster fin can. 
 // 0.9.0  10/10/2022  First code.
 //
 // ***********************************
@@ -74,17 +74,19 @@ ROmega_Fin_Tip_W=2*Scale;
 ROmega_Fin_Tip_L=ROmega_Fin_Root_L*0.75;
 ROmega_Fin_Span=ROmega_Fin_Root_L*0.75;
 ROmega_Fin_TipOffset=0;
-ROmega_Fin_Chamfer_L=ROmega_Fin_Root_W*2.5;
+ROmega_Fin_Chamfer_L=ROmega_Fin_Root_W*3;
 
 // Booster Fin
-ROmegaBooster_Fin_Post_h=10;
+ROmegaBooster_Fin_Post_h=15;
 ROmegaBooster_Fin_Root_L=90*Scale;
 ROmegaBooster_Fin_Root_W=5.7*Scale;
 ROmegaBooster_Fin_Tip_W=2*Scale;
 ROmegaBooster_Fin_Tip_L=ROmegaBooster_Fin_Root_L*0.75;
 ROmegaBooster_Fin_Span=ROmegaBooster_Fin_Root_L*0.75;
 ROmegaBooster_Fin_TipOffset=0;
-ROmegaBooster_Fin_Chamfer_L=ROmegaBooster_Fin_Root_W*2.5;
+ROmegaBooster_Fin_Chamfer_L=ROmegaBooster_Fin_Root_W*3;
+echo(ROmegaBooster_Fin_Root_L=ROmegaBooster_Fin_Root_L);
+echo(ROmegaBooster_Fin_Span=ROmegaBooster_Fin_Span);
 
 ROmega_Body_OD=BT137Body_OD;
 ROmega_Body_ID=BT137Body_ID;
@@ -124,6 +126,7 @@ module ShowRocketOmega(){
 	/**/
 	translate([0,0,Booster_Body_Len-40]) LowerFinCan();
 	
+	translate([0,0,ROmegaBooster_Fin_Root_L+60]) BoosterUpperFinCan();
 	//*
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j])
 		translate([ROmega_Body_OD/2-ROmega_Fin_Post_h, 0, ROmegaBooster_Fin_Root_L/2+10]) 
@@ -133,10 +136,12 @@ module ShowRocketOmega(){
 
 //ShowRocketOmega();
 
+/*
 ShowSpringThing(Tube_OD=ROmega_Body_OD, Tube_ID=ROmega_Body_ID, 
 				CouplerTube_OD=ROmega_Coupler_OD, CouplerTube_ID=ROmega_Coupler_ID,
 				InnerTube_OD=ROmega_MtrTube_OD, InnerTube_ID=ROmega_MtrTube_ID, 
 				InnerCouplerTube_OD=ROmega_MtrCoupleTube_OD, InnerCouplerTube_ID=ROmega_MtrCoupleTube_ID);
+/**/
 
 module LowerFinCan(){
 	RailGuide_Z=110;
@@ -154,14 +159,13 @@ module LowerFinCan(){
 			translate([0,ROmega_Body_OD/2+2,0]) RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
 		
 		// Booster attachment?
-		translate([0,0,-Overlap]) cylinder(d=ROmega_Body_OD+1,40+Overlap);
+		//translate([0,0,-Overlap]) cylinder(d=ROmega_Body_OD+1,40+Overlap);
 	} // difference
 		
 
 	//*
 	difference(){
 		translate([0,0,RailGuide_Z]) rotate([0,0,-90-180/nFins]) 
-			//RailButtonPost(OD=R98_Body_OD, MtrTube_OD=R98_MtrTube_OD, H=R98_Body_OD/2+5, Len=30);
 			RailGuidePost(OD=ROmega_Body_OD, MtrTube_OD=ROmega_MtrTube_OD+IDXtra*2, H=ROmega_Body_OD/2+2, TubeLen=70, Length = 40, BoltSpace=12.7);
 		
 		translate([0,0,RailGuide_Z]) TrapFin2Slots(Tube_OD=ROmega_Body_OD, nFins=nFins, 	
@@ -191,6 +195,8 @@ module RocketOmegaFin(){
 
 module BoosterUpperFinCan(){
 	// Upper Half of Fin Can
+	CablePuller_Z=-50-ROmegaBooster_Fin_Root_L/4;
+	WirePath_Z=CablePuller_Z;
 	
 	difference(){
 		rotate([180,0,0]) 
@@ -200,12 +206,33 @@ module BoosterUpperFinCan(){
 				Root_W=ROmegaBooster_Fin_Root_W, 
 				Chamfer_L=ROmegaBooster_Fin_Chamfer_L, HasTailCone=false); 
 		
-		translate([0,0,-90]) rotate([0,0,90-180/nFins]) CP_BayFrameHole(Tube_OD=ROmega_Body_OD);
+		// Cable Pullers
+		translate([0,0,CablePuller_Z]) rotate([0,0,90-180/nFins]) 
+			CP_BayFrameHole(Tube_OD=ROmega_Body_OD);
+		translate([0,0,CablePuller_Z]) rotate([0,0,90-180/nFins+360/nFins]) 
+			CP_BayFrameHole(Tube_OD=ROmega_Body_OD);
+		
+		// Altimeter
+		translate([0,0,CablePuller_Z]) rotate([0,0,90-180/nFins+360/nFins*2]) 
+		  Alt_BayFrameHole(Tube_OD=ROmega_Body_OD);
+		
+		// Wire Paths
+		for (j=[0:nFins-1]) rotate([0,0,360/nFins*j])
+			translate([ROmega_MtrTube_OD/2+5,0,WirePath_Z]) hull(){
+				rotate([90,0,0]) cylinder(d=7, h=30, center=true);
+				translate([0,0,10]) rotate([90,0,0]) cylinder(d=7, h=30, center=true);
+			}
 	} // difference
 	
-	// Doesn't fit with 4 fins in a 4" airframe
-	translate([0,0,-90]) rotate([0,0,90-180/nFins]) 
-		CP_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=false);
+	// Cable Pullers
+	translate([0,0,CablePuller_Z]) rotate([0,0,90-180/nFins]) 
+		CP_BayDoorFrame(Tube_OD=ROmega_Body_OD, Tube_ID=ROmega_Body_ID, ShowDoor=false);
+	translate([0,0,CablePuller_Z]) rotate([0,0,90-180/nFins+360/nFins]) 
+		CP_BayDoorFrame(Tube_OD=ROmega_Body_OD, Tube_ID=ROmega_Body_ID, ShowDoor=false);
+	
+	// Altimeter
+	translate([0,0,CablePuller_Z]) rotate([0,0,90-180/nFins+360/nFins*2])
+		Alt_BayDoorFrame(Tube_OD=ROmega_Body_OD, Tube_ID=ROmega_Body_ID, ShowDoor=false);
 } // BoosterUpperFinCan
 
 //BoosterUpperFinCan();
