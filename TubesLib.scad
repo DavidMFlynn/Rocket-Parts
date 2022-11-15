@@ -93,10 +93,11 @@ BT54Body_ID=54.2;
 BT54Coupler_OD=53.60;
 BT54Coupler_ID=50.70;
 
-PML38Body_OD=(1.525+0.062*2)*25.4;
+PML38Body_OD=42.2; //(1.525+0.062*2)*25.4; // 42.2 measured
 PML38Body_ID=1.525*25.4;
 PML38Coupler_OD=(1.40+0.062*2)*25.4;
 PML38Coupler_ID=1.40*25.4;
+//echo(PML38Body_OD=PML38Body_OD);
 
 module CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0){
 	difference(){

@@ -3,7 +3,7 @@
 // Filename: Rocket98Dual.scad
 // by David M. Flynn
 // Created: 10/16/2022 
-// Revision: 1.0.0  11/9/2022
+// Revision: 1.0.1  11/15/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -43,6 +43,7 @@
 //   Wire connection (Booster attached, Sustainer igniter) 270°
 //
 //  ***** History *****
+// 1.0.1  11/15/2022  Added parameters to R98_Electronics_Bay2
 // 1.0.0  11/9/2022   Extracted from Rocket9832.scad
 // 0.9.5  11/5/2022   Alt Door changed. Fixes to Drogue Springthing. 
 // 0.9.4  10/28/2022  Notes
@@ -83,7 +84,7 @@ F54_FairingHalf(IsLeftHalf=false,
 // F54_SpringEndCap();
 //
 // *** Electronics Bay ***
-// R98_Electronics_Bay2();
+// R98_Electronics_Bay2(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, Fairing_ID=Fairing_ID, InnerTube_OD=BT54Mtr_OD);
 // FairingBaseBulkPlate(Tube_ID=R98_Body_ID, Fairing_ID=Fairing_ID, ShockCord_a=-1);
 // rotate([0,180,0]) AltDoor54(Tube_OD=R98_Body_OD, IsLoProfile=true, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
 // rotate([0,180,0]) AltDoor54(Tube_OD=R98_Body_OD, IsLoProfile=true, DoorXtra_X=0, DoorXtra_Y=0); // old
@@ -260,7 +261,8 @@ module ShowUpperBays(){
 
 //ShowUpperBays();
 
-module R98_Electronics_Bay2(){
+module R98_Electronics_Bay2(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, 
+					Fairing_ID=Fairing_ID, InnerTube_OD=BT54Mtr_OD){
 	Len=162;
 	CablePuller_Z=81;
 	BattSwDoor_Z=70;
@@ -272,46 +274,46 @@ module R98_Electronics_Bay2(){
 	Batt2_a=270; // Cable puller battery and switch
 	
 	// The Fairing clamps onto this. 
-	translate([0,0,Len-5]) FairingBaseLockRing(Tube_ID=R98_Body_ID, Fairing_ID=Fairing_ID, Interface=Overlap, BlendToTube=true);
+	translate([0,0,Len-5]) FairingBaseLockRing(Tube_ID=Tube_ID, Fairing_ID=Fairing_ID, Interface=Overlap, BlendToTube=true);
 	
 	difference(){
 		union(){
-			Tube(OD=R98_Body_OD, ID=R98_Body_ID, Len=Len, myfn=$preview? 36:360);
+			Tube(OD=Tube_OD, ID=Tube_ID, Len=Len, myfn=$preview? 36:360);
 			translate([0,0,BottomSkirt_Len])
-				CenteringRing(OD=R98_Body_OD-1, ID=BT54Mtr_OD+IDXtra, Thickness=5, nHoles=4);
+				CenteringRing(OD=Tube_OD-1, ID=InnerTube_OD+IDXtra, Thickness=5, nHoles=4);
 			translate([0,0,Len-5-TopSkirt_Len])
-				CenteringRing(OD=R98_Body_OD-1, ID=BT54Mtr_OD+IDXtra, Thickness=5, nHoles=4);
+				CenteringRing(OD=Tube_OD-1, ID=InnerTube_OD+IDXtra, Thickness=5, nHoles=4);
 	} // union
 		
 		// Altimeter
 		translate([0,0,CablePuller_Z]) rotate([0,0,Alt_a]) 
-			Alt_BayFrameHole(Tube_OD=R98_Body_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
+			Alt_BayFrameHole(Tube_OD=Tube_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
 	
 		// Cable Puller door hole
 		translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a])
-			CP_BayFrameHole(Tube_OD=R98_Body_OD);
+			CP_BayFrameHole(Tube_OD=Tube_OD);
 		
 		// Battery and Switch door holes
 		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
-			Batt_BayFrameHole(Tube_OD=R98_Body_OD, HasSwitch=false);
+			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=false);
 		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
-			Batt_BayFrameHole(Tube_OD=R98_Body_OD, HasSwitch=true);
+			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
 		
 	} // difference
 	
 	// Altimeter
 	translate([0,0,CablePuller_Z]) rotate([0,0,Alt_a])
-		Alt_BayDoorFrame(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=false);
+		Alt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=false);
 	
 	// Cable Pullers
 	translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a])
-		CP_BayDoorFrame(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, ShowDoor=false);
+		CP_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, ShowDoor=false);
 	
 	// Battery and Switch door2
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
-		Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, HasSwitch=false, ShowDoor=false);
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, HasSwitch=false, ShowDoor=false);
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
-		Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, HasSwitch=true, ShowDoor=false);
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, HasSwitch=true, ShowDoor=false);
 	
 } // R98_Electronics_Bay2
 

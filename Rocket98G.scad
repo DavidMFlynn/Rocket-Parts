@@ -19,7 +19,7 @@
 // ***********************************
 //  ***** for STL output *****
 //
-//*
+/*
 FairingConeOGive(Fairing_OD=R98_Body_OD, 
 					FairingWall_T=FairingWall_T,
 					NC_Base=NC_Base, 
@@ -28,6 +28,11 @@ FairingConeOGive(Fairing_OD=R98_Body_OD,
 					NC_Tip_r=NC_Tip_r,
 					Cut_Z=160, LowerPortion=true);
 /**/
+
+// Alt. for single deploy varient
+// R98_Electronics_Bay2(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, Fairing_ID=Fairing_ID, InnerTube_OD=PML38Body_OD);
+// CenteringRing(OD=PML98Coupler_ID, ID=PML38Body_OD+IDXtra, Thickness=5, nHoles=4);
+//
 // *** Fin Can ***
 // UpperFinCan();
 // Rocket98Fin();
