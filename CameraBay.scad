@@ -271,9 +271,9 @@ module Cam_Door(Tube_OD=PML98Body_OD){
 					} //hull
 					
 					hull(){
-						translate([-19,50,0]) rotate([-Cam_a,0,0]) translate([0,0,39]) cube([38,34,21]);
+						translate([-19,50,0]) rotate([-Cam_a,0,0]) translate([0,0,42]) cube([38,34,21]);
 						translate([-11,50,0]) rotate([-Cam_a,0,0]) translate([0,0,31]) cube([22,37,21]);
-						translate([0,50,18]) rotate([-Cam_a,0,0]) translate([0,0,61]) cylinder(d=32, h=1);
+						translate([0,50,18]) rotate([-Cam_a,0,0]) translate([0,0,63]) cylinder(d=32, h=1);
 					} // hull
 					
 					translate([-19,50,0]) rotate([-Cam_a,0,0]) cube([38,34,60]);
@@ -289,7 +289,7 @@ module Cam_Door(Tube_OD=PML98Body_OD){
 			translate([0,50,18]) rotate([-Cam_a,0,0]) cylinder(d=27, h=101);
 			translate([0,50,18]) rotate([-Cam_a,0,0])  translate([0,-10,0]) cylinder(d=27, h=101);
 		} // hull
-		translate([-17,50,0]) rotate([-Cam_a,0,0]) cube([34,31,58]);
+		translate([-17,50,0]) rotate([-Cam_a,0,0]) cube([34,31,61]);
 		translate([-11,50,0]) rotate([-Cam_a,0,0]) cube([22,34,50]);
 
 		// Door mounting bolts
