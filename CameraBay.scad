@@ -3,7 +3,7 @@
 // Filename: CameraBay.scad
 // by David M. Flynn
 // Created: 11/17/2022 
-// Revision: 0.9.0 11/17/2022
+// Revision: 0.9.1 11/18/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,13 +12,14 @@
 //
 //  ***** History *****
 //
+// 0.9.1 11/18/2022   Added Offset to ScopeRail
 // 0.9.0 11/17/2022   First code.
 //
 // ***********************************
 //  ***** for STL output *****
 //
 // CameraBay(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID);
-// ScopeRail(Len=45);
+// ScopeRail(Len=45, Offset=2);
 // Cam_Door(Tube_OD=PML98Body_OD);
 //
 // ***********************************
@@ -50,7 +51,7 @@ Bolt4Inset=4;
 Cam_a=-65; // 15° from vertical
 CamPlate_Z=-8.5;
 
-CamMount_Z=130;
+CamMount_Z=133;
 CamOffset_Y=8;
 CamOffset_Z=4;
 CamDoor_Y=110;
@@ -66,8 +67,8 @@ module CamMountBoltPattern(){
 	translate([BoltCenter_X/2,BoltCenter_Y/2,0]) children();
 } // CamMountBoltPattern
 
-module ScopeRail(Len=45){
-	Width=21;
+module ScopeRail(Len=45, Offset=2){
+	Width=22.5;
 	H=5.75;
 	XZ=4.06;
 	
@@ -81,7 +82,7 @@ module ScopeRail(Len=45){
 			translate([0,0,-1.5-2.5]) cube([33,Len,3],center=true);
 		} // union
 		
-		for (j=[0:Len/8-1]) translate([-Width/2,-Len/2+8*(j+0.5),0.6]) cube([Width,4,H]);
+		for (j=[0:Len/8-1]) translate([-Width/2,-Len/2+8*(j+0.5)+Offset,0.6]) cube([Width,4,H]);
 			
 		translate([0,0,-2.5]) CamMountBoltPattern() Bolt4ButtonHeadHole();
 		
@@ -300,7 +301,7 @@ module Cam_Door(Tube_OD=PML98Body_OD){
 //translate([0,0,162/2]) rotate([0,0,180]) rotate([90,0,0]) Cam_Door();
 
 module CameraBay(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID){
-	Tube_Len=156;
+	Tube_Len=162;
 	Rod_CL_r=1.5*25.4;
 	Rod_d=4+IDXtra;
 	
