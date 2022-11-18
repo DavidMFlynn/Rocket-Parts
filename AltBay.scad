@@ -73,7 +73,7 @@ include<ChargeHolder.scad>
 //include<CommonStuffSAEmm.scad>
 
 Overlap=0.05;
-IDXtra=0.3; // looser normally 0.2
+IDXtra=0.2;
 $fn=$preview? 24:90;
 
 	NylonTube9_h=3;
@@ -722,6 +722,18 @@ module AltBayBottom(CT_Len=75, HasShockcordPassThru=true){
 //translate([0,0,75-8]) AltHolder();
 //translate([0,-C_ID/2*0.6-1,Alt_Y/2+75]) rotate([90,0,0]) AltPCB();
 //translate([0,0,75+95+25])rotate([0,180,0]) AltBayTop(Len=25);
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
