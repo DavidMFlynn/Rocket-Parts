@@ -3,7 +3,7 @@
 // Filename: Rocket98Dual.scad
 // by David M. Flynn
 // Created: 10/16/2022 
-// Revision: 1.0.1  11/15/2022
+// Revision: 1.0.2  11/18/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -43,6 +43,7 @@
 //   Wire connection (Booster attached, Sustainer igniter) 270°
 //
 //  ***** History *****
+// 1.0.2  11/18/2022  Moved FairingBaseLockRing in R98_Electronics_Bay2 up 0.5mm, was too tight
 // 1.0.1  11/15/2022  Added parameters to R98_Electronics_Bay2
 // 1.0.0  11/9/2022   Extracted from Rocket9832.scad
 // 0.9.5  11/5/2022   Alt Door changed. Fixes to Drogue Springthing. 
@@ -274,7 +275,7 @@ module R98_Electronics_Bay2(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID,
 	Batt2_a=270; // Cable puller battery and switch
 	
 	// The Fairing clamps onto this. 
-	translate([0,0,Len-5]) FairingBaseLockRing(Tube_ID=Tube_ID, Fairing_ID=Fairing_ID, Interface=Overlap, BlendToTube=true);
+	translate([0,0,Len-4.5]) FairingBaseLockRing(Tube_ID=Tube_ID, Fairing_ID=Fairing_ID, Interface=Overlap, BlendToTube=true);
 	
 	difference(){
 		union(){
