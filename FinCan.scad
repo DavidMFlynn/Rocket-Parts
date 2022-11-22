@@ -129,7 +129,7 @@ module FinCan3(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, MtrTube_OD=PML54Body_
 FinCan3(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, MtrTube_OD=PML54Body_OD, nFins=5, 
 					Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18,
 					HasTailCone=false);
-*/
+/**/
 
 
 

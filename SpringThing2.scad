@@ -49,7 +49,7 @@
 // ST_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, Tube_ID=PML98Coupler_ID, InnerTube_OD=BT54Mtr_OD);
 // ST_BallDetentStopper();
 //
-// ST_MT_DrillingJig(TubeOD=BT54Body_OD);
+// ST_MT_DrillingJig(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, InnerTubeOD=BT54Body_OD, Skirt_Len=30);
 //
 // ***********************************
 //  ***** Routines *****
@@ -645,7 +645,7 @@ module ST_MT_DrillingJig(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, InnerTubeO
 	
 	// Skirt
 			translate([0,0,-Skirt_Len]) 
-				Tube(OD=Tube_OD, ID=Skirt_ID, Len=Skirt_Len+Overlap*2, myfn=$preview? 36:360);
+				Tube(OD=Tube_OD, ID=Skirt_ID+IDXtra, Len=Skirt_Len+Overlap*2, myfn=$preview? 36:360);
 			
 			translate([0,0,-13]) 
 				TubeStop(InnerTubeID=Skirt_ID-3, OuterTubeOD=Tube_OD, myfn=$preview? 36:360);
@@ -669,7 +669,7 @@ module ST_MT_DrillingJig(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, InnerTubeO
 		for (j=[0:2]) rotate([0,0,120*j+Ball1_a]) translate([0,0,Race_W/2])
 			rotate([-90,0,0]) cylinder(d=BearingBall_d-2, h=InnerTubeOD);
 		
-		translate([0,0,Race_W/2]) cylinder(d=InnerTubeOD+IDXtra*2, h=H+Overlap*2, center=true);
+		translate([0,0,Race_W/2]) cylinder(d=InnerTubeOD+IDXtra*3, h=H+Overlap*2, center=true);
 	} // difference
 } // ST_MT_DrillingJig
 

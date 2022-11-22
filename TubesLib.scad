@@ -3,7 +3,7 @@
 // Filename: TubesLib.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.5  11/12/2022
+// Revision: 0.9.6  11/20/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,7 +12,8 @@
 //
 //  ***** History *****
 //
-echo("TubesLib 0.9.5");
+echo("TubesLib 0.9.6");
+// 0.9.6  11/20/2022 Added ClusterRing
 // 0.9.5  11/12/2022 Added Blue Tube 2.0  5.5" body & coupler. 
 // 0.9.4  10/16/2022 Added Blue Tube 2.0 54mm body & coupler. 
 // 0.9.3  10/10/2022 Added 6" PML tubing
@@ -25,6 +26,7 @@ echo("TubesLib 0.9.5");
 //
 // Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=300, myfn=$preview? 36:360);
 // CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0);
+// ClusterRing(OD=BT137Body_ID, Thickness=5, CenterMotor_OD=BT54Body_OD, ClusterMotor_OD=PML38Body_OD, nClusterMotors=3, Gap=7, Cant_a=2, Cant_Z=300)
 //
 // BT_RivetFixture(BT_Dia=PML98Body_OD, nRivets=3, Dia=5/32*25.4, Offset=25);
 //
@@ -86,6 +88,11 @@ BT137Body_OD=BT137Body_ID+0.077*2*25.4;
 BT137Coupler_ID=5.198*25.4;
 BT137Coupler_OD=BT137Coupler_ID+0.084*2*25.4;
 
+BT75Body_ID=3.000*25.4;
+BT75Body_OD=BT75Body_ID+0.062*2*25.4;
+BT75Coupler_ID=2.880*25.4;
+BT75Coupler_OD=BT75Coupler_ID+0.062*2*25.4;
+
 BT54Mtr_OD=57.20;
 BT54Mtr_ID=54.40;
 BT54Body_OD=57.20;
@@ -110,6 +117,24 @@ module CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0){
 } // CenteringRing
 
 //CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5);
+
+module ClusterRing(OD=BT137Body_ID, Thickness=5,
+					CenterMotor_OD=BT54Body_OD, ClusterMotor_OD=PML38Body_OD, nClusterMotors=3,
+					Gap=7, Cant_a=0, Cant_Z=300){
+	difference(){
+		cylinder(d=OD, h=Thickness);
+		
+		if (CenterMotor_OD>0)
+			translate([0,0,-Overlap]) cylinder(d=CenterMotor_OD, h=Thickness+Overlap*2);
+		
+		for (j=[0:nClusterMotors-1]) rotate([0,0,360/nClusterMotors*j]) 
+			translate([0,CenterMotor_OD/2+ClusterMotor_OD/2+Gap,-Cant_Z])
+				rotate([Cant_a,0,0]) translate([0,0,-5])
+				cylinder(d=ClusterMotor_OD, h=Cant_Z+Thickness+10);
+	} // difference
+} // ClusterRing
+
+//ClusterRing(OD=BT137Body_ID, Thickness=5, CenterMotor_OD=BT54Body_OD, ClusterMotor_OD=PML38Body_OD, nClusterMotors=3, Gap=7, Cant_a=2, Cant_Z=0);
 
 module Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=300, myfn=$preview? 36:360){
 	difference(){

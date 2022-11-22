@@ -3,7 +3,7 @@
 // Filename: BatteryHolderLib.scad
 // by David M. Flynn
 // Created: 9/30/2022 
-// Revision: 0.9.2  10/18/2022
+// Revision: 1.0.0  11/22/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,10 @@
 //
 //  ***** History *****
 //
-echo("BatteryHolderLib 0.9.2");
+echo("BatteryHolderLib 1.0.0");
 //
+// 1.0.0  11/22/2022  Code cleanup. 
+// 0.9.3  11/21/2022  Fixed door bolt angle
 // 0.9.2  10/18/2022  Added HasSwitch option to battery door.  
 // 0.9.1  10/17/2022  Added Batt_Door and other parts. 
 // 0.9.0  9/30/2022   First code. Moved stuff to this file. 
@@ -21,10 +23,10 @@ echo("BatteryHolderLib 0.9.2");
 // ***********************************
 //  ***** for STL output *****
 //
-//  Batt_Door(Tube_OD=PML98Body_OD, HasSwitch=false);
+//  Batt_Door(Tube_OD=PML98Body_OD, InnerTube_OD=PML54Body_OD, HasSwitch=false);
 //  SingleBatteryPocket();
 //
-//  rotate([180,0,0]) TubeEndStackedDoubleBatteryHolder(); // Fits 38mm motor tube
+//  rotate([180,0,0]) TubeEndStackedDoubleBatteryHolder(TubeOD=PML38Body_OD, TubeID=PML38Body_ID); // Fits 38mm motor tube
 //  rotate([180,0,0]) TubeEndDoubleBatteryHolder(TubeID=PML54Body_ID, TubeOD=PML54Body_OD); // Fits 54mm motor tube
 //
 //  SingleBatteryHolder(Tube_ID=PML75Body_ID);
@@ -59,6 +61,13 @@ Bolt4Inset=4;
 Batt_Door_Y=74;
 Batt_Door_X=27+Bolt4Inset*4+10;
 
+// CK Rotary Switch
+CK_RotSw_d=23.5;
+CK_RotSw_Face_d=18;
+CK_RotSw_Face_h=0.6;
+CK_RotSw_Access_d=8;
+CK_RotSw_AO_h=15;
+
 module BattDoorHole(Tube_OD=PML98Body_OD, HasSwitch=false){
 	Door_Y=HasSwitch? Batt_Door_Y+CK_RotSw_d+1:Batt_Door_Y+1;
 	Door_X=Batt_Door_X+1;
@@ -72,25 +81,23 @@ module BattDoorHole(Tube_OD=PML98Body_OD, HasSwitch=false){
 } // BattDoorHole
 
 //rotate([90,0,0]) BattDoorHole(Tube_OD=PML98Body_OD);
-//translate([0,-20,PML98Body_OD/2-6]) rotate([0,0,90]) CablePullerBoltPattern() cylinder(d=Bolt4Inset*2, h=4);
 
 module Batt_DoorBoltPattern(Tube_OD=PML98Body_OD, HasSwitch=false){
 	Door_Y=HasSwitch? Batt_Door_Y+CK_RotSw_d:Batt_Door_Y;
 	Door_X=Batt_Door_X;
-	DoorBolt_a=26; // calculation needed
+	DoorBolt_a=asin((Door_X/2)/(Tube_OD/2))-asin(Bolt4Inset/(Tube_OD/2));
+	
 	
 	rotate([0,DoorBolt_a,0]) translate([0,Door_Y/2-4,Tube_OD/2]) children();
 	rotate([0,DoorBolt_a,0]) translate([0,-Door_Y/2+4,Tube_OD/2]) children();
-	//rotate([0,DoorBolt_a,0]) translate([0,0,Tube_OD/2]) children();
 	
 	mirror([1,0,0]){
-		//rotate([0,DoorBolt_a,0]) translate([0,0,Tube_OD/2]) children();
 		rotate([0,DoorBolt_a,0]) translate([0,Door_Y/2-4,Tube_OD/2]) children();
 		rotate([0,DoorBolt_a,0]) translate([0,-Door_Y/2+4,Tube_OD/2]) children();
 	} // mirror
 } // Batt_DoorBoltPattern
 
-//Batt_DoorBoltPattern(Tube_OD=PML98Body_OD) Bolt4Hole();
+//rotate([90,0,0]) Batt_DoorBoltPattern(Tube_OD=PML98Body_OD) Bolt4Hole();
 
 module Batt_BayFrameHole(Tube_OD=PML98Body_OD, HasSwitch=false){
 	Tube_Len=HasSwitch? Batt_Door_Y+CK_RotSw_d+2:Batt_Door_Y+2;
@@ -146,15 +153,14 @@ module Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, HasSwitch=f
 	difference(){
 		// Bolt bosses
 		intersection(){
+			translate([0,0,-Door_Y/2-3]) 
+				Tube(OD=Tube_OD-1, ID=Tube_ID-8, Len=Door_Y+6, myfn=$preview? 36:360);
 			
-				translate([0,0,-Door_Y/2-3]) 
-						Tube(OD=Tube_OD-1, ID=Tube_ID-8, Len=Door_Y+6, myfn=$preview? 36:360);
-			
-			rotate([90,0,0]) 
-				Batt_DoorBoltPattern(Tube_OD=Tube_OD,HasSwitch=HasSwitch) translate([0,0,-6]) hull(){
-					cylinder(d=Bolt4Inset*2, h=6);
-					translate([Bolt4Inset,0,0]) cylinder(d=Bolt4Inset*2+2, h=6);
-				}
+				rotate([90,0,0]) 
+					Batt_DoorBoltPattern(Tube_OD=Tube_OD, HasSwitch=HasSwitch) translate([0,0,-6]) hull(){
+						cylinder(d=Bolt4Inset*2, h=6);
+						translate([Bolt4Inset,0,0]) cylinder(d=Bolt4Inset*2+2, h=6);
+					} // hull
 			
 		} // intersection
 		
@@ -166,19 +172,15 @@ module Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, HasSwitch=f
 		
 	} // difference
 	
-	if ($preview&&ShowDoor) rotate([90,0,0]) Batt_Door(HasSwitch=HasSwitch);
+	if ($preview&&ShowDoor) rotate([90,0,0]) Batt_Door(Tube_OD=Tube_OD, HasSwitch=HasSwitch);
 		
 	
 } // Batt_BayDoorFrame
 
 //Batt_BayDoorFrame(ShowDoor=true);
-CK_RotSw_d=23.5;
-CK_RotSw_Face_d=18;
-CK_RotSw_Face_h=0.6;
-CK_RotSw_Access_d=8;
-CK_RotSw_AO_h=15;
 
-module Batt_Door(Tube_OD=PML98Body_OD, HasSwitch=false){
+
+module Batt_Door(Tube_OD=PML98Body_OD, InnerTube_OD=PML54Body_OD, HasSwitch=false){
 	Door_Y=HasSwitch? Batt_Door_Y+CK_RotSw_d:Batt_Door_Y;
 	Door_X=Batt_Door_X;
 	Door_t=3;
@@ -206,7 +208,7 @@ module Batt_Door(Tube_OD=PML98Body_OD, HasSwitch=false){
 					translate([0,-Door_Y/2,0]) rotate([-90,0,0]) 
 						cylinder(d=Tube_OD-1, h=Door_Y);
 					translate([0,-Door_Y/2-Overlap,0]) rotate([-90,0,0]) 
-						cylinder(d=PML54Body_OD+IDXtra, h=Door_Y+Overlap*2);
+						cylinder(d=InnerTube_OD+IDXtra, h=Door_Y+Overlap*2);
 				} // difference
 				
 				union(){
@@ -274,7 +276,7 @@ module SingleBatteryPocket(){
 
 //SingleBatteryPocket();
 
-module TubeEndStackedDoubleBatteryHolder(){
+module TubeEndStackedDoubleBatteryHolder(TubeOD=PML38Body_OD, TubeID=PML38Body_ID){
 	// Sits in the E-Bay in the top of the motor tube. 
 	
 	Batt_h=45;
@@ -283,8 +285,6 @@ module TubeEndStackedDoubleBatteryHolder(){
 	Batt_Y=17;
 	Batt_r=3;
 	
-	TubeID=PML38Body_ID; // motor tube
-	TubeOD=PML38Body_OD;
 	Base_h=Batt_h+Batt_h+BattConn_h-1;
 	OAH=Base_h+5;
 	Offset_Y=-1;
@@ -345,9 +345,7 @@ module TubeEndDoubleBatteryHolder(TubeID=PML54Body_ID, TubeOD=PML54Body_OD){
 	Batt_X=27;
 	Batt_Y=17;
 	Batt_r=3;
-	
-	//TubeID=PML54Body_ID; // motor tube
-	//TubeOD=PML54Body_OD;
+
 	Base_h=Batt_h-5;
 	OAH=Base_h+5;
 	
