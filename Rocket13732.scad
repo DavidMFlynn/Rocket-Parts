@@ -397,7 +397,7 @@ module ShowRocket(){
 	translate([0,0,TopOfFinCan_Z-60]) rotate([180,0,0]) 
 		color("LightBlue") Tube(OD=Body_OD, ID=Body_ID, Len=FinCanExTube_Len, myfn=$preview? 36:360);
 	
-	translate([0,0,Booster_Body_Len+SustainerFinCanLength]) UpperFinCan();
+	translate([0,0,Booster_Body_Len+SustainerFinCanLength]) color("Tan") UpperFinCan();
 	//*
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j])
 		translate([Body_OD/2-S_Fin_Post_h, 0, Booster_Body_Len+SustainerFinCanLength]) 
@@ -406,8 +406,8 @@ module ShowRocket(){
 	
 	//*
 	translate([0,0,Booster_Body_Len]) {
-		color("Tan") LowerFinCan();
-		translate([0,0,5]) Stager_Cup(Tube_OD=Body_OD, ID=78, nLocks=2);
+		LowerFinCan();
+		translate([0,0,14]) color("Tan") Stager_Cup(Tube_OD=Body_OD, ID=78, nLocks=2);
 	}
 	/**/
 	
@@ -663,8 +663,8 @@ module ShowUpperBays(){
 //ShowUpperBays();
 
 module DrogueSep_CableRedirect(){
-	rotate([180,0,180]) CableRedirect(Tube_OD=Body_OD, Skirt_ID=Body_ID, Tube_ID=Coupler_ID, InnerTube_OD=BT54Mtr_OD, HasRaceway=true,
-							Raceway_a=270);
+	rotate([180,0,180]) CableRedirect(Tube_OD=Body_OD, Skirt_ID=Body_ID, Tube_ID=Coupler_ID, 
+		InnerTube_OD=BT54Mtr_OD, HasRaceway=true, Raceway_a=270);
 } // DrogueSep_CableRedirect
 
 //translate([0,0,78]) DrogueSep_CableRedirect();
@@ -764,7 +764,6 @@ module PhantomSustainer(){
 
 module UpperFinCan(){
 	// Upper Half of Fin Can
-	// Upper Half of Fin Can
 	CanLen=SustainerFinCanLength;
 	
 	difference(){
@@ -808,6 +807,7 @@ module LowerFinCan(){
 	CanLen=SustainerFinCanLength;
 	MtrRetainer_OD=MtrTube_OD+6;
 	MtrRetainer_L=16;
+	TailCone_Len=45;
 	
 	module MotorRetainer(OD=BoosterClusterMtrTube_OD+4, Len=33){
 		difference(){
@@ -841,13 +841,14 @@ module LowerFinCan(){
 			} // intersection
 			
 			// Tailcone
+			translate([0,0,TailCone_Len-10]) cylinder(d=Body_OD, h=10+Overlap, $fn=$preview? 90:360);
+			//*
 			hull(){
 				cylinder(d=MtrRetainer_OD+4.4, h=Overlap);
+				translate([0,0,TailCone_Len-32]) cylinder(d=Body_OD-44, h=32+Overlap);
 				
-				translate([0,0,TailCone_Len]) rotate_extrude() 
-					translate([Body_OD/2-7.5,0,0]) circle(d=15);
 			} // hull
-			
+			/**/
 		} // union
 		
 		// Fin slots
@@ -870,7 +871,7 @@ module LowerFinCan(){
 			translate([0,Body_OD/2+2,0]) RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
 		
 		// Booster attachment
-		//translate([0,0,8]) #Stager_CupHoles(Tube_OD=Body_OD, ID=DualDepTube_ID-1, nLocks=3);
+		translate([0,0,TailCone_Len-28]) Stager_CupHoles(Tube_OD=Body_OD, ID=Body_OD-30, nLocks=3);
 	} // difference
 		
 
@@ -885,10 +886,23 @@ module LowerFinCan(){
 			Post_h=S_Fin_Post_h, Root_L=S_Fin_Root_L, Root_W=S_Fin_Root_W, Chamfer_L=S_Fin_Chamfer_L);
 	} // difference
 	/**/
+	
+	if ($preview) 
+		translate([0,0,-18]) color("Red") MotorRetainer(OD=MtrRetainer_OD, Len=33);
 } // LowerFinCan
 
 //LowerFinCan();
+//translate([0,0,14]) Stager_Cup(Tube_OD=Body_OD, ID=Body_OD-28, nLocks=3, BoltsOn=true);
 
+/*
+
+translate([0,0,-31]) LockRing(Tube_OD=Body_OD, nLocks=3);
+
+translate([0,0,14]){ 
+		color("Blue") Stager_Saucer(Tube_OD=Body_OD, nLocks=3);
+		Stager_Mech(Tube_OD=Body_OD, nLocks=2, Skirt_ID=Body_ID, Skirt_Len=30);
+	}
+/**/
 
 module Rocket9832Fin(){
 	TrapFin2(Post_h=S_Fin_Post_h, Root_L=S_Fin_Root_L, Tip_L=S_Fin_Tip_L, 
