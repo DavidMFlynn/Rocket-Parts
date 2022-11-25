@@ -3,14 +3,17 @@
 // Filename: CablePuller.scad
 // by David M. Flynn
 // Created: 8/21/2022 
-// Revision: 1.1.3  11/14/2022
+// Revision: 1.1.4  11/23/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 //
 // Uses the release of a strong spring to pull on a cable. 
 // Used with success to release a fairing 10/22.
-// Needs a servo or something to push on the StopAdjuster. 
+// Needs a servo or something to push on the StopAdjuster.
+// The addition of a torsion spring made from 0.015" music wire is 
+// used to move the throughOut back, with the slot in the door this allows arming
+// without removing the door from the side of the rocket.
 //
 // Bearing MR84-2RS, 5ea
 // Undersize 4mm x 10mm steel dowel, 2ea
@@ -23,7 +26,8 @@
 //
 //  ***** History *****
 //
-echo("CablePuller 1.1.3");
+echo("CablePuller 1.1.4");
+// 1.1.4  11/23/2022  Added HasArmingSlot to door. 
 // 1.1.3  11/14/2022  Moved end bolts 1mm, changed to 16mm arm. 14mm travel
 // 1.1.2  11/2/2022   Added calculation for CP_DoorBoltPattern
 // 1.1.1  10/25/2022  Wider door
@@ -40,7 +44,7 @@ echo("CablePuller 1.1.3");
 // ***********************************
 //  ***** for STL output *****
 // 
-// rotate([0,180,0]) CP_Door(Tube_OD=PML98Body_OD);
+// rotate([0,180,0]) CP_Door(Tube_OD=PML98Body_OD, HasArmingSlot=true);
 //
 // ThroughOut();
 // rotate([0,90,0]) SpringBody();
@@ -270,7 +274,7 @@ module CP_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=fals
 
 //CP_BayDoorFrame(ShowDoor=false);
 
-module CP_Door(Tube_OD=PML98Body_OD){
+module CP_Door(Tube_OD=PML98Body_OD, HasArmingSlot=false){
 	Door_Y=CP_Door_Y;
 	Door_X=CP_Door_X;
 	Door_t=3;
@@ -293,18 +297,13 @@ module CP_Door(Tube_OD=PML98Body_OD){
 				translate([0,-Door_Y/2,0]) rotate([-90,0,0]) 
 						cylinder(d=Tube_OD-1, h=Door_Y);
 				
-				union(){
-					//Servo mount
-					
-					// Bolt bosses
-					translate([0,CP_Offset_Y,Tube_OD/2-Door_t-BoltBossInset]) 
+				// Bolt bosses
+				translate([0,CP_Offset_Y,Tube_OD/2-Door_t-BoltBossInset]) 
 						rotate([0,0,90]) CablePullerBoltPattern() cylinder(d=8, h=BoltBossInset+3);
-					} // union
+					
 			} // intersection
 		} // union
 	
-		
-		
 		// CablePuller bolt holes
 		translate([0,CP_Offset_Y,Tube_OD/2-Door_t-BoltBossInset]) 
 			rotate([0,0,90]) CablePullerBoltPattern() {
@@ -312,14 +311,19 @@ module CP_Door(Tube_OD=PML98Body_OD){
 				rotate([180,0,0]) cylinder(d=8, h=2);
 			}
 		
-
+		// Arming slot
+		if (HasArmingSlot) translate([0,CP_Offset_Y+ArmLen+CP_SpringBody_YZ,0]) hull(){
+			cylinder(d=3, h=Tube_OD/2+1);
+			translate([0,20,0]) cylinder(d=3, h=Tube_OD/2+1);
+		} // hull
+			
 		// Door mounting bolts
 		CP_DoorBoltPattern(Tube_OD=Tube_OD) Bolt4ClearHole(); //translate([0,0,0.5]) Bolt4ButtonHeadHole();
 	} // difference
 
 } // CP_Door
 
-//rotate([90,0,0]) CP_Door();
+//rotate([90,0,0]) CP_Door(Tube_OD=PML98Body_OD, HasArmingSlot=true);
 
 module ServoMount(Extend=0){
 	Servo_X=12;

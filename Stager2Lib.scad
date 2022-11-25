@@ -3,7 +3,7 @@
 // Filename: Stager2Lib.scad
 // by David M. Flynn
 // Created: 10/10/2022 
-// Revision: 0.9.15  11/14/2022
+// Revision: 0.9.16  11/23/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -30,6 +30,7 @@
 //  ***** History *****
 //
 echo("StagerLib 0.9.15");
+// 0.9.16  11/23/2022  Replaced some numbers w/ calculations
 // 0.9.15  11/14/2022  5.5"? Not yet. 
 // 0.9.14  11/11/2022  Code clean up.  
 // 0.9.13  11/6/2022   Cleaned up ShowStager(). FC4
@@ -71,7 +72,7 @@ echo("StagerLib 0.9.15");
 //
 // Stager_CupHoles(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true);
 // Stager_Cup(Tube_OD=PML98Body_OD, ID=78, nLocks=2);
-// Stager_SaucerBoltPattern(Tube_OD=PML98Body_OD, ID=70, nLocks=2);
+// Stager_SaucerBoltPattern(Tube_OD=PML98Body_OD, nLocks=2);
 //
 // ***********************************
 //  ***** for Viewing *****
@@ -557,7 +558,6 @@ module Stager_Cup(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true, Collar_h=
 	LR_Z=Stager_LockRod_Z;
 	nBolts=8;
 	
-	
 	difference(){
 		union(){
 			difference(){
@@ -609,9 +609,9 @@ module Stager_Cup(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true, Collar_h=
 
 //translate([0,0,Overlap]) Stager_Cup(Collar_h=18+15,HasElectrical=false);
 
-module Stager_SaucerBoltPattern(Tube_OD=PML98Body_OD, ID=70, nLocks=2){
+module Stager_SaucerBoltPattern(Tube_OD=PML98Body_OD, nLocks=2){
 	Inset_Y=7.5;
-	Bolt_a=37.5;
+	Bolt_a=asin(30/(Tube_OD/2)); // was 37.5;
 	
 	for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j]) {
 		rotate([0,0,Bolt_a]) translate([0,Tube_OD/2-Inset_Y,0]) children();
@@ -640,12 +640,14 @@ module Stager_LockRod_Holes(Tube_OD=PML98Body_OD, nLocks=2){
 } // Stager_LockRod_Holes
 	
 module SaucerEConnBoltPattern(Tube_OD=PML98Body_OD){
-	Bolt_a=15;
+	Bolt_a=asin(12.7/(Tube_OD/2)); // was 15;
 	BoltInset=10;
 	
 	rotate([0,0,Bolt_a]) translate([Tube_OD/2-BoltInset,0,0]) children();
 	rotate([0,0,-Bolt_a]) translate([Tube_OD/2-BoltInset,0,0]) children();
 } // SaucerEConnBoltPattern
+
+//SaucerEConnBoltPattern(Tube_OD=PML98Body_OD) Bolt4Hole();
 
 module SaucerEConnHolder(Tube_OD=PML98Body_OD){
 	ID=Saucer_ID(Tube_OD=Tube_OD);
@@ -698,7 +700,7 @@ module Stager_Saucer(Tube_OD=PML98Body_OD, nLocks=2, HasElectrical=false){
 		// Center hole
 		translate([0,0,-Len-Overlap]) cylinder(d=ID, h=Len, $fn=$preview? 90:360);
 		
-		translate([0,0,-2]) Stager_SaucerBoltPattern(Tube_OD=Tube_OD, ID=70, nLocks=nLocks) Bolt4ButtonHeadHole();
+		translate([0,0,-2]) Stager_SaucerBoltPattern(Tube_OD=Tube_OD, nLocks=nLocks) Bolt4ButtonHeadHole();
 		
 		Stager_LockRod_Holes(Tube_OD=Tube_OD, nLocks=nLocks);
 		
@@ -710,12 +712,13 @@ module Stager_Saucer(Tube_OD=PML98Body_OD, nLocks=2, HasElectrical=false){
 	
 } // Stager_Saucer
 
-//translate([0,0,Tube_Len+6+0.2]) Stager_Saucer( HasElectrical=true);
+//translate([0,0,Tube_Len+6+0.2]) Stager_Saucer(Tube_OD=PML98Body_OD, nLocks=2,  HasElectrical=true);
 
 module Stager_BallSpacer(Tube_OD=PML98Body_OD){
 	Thickness=1.5;
 	nBalls=nBearingBalls(Tube_OD=Tube_OD);
-	echo(nBalls=nBalls);
+	//echo(nBalls=nBalls);
+	
 	difference(){
 		cylinder(d=BearingBallCircle_d(Tube_OD=Tube_OD)+Ball_d*0.6, h=Ball_d/2+Thickness);
 		
@@ -823,7 +826,7 @@ module Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_
 			mirror([1,0,0]) BallPath();
 			
 			translate([0,0,5]) Stager_LockRod_Holes(Tube_OD=Tube_OD, nLocks=nLocks);
-			Stager_SaucerBoltPattern(Tube_OD=Tube_OD, ID=70, nLocks=nLocks) Bolt4Hole();
+			Stager_SaucerBoltPattern(Tube_OD=Tube_OD, nLocks=nLocks) Bolt4Hole();
 		} // difference
 		
 		if ($preview) 
