@@ -314,7 +314,7 @@ module ST_CableRedirectTop(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, InnerTub
 	
 	difference(){
 		union(){
-			CenteringRing(OD=Skirt_ID-IDXtra, ID=InnerTube_OD+IDXtra, Thickness=5, nHoles=0);
+			CenteringRing(OD=Skirt_ID-IDXtra, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=0);
 			
 			// Locked position stop
 			rotate([0,0,Stop_a(CablePath_Y)]) translate([0,CablePath_Y,0]) cylinder(d=8, h=10);
