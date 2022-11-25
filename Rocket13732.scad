@@ -238,6 +238,7 @@ F54_FairingHalf(IsLeftHalf=false,
 // ***********************************
 //  ***** Routines *****
 //
+// RocketStand(); // Adaptor to use 1-1/2" PVC pipe and a 2.5kg spool as a stand. 
 //
 // ***********************************
 //  ***** for Viewing *****
@@ -330,6 +331,26 @@ NC_Lock_H=5;
 Alt_DoorXtra_X=2;
 Alt_DoorXtra_Y=2;
 RailGuide_H=88;
+
+module RocketStand(){
+	// Adaptor to use 1-1/2" PVC pipe and a 2.5kg spool as a stand. 
+	Spool_ID=52.7;
+	H=75;
+	Pipe_OD=48.3;
+	
+	difference(){
+		union(){
+			cylinder(d=Spool_ID+8, h=3);
+			cylinder(d=Spool_ID, h=H+3);
+		} // union
+		
+		translate([0,0,-Overlap]) cylinder(d=Pipe_OD+IDXtra*2, h=H+Overlap*2);
+		translate([0,0,H]) cylinder(d1=Pipe_OD+IDXtra*2, d2=Pipe_OD-2, h=3+Overlap);
+	} // difference
+	
+} // RocketStand
+
+//RocketStand();
 
 //BodyTubeLen=36*25.4;
 module ShowMotorK185W(){
