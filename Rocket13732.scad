@@ -223,12 +223,13 @@ F54_FairingHalf(IsLeftHalf=false,
 // -------------
 //
 // Booster_Electronics_Bay(ShowDoors=false);
-//
+// rotate([0,180,0]) Batt_Door(Tube_OD=Body_OD, HasSwitch=false);
+// rotate([0,180,0]) Batt_Door(Tube_OD=Body_OD, HasSwitch=true);
+// rotate([0,180,0]) AltDoor54(Tube_OD=Body_OD, IsLoProfile=false, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
+// rotate([0,180,0]) CP_Door(Tube_OD=Body_OD, BoltBossInset=3, HasArmingSlot=true);
 // BoosterUpperFinCan();
 // Rocket_BoosterFin();
 // rotate([180,0,0]) BoosterLowerFinCan();
-// Batt_Door(Tube_OD=Body_OD, HasSwitch=false);
-// Batt_Door(Tube_OD=Body_OD, HasSwitch=true);
 //
 // *** The Rail Guides ***
 // rotate([90,0,0]) BoltOnRailGuide(Length = 35, BoltSpace=12.7, RoundEnds=true); // Drogue Cup

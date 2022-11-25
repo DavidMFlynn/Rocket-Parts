@@ -3,7 +3,7 @@
 // Filename: CablePuller.scad
 // by David M. Flynn
 // Created: 8/21/2022 
-// Revision: 1.1.4  11/23/2022
+// Revision: 1.1.5  11/25/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -26,7 +26,8 @@
 //
 //  ***** History *****
 //
-echo("CablePuller 1.1.4");
+echo("CablePuller 1.1.5");
+// 1.1.5  11/25/2022  Added BoltBossInset as parameter to CP_Door()
 // 1.1.4  11/23/2022  Added HasArmingSlot to door. 
 // 1.1.3  11/14/2022  Moved end bolts 1mm, changed to 16mm arm. 14mm travel
 // 1.1.2  11/2/2022   Added calculation for CP_DoorBoltPattern
@@ -44,7 +45,8 @@ echo("CablePuller 1.1.4");
 // ***********************************
 //  ***** for STL output *****
 // 
-// rotate([0,180,0]) CP_Door(Tube_OD=PML98Body_OD, HasArmingSlot=true);
+// rotate([0,180,0]) CP_Door(Tube_OD=PML98Body_OD, BoltBossInset=2, HasArmingSlot=true);
+// *** BoltBossInset=2 was 3, use 2 to clear 54mm motor tube w/ 98mm body tube ***
 //
 // ThroughOut();
 // rotate([0,90,0]) SpringBody();
@@ -274,11 +276,11 @@ module CP_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=fals
 
 //CP_BayDoorFrame(ShowDoor=false);
 
-module CP_Door(Tube_OD=PML98Body_OD, HasArmingSlot=false){
+module CP_Door(Tube_OD=PML98Body_OD, BoltBossInset=2, HasArmingSlot=false){
 	Door_Y=CP_Door_Y;
 	Door_X=CP_Door_X;
 	Door_t=3;
-	BoltBossInset=2; // was 3, use 2 to clear 54mm motor tube w/ 98mm body tube
+	//BoltBossInset=2; // was 3, use 2 to clear 54mm motor tube w/ 98mm body tube
 	CP_Offset_Y=Door_Y/2-68;
 	
 	translate([9,-Door_Y/2+27,Tube_OD/2-8]) rotate([0,90,0]) ServoMount(Extend=2);
@@ -323,7 +325,8 @@ module CP_Door(Tube_OD=PML98Body_OD, HasArmingSlot=false){
 
 } // CP_Door
 
-//rotate([90,0,0]) CP_Door(Tube_OD=PML98Body_OD, HasArmingSlot=true);
+//rotate([90,0,0]) 
+//rotate([0,180,0]) CP_Door(Tube_OD=PML98Body_OD, BoltBossInset=3, HasArmingSlot=true);
 
 module ServoMount(Extend=0){
 	Servo_X=12;
