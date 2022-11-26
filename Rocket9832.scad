@@ -436,7 +436,7 @@ module R98_Electronics_Bay2(){
 	Batt2_a=270; // Cable puller battery and switch
 	
 	// The Fairing clamps onto this. 
-	translate([0,0,Len-5]) FairingBaseLockRing(Tube_ID=R9832_Body_ID, Fairing_ID=Fairing_ID, Interface=Overlap, BlendToTube=true);
+	translate([0,0,Len]) FairingBaseLockRing(Tube_OD=R9832_Body_OD, Tube_ID=R9832_Body_ID, Fairing_ID=Fairing_ID, Interface=Overlap, BlendToTube=true);
 	
 	difference(){
 		union(){

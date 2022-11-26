@@ -59,7 +59,7 @@ rotate([180,0,0])
 					BodyTubeOD=BP_Body_OD, 
 					CouplerTube_OD=BP_BobyCoupler_OD, CouplerTube_ID=BP_BobyCoupler_ID);
 /**/				
-// FairingBaseLockRing(Tube_ID=BP_Fairing_ID, Fairing_ID=BP_Fairing_ID, Interface=-IDXtra);
+// FairingBaseLockRing(Tube_OD=BP_Fairing_OD, Tube_ID=BP_Fairing_ID, Fairing_ID=BP_Fairing_ID, Interface=-IDXtra);
 
 //	Electronics_Bay();	
 //   AltDoor54(Tube_OD=BP_Body_OD);

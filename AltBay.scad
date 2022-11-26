@@ -381,7 +381,7 @@ module Electronics_Bay(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Fairing_ID=PM
 	CP_Za=(Tube_OD<PML75Body_OD)? 135:180;
 	
 	// The Fairing clamps onto this. 
-	translate([0,0,TopOfTube-5]) FairingBaseLockRing(Tube_ID=Tube_ID, Fairing_ID=Fairing_ID, Interface=Overlap);
+	translate([0,0,TopOfTube]) FairingBaseLockRing(Tube_OD=Tube_OD, Tube_ID=Tube_ID, Fairing_ID=Fairing_ID, Interface=Overlap);
 	translate([0,0,EBay_Len-2.5]) rotate([180,0,0]) 
 				TubeStop(InnerTubeID=Tube_ID-5, OuterTubeOD=Tube_OD, myfn=$preview? 36:360);
 	

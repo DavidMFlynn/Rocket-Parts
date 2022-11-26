@@ -39,7 +39,7 @@ FairingCone(Fairing_ID=Fairing_ID, Fairing_OD=Fairing_OD,
 // BellCrank(Len=38);
 //
 //
-// FairingBaseLockRing(Fairing_ID=Fairing_ID);
+// FairingBaseLockRing(Tube_OD=PML98Body_OD, Fairing_ID=Fairing_ID);
 /*
  rotate([180,0,0]) FairingBase(BaseXtra=17, Fairing_OD=Fairing_OD, Fairing_ID=Fairing_ID,
 					BodyTubeOD=PML98Body_OD, 

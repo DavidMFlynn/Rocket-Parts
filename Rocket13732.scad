@@ -97,7 +97,7 @@ FairingConeOGive(Fairing_OD=Body_OD,
 					NC_Tip_r=NC_Tip_r,
 					Cut_Z=0, LowerPortion=true);
 /**/
-// NoseLockRing(Fairing_ID =Fairing_ID);
+// NoseLockRing(Fairing_OD=Body_OD, Fairing_ID =Fairing_ID);
 //
 //
 // *** Fairing ***
@@ -227,6 +227,7 @@ F54_FairingHalf(IsLeftHalf=false,
 // rotate([0,180,0]) Batt_Door(Tube_OD=Body_OD, HasSwitch=true);
 // rotate([0,180,0]) AltDoor54(Tube_OD=Body_OD, IsLoProfile=false, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
 // rotate([0,180,0]) CP_Door(Tube_OD=Body_OD, BoltBossInset=3, HasArmingSlot=true);
+//
 // BoosterUpperFinCan();
 // Rocket_BoosterFin();
 // rotate([180,0,0]) BoosterLowerFinCan();
@@ -342,10 +343,10 @@ module RocketStand(){
 	difference(){
 		union(){
 			cylinder(d=Spool_ID+8, h=3);
-			cylinder(d=Spool_ID, h=H+3);
+			cylinder(d1=Spool_ID, d2=Spool_ID-0.5, h=H+3);
 		} // union
 		
-		translate([0,0,-Overlap]) cylinder(d=Pipe_OD+IDXtra*2, h=H+Overlap*2);
+		translate([0,0,-Overlap]) cylinder(d=Pipe_OD+IDXtra*3, h=H+Overlap*2);
 		translate([0,0,H]) cylinder(d1=Pipe_OD+IDXtra*2, d2=Pipe_OD-2, h=3+Overlap);
 	} // difference
 	
@@ -353,7 +354,6 @@ module RocketStand(){
 
 //RocketStand();
 
-//BodyTubeLen=36*25.4;
 module ShowMotorK185W(){
 	Casing_Len=296+84.5;
 	
@@ -482,7 +482,7 @@ module R98_Electronics_Bay2(){
 	Batt2_a=270; // Cable puller battery and switch
 	
 	// The Fairing clamps onto this. 
-	translate([0,0,Len-5]) FairingBaseLockRing(Tube_ID=Body_ID, Fairing_ID=Fairing_ID, Interface=Overlap, BlendToTube=true);
+	translate([0,0,Len]) FairingBaseLockRing(Tube_OD=Body_OD, Tube_ID=Body_ID, Fairing_ID=Fairing_ID, Interface=Overlap, BlendToTube=true);
 	
 	difference(){
 		union(){
@@ -521,9 +521,9 @@ module R98_Electronics_Bay2(){
 	
 	// Battery and Switch door2
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
-		Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, HasSwitch=false, ShowDoor=false);
+		Batt_BayDoorFrame(Tube_OD=Body_OD, Tube_ID=Body_ID, HasSwitch=false, ShowDoor=false);
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
-		Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, HasSwitch=true, ShowDoor=false);
+		Batt_BayDoorFrame(Tube_OD=Body_OD, Tube_ID=Body_ID, HasSwitch=true, ShowDoor=false);
 	
 } // R98_Electronics_Bay2
 
