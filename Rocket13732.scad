@@ -207,18 +207,18 @@ F54_FairingHalf(IsLeftHalf=false,
 // ST_BallSpacer(Tube_OD=Body_OD); // print 2, spaces balls in bearing
 // ST_BallKeeper(InnerTube_OD=DualDepTube_OD); // ball alignment, glue to tube
 // 
-// rotate([0,180,0]) mirror([0,0,1]) ST_LockRing(Tube_OD=Body_OD, InnerTube_OD=DualDepTube_OD); 
-// ST_DetentOnly(Tube_OD=Body_OD, InnerTube_OD=DualDepTube_OD);
-// mirror([0,1,0]) ST_CableEndAndStop(Tube_OD=Body_OD, InnerTube_OD=DualDepTube_OD);
-// rotate([180,0,0]) ST_LockBallRetainer(Tube_OD=Body_OD, InnerTube_OD=DualDepTube_OD, HasDetent=false);
+// ST_LockRing(Tube_OD=Body_OD, InnerTube_OD=DualDepTube_OD); 
+// ST_DetentOnly(Tube_OD=Body_OD);
+// mirror([0,1,0]) ST_CableEndAndStop(Tube_OD=Body_OD);
+// rotate([180,0,0]) ST_LockBallRetainer(Tube_OD=Body_OD, InnerTube_OD=DualDepTube_OD);
 //
 // ST_UpperCenteringRing(Tube_OD=Body_OD, Tube_ID=Coupler_ID, Skirt_ID=Body_ID, InnerTube_OD=DualDepTube_OD);
 // ST_Frame(Tube_OD=Body_OD, Skirt_ID=Body_ID, Collar_Len=20, Skirt_Len=30); // 60mm long
 //
-// ST_CableRedirectTop(Tube_OD=Body_OD, Skirt_ID=Body_ID, Tube_ID=Coupler_ID, InnerTube_OD=DualDepTube_OD);
+// ST_CableRedirectTop(Tube_OD=Body_OD, Skirt_ID=Body_ID, InnerTube_OD=DualDepTube_OD);
 // ST_CableRedirect(Tube_OD=Body_OD, Skirt_ID=Body_ID, Tube_ID=Coupler_ID, InnerTube_OD=BoosterMtrTube_OD, InnerTube2_OD=DualDepTube_OD);
 //
-// ST_MT_DrillingJig(Tube_OD=Body_OD, Skirt_ID=Body_ID, InnerTubeOD=DualDepTube_OD, Skirt_Len=30);
+// ST_MT_DrillingJig(Tube_OD=Body_OD, Skirt_ID=Body_ID, InnerTube_OD=DualDepTube_OD, Skirt_Len=30);
 //
 // -------------
 //
@@ -274,7 +274,7 @@ Overlap=0.05;
 IDXtra=0.2;
 $fn=$preview? 24:90;
 
-nFins=3;
+nFins=3; // can be 3, 4 or 5
 
 // Sustainer Fin
 S_Fin_Post_h=12;
@@ -313,8 +313,8 @@ EBay_Len=162;
 TailCone_Len=60;
 BoosterFinCanLength=Booster_Fin_Root_L/2+10+TailCone_Len;
 SustainerFinCanLength=S_Fin_Root_L/2+10+TailCone_Len;
-Motor_Gap=9;
-Cant_a=1.75;
+Motor_Gap=10;
+Cant_a=1.80;
 Booster_Body_Len=BoosterFinCanLength*2+EBay_Len+60+300;
 //echo(Booster_Body_Len=Booster_Body_Len);
 
@@ -398,7 +398,7 @@ module ShowMotorJ460T(){
 
 module ShowBooster(){
 	
-	
+	//*
 	translate([0,0,Booster_Body_Len]){ 
 		color("Blue") Stager_Saucer(Tube_OD=Body_OD, nLocks=3);
 		Stager_Mech(Tube_OD=Body_OD, nLocks=2, Skirt_ID=Body_ID, Skirt_Len=30);
@@ -420,7 +420,7 @@ module ShowBooster(){
 		ST_Frame(Tube_OD=Body_OD, Skirt_ID=Body_ID, Collar_Len=20, Skirt_Len=30);
 	
 	translate([0,0,BoosterFinCanLength*2]) color("Green") Booster_Electronics_Bay(ShowDoors=true);
-	
+	/**/
 	translate([0,0,BoosterFinCanLength]) BoosterUpperFinCan();
 	
 	
@@ -1057,13 +1057,19 @@ module BoosterUpperFinCan(){
 	
 	echo(CanLen=CanLen);
 	
-	module ClusterMotorShroud(Len=500){
+	module ClusterMotorShroud(Len=CanLen+10){
 		difference(){
 			cylinder(d=BoosterClusterMtrTube_OD+12, h=Len);
 			translate([0,0,-Overlap]) cylinder(d=BoosterClusterMtrTube_OD+IDXtra*2, h=Len+Overlap*2);
 		} // difference
 		
 	} // ClusterMotorShroud
+	
+	module ClusterMotorPositions(){
+		for (j=[0:nFins-1]) rotate([0,0,360/nFins*j+180/nFins])
+			translate([BoosterMtrTube_OD/2+BoosterClusterMtrTube_OD/2+Motor_Gap,0,-CanLen]) 
+				rotate([0,-Cant_a,0]) translate([0,0,CanLen-5]) children();
+	} // ClusterMotorPositions
 	
 	difference(){
 		union(){
@@ -1081,10 +1087,7 @@ module BoosterUpperFinCan(){
 			
 			// Cluster shrouds
 			difference(){
-				for (j=[0:nFins-1]) rotate([0,0,360/nFins*j+180/nFins])
-					translate([PML54Body_OD/2+BoosterClusterMtrTube_OD/2+Motor_Gap,0,-CanLen]) 
-						rotate([0,-Cant_a,0]) translate([0,0,CanLen-2])
-						ClusterMotorShroud(Len=CanLen+2);
+				ClusterMotorPositions() ClusterMotorShroud(Len=CanLen+2);
 				
 				// trim base
 				translate([0,0,-10]) cylinder(d=Body_OD+30, h=10);
@@ -1109,8 +1112,7 @@ module BoosterUpperFinCan(){
 		translate([0,0,-Overlap]) cylinder(d=BoosterMtrTube_OD+IDXtra*3, h=CanLen+Overlap*2);
 		
 		// Cluster motor tubes
-		for (j=[0:nFins-1]) rotate([0,0,360/nFins*j+180/nFins])
-			translate([PML54Body_OD/2+BoosterClusterMtrTube_OD/2+Motor_Gap,0,-CanLen]) rotate([0,-Cant_a,0]) 
+		ClusterMotorPositions() 
 			 cylinder(d=BoosterClusterMtrTube_OD+IDXtra*3, h=CanLen*2+10-60);
 				
 		// Fin slots
@@ -1169,7 +1171,7 @@ module BoosterLowerFinCan(){
 	
 	module ClusterMotorPositions(){
 		for (j=[0:nFins-1]) rotate([0,0,360/nFins*j+180/nFins])
-			translate([PML54Body_OD/2+BoosterClusterMtrTube_OD/2+Motor_Gap,0,0]) 
+			translate([BoosterMtrTube_OD/2+BoosterClusterMtrTube_OD/2+Motor_Gap,0,0]) 
 				rotate([0,-Cant_a,0]) children();
 	} // ClusterMotorPositions
 	
@@ -1227,7 +1229,7 @@ module BoosterLowerFinCan(){
 		ClusterMotorPositions()
 			translate([0,0,-10]){
 				// motor tube
-				cylinder(d=BoosterClusterMtrTube_OD+IDXtra*3, h=CanLen+10);
+				cylinder(d=BoosterClusterMtrTube_OD+IDXtra*3, h=CanLen+11);
 				// Retainer
 				cylinder(d=BoosterClusterMtrTube_OD+6, h=26);
 			}
@@ -1253,8 +1255,12 @@ module BoosterLowerFinCan(){
 /**/
 	
 	if ($preview) {
-		ClusterMotorPositions() translate([0,0,-18]) color("Red") 
+		ClusterMotorPositions(){
+			translate([0,0,-18]) color("Red") 
 			MotorRetainer(OD=BoosterClusterMtrTube_OD+4, Len=33);
+			// motor
+			//translate([0,0,-15]) cylinder(d=38, h=285); // I284W-P
+		}
 		
 		translate([0,0,-18]) color("Red") MotorRetainer(OD=MtrRetainer_OD, Len=33);
 	}
