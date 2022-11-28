@@ -112,7 +112,7 @@ module TrapFin2Tail(Post_h=5, Root_L=150, Root_W=10, Chamfer_L=18){
 module TrapFin2Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18){
 	
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j]) translate([Tube_OD/2-Post_h,0,0])
-		rotate([0,90,0]) TrapFin2Tail(Post_h=Post_h, Root_L=Root_L, Root_W=Root_W, Chamfer_L=Chamfer_L);
+		rotate([0,90,0]) TrapFin2Tail(Post_h=Post_h+1, Root_L=Root_L, Root_W=Root_W, Chamfer_L=Chamfer_L);
 		
 } // TrapFin2Slots
 

@@ -189,13 +189,13 @@ F54_FairingHalf(IsLeftHalf=false,
 // Stager_Saucer(Tube_OD=Body_OD, nLocks=3); // Bolts on
 //
 // Stager_Mech(Tube_OD=Body_OD, nLocks=3, Skirt_ID=Body_ID, Skirt_Len=30, KeyOffset_a=-30, HasRaceway=false, Raceway_a=270);
-// LockRing(Tube_OD=Body_OD, nLocks=3);
+// Stager_LockRing(Tube_OD=Body_OD, nLocks=3);
 // Stager_InnerRace(Tube_OD=Body_OD);
 // Stager_BallSpacer(Tube_OD=Body_OD); // print 2
-// CableRedirect(Tube_OD=Body_OD, Skirt_ID=Body_ID, Tube_ID=Body_ID, InnerTube_OD=DualDepTube_OD);
-// mirror([0,1,0]) CableEndAndStop(Tube_OD=Body_OD);
+// Stager_CableRedirect(Tube_OD=Body_OD, Skirt_ID=Body_ID, Tube_ID=Body_ID, InnerTube_OD=DualDepTube_OD);
+// mirror([0,1,0]) Stager_CableEndAndStop(Tube_OD=Body_OD);
 // Stager_Detent(Tube_OD=Body_OD);
-// BallDetentStopper();
+// Stager_BallDetentStopper();
 // -------------
 //  ** Spring Thing Parts **
 //
@@ -274,7 +274,7 @@ Overlap=0.05;
 IDXtra=0.2;
 $fn=$preview? 24:90;
 
-nFins=3; // can be 3, 4 or 5
+nFins=5; // can be 3, 4 or 5
 
 // Sustainer Fin
 S_Fin_Post_h=12;
@@ -1051,6 +1051,8 @@ module Booster_Electronics_Bay(ShowDoors=false){
 
 //translate([0,0,EBay_Len]) Booster_Electronics_Bay(ShowDoors=false);
 
+FinRootSocket_W=5;
+
 module BoosterUpperFinCan(){
 	// Upper Half of Fin Can
 	CanLen=BoosterFinCanLength;
@@ -1100,10 +1102,10 @@ module BoosterUpperFinCan(){
 				cylinder(d=Body_ID+1, h=CanLen);
 				
 				for (j=[0:nFins]) hull(){
-					cylinder(d=Booster_Fin_Root_W+4.4, h=Booster_Fin_Root_L/2+10);
+					cylinder(d=Booster_Fin_Root_W+FinRootSocket_W, h=Booster_Fin_Root_L/2+10);
 					
 					rotate([0,0,360/nFins*j]) translate([Body_OD/2,0,0]) 
-						cylinder(d=Booster_Fin_Root_W+4.4, h=Booster_Fin_Root_L/2+10);
+						cylinder(d=Booster_Fin_Root_W+FinRootSocket_W, h=Booster_Fin_Root_L/2+10);
 				} // hull
 			} // intersection
 		} // union
@@ -1203,14 +1205,15 @@ module BoosterLowerFinCan(){
 			} // difference
 			
 			// Fin Holders
+			
 			intersection(){
 				cylinder(d=Body_ID+1, h=CanLen);
 				
 				for (j=[0:nFins]) hull() translate([0,0,CanLen-Booster_Fin_Root_L/2-10]) {
-					cylinder(d=Booster_Fin_Root_W+4.4, h=Booster_Fin_Root_L/2+10);
+					cylinder(d=Booster_Fin_Root_W+FinRootSocket_W, h=Booster_Fin_Root_L/2+10);
 					
 					rotate([0,0,360/nFins*j]) translate([Body_OD/2,0,0]) 
-						cylinder(d=Booster_Fin_Root_W+4.4, h=Booster_Fin_Root_L/2+10);
+						cylinder(d=Booster_Fin_Root_W+FinRootSocket_W, h=Booster_Fin_Root_L/2+10);
 				} // hull
 			} // intersection
 			
@@ -1245,6 +1248,8 @@ module BoosterLowerFinCan(){
 		// Rail guide bolts
 		rotate([0,0,90-360/nFins]) translate([0,86,RailGuide_Z]) 
 			RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
+			
+		
 	} // difference
 	
 	
@@ -1268,7 +1273,12 @@ module BoosterLowerFinCan(){
 
 //BoosterLowerFinCan();
 
+module SplitInThirds(Third=1){
+	translate([0,0,BoosterFinCanLength]) BoosterUpperFinCan();
+	BoosterLowerFinCan();
+} // SplitInThirds
 
+//SplitInThirds(Third=1);
 
 
 
