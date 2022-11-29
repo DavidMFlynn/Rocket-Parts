@@ -3,7 +3,7 @@
 // Filename: CablePuller.scad
 // by David M. Flynn
 // Created: 8/21/2022 
-// Revision: 1.1.5  11/25/2022
+// Revision: 1.1.6  11/28/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -26,7 +26,8 @@
 //
 //  ***** History *****
 //
-echo("CablePuller 1.1.5");
+echo("CablePuller 1.1.6");
+// 1.1.6  11/28/2022  Standardized door thickness. 
 // 1.1.5  11/25/2022  Added BoltBossInset as parameter to CP_Door()
 // 1.1.4  11/23/2022  Added HasArmingSlot to door. 
 // 1.1.3  11/14/2022  Moved end bolts 1mm, changed to 16mm arm. 14mm travel
@@ -108,6 +109,7 @@ LooseFit=0.8;
 Bolt4Inset=4;
 CP_Door_Y=120;
 CP_Door_X=CP_SpringBody_YZ+5+Bolt4Inset*4+20; // changed 10/25/2022, was +10
+CP_DoorThickness=3.7;
 
 module Bearing(){
 	color("Red")
@@ -155,7 +157,7 @@ module ShowCablePuller(){
 module CPDoorHole(Tube_OD=PML98Body_OD){
 	Door_Y=CP_Door_Y+1;
 	Door_X=CP_Door_X+1;
-	Door_t=3.7;
+	Door_t=CP_DoorThickness;
 	
 	intersection(){
 		translate([0,-Door_Y/2,0]) rotate([-90,0,0]) 
@@ -204,7 +206,7 @@ module CP_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=fals
 	Tube_Len=CP_Door_Y+7;
 	Door_Y=CP_Door_Y;
 	Door_X=CP_Door_X;
-	Door_t=3;
+	Door_t=CP_DoorThickness;
 	BoltBossInset=10.5+2;
 	
 	difference(){
@@ -279,7 +281,7 @@ module CP_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=fals
 module CP_Door(Tube_OD=PML98Body_OD, BoltBossInset=2, HasArmingSlot=false){
 	Door_Y=CP_Door_Y;
 	Door_X=CP_Door_X;
-	Door_t=3;
+	Door_t=CP_DoorThickness;
 	//BoltBossInset=2; // was 3, use 2 to clear 54mm motor tube w/ 98mm body tube
 	CP_Offset_Y=Door_Y/2-68;
 	

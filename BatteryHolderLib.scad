@@ -3,7 +3,7 @@
 // Filename: BatteryHolderLib.scad
 // by David M. Flynn
 // Created: 9/30/2022 
-// Revision: 1.0.0  11/22/2022
+// Revision: 1.0.1  11/28/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-echo("BatteryHolderLib 1.0.0");
+echo("BatteryHolderLib 1.0.1");
 //
+// 1.0.1  11/28/2022  Standardized door thickness. 
 // 1.0.0  11/22/2022  Code cleanup. 
 // 0.9.3  11/21/2022  Fixed door bolt angle
 // 0.9.2  10/18/2022  Added HasSwitch option to battery door.  
@@ -60,6 +61,7 @@ $fn=$preview? 24:90;
 Bolt4Inset=4;
 Batt_Door_Y=74;
 Batt_Door_X=27+Bolt4Inset*4+10;
+Batt_DoorThickness=3.7;
 
 // CK Rotary Switch
 CK_RotSw_d=23.5;
@@ -71,7 +73,7 @@ CK_RotSw_AO_h=15;
 module BattDoorHole(Tube_OD=PML98Body_OD, HasSwitch=false){
 	Door_Y=HasSwitch? Batt_Door_Y+CK_RotSw_d+1:Batt_Door_Y+1;
 	Door_X=Batt_Door_X+1;
-	Door_t=3.7;
+	Door_t=Batt_DoorThickness;
 	
 	intersection(){
 		translate([0,-Door_Y/2,0]) rotate([-90,0,0]) 
@@ -117,7 +119,7 @@ module Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, HasSwitch=f
 	Tube_Len=HasSwitch? Batt_Door_Y+CK_RotSw_d+7:Batt_Door_Y+7;
 	Door_Y=HasSwitch? Batt_Door_Y+CK_RotSw_d:Batt_Door_Y;
 	Door_X=Batt_Door_X;
-	Door_t=3;
+	Door_t=Batt_DoorThickness;
 	BoltBossInset=10.5+2;
 	
 	difference(){
@@ -183,7 +185,7 @@ module Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, HasSwitch=f
 module Batt_Door(Tube_OD=PML98Body_OD, InnerTube_OD=PML54Body_OD, HasSwitch=false){
 	Door_Y=HasSwitch? Batt_Door_Y+CK_RotSw_d:Batt_Door_Y;
 	Door_X=Batt_Door_X;
-	Door_t=3;
+	Door_t=Batt_DoorThickness;
 	BoltBossInset=3;
 	Batt_Offset_Y=Door_Y/2-68;
 	

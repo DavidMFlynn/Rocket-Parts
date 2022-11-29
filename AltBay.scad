@@ -3,7 +3,7 @@
 // Filename: AltBay.scad
 // by David M. Flynn
 // Created: 6/23/2022 
-// Revision: 0.9.13 11/9/2022
+// Revision: 0.9.14 11/28/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,6 +12,7 @@
 //
 //  ***** History *****
 //
+// 0.9.14 11/28/2022  Standardized door thickness. 
 // 0.9.13 11/9/2022   Made low profile door 2mm not so much. 
 // 0.9.12 11/4/2022   Added options to make door bigger. 
 // 0.9.11 10/31/2022  Added missing bolt bosses the Alt_BayDoorFrame
@@ -87,6 +88,10 @@ AltHoles_Y=86.35;
 AltArmingScrew_Y=19;
 AltLED_Y=35;
 
+Alt54Door_Y=Alt_Y+14;
+Alt54Door_X=Alt_X+5;
+AltDoorThickness=3.7;
+
 Tubing_d=12.7;
 nTubes=3;
 
@@ -117,13 +122,10 @@ module AltHoles(){
 
 // AltHoles() Bolt4Hole();
 
-Alt54Door_Y=Alt_Y+14;
-Alt54Door_X=Alt_X+5;
-
 module AltDoorHole54(Tube_OD=PML54Body_OD, DoorXtra_X=0, DoorXtra_Y=0){
 	Door_Y=Alt54Door_Y+DoorXtra_Y+1;
 	Door_X=Alt54Door_X+DoorXtra_X+1;
-	Door_t=3.7;
+	Door_t=AltDoorThickness;
 	
 	intersection(){
 		translate([0,-Door_Y/2,0]) rotate([-90,0,0]) 
@@ -165,7 +167,7 @@ module Alt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, DoorXtra_X=0
 	Tube_Len=Alt54Door_Y+DoorXtra_Y+7;
 	Door_Y=Alt54Door_Y+DoorXtra_Y;
 	Door_X=Alt54Door_X+DoorXtra_X;
-	Door_t=3;
+	Door_t=AltDoorThickness;
 	BoltBossInset=10.5+2;
 	AltOffset_Y=7;
 	
@@ -233,7 +235,7 @@ module Alt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, DoorXtra_X=0
 module AltBay54(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Tube_Len=120, ShowDoor=false){
 	Door_Y=Alt54Door_Y;
 	Door_X=Alt54Door_X;
-	Door_t=3;
+	Door_t=AltDoorThickness;
 	BoltBossInset=10.5+2;
 	AltOffset_Y=7;
 	
@@ -301,7 +303,7 @@ module AltBay54(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Tube_Len=120, ShowDo
 module AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false, DoorXtra_X=0, DoorXtra_Y=0){
 	Door_Y=Alt54Door_Y+DoorXtra_Y;
 	Door_X=Alt54Door_X+DoorXtra_X;
-	Door_t=3;
+	Door_t=AltDoorThickness;
 	BoltBossInset=IsLoProfile? 7.5:10.5;
 	BoltDepth=IsLoProfile? BoltBossInset:BoltBossInset-2; // thru the door:not
 	LEDSW_Boss_H=IsLoProfile? 2:3;
