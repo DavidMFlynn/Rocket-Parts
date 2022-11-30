@@ -3,7 +3,7 @@
 // Filename: CablePuller.scad
 // by David M. Flynn
 // Created: 8/21/2022 
-// Revision: 1.1.6  11/28/2022
+// Revision: 1.1.7  11/29/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -26,7 +26,8 @@
 //
 //  ***** History *****
 //
-echo("CablePuller 1.1.6");
+echo("CablePuller 1.1.7");
+// 1.1.7  11/29/2022  Added trigger hole to door
 // 1.1.6  11/28/2022  Standardized door thickness. 
 // 1.1.5  11/25/2022  Added BoltBossInset as parameter to CP_Door()
 // 1.1.4  11/23/2022  Added HasArmingSlot to door. 
@@ -150,9 +151,12 @@ module ShowCablePuller(){
 	BellCrankTriggerBearingHolder();
 	translate([CP_Bearing_OD*1.5+ArmLen, 7.5+4+CP_Bearing_OD/2, 7.5-2-CP_Bearing_H/2-1.5])
 		TriggerBellCrank();
+	
+	translate([8,0,36]) rotate([0,0,-90]) rotate([0,180,0]) CP_Door(Tube_OD=PML98Body_OD, BoltBossInset=3, HasArmingSlot=true);
 } // ShowCablePuller
 
-//ShowCablePuller();
+//
+ShowCablePuller();
 
 module CPDoorHole(Tube_OD=PML98Body_OD){
 	Door_Y=CP_Door_Y+1;
@@ -316,10 +320,15 @@ module CP_Door(Tube_OD=PML98Body_OD, BoltBossInset=2, HasArmingSlot=false){
 			}
 		
 		// Arming slot
-		if (HasArmingSlot) translate([0,CP_Offset_Y+ArmLen+CP_SpringBody_YZ,0]) hull(){
-			cylinder(d=3, h=Tube_OD/2+1);
-			translate([0,20,0]) cylinder(d=3, h=Tube_OD/2+1);
-		} // hull
+		if (HasArmingSlot) translate([0,CP_Offset_Y+ArmLen+CP_SpringBody_YZ,0]){
+			// Trigger hole
+			translate([15,-11,0]) cylinder(d=3, h=Tube_OD/2+1);
+			// Arming slot
+			hull(){
+				cylinder(d=3, h=Tube_OD/2+1);
+				translate([0,20,0]) cylinder(d=3, h=Tube_OD/2+1);
+			} // hull
+		}
 			
 		// Door mounting bolts
 		CP_DoorBoltPattern(Tube_OD=Tube_OD) Bolt4ClearHole(); //translate([0,0,0.5]) Bolt4ButtonHeadHole();
