@@ -3,7 +3,7 @@
 // Filename: Stager2Lib.scad
 // by David M. Flynn
 // Created: 10/10/2022 
-// Revision: 0.9.17  11/26/2022
+// Revision: 0.9.18  11/30/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -29,7 +29,8 @@
 //
 //  ***** History *****
 //
-echo("StagerLib 0.9.17");
+echo("StagerLib 0.9.18");
+// 0.9.18  11/30/2022  Too tight added 0.5mm to LockingBallOffset
 // 0.9.17  11/26/2022  More updates "Stager_" prefix
 // 0.9.16  11/23/2022  Replaced some numbers w/ calculations
 // 0.9.15  11/14/2022  5.5"? Not yet. 
@@ -117,7 +118,7 @@ Race_W=11;
 Tube_Len=40; //44.5;
 Race_Z=-Saucer_Len-Tube_Len;
 EConnInset=6.5; // use Saucer_ID/2+EConnInset
-
+Stager_LockingBallOffset=LockBall_d+0.5;
 
 function BearingBallCircle_d(Tube_OD=PML98Body_OD)=Tube_OD-6-Ball_d;
 function Race_ID(Tube_OD=PML98Body_OD)=BearingBallCircle_d(Tube_OD=Tube_OD)-Ball_d-Bolt4Inset*4;
@@ -348,7 +349,7 @@ module Stager_LockRing(Tube_OD=PML98Body_OD, nLocks=2){
 	
 	module BallGroove(Mir=false){
 		X=(Mir==true)? -Locked_Ball_X:Locked_Ball_X;
-		X2=(Mir==true)? -LockBall_d:LockBall_d;
+		X2=(Mir==true)? -Stager_LockingBallOffset:Stager_LockingBallOffset;
 		Rot_a=(Mir==true)? 35:-35;
 		Rot2_a=(Mir==true)? -15:15;
 		
@@ -762,6 +763,8 @@ module Stager_InnerRace(Tube_OD=PML98Body_OD){
 
 //translate([0,0,Race_Z]) Stager_InnerRace();
 	
+
+
 module Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_Len=30, KeyOffset_a=0, HasRaceway=true,
 	Raceway_a=270){
 		
@@ -775,6 +778,8 @@ module Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_
 	Locked_Ball_X=Stager_LockRod_X/2+LockBall_d/2-2;
 	Locked_Ball_Y=Tube_OD/2-StagerLockInset_Y;
 	
+	LockingBallOffset=Stager_LockingBallOffset;
+		
 	module ShowBall(){
 		color("Red") sphere(d=LockBall_d, $fn=18);
 	} // ShowBall
@@ -805,11 +810,11 @@ module Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_
 			// Cam ball
 			hull(){
 				translate([Locked_Ball_X, Locked_Ball_Y, -LockBall_d/2])
-					rotate([0,0,-35]) translate([LockBall_d,0,0]) sphere(d=LockBall_d+IDXtra*2);
+					rotate([0,0,-35]) translate([LockingBallOffset,0,0]) sphere(d=LockBall_d+IDXtra*3);
 				
 				translate([Locked_Ball_X, Locked_Ball_Y, -LockBall_d/2])
-					rotate([0,0,-35]) translate([LockBall_d,0,0]) 
-						rotate([0,0,15]) translate([0,-LockBall_d,0]) sphere(d=LockBall_d+IDXtra*2);
+					rotate([0,0,-35]) translate([LockingBallOffset,0,0]) 
+						rotate([0,0,15]) translate([0,-LockBall_d,0]) sphere(d=LockBall_d+IDXtra*3);
 			} // hull
 			
 			
@@ -836,7 +841,7 @@ module Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_
 		if ($preview) 
 			translate([Locked_Ball_X, Locked_Ball_Y, -LockBall_d/2]){
 				ShowBall();
-				rotate([0,0,-35]) translate([LockBall_d,0,0]) ShowBall();
+				rotate([0,0,-35]) translate([LockingBallOffset,0,0]) ShowBall();
 			}
 	} // BackStop
 	

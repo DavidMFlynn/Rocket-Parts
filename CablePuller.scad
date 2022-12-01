@@ -155,8 +155,7 @@ module ShowCablePuller(){
 	translate([8,0,36]) rotate([0,0,-90]) rotate([0,180,0]) CP_Door(Tube_OD=PML98Body_OD, BoltBossInset=3, HasArmingSlot=true);
 } // ShowCablePuller
 
-//
-ShowCablePuller();
+//ShowCablePuller();
 
 module CPDoorHole(Tube_OD=PML98Body_OD){
 	Door_Y=CP_Door_Y+1;
