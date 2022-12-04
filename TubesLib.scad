@@ -3,7 +3,7 @@
 // Filename: TubesLib.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.6  11/20/2022
+// Revision: 0.9.7  12/2/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,7 +12,8 @@
 //
 //  ***** History *****
 //
-echo("TubesLib 0.9.6");
+echo("TubesLib 0.9.7");
+// 0.9.7  12/2/2022  Added BT38Body tube
 // 0.9.6  11/20/2022 Added ClusterRing
 // 0.9.5  11/12/2022 Added Blue Tube 2.0  5.5" body & coupler. 
 // 0.9.4  10/16/2022 Added Blue Tube 2.0 54mm body & coupler. 
@@ -99,6 +100,9 @@ BT54Body_OD=57.20;
 BT54Body_ID=54.2;
 BT54Coupler_OD=53.60;
 BT54Coupler_ID=50.70;
+
+BT38Body_OD=41.30;
+BT38Body_ID=38.50;
 
 PML38Body_OD=42.2; //(1.525+0.062*2)*25.4; // 42.2 measured
 PML38Body_ID=1.525*25.4;

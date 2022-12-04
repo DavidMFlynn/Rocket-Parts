@@ -131,8 +131,8 @@ F54_FairingHalf(IsLeftHalf=false,
 // Drogue_ST_LowerCenteringRing();
 //
 //  *** Stager parts for dual deploy ***
-// Stager_BallDetentStopper();
-// rotate([0,180,0]) DrogueSep_CableRedirect();
+// Stager_CableRedirect(Tube_OD=R98_Body_OD, Skirt_ID=R98_Body_ID, Tube_ID=R98_Coupler_ID, InnerTube_OD=BT54Mtr_OD, HasRaceway=true, Raceway_a=270);
+// Stager_CableRedirectTop(Tube_OD=R98_Body_OD, Skirt_ID=R98_Body_ID, InnerTube_OD=BT54Mtr_OD, HasRaceway=true, Raceway_a=270);
 // Stager_Detent(Tube_OD=R98_Body_OD);
 // Stager_CableEndAndStop(Tube_OD=R98_Body_OD);
 // rotate([0,180,0]) DrogueSep();
@@ -181,8 +181,8 @@ $fn=$preview? 24:90;
 
 R98_Body_OD=PML98Body_OD;
 R98_Body_ID=PML98Body_ID;
-R98_BayInnerTube_OD=PML38Body_OD;
-R98_BayInnerTube_ID=PML38Body_ID;
+R98_BayInnerTube_OD=BT38Body_OD;
+R98_BayInnerTube_ID=BT38Body_ID;
 R98_Coupler_ID=PML98Coupler_ID;
 R98_DualDepTube_OD=BT54Body_OD;
 R98_DualDepTube_ID=BT54Body_ID;
@@ -480,12 +480,6 @@ module Drogue_ST_LowerCenteringRing(){
 
 //Drogue_ST_LowerCenteringRing();
 
-module DrogueSep_CableRedirect(){
-	rotate([180,0,180]) Stager_CableRedirect(Tube_OD=R98_Body_OD, Skirt_ID=R98_Body_ID, Tube_ID=R98_Coupler_ID, InnerTube_OD=BT54Mtr_OD, HasRaceway=true,
-							Raceway_a=270);
-} // DrogueSep_CableRedirect
-
-//translate([0,0,78]) DrogueSep_CableRedirect();
 
 module DrogueSep(){
 
