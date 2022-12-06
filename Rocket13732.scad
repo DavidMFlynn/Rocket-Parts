@@ -186,14 +186,15 @@ F54_FairingHalf(IsLeftHalf=false,
 // --------------
 //  ** Stager Parts, top of booster **
 //
-// Stager_Saucer(Tube_OD=Body_OD, nLocks=3); // Bolts on
+// Stager_Saucer(Tube_OD=Body_OD, nLocks=3, HasElectrical=true);
+// Stager_SaucerEConnHolder(Tube_OD=Body_OD);
 //
-// Stager_Mech(Tube_OD=Body_OD, nLocks=3, Skirt_ID=Body_ID, Skirt_Len=30, KeyOffset_a=-30, HasRaceway=false, Raceway_a=270);
-// Stager_LockRing(Tube_OD=Body_OD, nLocks=3);
+// Stager_Mech(Tube_OD=Body_OD, nLocks=3, Skirt_ID=Body_ID, Skirt_Len=30, KeyOffset_a=0, HasRaceway=true, Raceway_a=300);
+// Stager_LockRing(Tube_OD=Body_OD, nLocks=3, FlexComp_d=0.8);
 // Stager_InnerRace(Tube_OD=Body_OD);
 // Stager_BallSpacer(Tube_OD=Body_OD); // print 2
-// Stager_CableRedirectTop(Tube_OD=Body_OD, Skirt_ID=Body_ID, InnerTube_OD=DualDepTube_OD, HasRaceway=false, Raceway_a=270);
-// Stager_CableRedirect(Tube_OD=Body_OD, Skirt_ID=Body_ID, Tube_ID=Body_ID, InnerTube_OD=DualDepTube_OD);
+// Stager_CableRedirectTop(Tube_OD=Body_OD, Skirt_ID=Body_ID, InnerTube_OD=DualDepTube_OD, HasRaceway=true, Raceway_a=300);
+// Stager_CableRedirect(Tube_OD=Body_OD, Skirt_ID=Body_ID, Tube_ID=Body_ID, InnerTube_OD=DualDepTube_OD, HasRaceway=true, Raceway_a=300);
 // Stager_CableEndAndStop(Tube_OD=Body_OD);
 // Stager_Detent(Tube_OD=Body_OD);
 // Stager_BallDetentStopper();
@@ -203,7 +204,7 @@ F54_FairingHalf(IsLeftHalf=false,
 // ST_TubeEnd(Tube_OD=DualDepCouplerTube_OD, Tube_ID=DualDepCouplerTube_ID); // print 2, glued to half section of coupler tube
 // ST_SpringGuide(InnerTube_ID=BoosterMtrTube_ID); // Sits on top of motor, glued to bottom of spring. 
 // ST_SpringMiddle(Tube_ID=BoosterMtrTube_ID); // optional double spring slider
-// ST_TubeLock(Tube_OD=DualDepCouplerTube_OD, Tube_ID=DualDepCouplerTube_ID); // Glued to top of spring.
+// ST_TubeLock(Tube_OD=DualDepCouplerTube_OD, Tube_ID=DualDepCouplerTube_ID-2, SkirtLen=30);
 //
 // ST_BallSpacer(Tube_OD=Body_OD); // print 2, spaces balls in bearing
 // ST_BallKeeper(InnerTube_OD=DualDepTube_OD); // ball alignment, glue to tube
@@ -213,13 +214,14 @@ F54_FairingHalf(IsLeftHalf=false,
 // mirror([0,1,0]) ST_CableEndAndStop(Tube_OD=Body_OD);
 // rotate([180,0,0]) ST_LockBallRetainer(Tube_OD=Body_OD, InnerTube_OD=DualDepTube_OD);
 //
-// ST_UpperCenteringRing(Tube_OD=Body_OD, Tube_ID=Coupler_ID, Skirt_ID=Body_ID, InnerTube_OD=DualDepTube_OD);
+// 
+// ST_UpperCenteringRing(Tube_OD=Body_OD, Skirt_ID=Body_ID, InnerTube_OD=DualDepTube_OD);
 // BoosterSpringThing(); // 60mm long
 //
 // ST_CableRedirectTop(Tube_OD=Body_OD, Skirt_ID=Body_ID, InnerTube_OD=DualDepTube_OD);
 // ST_CableRedirect(Tube_OD=Body_OD, Skirt_ID=Body_ID, Tube_ID=Coupler_ID, InnerTube_OD=BoosterMtrTube_OD, InnerTube2_OD=DualDepTube_OD);
 //
-// ST_MT_DrillingJig(Tube_OD=Body_OD, Skirt_ID=Body_ID, InnerTube_OD=DualDepTube_OD, Skirt_Len=30);
+// ST_MT_DrillingJig(Tube_OD=Body_OD, Skirt_ID=Body_ID, InnerTube_OD=DualDepTube_OD, Skirt_Len=34);
 //
 // -------------
 //
@@ -1004,10 +1006,10 @@ module Booster_Electronics_Bay(ShowDoors=false){
 			Tube(OD=Body_OD, ID=Body_ID, Len=Len, myfn=$preview? 36:360);
 			
 			translate([0,0,BottomSkirt_Len])
-				CenteringRing(OD=Body_OD-1, ID=BT54Mtr_OD+IDXtra, Thickness=5, nHoles=4);
+				CenteringRing(OD=Body_OD-1, ID=BoosterMtrTube_OD+IDXtra*2, Thickness=5, nHoles=4);
 			
 			translate([0,0,Len-5-TopSkirt_Len])
-				CenteringRing(OD=Body_OD-1, ID=BT54Mtr_OD+IDXtra, Thickness=5, nHoles=4);
+				CenteringRing(OD=Body_OD-1, ID=BoosterMtrTube_OD+IDXtra*2, Thickness=5, nHoles=4);
 		} // union
 		
 		// Altimeter
@@ -1097,6 +1099,7 @@ module BoosterSpringThing(){
 } // BoosterSpringThing
 
 //BoosterSpringThing();
+FinRootSocket_W=6;
 
 module BoosterUpperFinCan(){
 	// Upper Half of Fin Can
