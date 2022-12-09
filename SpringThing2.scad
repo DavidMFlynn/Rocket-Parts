@@ -911,7 +911,7 @@ module ST_TubeEnd(Tube_OD=BT54Coupler_OD, Tube_ID=BT54Coupler_ID){
 //ST_TubeEnd();
 
 module ST_TubeLock(Tube_OD=BT54Coupler_OD, Tube_ID=BT54Coupler_ID, SkirtLen=0){
-	
+	echo(Tube_OD=Tube_OD);
 	H=(SkirtLen>0)? LockBall_d+2:LockBall_d+7;
 	
 	if (SkirtLen>0)
