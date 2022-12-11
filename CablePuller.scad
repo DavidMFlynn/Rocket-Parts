@@ -3,7 +3,7 @@
 // Filename: CablePuller.scad
 // by David M. Flynn
 // Created: 8/21/2022 
-// Revision: 1.1.7  11/29/2022
+// Revision: 1.1.8  12/11/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -26,7 +26,8 @@
 //
 //  ***** History *****
 //
-echo("CablePuller 1.1.7");
+echo("CablePuller 1.1.8");
+// 1.1.8  12/11/2022  Adjusted door thickness w/o changing frame or hole. 
 // 1.1.7  11/29/2022  Added trigger hole to door
 // 1.1.6  11/28/2022  Standardized door thickness. 
 // 1.1.5  11/25/2022  Added BoltBossInset as parameter to CP_Door()
@@ -284,7 +285,7 @@ module CP_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=fals
 module CP_Door(Tube_OD=PML98Body_OD, BoltBossInset=2, HasArmingSlot=false){
 	Door_Y=CP_Door_Y;
 	Door_X=CP_Door_X;
-	Door_t=CP_DoorThickness;
+	Door_t=CP_DoorThickness-0.7;
 	//BoltBossInset=2; // was 3, use 2 to clear 54mm motor tube w/ 98mm body tube
 	CP_Offset_Y=Door_Y/2-68;
 	
