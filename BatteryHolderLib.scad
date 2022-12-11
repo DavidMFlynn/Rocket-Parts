@@ -3,7 +3,7 @@
 // Filename: BatteryHolderLib.scad
 // by David M. Flynn
 // Created: 9/30/2022 
-// Revision: 1.0.1  11/28/2022
+// Revision: 1.0.2  12/11/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-echo("BatteryHolderLib 1.0.1");
+echo("BatteryHolderLib 1.0.2");
 //
+// 1.0.2  12/11/2022  Added LED hole. Thinned door by 0.7mm w/o changing frame or hole. 
 // 1.0.1  11/28/2022  Standardized door thickness. 
 // 1.0.0  11/22/2022  Code cleanup. 
 // 0.9.3  11/21/2022  Fixed door bolt angle
@@ -185,7 +186,7 @@ module Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, HasSwitch=f
 module Batt_Door(Tube_OD=PML98Body_OD, InnerTube_OD=PML54Body_OD, HasSwitch=false){
 	Door_Y=HasSwitch? Batt_Door_Y+CK_RotSw_d:Batt_Door_Y;
 	Door_X=Batt_Door_X;
-	Door_t=Batt_DoorThickness;
+	Door_t=Batt_DoorThickness-0.7;
 	BoltBossInset=3;
 	Batt_Offset_Y=Door_Y/2-68;
 	
@@ -236,7 +237,7 @@ module Batt_Door(Tube_OD=PML98Body_OD, InnerTube_OD=PML54Body_OD, HasSwitch=fals
 				cylinder(d=CK_RotSw_d+IDXtra*2, h=CK_RotSw_AO_h/2-Door_t);
 				cylinder(d=CK_RotSw_Face_d+IDXtra*2, h=CK_RotSw_AO_h/2+CK_RotSw_Face_h-Door_t);
 				cylinder(d=CK_RotSw_Access_d+IDXtra, h=CK_RotSw_AO_h/2+Overlap*2);
-				
+			translate([10,CK_RotSw_d/2+2,0]) cylinder(d=3, h=10);
 			}
 	} // difference
 
