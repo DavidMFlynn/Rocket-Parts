@@ -3,7 +3,7 @@
 // Filename: AltBay.scad
 // by David M. Flynn
 // Created: 6/23/2022 
-// Revision: 0.9.14 11/28/2022
+// Revision: 0.9.15 12/11/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,6 +12,7 @@
 //
 //  ***** History *****
 //
+// 0.9.15 12/11/2022  Adjusted door thickness w/o changing frame or hole. 
 // 0.9.14 11/28/2022  Standardized door thickness. 
 // 0.9.13 11/9/2022   Made low profile door 2mm not so much. 
 // 0.9.12 11/4/2022   Added options to make door bigger. 
@@ -303,7 +304,7 @@ module AltBay54(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Tube_Len=120, ShowDo
 module AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false, DoorXtra_X=0, DoorXtra_Y=0){
 	Door_Y=Alt54Door_Y+DoorXtra_Y;
 	Door_X=Alt54Door_X+DoorXtra_X;
-	Door_t=AltDoorThickness;
+	Door_t=AltDoorThickness-0.7;
 	BoltBossInset=IsLoProfile? 7.5:10.5;
 	BoltDepth=IsLoProfile? BoltBossInset:BoltBossInset-2; // thru the door:not
 	LEDSW_Boss_H=IsLoProfile? 2:3;

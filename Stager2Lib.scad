@@ -3,10 +3,13 @@
 // Filename: Stager2Lib.scad
 // by David M. Flynn
 // Created: 10/10/2022 
-// Revision: 0.9.20  12/4/2022
+// Revision: 0.9.21  12/13/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
+//
+// 12/11/22-12/14/22 0.9.21 printed and assembled a full set of parts for 98mm/3.9" rocket. Worked!
+// I will print a 137mm version, if OK this will be version 1.0.0
 //
 // Specifically built for a 4 inch rocket.
 // It could be modified to a larger tube, but smaller would be hard. 
@@ -21,15 +24,31 @@
 // Parts
 // ---------------
 // 9 3/8" Delrin Balls for 2 locks, 13 for 3 locks
-// 6 #4-40 x 3/8" Socket head cap screws
-// 10 #4-40 x 3/8" Button head screws
-// 2 5/16" Dia. x 1-1/4" strong spring
-// 1 5/16" Dia. x 3/4" light spring
+// 6 #4-40 x 3/8" Socket head cap screws (Lock Ring)
+// 10 #4-40 x 3/8" Button head screws (saucer, ball detent, CableEndAndStop, add 4 for electrical conns) 
+// 8  #2-56 x 1/4" Socket head cap screws (ball spacer)
+// 4/6  #6-32 x 1/2" Button head cap screws (lock rods)
+// 2 5/16" Dia. x 1-1/4" strong spring, or 3 for 3 locks
+// 1 5/16" Dia. x 3/4" light spring (ball detent)
+// length of 1/32" or 1mm wire rope and 2 copper crimp on ends
+// A 4 pin Molex connector is required for booster separation detection and sustainer ignition. 
 // 
+//  ***** Assembly Instructions *****
+// -------------------------------------------------
+//  Print all parts, PETG 0.4mm nozzle
+//    0.3mm layers, 30% huney comb infil, 3 perimeters, 3 botoom layers, 3 top layers
+//  Insert 3/8" Delrin lock balls 4 per lock
+//  Insert lock ring, sit saucer in place 
+//  Prepair ball spacers, drill 1/16" or #2-56 tap drill, cleanup counter bores w/ 9/64" drill
+//    remove all brim and sand inside and out to fit loose between inner and outer races. 
+//  Sit one ball spacer in place, then inner race w/ ball groove up/aligned to outer race
+//  Install 5/16" Delrin balls and the other ball spacer, Install #2-56 screws
+//  Install 6ea. #4-40 x 3/8" socket head screws connecting lock ring to inner race
 //
 //  ***** History *****
 //
-echo("StagerLib 0.9.20");
+echo("StagerLib 0.9.21");
+// 0.9.21  12/13/2022  Small adjustments, centering rings to +IDXtra*2, built a 98mm version complete. 
 // 0.9.20  12/4/2022   Tighter balls
 // 0.9.19  12/2/2022   Reworked Stager_CableEndAndStop, re-did angle calculations
 // 0.9.18  11/30/2022  Too tight added 0.5mm to LockingBallOffset
@@ -65,7 +84,7 @@ echo("StagerLib 0.9.20");
 
 // Stager_LockRing(Tube_OD=PML98Body_OD, nLocks=2);
 //
-// Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_Len=30, KeyOffset_a=-30, HasRaceway=true, Raceway_a=270);
+// Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_Len=30, KeyOffset_a=0, HasRaceway=true, Raceway_a=270);
 //
 // Stager_InnerRace(Tube_OD=PML98Body_OD);
 // Stager_BallSpacer(Tube_OD=PML98Body_OD);
@@ -123,7 +142,7 @@ Race_W=11;
 Tube_Len=40; //44.5;
 Race_Z=-Saucer_Len-Tube_Len;
 EConnInset=6.5; // use Saucer_ID/2+EConnInset
-Stager_LockingBallOffset=LockBall_d+0.5;
+Stager_LockingBallOffset=LockBall_d+0.2; // was 0.5 changed to 0.2 12/12/22
 CamBall_a=-30;
 CamBall_a2=20;
 
@@ -137,32 +156,35 @@ function nBearingBalls(Tube_OD=PML98Body_OD)=floor(BearingBallCircle_d(Tube_OD=T
 
 // ============================================================================ //
 
-module ShowStager(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_OD,
+module ShowStager(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID,
 					CouplerTube_ID=PML98Coupler_ID, 
 					InnerTube_OD=BT54Mtr_OD, nLocks=2){
 	
-	//translate([0,0,30]) Stager_Cup(Tube_OD=Tube_OD, ID=Tube_OD-24, nLocks=nLocks);
-	//translate([0,0,10]) color("LightBlue") Stager_Saucer(Tube_OD=Tube_OD, nLocks=nLocks, HasElectrical=false);
-	//translate([0,0,-Overlap*2]) Stager_Mech(Tube_OD=Tube_OD, nLocks=nLocks, Skirt_ID=Tube_ID, Skirt_Len=30);
+	translate([0,0,30]) Stager_Cup(Tube_OD=Tube_OD, ID=Tube_OD-24, nLocks=nLocks);
+	translate([0,0,10]) color("LightBlue") Stager_Saucer(Tube_OD=Tube_OD, nLocks=nLocks, HasElectrical=false);
+	Stager_Mech(Tube_OD=Tube_OD, nLocks=nLocks, Skirt_ID=Tube_ID, Skirt_Len=30, KeyOffset_a=0, HasRaceway=true, Raceway_a=270);
 	
 	translate([0,0,-140]) Stager_LockRing(Tube_OD=Tube_OD, nLocks=nLocks);
 	
 	//*
 	translate([0,0,-150]) {
-		translate([100,0,-20]) rotate([180,0,120]) mirror([0,1,0]) Stager_CableEndAndStop(Tube_OD=Tube_OD);
+		translate([20,0,-40]) rotate([180,0,120]) Stager_CableEndAndStop(Tube_OD=Tube_OD);
 		translate([0,0,-10]) Stager_InnerRace(Tube_OD=Tube_OD);
 		translate([0,0,-30]) Stager_BallSpacer(Tube_OD=Tube_OD);
 		translate([0,0,0]) rotate([180,0,0]) Stager_BallSpacer(Tube_OD=Tube_OD);
-		rotate([0,180,120]) translate([0,60,20]) Stager_Detent(Tube_OD=Tube_OD);
+		rotate([0,180,120]) translate([0,20,40]) Stager_Detent(Tube_OD=Tube_OD);
 	}
 	/**/
-	translate([0,0,-200]) {
-		Stager_CableRedirect(Tube_OD=Tube_OD, Skirt_ID=Tube_ID, 
+	translate([0,0,-210]) {
+		Stager_CableRedirectTop(Tube_OD=Tube_OD, Skirt_ID=Tube_ID, 
+				InnerTube_OD=InnerTube_OD, HasRaceway=true, Raceway_a=270);
+		translate([0,0,-25]) 
+			Stager_CableRedirect(Tube_OD=Tube_OD, Skirt_ID=Tube_ID, 
 							Tube_ID=CouplerTube_ID, 
 							InnerTube_OD=InnerTube_OD,
 							HasRaceway=true,
 							Raceway_a=270);
-		translate([80,0,-25]) Stager_BallDetentStopper();
+		
 	}
 	
 } // ShowStager
@@ -184,7 +206,7 @@ module ShowStagerAssy(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_OD,
 	
 	Sep_Z=28; // 23 down from bearing
 
-	//translate([0,0,1]) Stager_LockRing(Tube_OD=Tube_OD, nLocks=nLocks);
+	translate([0,0,1]) Stager_LockRing(Tube_OD=Tube_OD, nLocks=nLocks);
 
 	//*
 	translate([0,0,-Race_Z]) 
@@ -319,7 +341,7 @@ module Stager_CableRedirectTop(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 
 	difference(){
 		union(){
-			rotate([0,0,22.5]) CenteringRing(OD=Skirt_ID-IDXtra*2, ID=InnerTube_OD+IDXtra, Thickness=5, nHoles=0);
+			rotate([0,0,22.5]) CenteringRing(OD=Skirt_ID-IDXtra*2, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=0);
 			
 			// Locked position stop
 			rotate([0,0,Stop_a]) translate([0,CablePath_Y,0]) cylinder(d=8, h=10);
@@ -433,7 +455,7 @@ module Stager_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 		union(){
 			
 			translate([0,0,-20]) {
-				rotate([0,0,-20]) CenteringRing(OD=Tube_ID-IDXtra*2, ID=InnerTube_OD+IDXtra, 
+				rotate([0,0,-20]) CenteringRing(OD=Tube_ID-IDXtra*2, ID=InnerTube_OD+IDXtra*2, 
 										Thickness=5, nHoles=0);
 				Tube(OD=InnerTube_OD+Bolt4Inset*4, ID=InnerTube_OD+IDXtra*2, Len=20, myfn=$preview? 36:360);
 				//Tube(OD=InnerTube_OD+4.4, ID=InnerTube_OD+IDXtra*2, Len=21, myfn=$preview? 36:360);
@@ -475,10 +497,11 @@ module Stager_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 //Stager_CableRedirect(HasRaceway=true);
 
 module Stager_LockRing(Tube_OD=PML98Body_OD, nLocks=2, FlexComp_d=0.8){
+	// use FlexComp_d=0.4 for 98mm, FlexComp_d=0.8 for 137mm
 	nBolts=nInnerRaceBolts;
 	OD=Saucer_ID(Tube_OD=Tube_OD);
 	Depth=3;
-	Inset=2;
+	Inset=1.0; // was 2, changed to 1.0 12/12/22 66.6 , w/ FlexComp_d=0.4  0.7 too tight, 2.0 too loose for 98mm
 	nSteps=15;
 	Arc_a=Calc_a(9,(OD/2-Inset));
 	echo(Arc_a=Arc_a);
@@ -520,6 +543,8 @@ module Stager_LockRing(Tube_OD=PML98Body_OD, nLocks=2, FlexComp_d=0.8){
 			cylinder(d=OD-1, h=Tube_Len-LockBall_d-6);
 			translate([0,0,Tube_Len-LockBall_d-6-Overlap]) cylinder(d1=OD-1, d2=OD-Inset*2+FlexComp_d, h=3+Overlap*2);
 			cylinder(d=OD-Inset*2+FlexComp_d, h=Tube_Len+3, $fn=$preview? 90:360);
+			//
+			echo(OD-Inset*2+FlexComp_d);
 		} // union
 		
 		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j])
@@ -542,6 +567,7 @@ module Stager_LockRing(Tube_OD=PML98Body_OD, nLocks=2, FlexComp_d=0.8){
 } // Stager_LockRing
 
 //translate([0,0,1]) Stager_LockRing(Tube_OD=BT137Body_OD, nLocks=3, FlexComp_d=0.8);
+//Stager_LockRing(Tube_OD=PML98Body_OD, nLocks=2, FlexComp_d=0.4);
 
 module Stager_Detent(Tube_OD=PML98Body_OD){
 	nBottomBolts=nInnerRaceBolts;
@@ -1069,8 +1095,7 @@ module Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_
 
 //Stager_Mech();
 
-//
-Stager_Mech(Tube_OD=PML150Body_OD, nLocks=3, Skirt_ID=PML150Body_ID, Skirt_Len=30, HasRaceway=true, Raceway_a=300);
+//Stager_Mech(Tube_OD=PML150Body_OD, nLocks=3, Skirt_ID=PML150Body_ID, Skirt_Len=30, HasRaceway=true, Raceway_a=300);
 
 
 

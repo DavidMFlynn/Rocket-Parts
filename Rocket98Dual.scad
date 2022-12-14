@@ -131,11 +131,11 @@ F54_FairingHalf(IsLeftHalf=false,
 // Drogue_ST_LowerCenteringRing();
 //
 //  *** Stager parts for dual deploy ***
-// Stager_CableRedirect(Tube_OD=R98_Body_OD, Skirt_ID=R98_Body_ID, Tube_ID=R98_Coupler_ID, InnerTube_OD=BT54Mtr_OD, HasRaceway=true, Raceway_a=270);
-// Stager_CableRedirectTop(Tube_OD=R98_Body_OD, Skirt_ID=R98_Body_ID, InnerTube_OD=BT54Mtr_OD, HasRaceway=true, Raceway_a=270);
+// Stager_CableRedirect(Tube_OD=R98_Body_OD, Skirt_ID=R98_Body_ID, Tube_ID=R98_Coupler_ID, InnerTube_OD=R98_DualDepTube_OD, HasRaceway=true, Raceway_a=270);
+// Stager_CableRedirectTop(Tube_OD=R98_Body_OD, Skirt_ID=R98_Body_ID, InnerTube_OD=R98_DualDepTube_OD, HasRaceway=true, Raceway_a=270);
 // Stager_Detent(Tube_OD=R98_Body_OD);
 // Stager_CableEndAndStop(Tube_OD=R98_Body_OD);
-// rotate([0,180,0]) DrogueSep();
+// rotate([0,180,0]) DrogueSep(); // aka Stager_Mech
 // Stager_BallSpacer(Tube_OD=R98_Body_OD);
 // Stager_InnerRace(Tube_OD=R98_Body_OD);
 // Stager_LockRing(Tube_OD=R98_Body_OD, nLocks=2);
