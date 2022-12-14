@@ -29,7 +29,7 @@
 // 8  #2-56 x 1/4" Socket head cap screws (ball spacer)
 // 4/6  #6-32 x 1/2" Button head cap screws (lock rods)
 // 2 5/16" Dia. x 1-1/4" strong spring, or 3 for 3 locks
-// 1 5/16" Dia. x 3/4" light spring (ball detent)
+// 1 5/16" Dia. x 3/4" 0.3" OD, 0.028" Wire, WB Jones p/n C10-028-024 light spring (ball detent)
 // length of 1/32" or 1mm wire rope and 2 copper crimp on ends
 // A 4 pin Molex connector is required for booster separation detection and sustainer ignition. 
 // 
