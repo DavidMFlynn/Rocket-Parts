@@ -183,6 +183,7 @@ R98_Body_OD=PML98Body_OD;
 R98_Body_ID=PML98Body_ID;
 R98_BayInnerTube_OD=BT38Body_OD;
 R98_BayInnerTube_ID=BT38Body_ID;
+//R98_Coupler_OD=BT98Coupler_OD;
 R98_Coupler_ID=PML98Coupler_ID;
 R98_DualDepTube_OD=BT54Body_OD;
 R98_DualDepTube_ID=BT54Body_ID;
@@ -288,9 +289,9 @@ module R98_Electronics_Bay2(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID,
 		union(){
 			Tube(OD=Tube_OD, ID=Tube_ID, Len=Len, myfn=$preview? 36:360);
 			translate([0,0,BottomSkirt_Len])
-				CenteringRing(OD=Tube_OD-1, ID=InnerTube_OD+IDXtra, Thickness=5, nHoles=4);
+				CenteringRing(OD=Tube_OD-1, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=4);
 			translate([0,0,Len-5-TopSkirt_Len])
-				CenteringRing(OD=Tube_OD-1, ID=InnerTube_OD+IDXtra, Thickness=5, nHoles=4);
+				CenteringRing(OD=Tube_OD-1, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=4);
 	} // union
 		
 		// Altimeter

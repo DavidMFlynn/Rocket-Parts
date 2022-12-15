@@ -103,6 +103,7 @@ BT54Coupler_ID=50.70;
 
 BT38Body_OD=41.30;
 BT38Body_ID=38.50;
+BT38Coupler_OD=38.20;
 
 PML38Body_OD=42.2; //(1.525+0.062*2)*25.4; // 42.2 measured
 PML38Body_ID=1.525*25.4;
@@ -121,6 +122,7 @@ module CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0){
 } // CenteringRing
 
 //CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5);
+//CenteringRing(OD=BT54Body_ID, ID=BT38Coupler_OD+IDXtra*2, Thickness=5, nHoles=0);
 
 module ClusterRing(OD=BT137Body_ID, Thickness=5,
 					CenterMotor_OD=BT54Body_OD, ClusterMotor_OD=PML38Body_OD, nClusterMotors=3,
