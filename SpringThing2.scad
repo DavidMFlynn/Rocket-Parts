@@ -3,7 +3,7 @@
 // Filename: SpringThing2.scad
 // by David M. Flynn
 // Created: 10/17/2022 
-// Revision: 0.9.21  12/16/2022
+// Revision: 0.9.22  12/17/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,6 +12,7 @@
 // 80mm of 54mm Body tube is required to fit the spring from end to lock balls. 
 //
 //  ***** History *****
+// 0.9.22  12/17/2022 Fixed cable raceways at 180° and 90°. Printing a 98mm one today. 
 // 0.9.21  12/16/2022 Added wire chanel to CableRedirect so wire don't get lost between centering rings.
 // 0.9.20  12/5/2022  ST_UpperCenteringRing ID + IDXtra*2
 // 0.9.19  12/4/2022  Works for BT137Body, needs testing w/ PML98Body, added notches for stager & wires
@@ -76,6 +77,7 @@
 include<TubesLib.scad>
 include<CableRelease.scad>
 include<BearingLib.scad>
+use<RacewayLib.scad>
 //include<CommonStuffSAEmm.scad>
 
 Overlap=0.05;
@@ -160,7 +162,7 @@ module ShowSpringThing(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID,
 module ST_SpringMiddle(Tube_ID=BT54Coupler_OD){
 		
 	difference(){
-		translate([0,0,-ST_DSpring_CBL-2]) cylinder(d=Tube_ID, h=ST_DSpring_CBL*2+4);
+		translate([0,0,-ST_DSpring_CBL-2]) cylinder(d=Tube_ID-LooseFit, h=ST_DSpring_CBL*2+4);
 		
 		// center hole
 		translate([0,0,-ST_DSpring_CBL-2-Overlap]) cylinder(d=Tube_ID-4.4, h=ST_DSpring_CBL*2+4+Overlap*2);
@@ -168,8 +170,8 @@ module ST_SpringMiddle(Tube_ID=BT54Coupler_OD){
 	
 	difference(){
 		union(){
-			translate([0,0,-2]) cylinder(d=ST_DSpring_ID-1, h=ST_DSpring_CBL+2);
-			translate([0,0,-2]) cylinder(d=Tube_ID, h=2);
+			translate([0,0,-6]) cylinder(d=ST_DSpring_ID-1, h=ST_DSpring_CBL+6);
+			translate([0,0,-2]) cylinder(d=Tube_ID-LooseFit, h=2);
 		} // union
 		
 		// center hole
@@ -187,7 +189,7 @@ module ST_SpringGuide(InnerTube_ID=BT54Body_ID){
 	difference(){
 		union(){
 			cylinder(d=ST_DSpring_ID-1, h=ST_DSpring_CBL);
-			translate([0,0,-Tail_Len+Overlap]) cylinder(d=InnerTube_ID-IDXtra, h=Tail_Len);
+			translate([0,0,-Tail_Len+Overlap]) cylinder(d=InnerTube_ID-IDXtra*2, h=Tail_Len);
 		} // union
 		
 		translate([0,0,-Tail_Len]) cylinder(d=39, h=MotorTopDepth);
@@ -288,7 +290,7 @@ module ST_UpperCenteringRing(Tube_OD=PML98Body_OD,
 		} // hull
 		
 		//wires
-		rotate([0,0,Cable_a(CablePath_Y)-90]) hull(){
+		rotate([0,0,Cable_a(CablePath_Y)+90]) hull(){
 			translate([0,Tube_OD/2,-20-Overlap]) cylinder(d=6, h=25+Overlap*2);
 			translate([0,Skirt_ID/2-4,-20-Overlap]) cylinder(d=6, h=25+Overlap*2);
 		} // hull
@@ -374,7 +376,7 @@ module ST_CableRedirectTop(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, InnerTub
 		} // hull
 		
 		//wires
-		rotate([0,0,Cable_a(CablePath_Y)-90]) hull(){
+		rotate([0,0,Cable_a(CablePath_Y)+90]) hull(){
 			translate([0,Tube_OD/2,-20-Overlap]) cylinder(d=CablePath_ID, h=25+Overlap*2);
 			translate([0,Skirt_ID/2-4,-20-Overlap]) cylinder(d=CablePath_ID, h=25+Overlap*2);
 		} // hull
@@ -457,7 +459,7 @@ module ST_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 					} // hull
 					
 					//wires
-					rotate([0,0,Cable_a(CablePath_Y)-90]) hull(){
+					rotate([0,0,Cable_a(CablePath_Y)+90]) hull(){
 						translate([0,Tube_OD/2,-20-Overlap]) cylinder(d=CablePath_ID+3, h=25+Overlap*2);
 						translate([0,Skirt_ID/2-4,-20-Overlap]) cylinder(d=CablePath_ID+3, h=25+Overlap*2);
 					} // hull
@@ -489,7 +491,7 @@ module ST_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 		} // hull
 		
 		//wires
-		rotate([0,0,Cable_a(CablePath_Y)-90]) hull(){
+		rotate([0,0,Cable_a(CablePath_Y)+90]) hull(){
 			translate([0,Tube_OD/2,-20-Overlap]) cylinder(d=CablePath_ID, h=25+Overlap*2);
 			translate([0,Skirt_ID/2-4,-20-Overlap]) cylinder(d=CablePath_ID, h=25+Overlap*2);
 		} // hull
@@ -510,7 +512,7 @@ module ShowST_Assy(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, InnerTube_OD=BT5
 
 	difference(){
 		translate([0,0,-10-1.5]) 
-			ST_Frame(Tube_OD=Tube_OD, Skirt_ID=Skirt_ID, Collar_Len=20, Skirt_Len=30);
+			ST_Frame(Tube_OD=Tube_OD, Skirt_ID=Skirt_ID, Collar_Len=26, Skirt_Len=34, HasStagerCableRaceway=true, HasWireRaceway=true);
 		rotate([0,0,-15]) translate([0,0,-50]) cube([100,100,100]);
 	} // difference
 
@@ -857,13 +859,32 @@ module ST_MT_DrillingJig(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, InnerTube_
 //ST_MT_DrillingJig();
 //ST_MT_DrillingJig(Tube_OD=BT137Body_OD, Skirt_ID=BT137Body_ID, InnerTube_OD=BT75Body_OD, Skirt_Len=34);
 
-module ST_Frame(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, Collar_Len=20, Skirt_Len=30){
+module ST_Frame(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, Collar_Len=26, Skirt_Len=34,
+			HasStagerCableRaceway=false,
+			HasWireRaceway=false){
 	
 	Race_W=OuterRace_w;
 	SkirtTubeStop_Z=-13;
 	CollarTubeStop_Z=17; // added 1 11/5/22
 	BC_d=BoltCircle_d(Tube_OD=Tube_OD);
+	Raceway_Len=36;
+	Raceway_Z=2;
+	Raceway_ID=7;
 	
+	module RacewayHole(){
+		translate([0,0,Raceway_Z+Raceway_Len/2]) 
+			Raceway_Exit(Tube_OD=Tube_OD, Race_ID=Raceway_ID, Wall_t=4, Top_Len=10, Bottom_Len=10);
+		translate([0,0,Raceway_Z-Raceway_Len/2]) rotate([180,0,0]) 
+			Raceway_Exit(Tube_OD=Tube_OD, Race_ID=Raceway_ID, Wall_t=4, Top_Len=10, Bottom_Len=10);
+	} // RacewayHole
+	
+	module RacewayOuter(){
+		translate([0,0,Raceway_Z+Raceway_Len/2]) 
+			Raceway_End(Tube_OD=Tube_OD, Race_ID=Raceway_ID, Wall_t=4, Len=Raceway_Len/2); //External cover end
+		translate([0,0,Raceway_Z-Raceway_Len/2]) rotate([180,0,0]) 
+			Raceway_End(Tube_OD=Tube_OD, Race_ID=Raceway_ID, Wall_t=4, Len=Raceway_Len/2); //External cover end
+	} // RacewayOuter
+
 	rotate([0,0,-Cable_a(BC_d/2)]) // align cable to 0°
 	difference(){
 		union(){
@@ -897,6 +918,12 @@ module ST_Frame(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, Collar_Len=20, Skir
 	
 		} // union
 		
+		// Sustainer wires 270°
+		if (HasWireRaceway) rotate([0,0,Cable_a(BC_d/2)+180]) RacewayHole();
+		
+		// Stager Cable 180°
+		if (HasStagerCableRaceway) rotate([0,0,Cable_a(BC_d/2)-90]) RacewayHole();
+		
 		// Arm / Trigger access hole
 		rotate([0,0,-30])
 			translate([0, BearingBallCircle_d(Tube_OD=Tube_OD)/2-2, -3]) 
@@ -904,10 +931,16 @@ module ST_Frame(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, Collar_Len=20, Skir
 		
 	} // difference
 	
+	// Sustainer wires
+	if (HasWireRaceway) rotate([0,0,180]) RacewayOuter();
+	
+	// Stager Cable 180°
+	if (HasStagerCableRaceway) rotate([0,0,-90]) RacewayOuter();
+	
 } // ST_Frame
 
-//ST_Frame(Tube_OD=BT137Body_OD, Skirt_ID=BT137Body_ID, Collar_Len=20, Skirt_Len=30);
-//ST_Frame();
+//ST_Frame(Tube_OD=BT137Body_OD, Skirt_ID=BT137Body_ID,HasStagerCableRaceway=true, HasWireRaceway=true);
+//ST_Frame(HasStagerCableRaceway=true, HasWireRaceway=true);
 
 module ST_OuterRace(Tube_OD=PML98Body_OD){
 	Race_W=OuterRace_w;
@@ -952,7 +985,7 @@ module ST_TubeLock(Tube_OD=BT54Coupler_OD, Tube_ID=BT54Coupler_ID, SkirtLen=0){
 		//translate([0,0,5 ]) cylinder(d=ST_DSpring_ID,h=15);
 		
 		translate([0,0,1+LockBall_d/2]) rotate_extrude()
-			translate([LockBallCircle_d(InnerTube_OD=Tube_OD)/2,0,0]) circle(d=LockBall_d+IDXtra);
+			translate([LockBallCircle_d(InnerTube_OD=Tube_OD+3)/2,0,0]) circle(d=LockBall_d+IDXtra);
 	} // difference
 } // ST_TubeLock
 

@@ -3,7 +3,7 @@
 // Filename: Rocket98Dual.scad
 // by David M. Flynn
 // Created: 10/16/2022 
-// Revision: 1.0.3  11/26/2022
+// Revision: 1.0.4  12/17/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -47,6 +47,7 @@
 //   Wire connection (Booster attached, Sustainer igniter) 270°
 //
 //  ***** History *****
+// 1.0.4  12/17/2022  Spring Thing fixes.
 // 1.0.3  11/26/2022  Updated and changed to 38mm bay tube
 // 1.0.2  11/18/2022  Moved FairingBaseLockRing in R98_Electronics_Bay2 up 0.5mm, was too tight
 // 1.0.1  11/15/2022  Added parameters to R98_Electronics_Bay2
@@ -116,12 +117,12 @@ F54_FairingHalf(IsLeftHalf=false,
 // DrogueMechBay();
 //
 //  *** SpringThing parts for dual deploy ***
-// ST_TubeEnd(Tube_OD=R98_DualDepTube_OD, Tube_ID=R98_DualDepTube_ID);
-// ST_TubeLock(Tube_OD=R98_DualDepTube_OD, Tube_ID=R98_DualDepTube_ID);
-// ST_SpringMiddle(Tube_ID=R98_DualDepTube_ID);
-// ST_SpringGuide(InnerTube_ID=R98_DualDepTube_ID);
-// 
-DrogueSpringThing();
+// ST_TubeEnd(Tube_OD=R98_DualDepInnerTube_OD, Tube_ID=R98_DualDepInnerTube_ID);
+// ST_TubeLock(Tube_OD=R98_DualDepInnerTube_OD, Tube_ID=R98_DualDepInnerTube_ID, SkirtLen=15);
+// ST_SpringMiddle(Tube_ID=R98_DualDepInnerTube_OD);
+// ST_SpringGuide(InnerTube_ID=R98_DualDepInnerTube_OD);
+// ST_Frame(Tube_OD=R98_Body_OD, Skirt_ID=R98_Body_ID, Collar_Len=26, Skirt_Len=34, HasStagerCableRaceway=true, HasWireRaceway=true);
+
 // ST_CableRedirectTop(Tube_OD=R98_Body_OD, Skirt_ID=R98_Body_ID, InnerTube_OD=R98_DualDepTube_OD);
 // ST_CableRedirect(Tube_OD=R98_Body_OD, Skirt_ID=R98_Body_ID, Tube_ID=R98_Coupler_ID, InnerTube_OD=R98_DualDepTube_OD, InnerTube2_OD=R98_DualDepTube_OD);
 // ST_BallKeeper(InnerTube_OD=R98_DualDepTube_OD);
@@ -189,6 +190,8 @@ R98_BayInnerTube_ID=BT38Body_ID;
 R98_Coupler_ID=PML98Coupler_ID;
 R98_DualDepTube_OD=BT54Body_OD;
 R98_DualDepTube_ID=BT54Body_ID;
+R98_DualDepInnerTube_OD=BT54Coupler_OD;
+R98_DualDepInnerTube_ID=BT54Coupler_ID;
 
 // Fairing Overrides
 Fairing_OD=PML98Body_OD;
@@ -385,49 +388,7 @@ module DrogueMechBay(){
 
 //DrogueMechBay();
 
-module DrogueSpringThing(){
-	// 70mm long
-	//   Cable from Drogue Mechanical Bay (SpringThing, push out drogue) 0°
-	//   Cable from Drogue Mechanical Bay (Stager for drogue separation) 180°
-	//   Wire passthrough 270°
 
-	Raceway_Len=36;
-	Raceway_Z=1;
-	
-	module RacewayHole(){
-		translate([0,0,Raceway_Z+Raceway_Len/2]) 
-			Raceway_Exit(Tube_OD=R98_Body_OD, Race_ID=6, Wall_t=4, Top_Len=10, Bottom_Len=10);
-		translate([0,0,Raceway_Z-Raceway_Len/2]) rotate([180,0,0]) 
-			Raceway_Exit(Tube_OD=R98_Body_OD, Race_ID=6, Wall_t=4, Top_Len=10, Bottom_Len=10);
-	} // RacewayHole
-	
-	module RacewayOuter(){
-		translate([0,0,Raceway_Z+Raceway_Len/2]) 
-			Raceway_End(Tube_OD=R98_Body_OD, Race_ID=6, Wall_t=4, Len=Raceway_Len/2); //External cover end
-		translate([0,0,Raceway_Z-Raceway_Len/2]) rotate([180,0,0]) 
-			Raceway_End(Tube_OD=R98_Body_OD, Race_ID=6, Wall_t=4, Len=Raceway_Len/2); //External cover end
-	} // RacewayOuter
-	
-	//*
-	difference(){
-		ST_Frame(Tube_OD=R98_Body_OD, Skirt_ID=R98_Body_ID, Collar_Len=26, Skirt_Len=34);
-
-		// Sustainer wires 270°
-		rotate([0,0,180]) RacewayHole();
-		
-		// Stager Cable 180°
-		rotate([0,0,-90]) RacewayHole();
-	} // difference
-	/**/
-	// Sustainer wires
-	rotate([0,0,180]) RacewayOuter();
-	
-	// Stager Cable 180°
-	rotate([0,0,-90]) RacewayOuter();
-	
-} // DrogueSpringThing
-
-//translate([0,0,-40-Overlap]) rotate([0,180,0]) DrogueSpringThing();
 
 
 module DrogueSep(){

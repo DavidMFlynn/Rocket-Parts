@@ -93,7 +93,7 @@ module Raceway_End(Tube_OD=102, Race_ID=6, Wall_t=2, Len=10){
 	
 	difference(){
 		hull(){
-			translate([Tube_OD/2-Wall_t/2,0,ID*2+Wall_t-Overlap]) cylinder(d=Wall_t, h=Overlap);
+			translate([Tube_OD/2-Wall_t/2,0,ID*1.4+Wall_t-Overlap]) cylinder(d=Wall_t, h=Overlap);
 			
 			translate([Tube_OD/2,0,-Len]) {
 				translate([ID/2,0,0]) cylinder(d=ID+Race_Wall_t*2, h=Len);
