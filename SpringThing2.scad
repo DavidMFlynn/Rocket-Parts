@@ -3,7 +3,7 @@
 // Filename: SpringThing2.scad
 // by David M. Flynn
 // Created: 10/17/2022 
-// Revision: 0.9.20  12/5/2022
+// Revision: 0.9.21  12/16/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,6 +12,7 @@
 // 80mm of 54mm Body tube is required to fit the spring from end to lock balls. 
 //
 //  ***** History *****
+// 0.9.21  12/16/2022 Added wire chanel to CableRedirect so wire don't get lost between centering rings.
 // 0.9.20  12/5/2022  ST_UpperCenteringRing ID + IDXtra*2
 // 0.9.19  12/4/2022  Works for BT137Body, needs testing w/ PML98Body, added notches for stager & wires
 // 0.9.18  12/3/2022  sync'd w/ Stager ST_CableEndAndStop
@@ -304,7 +305,7 @@ module ST_CableRedirectTop(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, InnerTub
 	Exit_a=75;
 	nBolts=8;
 	BallDetent_a=90;
-	
+	CablePath_ID=7;
 			
 	module CablePath(){
 		R=7;
@@ -368,14 +369,14 @@ module ST_CableRedirectTop(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, InnerTub
 		
 		//Stager cable
 		rotate([0,0,Cable_a(CablePath_Y)+180]) hull(){
-			translate([0,Tube_OD/2,-20-Overlap]) cylinder(d=6, h=25+Overlap*2);
-			translate([0,Skirt_ID/2-4,-20-Overlap]) cylinder(d=6, h=25+Overlap*2);
+			translate([0,Tube_OD/2,-20-Overlap]) cylinder(d=CablePath_ID, h=25+Overlap*2);
+			translate([0,Skirt_ID/2-4,-20-Overlap]) cylinder(d=CablePath_ID, h=25+Overlap*2);
 		} // hull
 		
 		//wires
 		rotate([0,0,Cable_a(CablePath_Y)-90]) hull(){
-			translate([0,Tube_OD/2,-20-Overlap]) cylinder(d=6, h=25+Overlap*2);
-			translate([0,Skirt_ID/2-4,-20-Overlap]) cylinder(d=6, h=25+Overlap*2);
+			translate([0,Tube_OD/2,-20-Overlap]) cylinder(d=CablePath_ID, h=25+Overlap*2);
+			translate([0,Skirt_ID/2-4,-20-Overlap]) cylinder(d=CablePath_ID, h=25+Overlap*2);
 		} // hull
 	} // difference
 	
@@ -396,7 +397,7 @@ module ST_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 	nBolts=8;
 	DetentBall_d=ST_DetentBall_d;
 				
-	
+	CablePath_ID=7;
 								
 	//echo(Tube_OD=Tube_OD);
 	//echo(Skirt_ID=Skirt_ID);
@@ -447,6 +448,23 @@ module ST_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 			// vertical tube for cable
 			rotate([0,0,Cable_a(CablePath_Y)]) translate([0,CablePath_Y,-20]) cylinder(d=10, h=20);
 			
+			intersection(){
+				union(){
+					//Stager cable
+						rotate([0,0,Cable_a(CablePath_Y)+180]) hull(){
+						translate([0,Tube_OD/2,-20-Overlap]) cylinder(d=CablePath_ID+3, h=25+Overlap*2);
+						translate([0,Skirt_ID/2-4,-20-Overlap]) cylinder(d=CablePath_ID+3, h=25+Overlap*2);
+					} // hull
+					
+					//wires
+					rotate([0,0,Cable_a(CablePath_Y)-90]) hull(){
+						translate([0,Tube_OD/2,-20-Overlap]) cylinder(d=CablePath_ID+3, h=25+Overlap*2);
+						translate([0,Skirt_ID/2-4,-20-Overlap]) cylinder(d=CablePath_ID+3, h=25+Overlap*2);
+					} // hull
+				}
+				translate([0,0,-20]) cylinder(d=Tube_ID, h=20);
+			} // intersection
+				
 		} // union
 		
 		// Bolt holes
@@ -466,14 +484,14 @@ module ST_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 		
 		//Stager cable
 		rotate([0,0,Cable_a(CablePath_Y)+180]) hull(){
-			translate([0,Tube_OD/2,-20-Overlap]) cylinder(d=6, h=25+Overlap*2);
-			translate([0,Skirt_ID/2-4,-20-Overlap]) cylinder(d=6, h=25+Overlap*2);
+			translate([0,Tube_OD/2,-20-Overlap]) cylinder(d=CablePath_ID, h=25+Overlap*2);
+			translate([0,Skirt_ID/2-4,-20-Overlap]) cylinder(d=CablePath_ID, h=25+Overlap*2);
 		} // hull
 		
 		//wires
 		rotate([0,0,Cable_a(CablePath_Y)-90]) hull(){
-			translate([0,Tube_OD/2,-20-Overlap]) cylinder(d=6, h=25+Overlap*2);
-			translate([0,Skirt_ID/2-4,-20-Overlap]) cylinder(d=6, h=25+Overlap*2);
+			translate([0,Tube_OD/2,-20-Overlap]) cylinder(d=CablePath_ID, h=25+Overlap*2);
+			translate([0,Skirt_ID/2-4,-20-Overlap]) cylinder(d=CablePath_ID, h=25+Overlap*2);
 		} // hull
 	} // difference
 	

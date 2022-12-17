@@ -3,7 +3,7 @@
 // Filename: Stager2Lib.scad
 // by David M. Flynn
 // Created: 10/10/2022 
-// Revision: 0.9.21  12/13/2022
+// Revision: 0.9.22  12/16/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -47,7 +47,8 @@
 //
 //  ***** History *****
 //
-echo("StagerLib 0.9.21");
+echo("StagerLib 0.9.22");
+// 0.9.22  12/16/2022  Added wire chanel to CableRedirect so wire don't get lost between centering rings.
 // 0.9.21  12/13/2022  Small adjustments, centering rings to +IDXtra*2, built a 98mm version complete. 
 // 0.9.20  12/4/2022   Tighter balls
 // 0.9.19  12/2/2022   Reworked Stager_CableEndAndStop, re-did angle calculations
@@ -305,7 +306,8 @@ module Stager_CableRedirectTop(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 								
 	BallDetent_a=60-Calc_a(5,CablePath_Y); // 5mm past 60°
 	Key_a=0;
-	
+	CablePath_ID=7;
+								
 	echo(CablePath_Y=CablePath_Y);
 	echo(Stop_a=Stop_a);
 								
@@ -362,8 +364,8 @@ module Stager_CableRedirectTop(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 		
 		// Wire path
 		if (HasRaceway) rotate([0,0,Raceway_a]) hull(){
-			translate([0,Skirt_ID/2,-20-Overlap]) cylinder(d=6, h=25+Overlap*2);
-			translate([0,Skirt_ID/2-4,-20-Overlap]) cylinder(d=6, h=25+Overlap*2);
+			translate([0,Skirt_ID/2,-20-Overlap]) cylinder(d=CablePath_ID, h=25+Overlap*2);
+			translate([0,Skirt_ID/2-4,-20-Overlap]) cylinder(d=CablePath_ID, h=25+Overlap*2);
 		}
 		
 		// Ball Detent
@@ -380,7 +382,7 @@ module Stager_CableRedirectTop(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 	
 } // Stager_CableRedirectTop
 
-//Stager_CableRedirectTop();
+//Stager_CableRedirectTop(HasRaceway=true);
 /*
 Stager_CableRedirectTop(Tube_OD=BT137Body_OD, Skirt_ID=BT137Body_ID, 
 							InnerTube_OD=PML75Body_OD,
@@ -412,7 +414,8 @@ module Stager_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 	Cable_a=BackStop_a+Calc_a(26,CablePath_Y);
 	BallDetent_a=60-Calc_a(5,CablePath_Y); // 5mm past 60°
 	Key_a=0;
-	
+	CablePath_ID=7;
+								
 	//echo(CablePath_Y=CablePath_Y);
 	//echo(Stop_a=Stop_a);
 								
@@ -464,6 +467,18 @@ module Stager_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 			// vertical tube
 			rotate([0,0,Cable_a]) translate([0,CablePath_Y,-20]) cylinder(d=10, h=20);
 			
+			if (HasRaceway) 
+			intersection(){
+					
+					//wires
+					rotate([0,0,Raceway_a]) hull(){
+						translate([0,Tube_OD/2,-20-Overlap]) cylinder(d=CablePath_ID+3, h=25+Overlap*2);
+						translate([0,Skirt_ID/2-4,-20-Overlap]) cylinder(d=CablePath_ID+3, h=25+Overlap*2);
+					} // hull
+				
+				translate([0,0,-20]) cylinder(d=Tube_ID, h=20);
+			} // intersection
+			
 		} // union
 		
 		// Bolt holes
@@ -477,8 +492,8 @@ module Stager_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 		
 		// Wire path
 		if (HasRaceway) rotate([0,0,Raceway_a]) hull(){
-			translate([0,Skirt_ID/2,-20-Overlap]) cylinder(d=6, h=25+Overlap*2);
-			translate([0,Skirt_ID/2-4,-20-Overlap]) cylinder(d=6, h=25+Overlap*2);
+			translate([0,Skirt_ID/2,-20-Overlap]) cylinder(d=CablePath_ID, h=25+Overlap*2);
+			translate([0,Skirt_ID/2-4,-20-Overlap]) cylinder(d=CablePath_ID, h=25+Overlap*2);
 		}
 		
 		// Ball Detent
