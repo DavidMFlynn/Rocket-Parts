@@ -135,7 +135,7 @@ module ShowSpringThing(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID,
 	
 	translate([0,0,-30]) {
 		rotate([0,180,-60]) ST_CableEndAndStop(Tube_OD=Tube_OD);
-		rotate([180,0,135]) color("Green") ST_LockBallRetainer(Tube_OD=Tube_OD, InnerTube_OD=InnerTube_OD, HasDetent=false);
+		rotate([180,0,135]) color("Green") ST_LockBallRetainer(Tube_OD=Tube_OD, InnerTube_OD=InnerTube_OD);
 	}
 	
 	color("Orange") translate([0,0,50]){
@@ -144,8 +144,8 @@ module ShowSpringThing(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID,
 		}
 	
 	color("Green") translate([0,0,45]) {
-		ST_BallSpacer(Tube_OD=Tube_OD, InnerTube_OD=InnerTube_OD);
-		translate([0,0,25]) rotate([180,0,0]) ST_BallSpacer(Tube_OD=Tube_OD, InnerTube_OD=InnerTube_OD);
+		ST_BallSpacer(Tube_OD=Tube_OD);
+		translate([0,0,25]) rotate([180,0,0]) ST_BallSpacer(Tube_OD=Tube_OD);
 	}
 	translate([0,0,80]) color("Tan") ST_TubeLock(Tube_OD=InnerCouplerTube_OD, Tube_ID=InnerCouplerTube_ID);
 	
@@ -500,26 +500,33 @@ module ST_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 // ST_CableRedirect();
 //ST_CableRedirect(Tube_OD=BT137Body_OD, Skirt_ID=BT137Body_ID, Tube_ID=BT137Coupler_ID, InnerTube_OD=BT54Body_OD, InnerTube2_OD=BT75Body_OD);
 
-module ShowST_Assy(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, InnerTube_OD=BT54Mtr_OD, InnerTube_ID=PML98Coupler_ID, Triggered=false){
+module ShowST_Assy(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, InnerTube_OD=BT54Mtr_OD,
+	InnerTube2_OD=BT54Mtr_OD, InnerTube_ID=PML98Coupler_ID, Triggered=false){
 	
 	Sep_Z=29; // 23 down from bearing
+	BC_r=BoltCircle_d(Tube_OD)/2;
 
 	T_a=Triggered? Calc_a(11,BoltCircle_d(Tube_OD)/2):0;
 
 	difference(){
 		translate([0,0,-10-1.5]) 
 			ST_Frame(Tube_OD=Tube_OD, Skirt_ID=Skirt_ID, Collar_Len=20, Skirt_Len=30);
-		translate([0,0,-50]) cube([100,100,100]);
+		rotate([0,0,-15]) translate([0,0,-50]) cube([100,100,100]);
 	} // difference
 
-//translate([0,0,5.5])  ST_UpperCenteringRing(Tube_OD=PML98Body_OD, Tube_ID=PML98Coupler_ID, Skirt_ID=PML98Body_ID, InnerTube_OD=BT54Mtr_OD);
+	translate([0,0,5.5])  rotate([0,0,-Cable_a(BC_r)]) ST_UpperCenteringRing(Tube_OD=Tube_OD, Skirt_ID=Skirt_ID, InnerTube_OD=InnerTube_OD);
 
+	rotate([0,0,-Cable_a(BC_r)]) 
 	translate([0,0,-Sep_Z]){
 		ST_CableRedirectTop(Tube_OD=Tube_OD, Skirt_ID=Skirt_ID, InnerTube_OD=InnerTube_OD);
-		ST_CableRedirect(Tube_OD=Tube_OD, Skirt_ID=Skirt_ID, Tube_ID=InnerTube_ID, InnerTube_OD=InnerTube_OD);
+		ST_CableRedirect(Tube_OD=Tube_OD, Skirt_ID=Skirt_ID, 
+							Tube_ID=InnerTube_ID, 
+							InnerTube2_OD=InnerTube_OD, // in from ebay
+							InnerTube_OD=InnerTube2_OD);
+		//ST_CableRedirect(Tube_OD=Tube_OD, Skirt_ID=Skirt_ID, Tube_ID=InnerTube_ID, InnerTube_OD=InnerTube_OD);
 	}
 	
-	rotate([0,0,T_a]){
+	rotate([0,0,-Cable_a(BC_r)+T_a]){
 		ST_LockBallRetainer(Tube_OD=Tube_OD, InnerTube_OD=InnerTube_OD);
 		rotate([0,0,-30]) translate([0,0,-13]) rotate([0,180,0]) ST_CableEndAndStop(Tube_OD=Tube_OD);
 		translate([0,0,-13]) ST_LockRing(Tube_OD=Tube_OD, InnerTube_OD=InnerTube_OD);
@@ -529,8 +536,8 @@ module ShowST_Assy(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, InnerTube_OD=BT5
 
 } // ShowST_Assy
 
-//ShowST_Assy(Tube_OD=BT137Body_OD, Skirt_ID=BT137Body_ID, InnerTube_OD=BT75Body_OD, InnerTube_ID=BT137Coupler_ID, Triggered=false);
-
+//ShowST_Assy(Tube_OD=BT137Body_OD, Skirt_ID=BT137Body_ID, InnerTube_OD=BT75Body_OD, InnerTube2_OD=BT54Body_OD, InnerTube_ID=BT137Coupler_ID, Triggered=false);
+//ShowST_Assy();
 
 module ST_CableEndAndStop(Tube_OD=PML98Body_OD){
 	BC_r=BoltCircle_d(Tube_OD=Tube_OD)/2;
@@ -857,7 +864,7 @@ module ST_Frame(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, Collar_Len=20, Skir
 	CollarTubeStop_Z=17; // added 1 11/5/22
 	BC_d=BoltCircle_d(Tube_OD=Tube_OD);
 	
-	rotate([0,0,Cable_a(BC_d)]) // align cable to 0°
+	rotate([0,0,-Cable_a(BC_d/2)]) // align cable to 0°
 	difference(){
 		union(){
 			// collar
@@ -891,7 +898,7 @@ module ST_Frame(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, Collar_Len=20, Skir
 		} // union
 		
 		// Arm / Trigger access hole
-		rotate([0,0,-Cable_a(BC_d)-30])
+		rotate([0,0,-30])
 			translate([0, BearingBallCircle_d(Tube_OD=Tube_OD)/2-2, -3]) 
 				rotate([0,90,0]) cylinder(d=3, h=Tube_OD, center=true);
 		
@@ -900,6 +907,7 @@ module ST_Frame(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, Collar_Len=20, Skir
 } // ST_Frame
 
 //ST_Frame(Tube_OD=BT137Body_OD, Skirt_ID=BT137Body_ID, Collar_Len=20, Skirt_Len=30);
+//ST_Frame();
 
 module ST_OuterRace(Tube_OD=PML98Body_OD){
 	Race_W=OuterRace_w;

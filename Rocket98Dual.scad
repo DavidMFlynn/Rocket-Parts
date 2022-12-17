@@ -120,15 +120,17 @@ F54_FairingHalf(IsLeftHalf=false,
 // ST_TubeLock(Tube_OD=R98_DualDepTube_OD, Tube_ID=R98_DualDepTube_ID);
 // ST_SpringMiddle(Tube_ID=R98_DualDepTube_ID);
 // ST_SpringGuide(InnerTube_ID=R98_DualDepTube_ID);
-// DrogueSpringThing();
-// rotate([0,180,0]) Drogue_ST_CableRedirect();
+// 
+DrogueSpringThing();
+// ST_CableRedirectTop(Tube_OD=R98_Body_OD, Skirt_ID=R98_Body_ID, InnerTube_OD=R98_DualDepTube_OD);
+// ST_CableRedirect(Tube_OD=R98_Body_OD, Skirt_ID=R98_Body_ID, Tube_ID=R98_Coupler_ID, InnerTube_OD=R98_DualDepTube_OD, InnerTube2_OD=R98_DualDepTube_OD);
 // ST_BallKeeper(InnerTube_OD=R98_DualDepTube_OD);
 // ST_BallSpacer(Tube_OD=R98_Body_OD);
-// mirror([0,0,1]) ST_LockBallRetainer(Tube_OD=R98_Body_OD);
-// ST_LockRing(R98_Body_OD=PML98Body_OD, InnerTube_OD=R98_DualDepTube_OD);
+// rotate([180,0,0]) ST_LockBallRetainer(Tube_OD=R98_Body_OD);
+// ST_LockRing(Tube_OD=R98_Body_OD, InnerTube_OD=R98_DualDepTube_OD);
 // ST_DetentOnly(Tube_OD=R98_Body_OD);
-// mirror([0,1,0]) ST_CableEndAndStop(Tube_OD=R98_Body_OD);
-// Drogue_ST_LowerCenteringRing();
+// ST_CableEndAndStop(Tube_OD=R98_Body_OD);
+// ST_UpperCenteringRing(Tube_OD=R98_Body_OD, Skirt_ID=R98_Body_ID, InnerTube_OD=R98_DualDepTube_OD);
 //
 //  *** Stager parts for dual deploy ***
 // Stager_CableRedirect(Tube_OD=R98_Body_OD, Skirt_ID=R98_Body_ID, Tube_ID=R98_Coupler_ID, InnerTube_OD=R98_DualDepTube_OD, HasRaceway=true, Raceway_a=270);
@@ -242,9 +244,9 @@ module ShowUpperBays(){
 	translate([0,0,SpringTube_Z]) color("Orange") Tube(OD=R98_Body_OD, ID=R98_Body_ID, Len=SpringTube_Len, myfn=$preview? 36:360);
 	
 	translate([0,0,SpringThing_Z]){
-		translate([0,0,19]) Drogue_ST_CableRedirect();
-		DrogueSpringThing();
-		translate([0,0,-17]) Drogue_ST_LowerCenteringRing();
+		//translate([0,0,19]) ST_CableRedirect();
+		rotate([0,180,0]) DrogueSpringThing();
+		//translate([0,0,-17]) ST_UpperCenteringRing();
 	}
 	
 	//translate([0,0,120]) color("Blue") Tube(OD=BT54Mtr_OD, ID=BT54Mtr_ID, Len=23.75*25.4, myfn=$preview? 36:360);
@@ -253,7 +255,7 @@ module ShowUpperBays(){
 	translate([0,0,DrogueTube_Z]) color("Orange") Tube(OD=R98_Body_OD, ID=R98_Body_ID, Len=LowerTube_Len, myfn=$preview? 36:360);
 	
 	translate([0,0,60]){
-		translate([0,0,78]) DrogueSep_CableRedirect();
+		//translate([0,0,78]) Stager_CableRedirect();
 		DrogueSep();
 		rotate([0,180,0]) color("Blue") Stager_Saucer(Tube_OD=R98_Body_OD, nLocks=2, HasElectrical=true);
 		
@@ -390,7 +392,7 @@ module DrogueSpringThing(){
 	//   Wire passthrough 270°
 
 	Raceway_Len=36;
-	Raceway_Z=-1;
+	Raceway_Z=1;
 	
 	module RacewayHole(){
 		translate([0,0,Raceway_Z+Raceway_Len/2]) 
@@ -408,78 +410,24 @@ module DrogueSpringThing(){
 	
 	//*
 	difference(){
-		rotate([0,180,0]) ST_Frame(Tube_OD=R98_Body_OD, Skirt_ID=R98_Body_ID, Collar_Len=26, Skirt_Len=34);
+		ST_Frame(Tube_OD=R98_Body_OD, Skirt_ID=R98_Body_ID, Collar_Len=26, Skirt_Len=34);
 
 		// Sustainer wires 270°
-		RacewayHole();
+		rotate([0,0,180]) RacewayHole();
 		
 		// Stager Cable 180°
 		rotate([0,0,-90]) RacewayHole();
 	} // difference
 	/**/
 	// Sustainer wires
-	RacewayOuter();
+	rotate([0,0,180]) RacewayOuter();
 	
 	// Stager Cable 180°
 	rotate([0,0,-90]) RacewayOuter();
 	
 } // DrogueSpringThing
 
-//translate([0,0,-40-Overlap]) DrogueSpringThing();
-
-module Drogue_ST_CableRedirect(){
-	
-	module WireCut(){
-		translate([0,0,-6]) hull(){
-			translate([R98_Body_OD/2,0,0]) cylinder(d=6, h=40);
-			translate([R98_Body_OD/2-6,0,0]) cylinder(d=6, h=40);
-		} // hull
-	} // WireCut
-	
-	difference(){
-		rotate([0,180,0]) ST_CableRedirect(Tube_OD=R98_Body_OD, Skirt_ID=R98_Body_ID, 
-							Tube_ID=R98_Coupler_ID, 
-							InnerTube_OD=R98_DualDepTube_OD);
-		
-		// cut out for wires
-		WireCut();
-		
-		// cut out for stager cable
-		rotate([0,0,-90]) WireCut();
-		
-	} // difference
-} // Drogue_ST_CableRedirect
-
-//rotate([0,180,0]) Drogue_ST_CableRedirect();
-
-//ST_DetentOnly();
-//mirror([0,0,1]) ST_LockRing();
-
-//translate([0,0,-13]) rotate([0,0,0]) 
-//mirror([0,0,1]) ST_LockBallRetainer(Tube_OD=PML98Body_OD,HasDetent=false);
-
-module Drogue_ST_LowerCenteringRing(){
-	
-	module WireCut(){
-		translate([0,0,-6]) hull(){
-			translate([R98_Body_OD/2,0,0]) cylinder(d=6, h=40);
-			translate([R98_Body_OD/2-6,0,0]) cylinder(d=6, h=40);
-		} // hull
-	} // WireCut
-	
-	difference(){
-		rotate([0,180,0]) ST_UpperCenteringRing(Tube_OD=R98_Body_OD, Tube_ID=PML98Coupler_ID, 
-					Skirt_ID=R98_Body_ID, InnerTube_OD=R98_DualDepTube_OD);
-		
-		// cut out for wires
-		WireCut();
-		
-		// cut out for stager cable
-		rotate([0,0,-90]) WireCut();
-	} // difference
-} // Drogue_ST_LowerCenteringRing
-
-//Drogue_ST_LowerCenteringRing();
+//translate([0,0,-40-Overlap]) rotate([0,180,0]) DrogueSpringThing();
 
 
 module DrogueSep(){
