@@ -350,13 +350,13 @@ module DrogueMechBay(){
 		union(){
 			Tube(OD=R98_Body_OD, ID=R98_Body_ID, Len=Len, myfn=$preview? 36:360);
 			translate([0,0,BottomSkirt_Len])
-				CenteringRing(OD=R98_Body_OD-1, ID=R98_BayInnerTube_OD+IDXtra, Thickness=5, nHoles=4);
+				CenteringRing(OD=R98_Body_OD-1, ID=R98_BayInnerTube_OD+IDXtra*2, Thickness=5, nHoles=4);
 			translate([0,0,Len-5-TopSkirt_Len])
-				CenteringRing(OD=R98_Body_OD-1, ID=R98_BayInnerTube_OD+IDXtra, Thickness=5, nHoles=4);
+				CenteringRing(OD=R98_Body_OD-1, ID=R98_BayInnerTube_OD+IDXtra*2, Thickness=5, nHoles=4);
 			
 			// Center deployment tube
 			translate([0,0,BottomSkirt_Len-5+Overlap])
-				CenteringRing(OD=R98_DualDepTube_ID, ID=R98_BayInnerTube_OD+IDXtra, Thickness=5, nHoles=0);
+				CenteringRing(OD=R98_DualDepTube_ID, ID=R98_BayInnerTube_OD+IDXtra*2, Thickness=5, nHoles=0);
 		} // union
 		
 		// Cable Puller door holes
