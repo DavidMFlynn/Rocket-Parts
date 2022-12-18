@@ -122,7 +122,6 @@ F54_FairingHalf(IsLeftHalf=false,
 // ST_SpringMiddle(Tube_ID=R98_DualDepInnerTube_OD);
 // ST_SpringGuide(InnerTube_ID=R98_DualDepInnerTube_OD);
 // ST_Frame(Tube_OD=R98_Body_OD, Skirt_ID=R98_Body_ID, Collar_Len=26, Skirt_Len=34, HasStagerCableRaceway=true, HasWireRaceway=true);
-
 // ST_CableRedirectTop(Tube_OD=R98_Body_OD, Skirt_ID=R98_Body_ID, InnerTube_OD=R98_DualDepTube_OD);
 // ST_CableRedirect(Tube_OD=R98_Body_OD, Skirt_ID=R98_Body_ID, Tube_ID=R98_Coupler_ID, InnerTube_OD=R98_DualDepTube_OD, InnerTube2_OD=R98_DualDepTube_OD);
 // ST_BallKeeper(InnerTube_OD=R98_DualDepTube_OD);
@@ -132,6 +131,8 @@ F54_FairingHalf(IsLeftHalf=false,
 // ST_DetentOnly(Tube_OD=R98_Body_OD);
 // ST_CableEndAndStop(Tube_OD=R98_Body_OD);
 // ST_UpperCenteringRing(Tube_OD=R98_Body_OD, Skirt_ID=R98_Body_ID, InnerTube_OD=R98_DualDepTube_OD);
+//
+// ST_MT_DrillingJig(Tube_OD=R98_Body_OD, Skirt_ID=R98_Body_ID, InnerTube_OD=R98_DualDepTube_OD, Skirt_Len=34);
 //
 //  *** Stager parts for dual deploy ***
 // Stager_CableRedirect(Tube_OD=R98_Body_OD, Skirt_ID=R98_Body_ID, Tube_ID=R98_Coupler_ID, InnerTube_OD=R98_DualDepTube_OD, HasRaceway=true, Raceway_a=270);

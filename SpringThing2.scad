@@ -276,6 +276,7 @@ module ST_UpperCenteringRing(Tube_OD=PML98Body_OD,
 			Skirt_ID=PML98Body_ID, InnerTube_OD=BT54Mtr_OD){
 				
 	CablePath_Y=BoltCircle_d(Tube_OD)/2; 
+	CablePath_ID=7;
 				
 	difference(){
 		rotate([0,0,22.5+Cable_a(CablePath_Y)]) CenteringRing(OD=Skirt_ID-IDXtra, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=8);
@@ -291,8 +292,8 @@ module ST_UpperCenteringRing(Tube_OD=PML98Body_OD,
 		
 		//wires
 		rotate([0,0,Cable_a(CablePath_Y)+90]) hull(){
-			translate([0,Tube_OD/2,-20-Overlap]) cylinder(d=6, h=25+Overlap*2);
-			translate([0,Skirt_ID/2-4,-20-Overlap]) cylinder(d=6, h=25+Overlap*2);
+			translate([0,Tube_OD/2,-20-Overlap]) cylinder(d=CablePath_ID, h=25+Overlap*2);
+			translate([0,Skirt_ID/2-4,-20-Overlap]) cylinder(d=CablePath_ID, h=25+Overlap*2);
 		} // hull
 	} // difference
 		
