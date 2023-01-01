@@ -899,7 +899,7 @@ module Booster_Electronics_Bay(ShowDoors=false){
 	CP1_a=0;
 	CP2_a=180;
 	Alt_a=120;
-	Batt1_a=70; // Altimeter Battery
+	Batt1_a=62; // Altimeter Battery
 	Batt2_a=300; // Cable puller battery and switch
 	Batt3_a=240;
 	
@@ -934,11 +934,12 @@ module Booster_Electronics_Bay(ShowDoors=false){
 		
 	} // difference
 	
+	//*
 	// Altimeter
 	translate([0,0,CablePuller_Z]) rotate([0,0,Alt_a])
 		Alt_BayDoorFrame(Tube_OD=Body_OD, Tube_ID=Body_ID, 
 			DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=ShowDoors);
-	
+	/**/
 	// Cable Pullers
 	translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a])
 		CP_BayDoorFrame(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoor=ShowDoors);

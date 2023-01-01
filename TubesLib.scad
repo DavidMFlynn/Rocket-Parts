@@ -3,7 +3,7 @@
 // Filename: TubesLib.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.7  12/2/2022
+// Revision: 0.9.8  12/29/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,7 +12,8 @@
 //
 //  ***** History *****
 //
-echo("TubesLib 0.9.7");
+echo("TubesLib 0.9.8");
+// 0.9.8  12/29/2022 Added ShockCordMount()
 // 0.9.7  12/2/2022  Added BT38Body tube
 // 0.9.6  11/20/2022 Added ClusterRing
 // 0.9.5  11/12/2022 Added Blue Tube 2.0  5.5" body & coupler. 
@@ -25,6 +26,7 @@ echo("TubesLib 0.9.7");
 // ***********************************
 //  ***** for STL output *****
 //
+// ShockCordMount(OD=PML98Body_ID, ID=BT54Mtr_OD, AnchorRod_OD=12.7);
 // Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=300, myfn=$preview? 36:360);
 // CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0);
 // ClusterRing(OD=BT137Body_ID, Thickness=5, CenterMotor_OD=BT54Body_OD, ClusterMotor_OD=PML38Body_OD, nClusterMotors=3, Gap=7, Cant_a=2, Cant_Z=300)
@@ -142,6 +144,29 @@ module ClusterRing(OD=BT137Body_ID, Thickness=5,
 
 //ClusterRing(OD=BT137Body_ID, Thickness=5, CenterMotor_OD=BT54Body_OD, ClusterMotor_OD=PML38Body_OD, nClusterMotors=3, Gap=7, Cant_a=2, Cant_Z=0);
 
+module ShockCordMount(OD=PML98Body_ID, ID=BT54Mtr_OD, AnchorRod_OD=12.7){
+	H=20;
+	
+	difference(){
+		union(){
+			cylinder(d=OD, h=5);
+			cylinder(d=ID+10, h=H);
+			hull(){
+				translate([-(AnchorRod_OD+10)/2, -(OD-4)/2,5-Overlap]) 
+					cube([AnchorRod_OD+10, OD-4, Overlap]);
+				translate([-(AnchorRod_OD+5)/2, -(ID+8)/2, H-2])
+					cube([AnchorRod_OD+5, ID+8, Overlap]);
+			} // hull
+		} // union
+		
+		translate([0,0,-Overlap]) cylinder(d=ID+IDXtra*2, h=H+Overlap*2);
+		translate([0,0,5+AnchorRod_OD/2+IDXtra]) rotate([90,0,0]) 
+			cylinder(d=AnchorRod_OD+IDXtra*2, h=OD+2, center=true);
+	} // diff
+} // ShockCordMount
+
+//ShockCordMount();
+
 module Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=300, myfn=$preview? 36:360){
 	difference(){
 		cylinder(d=OD, h=Len, $fn=myfn);
@@ -150,6 +175,7 @@ module Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=300, myfn=$preview? 36:360){
 } // Tube
 
 //Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=300, myfn=$preview? 36:360);
+//Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=1.5, myfn=$preview? 36:360); // spacer!
 
 module TubeStop(InnerTubeID=PML54Coupler_ID, OuterTubeOD=PML54Body_OD, myfn=$preview? 36:360){
 	
