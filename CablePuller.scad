@@ -3,7 +3,7 @@
 // Filename: CablePuller.scad
 // by David M. Flynn
 // Created: 8/21/2022 
-// Revision: 1.1.8  12/11/2022
+// Revision: 1.1.9  1/1/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -26,7 +26,8 @@
 //
 //  ***** History *****
 //
-echo("CablePuller 1.1.8");
+echo("CablePuller 1.1.9");
+// 1.1.9  1/1/2023    Changed door the use BoltInServoMount()
 // 1.1.8  12/11/2022  Adjusted door thickness w/o changing frame or hole. 
 // 1.1.7  11/29/2022  Added trigger hole to door
 // 1.1.6  11/28/2022  Standardized door thickness. 
@@ -51,6 +52,7 @@ echo("CablePuller 1.1.8");
 // rotate([0,180,0]) CP_Door(Tube_OD=PML98Body_OD, BoltBossInset=2, HasArmingSlot=true);
 // *** BoltBossInset=2 was 3, use 2 to clear 54mm motor tube w/ 98mm body tube ***
 //
+// BoltInServoMount();
 // ThroughOut();
 // rotate([0,90,0]) SpringBody();
 // CableRetainer();
@@ -76,6 +78,7 @@ echo("CablePuller 1.1.8");
 // CP_DoorBoltPattern(Tube_OD=PML98Body_OD) Bolt4Hole();
 // CP_BayFrameHole(Tube_OD=PML98Body_OD);
 // CP_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=false);
+// function Calc_a(Dist=1,R=2)=Dist/(R*2*PI)*360;
 //
 // ***********************************
 //  ***** for Viewing *****
@@ -275,8 +278,10 @@ module CP_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=fals
 		
 	} // difference
 	
-	if ($preview&&ShowDoor){ rotate([90,0,0]) CP_Door(Tube_OD=Tube_OD);
-		translate([0,-Tube_OD/2+14,-8]) rotate([0,0,-90]) rotate([0,-90,0]) ShowCablePuller();}
+	if ($preview&&ShowDoor){ 
+		rotate([90,0,0]) CP_Door(Tube_OD=Tube_OD, BoltBossInset=2, HasArmingSlot=true);
+		translate([0,-Tube_OD/2+14,-8]) rotate([0,0,-90]) rotate([0,-90,0]) ShowCablePuller();
+	}
 	
 } // CP_BayDoorFrame
 
@@ -288,8 +293,11 @@ module CP_Door(Tube_OD=PML98Body_OD, BoltBossInset=2, HasArmingSlot=false){
 	Door_t=CP_DoorThickness-0.7;
 	//BoltBossInset=2; // was 3, use 2 to clear 54mm motor tube w/ 98mm body tube
 	CP_Offset_Y=Door_Y/2-68;
+	DoorEdge_a=asin((Door_X/2)/(Tube_OD/2));
 	
-	translate([9,-Door_Y/2+27,Tube_OD/2-8]) rotate([0,90,0]) ServoMount(Extend=2);
+	//translate([12,-Door_Y/2+27,Tube_OD/2-8]) rotate([0,90,180]) BoltInServoMount();
+	
+	//translate([9,-Door_Y/2+27,Tube_OD/2-8]) rotate([0,90,0]) ServoMount(Extend=2);
 	
 	difference(){
 		union(){
@@ -304,14 +312,29 @@ module CP_Door(Tube_OD=PML98Body_OD, BoltBossInset=2, HasArmingSlot=false){
 			intersection(){
 				translate([0,-Door_Y/2,0]) rotate([-90,0,0]) 
 						cylinder(d=Tube_OD-1, h=Door_Y);
+						
 				
 				// Bolt bosses
+				union(){
+				translate([12,-Door_Y/2+27,Tube_OD/2-9]) rotate([0,90,180]) BoltInServoMountBase();
 				translate([0,CP_Offset_Y,Tube_OD/2-Door_t-BoltBossInset]) 
 						rotate([0,0,90]) CablePullerBoltPattern() cylinder(d=8, h=BoltBossInset+3);
+						}
 					
 			} // intersection
 		} // union
 	
+		// Trim back for better bed adhetion
+		rotate([0,-DoorEdge_a,0]) translate([0,0,Tube_OD/2]) rotate([0,DoorEdge_a,0]) 
+			translate([-1,-Door_Y/2-1,-Door_t-5]) cube([Door_X+2, Door_Y+2, 5.5]);
+		
+		// Servo Mount Mounting Holes
+		translate([12,-Door_Y/2+27,Tube_OD/2-8]) rotate([0,90,180]) 
+			BoltInServoMountBoltPattern() Bolt4Hole();
+			
+		// Trim door clear of servo base
+		translate([12,-Door_Y/2+27,Tube_OD/2-9-3.5+Overlap]) rotate([0,90,180]) BoltInServoMountBase();
+		
 		// CablePuller bolt holes
 		translate([0,CP_Offset_Y,Tube_OD/2-Door_t-BoltBossInset]) 
 			rotate([0,0,90]) CablePullerBoltPattern() {
@@ -338,7 +361,33 @@ module CP_Door(Tube_OD=PML98Body_OD, BoltBossInset=2, HasArmingSlot=false){
 
 //rotate([90,0,0]) 
 //rotate([0,180,0]) CP_Door(Tube_OD=PML98Body_OD, BoltBossInset=3, HasArmingSlot=true);
+//CP_Door(Tube_OD=BT137Body_OD, BoltBossInset=3, HasArmingSlot=true);
 
+module BoltInServoMountBase(){
+	translate([-8,-18,0]) cube([3.5,36,10]);
+} // BoltInServoMountBase
+
+module BoltInServoMountBoltPattern(){
+	translate([0,14,6.5]) rotate([0,90,0]) children();
+	translate([0,-14,6.5]) rotate([0,90,0]) children();
+} // BoltInServoMountBoltPattern
+
+module BoltInServoMount(){
+	
+	
+	difference(){
+		union(){
+			translate([-3.5,-18,0]) cube([3.5,36,10]);
+			ServoMount(Extend=0);
+		} // union
+		
+		BoltInServoMountBoltPattern() Bolt4ButtonHeadHole();
+		
+	} // diff
+} // BoltInServoMount
+
+//BoltInServoMount();
+	
 module ServoMount(Extend=0){
 	Servo_X=12;
 	Servo_Y=22.6;
@@ -354,8 +403,8 @@ module ServoMount(Extend=0){
 		translate([0,-Servo_Y/2,-Overlap]) 
 			cube([Servo_X+Overlap, Servo_Y, MountPlate_h+Overlap*2]);
 		
-		translate([Servo_X/2, -ServoBC_Y/2, MountPlate_h]) Bolt2Hole();
-		translate([Servo_X/2, ServoBC_Y/2, MountPlate_h]) Bolt2Hole();
+		translate([Servo_X/2+0.3, -ServoBC_Y/2, MountPlate_h]) Bolt2Hole();
+		translate([Servo_X/2+0.3, ServoBC_Y/2, MountPlate_h]) Bolt2Hole();
 	} // difference
 } // ServoMount
 

@@ -782,20 +782,23 @@ module Stager_Cup(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true, Collar_h=
 			translate([0,Tube_OD/2-StagerLockInset_Y,-16])
 				Stager_LockRodBoltPattern() Bolt6Hole(depth=StagerLockInset_Y);
 		
-		if (HasElectrical){
-			translate([Saucer_ID(Tube_OD=Tube_OD)/2+EConnInset,0,-2]) cube([10,10,22], center=true);
-			translate([Saucer_ID(Tube_OD=Tube_OD)/2+EConnInset,0,8]) RoundRect(X=12, Y=12, Z=Collar_h, R=0.2);
+		if (HasElectrical) rotate([0,0,-180/nLocks]){
+			translate([0,Saucer_ID(Tube_OD=Tube_OD)/2+EConnInset,-2]) cube([10,10,22], center=true);
+			translate([0,Saucer_ID(Tube_OD=Tube_OD)/2+EConnInset,8]) RoundRect(X=12, Y=12, Z=Collar_h, R=0.2);
 			//translate([0,0,-2]) SaucerEConnBoltPattern() Bolt4ButtonHeadHole();
 		}
 	} // difference
 	
-	if (HasElectrical)
+	if (HasElectrical) rotate([0,0,-180/nLocks])
 			difference(){
 				intersection(){
 					translate([0,0,-2]) cylinder(d=Tube_OD-8, h=10);
-					translate([Saucer_ID(Tube_OD=Tube_OD)/2+EConnInset,0,-2]) RoundRect(X=14, Y=14, Z=10, R=1);
+					translate([0,Saucer_ID(Tube_OD=Tube_OD)/2+EConnInset,-2]) 
+						RoundRect(X=14, Y=14, Z=10, R=1);
 				} // intersection
-				translate([Saucer_ID(Tube_OD=Tube_OD)/2+EConnInset,0,-2-Overlap]) RoundRect(X=10, Y=10, Z=10+Overlap*2, R=0.2);
+				
+				translate([0, Saucer_ID(Tube_OD=Tube_OD)/2+EConnInset,-2-Overlap]) 
+					RoundRect(X=10, Y=10, Z=10+Overlap*2, R=0.2);
 			} // difference
 			
 	if ($preview)
@@ -804,6 +807,8 @@ module Stager_Cup(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true, Collar_h=
 } // Stager_Cup
 
 //translate([0,0,Overlap]) Stager_Cup(Collar_h=18+15,HasElectrical=false);
+//Stager_Cup(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true, Collar_h=18, HasElectrical=true);
+//rotate([0,180,0]) Stager_Cup(Tube_OD=BT137Body_OD, ID=BT137Body_OD-28, nLocks=3, BoltsOn=false, Collar_h=18, HasElectrical=true);
 
 module Stager_SaucerBoltPattern(Tube_OD=PML98Body_OD, nLocks=2){
 	Inset_Y=7.5;

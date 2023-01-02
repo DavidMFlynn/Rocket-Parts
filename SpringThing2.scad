@@ -46,7 +46,7 @@
 // ST_TubeEnd(Tube_OD=BT54Coupler_OD, Tube_ID=BT54Coupler_ID); // print 2, glued to half section of coupler tube
 // ST_SpringGuide(InnerTube_ID=BT54Body_ID); // Sits on top of motor, glued to bottom of spring. 
 // ST_SpringMiddle(Tube_ID=BT54Coupler_OD); // optional double spring slider
-// ST_TubeLock(Tube_OD=BT54Coupler_OD, Tube_ID=BT54Coupler_ID, SkirtLen=0); // Glued to top of spring.
+// ST_TubeLock(Tube_OD=BT54Coupler_OD, Skirt_ID=BT54Coupler_ID-2, SkirtLen=0); // Glued to top of spring.
 //
 // ST_BallSpacer(Tube_OD=PML98Body_OD); // print 2, spaces balls in bearing
 // ST_BallKeeper(InnerTube_OD=BT54Body_OD); // ball alignment, glue to tube
@@ -157,7 +157,7 @@ module ShowSpringThing(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID,
 		ST_BallSpacer(Tube_OD=Tube_OD);
 		translate([0,0,25]) rotate([180,0,0]) ST_BallSpacer(Tube_OD=Tube_OD);
 	}
-	translate([0,0,110]) color("Tan") ST_TubeLock(Tube_OD=InnerCouplerTube_OD, Tube_ID=InnerCouplerTube_ID);
+	translate([0,0,110]) color("Tan") ST_TubeLock(Tube_OD=InnerCouplerTube_OD, Skirt_ID=InnerCouplerTube_ID-2);
 	
 	color("LightBlue") translate([0,0,140]) {
 		translate([0,-10,0]) ST_TubeEnd(Tube_OD=InnerCouplerTube_OD, Tube_ID=InnerCouplerTube_ID);
@@ -981,12 +981,12 @@ module ST_TubeEnd(Tube_OD=BT54Coupler_OD, Tube_ID=BT54Coupler_ID){
 
 //ST_TubeEnd();
 
-module ST_TubeLock(Tube_OD=BT54Coupler_OD, Tube_ID=BT54Coupler_ID, SkirtLen=0){
+module ST_TubeLock(Tube_OD=BT54Coupler_OD, Skirt_ID=BT54Coupler_ID-2, SkirtLen=0){
 	echo(Tube_OD=Tube_OD);
 	H=(SkirtLen>0)? LockBall_d+2:LockBall_d+7;
 	
 	if (SkirtLen>0)
-		translate([0,0,H-Overlap]) Tube(OD=Tube_OD, ID=Tube_ID, Len=SkirtLen, myfn=$preview? 36:360);
+		translate([0,0,H-Overlap]) Tube(OD=Tube_OD, ID=Skirt_ID, Len=SkirtLen, myfn=$preview? 36:360);
 	
 	difference(){
 		cylinder(d=Tube_OD, h=H);
@@ -1002,7 +1002,7 @@ module ST_TubeLock(Tube_OD=BT54Coupler_OD, Tube_ID=BT54Coupler_ID, SkirtLen=0){
 } // ST_TubeLock
 
 //ST_TubeLock();
-//ST_TubeLock(Tube_OD=BT75Coupler_OD, Tube_ID=BT75Coupler_ID-2, SkirtLen=30);
+//ST_TubeLock(Tube_OD=BT75Coupler_OD, Skirt_ID=BT75Coupler_ID-2, SkirtLen=30);
 
 
 

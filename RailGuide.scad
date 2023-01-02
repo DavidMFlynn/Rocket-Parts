@@ -3,7 +3,7 @@
 // Filename: RailGuide.scad
 // by David M. Flynn
 // Created: 6/11/2022 
-// Revision: 1.0.3  11/7/2022
+// Revision: 1.0.4  1/1/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,7 +12,8 @@
 //
 //  ***** History *****
 //
-echo("RailGuide 1.0.3");
+echo("RailGuide 1.0.4");
+// 1.0.4  1/1/2023  Bolt holes now thru in RailGuidePost. 
 // 1.0.3  11/7/2022 Shorter cap to clear 8020-1010 rail better. 
 // 1.0.2  10/29/2022 Narrower and taller by 0.3mm.
 // 1.0.1  10/11/2022 Added TubeBoltedRailGuide
@@ -197,7 +198,7 @@ module RailGuidePost(OD=PML98Body_OD, MtrTube_OD=PML54Body_OD, H=5.5*25.4/2, Tub
 			} // hull
 		} // union
 		
-		translate([0,H,0]) RailGuideBoltPattern(BoltSpace=BoltSpace) Bolt6Hole();
+		translate([0,H,0]) RailGuideBoltPattern(BoltSpace=BoltSpace) Bolt6Hole(depth=H);
 	} // difference
 } // RailGuidePost
 
