@@ -482,15 +482,36 @@ module ShowSustainerFinCan(){
 
 module ShowMidSection(){
 	DrogueBay_L=200;
+	DrogueTube_Z=TopOfFinCan_Z+87;
+	SpringThing_Z=DrogueTube_Z+DrogueBay_L+36;
+	EBay_Z=SpringThing_Z+34;
+	Fairing_Z=EBay_Z+EBay_Len;
+	Nose_Z=Fairing_Z+Fairing_Len+2;
+	
+	translate([0,0,Nose_Z]) FairingConeOGive(Fairing_OD=Body_OD,
+					FairingWall_T=FairingWall_T,
+					NC_Base=NC_Base,
+					NC_Len=NC_Len,
+					NC_Wall_t=NC_Wall_t,
+					NC_Tip_r=NC_Tip_r,
+					Cut_Z=0, LowerPortion=true);
+	
+	translate([0,0,Fairing_Z]) color("LightGreen")
+		F54_FairingHalf(IsLeftHalf=true,
+				Fairing_OD=Fairing_OD,
+				Wall_T=FairingWall_T,
+				Len=Fairing_Len);
+				
+	translate([0,0,EBay_Z]) color("LightBlue") R98_Electronics_Bay2();
 	
 	translate([0,0,TopOfFinCan_Z]){
 		rotate([0,180,0]) color("Blue") Stager_Saucer(Tube_OD=Body_OD, nLocks=3, HasElectrical=true);
 		DrogueSep();
 		}
-	translate([0,0,TopOfFinCan_Z+87]) color("Orange")
+	translate([0,0,DrogueTube_Z]) color("Orange")
 		Tube(OD=Body_OD, ID=Body_ID, Len=DrogueBay_L, myfn=$preview? 36:90);
 		
-	translate([0,0,TopOfFinCan_Z+87+DrogueBay_L+36])
+	translate([0,0,SpringThing_Z])
 	rotate([180,0,0]) ST_Frame(Tube_OD=Body_OD, Skirt_ID=Body_ID, Collar_Len=26, Skirt_Len=34, HasStagerCableRaceway=true, HasWireRaceway=true);
 } // ShowMidSection
 

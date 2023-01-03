@@ -3,7 +3,7 @@
 // Filename: CablePuller.scad
 // by David M. Flynn
 // Created: 8/21/2022 
-// Revision: 1.1.9  1/1/2023
+// Revision: 1.1.10  1/3/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -26,7 +26,8 @@
 //
 //  ***** History *****
 //
-echo("CablePuller 1.1.9");
+echo("CablePuller 1.1.10");
+// 1.1.10  1/3/2023   Added CP_SpringWindingTool()
 // 1.1.9  1/1/2023    Changed door the use BoltInServoMount()
 // 1.1.8  12/11/2022  Adjusted door thickness w/o changing frame or hole. 
 // 1.1.7  11/29/2022  Added trigger hole to door
@@ -68,6 +69,8 @@ echo("CablePuller 1.1.9");
 // rotate([180,0,0]) TriggerBellCrank();
 //
 // BellCrank(Len=38);
+
+// CP_SpringWindingTool();
 //
 // ***********************************
 //  ***** Routines *****
@@ -160,6 +163,35 @@ module ShowCablePuller(){
 } // ShowCablePuller
 
 //ShowCablePuller();
+
+module CP_SpringWindingTool(){
+	Plate_X=30;
+	Plate_Y=30;
+	Plate_t=10;
+	
+	difference(){
+		union(){
+			RoundRect(X=Plate_X, Y=Plate_Y, Z=Plate_t, R=3);
+			RoundRect(X=12, Y=12, Z=Plate_t+1.5, R=3);
+			translate([-Plate_X/2+5, Plate_Y/2-5, Plate_t-Overlap])
+				RoundRect(X=10, Y=10, Z=2.5, R=3);
+		} // union
+		
+		// Wire
+		hull(){
+		Wire_a=24;
+			translate([-2,-2.5,Plate_t+1.75]) rotate([-90,0,Wire_a]) cylinder(d=1, h=Plate_X);
+			translate([-2,-2.5,Plate_t+4]) rotate([-90,0,Wire_a]) cylinder(d=1, h=Plate_X);
+		} // hull
+		
+		// wire clamping screw
+		translate([-Plate_X/2+5, Plate_Y/2-5, Plate_t+3]) Bolt4ButtonHeadHole();
+		
+		rotate([180,0,0]) Bolt10HeadHole();
+	} // difference
+} // CP_SpringWindingTool
+
+//CP_SpringWindingTool();
 
 module CPDoorHole(Tube_OD=PML98Body_OD){
 	Door_Y=CP_Door_Y+1;
