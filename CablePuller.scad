@@ -180,15 +180,21 @@ module CP_SpringWindingTool(){
 		
 		// Wire
 		hull(){
-		Wire_a=24;
-			translate([-2,-2.5,Plate_t+1.75]) rotate([-90,0,Wire_a]) cylinder(d=1, h=Plate_X);
-			translate([-2,-2.5,Plate_t+4]) rotate([-90,0,Wire_a]) cylinder(d=1, h=Plate_X);
+		Wire_a=26;
+			translate([-1.5,-2.5,Plate_t+1.75]) rotate([-90,0,Wire_a]) cylinder(d=1, h=Plate_X);
+			translate([-1.5,-2.5,Plate_t+4]) rotate([-90,0,Wire_a]) cylinder(d=1, h=Plate_X);
 		} // hull
 		
 		// wire clamping screw
-		translate([-Plate_X/2+5, Plate_Y/2-5, Plate_t+3]) Bolt4ButtonHeadHole();
+		translate([-Plate_X/2+5, Plate_Y/2-5, Plate_t+3]) {
+			Bolt4ButtonHeadHole(depth=0);
+			Bolt4Hole();
+			}
 		
-		rotate([180,0,0]) Bolt10HeadHole();
+		rotate([180,0,1]) {
+			Bolt10HeadHole(depth=0);
+			Bolt10Hole();
+			}
 	} // difference
 } // CP_SpringWindingTool
 
