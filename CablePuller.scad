@@ -3,7 +3,7 @@
 // Filename: CablePuller.scad
 // by David M. Flynn
 // Created: 8/21/2022 
-// Revision: 1.1.10  1/3/2023
+// Revision: 1.1.11  1/3/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -26,7 +26,8 @@
 //
 //  ***** History *****
 //
-echo("CablePuller 1.1.10");
+echo("CablePuller 1.1.11");
+// 1.1.11  1/3/2023   Added 1.25mm space for the spring
 // 1.1.10  1/3/2023   Added CP_SpringWindingTool()
 // 1.1.9  1/1/2023    Changed door the use BoltInServoMount()
 // 1.1.8  12/11/2022  Adjusted door thickness w/o changing frame or hole. 
@@ -550,6 +551,12 @@ module CR_Cage(){
 			translate([CP_Bearing_OD/2,-3.5,-CP_Bearing_H-1]) cube([Overlap,7,CP_Bearing_H*2+2]);
 			translate([ArmLen,0,0]) cylinder(d=CP_Bearing_OD+1, h=CP_Bearing_H+8, center=true);}
 		} // hull
+		
+		// Spring space
+		translate([0,0,2.25]) hull(){
+			cylinder(d=8, h=2);
+			translate([6,-5,0]) cylinder(d=8, h=2);
+		}
 		
 		// Bolts
 		CablePullerBoltPattern() Bolt1();
