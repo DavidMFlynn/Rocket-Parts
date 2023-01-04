@@ -53,6 +53,15 @@ echo("Fairing54 1.0.17");
 //  ***** for STL output *****
 //
 // FairingCone();
+/*
+FairingConeOGive(Fairing_OD=Fairing_OD, 
+					FairingWall_T=FairingWall_T,
+					NC_Base=NC_Base, 
+					NC_Len=130, 
+					NC_Wall_t=NC_Wall_t,
+					NC_Tip_r=NC_Tip_r,
+					Cut_Z=0, LowerPortion=false, HasLanyard=true)
+/**/
 // NoseLockRing(Fairing_OD=Fairing_OD, Fairing_ID =Fairing_ID);
 //
 /*
@@ -424,13 +433,13 @@ module FairingConeOGive(Fairing_OD=Fairing_OD,
 					NC_Len=130, 
 					NC_Wall_t=NC_Wall_t,
 					NC_Tip_r=NC_Tip_r,
-					Cut_Z=0, LowerPortion=false){
+					Cut_Z=0, LowerPortion=false, HasLanyard=true){
 	
-	Fairing_ID=Fairing_OD-FairingWall_T*2;
-						
+	Base_ID=Fairing_OD-NC_Wall_t*2;
+	
 	difference(){
 		union(){
-			BluntOgiveNoseCone(ID=Fairing_ID, OD=Fairing_OD, L=NC_Len, 
+			BluntOgiveNoseCone(ID=Base_ID, OD=Fairing_OD, L=NC_Len, 
 						Base_L=NC_Base, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t,
 						Cut_Z=Cut_Z, LowerPortion=LowerPortion);
 			
@@ -446,11 +455,22 @@ module FairingConeOGive(Fairing_OD=Fairing_OD,
 		
 	} // difference
 	
-	if (LowerPortion||(Cut_Z==0))
-	translate([0,0,NC_Base+18]) rotate([-3.5,0,0]) LanyardToTube(ID=Fairing_ID);
+	if ((LowerPortion||(Cut_Z==0))&&HasLanyard)
+	translate([0,0,NC_Base+18]) rotate([-3.5,0,0]) LanyardToTube(ID=Base_ID);
 } // FairingConeOGive
 
 //translate([0,0,Fairing_Len+Overlap]) FairingConeOGive(); 
+/*
+FairingConeOGive(Fairing_OD=BT137Body_OD,
+					FairingWall_T=2.2,
+					NC_Base=5,
+					NC_Len=380,
+					NC_Wall_t=3,
+					NC_Tip_r=8,
+					Cut_Z=0, LowerPortion=true);
+					
+translate([0,0,-2]) NoseLockRing(Fairing_OD=BT137Body_OD, Fairing_ID =BT137Body_OD-4.4);
+/**/
 /*
 FairingConeOGive(Fairing_OD=PML75Body_OD, 
 					FairingWall_T=FairingWall_T,

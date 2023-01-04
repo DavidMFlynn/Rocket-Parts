@@ -98,9 +98,9 @@ FairingConeOGive(Fairing_OD=Body_OD,
 					NC_Len=NC_Len,
 					NC_Wall_t=NC_Wall_t,
 					NC_Tip_r=NC_Tip_r,
-					Cut_Z=0, LowerPortion=true);
+					Cut_Z=190, LowerPortion=true);
 /**/
-// NoseLockRing(Fairing_OD=Body_OD, Fairing_ID =Fairing_ID);
+// rotate([0,180,0]) NoseLockRing(Fairing_OD=Body_OD, Fairing_ID =Fairing_ID); // Brim+Support
 //
 //
 // *** Fairing ***

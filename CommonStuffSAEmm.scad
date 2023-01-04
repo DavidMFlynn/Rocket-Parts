@@ -1,7 +1,7 @@
 // *************************************************
 // filename: CommondStuffSAEmm.scad
 //  by Dave Flynn 2015, GPL v2
-// Rev: 1.0.5 10/16/2022
+// Rev: 1.0.6 1/4/2023
 // Some hole sizes have not been tested.
 //
 // This file contains constants and some common routines
@@ -43,6 +43,7 @@
 // Bolt250HeadHole(depth=12, lAccess=12);
 // Bolt250Hole(depth=19);
 // Bolt250ClearHole(depth=19);
+// Bolt250NutHole(depth=7);
 //   M8
 // BoltM8ButtonHeadHole(depth=20,lHead=12);
 // BoltM8Hole(depth=22);
@@ -57,7 +58,8 @@
 // *************************************************
 //  **** History *****
 //
-echo("CommonStuffSAEmm 1.0.5");
+echo("CommonStuffSAEmm 1.0.6");
+// 1.0.6 1/4/2023	Added Bolt250NutHole
 // 1.0.5 10/16/2022 Fixed Bolt2Head_r for my Soc Hd Cap Screws
 // 1.0.4 9/1/2022   Added Bolt250FlatHeadHole
 // 1.0.3 6/21/2022  Added/Fixed Bolt6RailNut
@@ -495,6 +497,12 @@ module Bolt250HeadHole(depth=12, lAccess=12){
 } // Bolt250HeadHole
 
 //Bolt250HeadHole(depth=12, lAccess=12);
+
+module Bolt250NutHole(depth=7){
+	cylinder(d=7/16*25.4*1.1339+ID_Xtra*2, h=depth, $fn=6);
+} // Bolt250NutHole
+
+//Bolt250NutHole(depth=7);
 
 // ***** M8 *****
 

@@ -129,7 +129,7 @@ F54_FairingHalf(IsLeftHalf=false,
 // CP_Door(Tube_OD=R9832_Body_OD, BoltBossInset=2, HasArmingSlot=true);
 // BoltInServoMount();
 // Batt_Door(Tube_OD=R9832_Body_OD, HasSwitch=false);
-// Batt_Door(Tube_OD=R9832_Body_OD, HasSwitch=true);
+// Batt_Door(Tube_OD=R9832_Body_OD, InnerTube_OD=R9832_DualDepTube_OD, HasSwitch=true);
 //
 // ------------
 // *** Cable Puller, 5 Req. ***

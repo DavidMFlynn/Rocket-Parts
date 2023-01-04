@@ -3,7 +3,7 @@
 // Filename: NoseCone.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.5  10/19/2022
+// Revision: 0.9.6  1/4/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -13,6 +13,7 @@
 //  ***** History *****
 //
 echo("NoseCone 0.9.5");
+// 0.9.6  1/4/2023   Added Bulkplate_BONC
 // 0.9.5  10/19/2022 edited Transition_OD
 // 0.9.4  9/18/2022  More fixes, optioned HasRivets
 // 0.9.3  9/8/2022   Added base radius to BluntConeNoseCone. 
@@ -26,7 +27,8 @@ echo("NoseCone 0.9.5");
 // BluntConeNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=180, Base_L=21, Tip_R=15, Wall_T=3);
 // OgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=170, Base_L=21, Wall_T=3);
 //
-// BluntOgiveNoseCone(ID=PML54Body_ID, OD=PML54Body_OD, L=160, Base_L=10, Tip_R=7, Wall_T=3);
+// BluntOgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=280, Base_L=5, Tip_R=5, Wall_T=3, Cut_Z=130, LowerPortion=false);
+// Bulkplate_BONC(OD=58, T=10, L=160, Base_L=5, Tip_R=5, Wall_T=2.2, Cut_Z=80);
 // BluntOgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=190, Base_L=21, Tip_R=22, Wall_T=2);
 // NoseconeBase(OD=PML98Body_ID, L=60, NC_Base=21);
 //
@@ -203,19 +205,34 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3, Cut
 	
 	if (Cut_Z!=0 && LowerPortion)
 		difference(){
-			rotate_extrude($fn=$preview? 90:360) 
-				offset(-Wall_T+Overlap) BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
+			union(){
+				// gluing flange
+				rotate_extrude($fn=$preview? 90:360) 
+					offset(-Wall_T-IDXtra*2) 
+						BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
+					
+				// connect outer shell to gluing flange	
+				intersection(){
+					translate([0,0,Cut_Z-7]) cylinder(d=OD, h=7, $fn=$preview? 90:360);
+					rotate_extrude($fn=$preview? 90:360) 
+						offset(-1) BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
+				}
+			} // union
 			
+			// Remove lower part
 			translate([0,0, -Overlap]) cylinder(d=OD+1, h=Cut_Z-5);
+			// Remove upper part
 			translate([0,0,Cut_Z+5]) cylinder(d=OD+1, h=L-Cut_Z+Overlap);
-			translate([0,0,Cut_Z-5]) cylinder(d=OD/2, h=12);
+			// Clean up inside
+			translate([0,0,Cut_Z-6]) cylinder(d=OD/2, h=12);
 			
 			// this needs fixed, should be calculated, 
-			Transition_OD=OD*0.7+4.25; // works for 102mm OD x 350mm L Cut @180mm
-			translate([0,0,Cut_Z-5-Overlap*2]) cylinder(d1=Transition_OD, d2=Transition_OD-12, h=8);
+			Transition_OD=OD*0.7+7; // works for 102mm OD x 350mm L Cut @180mm
+			translate([0,0,Cut_Z-7]) 
+				cylinder(d1=Transition_OD, d2=Transition_OD-12, h=8, $fn=$preview? 90:360);
 			
 			rotate_extrude($fn=$preview? 90:360) 
-				offset(-Wall_T*2) BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
+				offset(-Wall_T*2-IDXtra*2) BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
 			
 			if ($preview==true) translate([0,-100,-1]) cube([100,100,L+2]);
 		} // difference
@@ -238,6 +255,25 @@ BluntOgiveNoseCone(ID=PML98Body_ID,
 
 //BluntOgiveNoseCone(ID=PML54Body_ID, OD=PML54Body_OD, L=160, Base_L=10, Tip_R=7, Wall_T=3);
 
+module Bulkplate_BONC(OD=58, T=10, L=160, Base_L=5, Tip_R=5, Wall_T=2.2, Cut_Z=80){
+	
+	difference(){
+		rotate_extrude($fn=$preview? 90:360) 
+			offset(-Wall_T-IDXtra*2) 
+				BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
+		
+		// Remove lower part
+		translate([0,0, -Overlap]) cylinder(d=OD+1, h=Cut_Z+5+Overlap);
+		// Remove upper part
+		translate([0,0,Cut_Z+5+T]) cylinder(d=OD+1, h=L-Cut_Z+Overlap);
+		
+		translate([0,0,Cut_Z+5+T]) Bolt250Hole(depth=T);
+		translate([0,0,Cut_Z+T]) Bolt250NutHole();
+	} // diff
+	
+} // Bulkplate_BONC
+
+//Bulkplate_BONC();
 
 module BluntOgiveWeight(OD=58, L=160, Tip_R=5, Wall_T=3){
 	R=OD/2;

@@ -26,8 +26,10 @@ FairingConeOGive(Fairing_OD=R98_Body_OD,
 					NC_Len=NC_Len, 
 					NC_Wall_t=NC_Wall_t,
 					NC_Tip_r=NC_Tip_r,
-					Cut_Z=160, LowerPortion=true);
+					Cut_Z=160, LowerPortion=false, HasLanyard=false);
 /**/
+//rotate([0,180,0]) NoseLockRing(Fairing_OD=R98_Body_OD, Fairing_ID =Fairing_ID);
+//Bulkplate_BONC(OD=R98_Body_OD, T=13, L=NC_Len, Base_L=NC_Base, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=160);
 
 // Alt. for single deploy varient
 // R98_Electronics_Bay2(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, Fairing_ID=Fairing_ID, InnerTube_OD=PML38Body_OD);
@@ -62,6 +64,8 @@ Overlap=0.05;
 IDXtra=0.2;
 $fn=$preview? 24:90;
 
+/*
+// "The Green One"
 nFins=5;
 R98_Fin_Post_h=10;
 R98_Fin_Root_L=240;
@@ -71,6 +75,20 @@ R98_Fin_Tip_L=80;
 R98_Fin_Span=150;
 R98_Fin_TipOffset=60;
 R98_Fin_Chamfer_L=32;
+/**/
+
+//*
+// "The Blue One"
+nFins=5;
+R98_Fin_Post_h=10;
+R98_Fin_Root_L=220;
+R98_Fin_Root_W=14;
+R98_Fin_Tip_W=5;
+R98_Fin_Tip_L=80;
+R98_Fin_Span=140;
+R98_Fin_TipOffset=65;
+R98_Fin_Chamfer_L=40;
+/**/
 
 R98_Body_OD=PML98Body_OD;
 R98_Body_ID=PML98Body_ID;
@@ -87,7 +105,7 @@ Fairing_Len=180; // Body of the fairing.
 
 NoseconeSep_Z=0; // This much of the nosecone becomes part of the fairing.
 NC_Len=320;
-NC_Tip_r=10;
+NC_Tip_r=8;
 NC_Base=5;
 NC_Lock_H=5;
 NC_Wall_t=2.2;
