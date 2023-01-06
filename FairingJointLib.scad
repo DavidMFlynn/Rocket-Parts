@@ -3,7 +3,7 @@
 // Filename: FairingJointLib.scad
 // by David M. Flynn
 // Created: 8/5/2022 
-// Revision: 0.9.8  9/12/2022
+// Revision: 0.9.9  1/5/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -13,6 +13,7 @@
 //  ***** History *****
 //
 echo("FairingJointLib 0.9.8");
+// 0.9.9  1/5/2023   Added BoltOnTenon
 // 0.9.8  9/12/2022  Fairing 75 is OK but changes will need to be tested with other sizes.
 // 0.9.7  9/9/2022   Finding size for Fairing98
 // 0.9.6  9/5/2022   Adjustments for 54mm BT
@@ -30,6 +31,7 @@ echo("FairingJointLib 0.9.8");
 //  ***** Routines *****
 //
 // Tenon(Tail=12);
+// BoltOnTenon(Tenon_h=Tenon_h);
 // SkirtedTenon(Tube_OD=100, Z=15);
 // Mortise(Mortise_h=Mortise_h);
 //
@@ -65,7 +67,7 @@ Tenon_Y=JointPin_d/2-1+2;
 Mortise_h=Tenon_h+IDXtra*3;
 MortiseOffset=JointPin_d/2+2.5;
 
-module Tenon(Tail=12){
+module Tenon(Tail=12, Tenon_h=Tenon_h){
 	translate([0,0,-Tenon_h/2])
 	difference(){
 		union(){
@@ -82,6 +84,31 @@ module Tenon(Tail=12){
 } // Tenon
 
 //translate([JointPin_d/2+1,0,0]) Tenon(Tail=12);
+
+module BoltOnTenon(Tenon_h=Tenon_h){
+	Tail=20;
+	Bolt4Inset=4;
+	
+	translate([0,0,-Tenon_h/2])
+	difference(){
+		union(){
+			hull(){
+				translate([-Tail,0,0]) cube([Tail+JointPin_d/2,Tenon_Y,Tenon_h]);
+				translate([-Tail,0,0]) cube([Tail+JointPin_d,Tenon_Y/2,Tenon_h]);
+			}
+			translate([-Tail,0,0]) cube([Tail-2,Tenon_Y+4,Tenon_h]);
+		} // union
+		
+		translate([0,-1,-Overlap]) cylinder(d=JointPin_d+IDXtra*2,h=Tenon_h+Overlap*2);
+		
+		translate([-JointPin_d/2-Bolt4Inset,0,Tenon_h/2]) 
+			rotate([90,0,0]) Bolt4Hole();
+		translate([-JointPin_d/2-Bolt4Inset*3,0,Tenon_h/2]) 
+			rotate([90,0,0]) Bolt4Hole();
+	} // difference
+} // BoltOnTenon
+
+// BoltOnTenon(Tenon_h=6);
 		
 module SkirtedTenon(Tube_OD=100, Z=15){
 	rotate([0,0,180]) translate([-Tube_OD/2+8.5,6.5,Z]) 
@@ -201,7 +228,74 @@ BigFairing_OD=5.5 * 25.4;
 SmallFairing_OD=PML54Body_OD;
 PJ_Clip_a=6;
 
+
+module LargeFairing_PJ_Clip_BoltPattern(Fairing_OD=137){
+	PJ_Clip_a=BigFairing_OD/Fairing_OD*PJ_Clip_a;
+
+	rotate([0,0,PJ_Clip_a/1.7+PJ_Clip_a*0.2]) translate([Fairing_OD/2,0,0]) rotate([0,90,0]) children();
+	rotate([0,0,PJ_Clip_a*1.7+PJ_Clip_a*0.2]) translate([Fairing_OD/2,0,0]) rotate([0,90,0]) children();
+		
+} // LargeFairing_PJ_Clip_BoltPattern
+
+module LargeFairing_PJ_Clip_Boss(Fairing_OD=137, FairingWall_t=2.2){
+	Fairing_ID=Fairing_OD-FairingWall_t*2;
+	PJ_Clip_a=BigFairing_OD/Fairing_OD*PJ_Clip_a;
+	
+	difference(){
+		union(){
+			hull(){
+				LargeFairing_PJ_Clip_BoltPattern(Fairing_OD=Fairing_OD)
+					rotate([0,180,0]) cylinder(d=7+IDXtra*3, h=20);
+			} // hull
+			scale([1,1,1.1]) PJ_Clip(Fairing_OD=Fairing_OD, FairingWall_t=FairingWall_t);
+		} // union
+			
+		// Trim to Fairing_ID
+		translate([0,0,-5])
+		difference(){
+			cylinder(d=Fairing_ID+10, h=10);
+			translate([0,0,-Overlap]) cylinder(d=Fairing_ID, h=10+Overlap*2, $fn=$preview? 90:360);
+		} // difference
+	} // difference
+} // LargeFairing_PJ_Clip_Boss
+
+//LargeFairing_PJ_Clip_Boss(Fairing_OD=137, FairingWall_t=2.2);
+
+module LargeBolt_On_PJ_Clip(Fairing_OD=137, FairingWall_t=2.2){
+	// Used to repair a broken clip
+	
+	Fairing_ID=Fairing_OD-FairingWall_t*2;
+	PJ_Clip_a=BigFairing_OD/Fairing_OD*PJ_Clip_a;
+	
+	difference(){
+		union(){
+			PJ_Clip(Fairing_OD=Fairing_OD, FairingWall_t=FairingWall_t);
+			
+			hull(){
+				LargeFairing_PJ_Clip_BoltPattern(Fairing_OD=Fairing_OD)
+					rotate([0,180,0]) cylinder(d=7, h=FairingWall_t+9);
+				
+			} // hull
+		} // union
+	
+		// Bolt holes
+		LargeFairing_PJ_Clip_BoltPattern(Fairing_OD=137) Bolt4Hole(depth=20);
+		
+		// Trim to Fairing_ID
+		translate([0,0,-5])
+		difference(){
+			cylinder(d=Fairing_ID+10, h=10);
+			translate([0,0,-Overlap]) cylinder(d=Fairing_ID, h=10+Overlap*2, $fn=$preview? 90:360);
+		} // difference
+	} // difference
+	
+} // LargeBolt_On_PJ_Clip
+
+//LargeBolt_On_PJ_Clip();
+
 module Bolt_On_PJ_Clip(Fairing_OD=100, FairingWall_t=2.2){
+	// Used to repair a broken clip
+	
 	Fairing_ID=Fairing_OD-FairingWall_t*2;
 	PJ_Clip_a=BigFairing_OD/Fairing_OD*PJ_Clip_a;
 	

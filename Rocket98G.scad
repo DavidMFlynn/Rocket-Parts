@@ -30,7 +30,20 @@ FairingConeOGive(Fairing_OD=R98_Body_OD,
 /**/
 //rotate([0,180,0]) NoseLockRing(Fairing_OD=R98_Body_OD, Fairing_ID =Fairing_ID);
 //Bulkplate_BONC(OD=R98_Body_OD, T=13, L=NC_Len, Base_L=NC_Base, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=160);
-
+//
+// fix a failed print
+// Splice_BONC(OD=R98_Body_OD, H=12, L=NC_Len, Base_L=NC_Base, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=160+120.6);
+/*
+// fix for failed print
+FairingConeOGive(Fairing_OD=R98_Body_OD, 
+					FairingWall_T=FairingWall_T,
+					NC_Base=NC_Base, 
+					NC_Len=NC_Len, 
+					NC_Wall_t=NC_Wall_t,
+					NC_Tip_r=NC_Tip_r,
+					Cut_Z=160+120.6, LowerPortion=false, HasLanyard=false);
+/**/
+//
 // Alt. for single deploy varient
 // R98_Electronics_Bay2(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, Fairing_ID=Fairing_ID, InnerTube_OD=PML38Body_OD);
 // CenteringRing(OD=PML98Coupler_ID, ID=PML38Body_OD+IDXtra, Thickness=5, nHoles=4);

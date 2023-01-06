@@ -34,7 +34,7 @@ FairingCone(Fairing_OD=BP_Fairing_OD,
 					NC_Tip_r=BP_FairingConeTip_r);
 /**/
 
-//NoseLockRing(Fairing_ID =BP_Fairing_ID);
+//rotate([0,180,0]) NoseLockRing(Fairing_OD=BP_Fairing_OD, Fairing_ID =BP_Fairing_ID);
 
 /*
 // *** >>>Enable override for larger main fairing spring<<< ***
@@ -99,7 +99,7 @@ FairingCone(Fairing_OD=BP_Booster_Body_OD,
 					NC_Wall_t=2,
 					NC_Tip_r=5);
 /**/
-// NoseLockRing(Fairing_ID =BP_Booster_Fairing_ID);
+// NoseLockRing(Fairing_OD=BP_Booster_Body_OD, Fairing_ID =BP_Booster_Fairing_ID);
 //
 /*
 // *** >>>Enable override for smaller booster fairing spring<<< ***
@@ -212,7 +212,13 @@ BP_Fairing_ID=BP_Fairing_OD-BP_FairingWall_T*2;
 BP_FairingConeBase=10;
 BP_FairingCone_Len=190;
 BP_FairingConeWall_T=2.2; // may need to be thicker
-BP_FairingConeTip_r=7.5;
+BP_FairingConeTip_r=20;
+
+BP_Booster_FairingWall_T=2.2;
+BP_Booster_NC_Base=5;
+BP_Booster_NC_Len=90;
+BP_Booster_NC_Wall_t=2.2;
+BP_Booster_NC_Tip_r=10;
 
 BP_ElectronicsBay_Len=140;
 BP_LowerBodyTube_Len=236;
@@ -247,16 +253,23 @@ LockShaftLen=48.0; // Changed -0.5mm 9/11/2022
 nLockShaftTeeth=24;
 nServoGearTeeth=24;
 
-//NoseLockRing(Fairing_ID =BP_Booster_Fairing_ID);
+//NoseLockRing(Fairing_OD=BP_Booster_Body_OD, Fairing_ID =BP_Booster_Fairing_ID);
 //FairingBaseLockRing(Tube_ID=BP_Booster_Body_ID, Fairing_ID=BP_Booster_Fairing_ID, Interface=Overlap);
 //mirror([0,0,1])F54_Retainer(IsLeftHalf=true, Fairing_OD=BP_Booster_Fairing_OD, Wall_T=BP_Booster_Fairing_Wall_t);
+
+
 
 module ShowBooster(){
 	//*
 	// Booster nosecone
 	translate([0,0,BP_BoosterButton2_z+BP_Booster_EBay_Len+ThrustRing_h/2+Fairing_Len+Overlap*3]){
-		color("Green") FairingCone();
-		color("Tan") NoseLockRing();
+		color("Green") FairingCone(Fairing_OD=BP_Booster_Body_OD, 
+					FairingWall_T=BP_Booster_FairingWall_T,
+					NC_Base=BP_Booster_NC_Base, 
+					NC_Len=BP_Booster_NC_Len,
+					NC_Wall_t=BP_Booster_NC_Wall_t,
+					NC_Tip_r=BP_Booster_NC_Tip_r);
+		color("Tan") NoseLockRing(Fairing_OD=BP_Booster_Body_OD, Fairing_ID =BP_Booster_Fairing_ID);
 	}
 
 	// Booster fairing
@@ -307,7 +320,7 @@ module ShowBoosterPooper(){
 					NC_Len=BP_FairingCone_Len,
 					NC_Wall_t=BP_FairingConeWall_T,
 					NC_Tip_r=BP_FairingConeTip_r);
-		translate([0,0,-5]) NoseLockRing(Fairing_ID =BP_Fairing_ID);
+		translate([0,0,-2]) NoseLockRing(Fairing_OD=BP_Fairing_OD, Fairing_ID =BP_Fairing_ID);
 	}
 	
 	translate([0,0,BP_BoosterButton2_z+50+Overlap*2+BP_UpperBodyTube_Len+BP_ElectronicsBay_Len+65])
@@ -329,16 +342,16 @@ module ShowBoosterPooper(){
 	
 	translate([0,0,BP_BoosterButton2_z+40+BP_UpperBodyTube_Len+Overlap*2]) Electronics_Bay();
 	
-	/*
+	//*
 	translate([0,0,BP_BoosterButton2_z+50+Overlap*2+Overlap]) color("LightBlue")
 		Tube(OD=BP_Body_OD, ID=BP_Body_ID, Len=BP_UpperBodyTube_Len-Overlap*2, myfn=$preview? 36:360);
 	/**/
 	
-	//translate([0,0,BP_BoosterButton2_z+Overlap*2]) rotate([0,0,45]) rotate([0,90,0]) BB_LockShaft(Len=LockShaftLen);
+	translate([0,0,BP_BoosterButton2_z+Overlap*2]) rotate([0,0,45]) rotate([0,90,0]) BB_LockShaft(Len=LockShaftLen);
 	
 
 	
-	/*
+	//*
 	translate([0,0,BP_BoosterButton2_z+Overlap*2])
 		rotate([0,0,-45]) {
 			translate([0,BP_Body_OD/2-BoosterButtonOA_h,0]) rotate([-90,0,0]){
@@ -353,14 +366,14 @@ module ShowBoosterPooper(){
 	} /**/
 	
 	
-	//translate([0,0,BP_BoosterButton2_z+Overlap*2]) rotate([0,0,-45]) ForwardBoosterLock();
+	translate([0,0,BP_BoosterButton2_z+Overlap*2]) rotate([0,0,-45]) ForwardBoosterLock();
 	
-	/*
+	//*
 	translate([0,0,BP_BoosterButton1_z+BP_Fin_Root_L+Overlap]) color("LightBlue")
 		Tube(OD=BP_Body_OD, ID=BP_Body_ID, Len=BP_LowerBodyTube_Len-Overlap*2, myfn=$preview? 36:360);
 	/**/
 	
-	/*
+	//*
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j])
 		translate([BP_Body_OD/2-BP_Fin_Post_h,0,BP_Fin_Root_L/2+50]) 
 			rotate([0,90,0]) color("Yellow") BP_Fin();
@@ -371,11 +384,11 @@ module ShowBoosterPooper(){
 			Len=BP_MtrTubeLen, myfn=$preview? 90:360);
 	/**/
 	 
-	//translate([0,0,BP_Fin_Root_L+100+Overlap]) color("White") UpperFinCan();
-	//	color("LightGreen") LowerFinCan();
+	translate([0,0,BP_Fin_Root_L+100+Overlap]) color("White") UpperFinCan();
+		color("LightGreen") LowerFinCan();
 	
 	// Boosters 
-	/*
+	//*
 	rotate([0,0,45]) translate([BP_Booster_Body_OD/2+BP_Body_OD/2,0,0]) ShowBooster();
 	rotate([0,0,45+180]) translate([BP_Booster_Body_OD/2+BP_Body_OD/2,0,0]) ShowBooster();
 	/**/

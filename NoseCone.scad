@@ -12,8 +12,8 @@
 //
 //  ***** History *****
 //
-echo("NoseCone 0.9.5");
-// 0.9.6  1/4/2023   Added Bulkplate_BONC
+echo("NoseCone 0.9.6");
+// 0.9.6  1/4/2023   Added Bulkplate_BONC, Splice_BONC
 // 0.9.5  10/19/2022 edited Transition_OD
 // 0.9.4  9/18/2022  More fixes, optioned HasRivets
 // 0.9.3  9/8/2022   Added base radius to BluntConeNoseCone. 
@@ -28,6 +28,8 @@ echo("NoseCone 0.9.5");
 // OgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=170, Base_L=21, Wall_T=3);
 //
 // BluntOgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=280, Base_L=5, Tip_R=5, Wall_T=3, Cut_Z=130, LowerPortion=false);
+// 
+// Splice_BONC(OD=58, H=10, L=160, Base_L=5, Tip_R=5, Wall_T=2.2, Cut_Z=80);  // fix a failed print
 // Bulkplate_BONC(OD=58, T=10, L=160, Base_L=5, Tip_R=5, Wall_T=2.2, Cut_Z=80);
 // BluntOgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=190, Base_L=21, Tip_R=22, Wall_T=2);
 // NoseconeBase(OD=PML98Body_ID, L=60, NC_Base=21);
@@ -208,7 +210,7 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3, Cut
 			union(){
 				// gluing flange
 				rotate_extrude($fn=$preview? 90:360) 
-					offset(-Wall_T-IDXtra*2) 
+					offset(-Wall_T-IDXtra/2) // did IDXtra*2, too much
 						BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
 					
 				// connect outer shell to gluing flange	
@@ -254,6 +256,31 @@ BluntOgiveNoseCone(ID=PML98Body_ID,
 //		Cut_Z=150, LowerPortion=true);
 
 //BluntOgiveNoseCone(ID=PML54Body_ID, OD=PML54Body_OD, L=160, Base_L=10, Tip_R=7, Wall_T=3);
+
+module Splice_BONC(OD=58, H=10, L=160, Base_L=5, Tip_R=5, Wall_T=2.2, Cut_Z=80){
+	// Failed print from power outage? Print this and the missing top protion.
+	difference(){
+		rotate_extrude($fn=$preview? 90:360) 
+			offset(-Wall_T-IDXtra*2) 
+				BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
+				
+		// inside
+		rotate_extrude($fn=$preview? 90:360) 
+			offset(-Wall_T*2-IDXtra*2) 
+				BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
+				
+		// Remove lower part
+			translate([0,0, -Overlap]) cylinder(d=OD+1, h=Cut_Z-H/2);
+			
+		// Remove upper part
+			translate([0,0,Cut_Z+H/2]) cylinder(d=OD+1, h=L-Cut_Z);
+			
+		// Clean up inside
+		translate([0,0,Cut_Z-H/2-1]) cylinder(d=10, h=H+2);
+	} // difference
+} // Splice_BONC
+
+//Splice_BONC(OD=102, H=12, L=320, Base_L=5, Tip_R=8, Wall_T=2.2, Cut_Z=160);
 
 module Bulkplate_BONC(OD=58, T=10, L=160, Base_L=5, Tip_R=5, Wall_T=2.2, Cut_Z=80){
 	
