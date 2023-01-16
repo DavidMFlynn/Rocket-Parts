@@ -124,8 +124,8 @@ F54_FairingHalf(IsLeftHalf=false,
 // *** Electronics Bay ***
 // R98_Electronics_Bay2();
 // FairingBaseBulkPlate(Tube_ID=R9832_Body_ID, Fairing_ID=Fairing_ID, ShockCord_a=-1);
-// rotate([0,180,0]) AltDoor54(Tube_OD=R9832_Body_OD, IsLoProfile=true, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
-// rotate([0,180,0]) AltDoor54(Tube_OD=R9832_Body_OD, IsLoProfile=true, DoorXtra_X=0, DoorXtra_Y=0); // old
+// AltDoor54(Tube_OD=R9832_Body_OD, IsLoProfile=true, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
+// AltDoor54(Tube_OD=R9832_Body_OD, IsLoProfile=true, DoorXtra_X=0, DoorXtra_Y=0); // old
 // CP_Door(Tube_OD=R9832_Body_OD, BoltBossInset=2, HasArmingSlot=true);
 // BoltInServoMount();
 // Batt_Door(Tube_OD=R9832_Body_OD, HasSwitch=false);

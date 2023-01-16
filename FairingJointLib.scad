@@ -3,7 +3,7 @@
 // Filename: FairingJointLib.scad
 // by David M. Flynn
 // Created: 8/5/2022 
-// Revision: 0.9.9  1/5/2023
+// Revision: 0.9.10  1/13/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,7 +12,8 @@
 //
 //  ***** History *****
 //
-echo("FairingJointLib 0.9.8");
+echo("FairingJointLib 0.9.10");
+// 0.9.10  1/13/2023 Changes tenon inset from 8.5 to Tenon_Y+FairingWall_t
 // 0.9.9  1/5/2023   Added BoltOnTenon
 // 0.9.8  9/12/2022  Fairing 75 is OK but changes will need to be tested with other sizes.
 // 0.9.7  9/9/2022   Finding size for Fairing98
@@ -64,10 +65,16 @@ JointPin_d=7.92; // 5/16" Delrin Ball
 
 Tenon_h=5;
 Tenon_Y=JointPin_d/2-1+2;
+
+//echo(Tenon_Y=Tenon_Y);
 Mortise_h=Tenon_h+IDXtra*3;
 MortiseOffset=JointPin_d/2+2.5;
+//echo(MortiseOffset=MortiseOffset);
 
 module Tenon(Tail=12, Tenon_h=Tenon_h){
+
+	MaxBall_Z=Tenon_h-JointPin_d/3;
+	
 	translate([0,0,-Tenon_h/2])
 	difference(){
 		union(){
@@ -78,12 +85,18 @@ module Tenon(Tail=12, Tenon_h=Tenon_h){
 			translate([-Tail,0,0]) cube([Tail-2,Tenon_Y+4,Tenon_h]);
 		} // union
 		
-		translate([0,-1,-Overlap]) cylinder(d=JointPin_d+IDXtra*2,h=Tenon_h+Overlap*2);
+		//translate([0,-1,-Overlap]) cylinder(d=JointPin_d+IDXtra*2,h=Tenon_h+Overlap*2);
+		
+		translate([0,-1,-Overlap]) cylinder(d=JointPin_d-1,h=Tenon_h+Overlap*2);
+		translate([0,-1,-Overlap]) cylinder(d=JointPin_d+IDXtra*2,h=MaxBall_Z+Overlap);
+		translate([0,-1,MaxBall_Z]) sphere(d=JointPin_d+IDXtra*2);
 		
 	} // difference
 } // Tenon
 
-//translate([JointPin_d/2+1,0,0]) Tenon(Tail=12);
+//translate([JointPin_d/2+1,0,0]) Tenon(Tail=12, Tenon_h=Tenon_h);
+
+//Tenon(Tail=12, Tenon_h=7);
 
 module BoltOnTenon(Tenon_h=Tenon_h){
 	Tail=20;
@@ -111,7 +124,9 @@ module BoltOnTenon(Tenon_h=Tenon_h){
 // BoltOnTenon(Tenon_h=6);
 		
 module SkirtedTenon(Tube_OD=100, Z=15){
-	rotate([0,0,180]) translate([-Tube_OD/2+8.5,6.5,Z]) 
+	TenonInset=Tenon_Y+2.2;
+	
+	rotate([0,0,180]) translate([-Tube_OD/2+TenonInset,6.5,Z]) 
 		rotate([0,0,90]) Tenon(Tail=15);
 	
 	translate([0,0,Z])
@@ -237,6 +252,69 @@ module LargeFairing_PJ_Clip_BoltPattern(Fairing_OD=137){
 		
 } // LargeFairing_PJ_Clip_BoltPattern
 
+module LargeFairing_PJ_Clip_Mounting(Fairing_OD=137, FairingWall_t=2.2){
+	Fairing_ID=Fairing_OD-FairingWall_t*2;
+	PJ_Clip_a=BigFairing_OD/Fairing_OD*PJ_Clip_a;
+	
+	difference(){
+		union(){
+			hull(){
+				LargeFairing_PJ_Clip_BoltPattern(Fairing_OD=Fairing_OD)
+					rotate([0,180,0]) cylinder(d=7+IDXtra*3+2.4, h=6);
+			} // hull
+			
+		} // union
+			
+		// Trim to Fairing_ID
+		translate([0,0,-10])
+		difference(){
+			cylinder(d=Fairing_ID+10, h=20);
+			translate([0,0,-Overlap]) cylinder(d=Fairing_ID+1, h=20+Overlap*2, $fn=$preview? 90:360);
+		} // difference
+	} // difference
+} // LargeFairing_PJ_Clip_Mounting
+
+//LargeFairing_PJ_Clip_Mounting();
+
+module LargeFairing_PJ_Clip_Socket(Fairing_OD=137, FairingWall_t=2.2){
+	PJ_Clip_a=BigFairing_OD/Fairing_OD*PJ_Clip_a;
+	
+	LockTip_X=Fairing_OD/2-FairingWall_t-PJ_Jointer_d/2+1;
+
+	
+	
+	hull(){
+		// Locking surface
+		rotate([0,0,-PJ_Clip_a]) translate([LockTip_X,-PJ_Jointer_d,0]){
+		
+			cylinder(d=PJ_Jointer_d, h=PJ_Clip_h+3, center=true);
+			rotate([0,0,PJ_Clip_a])
+				translate([-PJ_Jointer_d*2.5,0,0]) 
+					cylinder(d=PJ_Jointer_d, h=PJ_Clip_h+3, center=true);
+			}
+			
+		rotate([0,0,-PJ_Clip_a]) translate([LockTip_X,-PJ_Jointer_d*3,0]){
+			cylinder(d=PJ_Jointer_d, h=PJ_Clip_h+3, center=true);
+			rotate([0,0,PJ_Clip_a])
+				translate([-PJ_Jointer_d*5,0,0]) 
+					cylinder(d=PJ_Jointer_d, h=PJ_Clip_h+3, center=true);
+			}
+	} // hull
+	Lock_H=0.5;
+	difference(){
+		translate([Fairing_OD/2-FairingWall_t-Lock_H-2.5-PJ_Jointer_d/2,0,0]) cube([5,20,PJ_Clip_h+3],center=true);
+		
+		hull(){
+			translate([Fairing_OD/2-FairingWall_t-Lock_H-PJ_Jointer_d/2,10,0]) 
+				cylinder(d=PJ_Jointer_d, h=PJ_Clip_h+3+Overlap, center=true);
+			translate([Fairing_OD/2-FairingWall_t-Lock_H-PJ_Jointer_d/2,-7,0]) 
+				cylinder(d=PJ_Jointer_d, h=PJ_Clip_h+3+Overlap, center=true);
+		} // hull
+	} // difference
+} // LargeFairing_PJ_Clip_Socket
+
+//LargeFairing_PJ_Clip_Socket();
+
 module LargeFairing_PJ_Clip_Boss(Fairing_OD=137, FairingWall_t=2.2){
 	Fairing_ID=Fairing_OD-FairingWall_t*2;
 	PJ_Clip_a=BigFairing_OD/Fairing_OD*PJ_Clip_a;
@@ -261,6 +339,35 @@ module LargeFairing_PJ_Clip_Boss(Fairing_OD=137, FairingWall_t=2.2){
 
 //LargeFairing_PJ_Clip_Boss(Fairing_OD=137, FairingWall_t=2.2);
 
+module LargeFairing_Tenon_Boss(Fairing_OD=137, FairingWall_t=2.2){
+	Fairing_ID=Fairing_OD-FairingWall_t*2;
+	PJ_Clip_a=BigFairing_OD/Fairing_OD*PJ_Clip_a;
+	H=7;
+	TenonInset=Tenon_Y+FairingWall_t;
+	//echo(TenonInset=TenonInset);
+	
+	difference(){
+		union(){
+			hull(){
+				LargeFairing_PJ_Clip_BoltPattern(Fairing_OD=Fairing_OD)
+					rotate([0,180,0]) cylinder(d=7+IDXtra*3, h=20);
+			} // hull
+			rotate([0,0,180]) translate([-Fairing_OD/2+TenonInset,6.5,0]) 
+				rotate([0,0,90]) scale([1,1,1.1]) Tenon(Tail=12, Tenon_h=H);
+		} // union
+			
+		// Trim to Fairing_ID
+		translate([0,0,-5])
+		difference(){
+			cylinder(d=Fairing_ID+10, h=10);
+			translate([0,0,-Overlap]) 
+				cylinder(d=Fairing_ID+IDXtra*2, h=10+Overlap*2, $fn=$preview? 90:360);
+		} // difference
+	} // difference
+} // LargeFairing_Tenon_Boss
+
+//LargeFairing_Tenon_Boss();
+
 module LargeBolt_On_PJ_Clip(Fairing_OD=137, FairingWall_t=2.2){
 	// Used to repair a broken clip
 	
@@ -269,7 +376,7 @@ module LargeBolt_On_PJ_Clip(Fairing_OD=137, FairingWall_t=2.2){
 	
 	difference(){
 		union(){
-			PJ_Clip(Fairing_OD=Fairing_OD, FairingWall_t=FairingWall_t);
+			PJ_Clip(Fairing_OD=Fairing_OD, FairingWall_t=FairingWall_t, Xtra=1);
 			
 			hull(){
 				LargeFairing_PJ_Clip_BoltPattern(Fairing_OD=Fairing_OD)
@@ -285,13 +392,63 @@ module LargeBolt_On_PJ_Clip(Fairing_OD=137, FairingWall_t=2.2){
 		translate([0,0,-5])
 		difference(){
 			cylinder(d=Fairing_ID+10, h=10);
-			translate([0,0,-Overlap]) cylinder(d=Fairing_ID, h=10+Overlap*2, $fn=$preview? 90:360);
+			translate([0,0,-Overlap]) 
+				cylinder(d=Fairing_ID, h=10+Overlap*2, $fn=$preview? 90:360);
+			translate([Fairing_ID/2-5,0,0]) mirror([0,1,0]) cube([20,20,10]);
 		} // difference
 	} // difference
 	
 } // LargeBolt_On_PJ_Clip
 
-//LargeBolt_On_PJ_Clip();
+//LargeBolt_On_PJ_Clip(Fairing_OD=137, FairingWall_t=2.2);
+
+module LargeFairing_BoltOn_Tenon(Fairing_OD=137, FairingWall_t=2.2){
+	Fairing_ID=Fairing_OD-FairingWall_t*2;
+	PJ_Clip_a=BigFairing_OD/Fairing_OD*PJ_Clip_a;
+	
+	TenonInset=8;//8.5; // was Tenon_Y+FairingWall_t;
+	//echo(TenonInset=TenonInset);
+	TenonOffset_Y=5.8; // was 6.5
+	H=7;
+	
+	difference(){
+		union(){
+			rotate([0,0,180]) translate([-Fairing_OD/2+TenonInset, TenonOffset_Y, 0]) 
+				rotate([0,0,90]) Tenon(Tail=15, Tenon_h=H);
+				
+			hull(){
+				LargeFairing_PJ_Clip_BoltPattern(Fairing_OD=Fairing_OD)
+					rotate([0,180,0]) cylinder(d=H, h=FairingWall_t+9);
+			} // hull
+		} // Union
+		
+		// Bolt holes
+		LargeFairing_PJ_Clip_BoltPattern(Fairing_OD=137) Bolt4Hole(depth=20);
+		
+		// Trim to Fairing_ID
+		translate([0,0,-5])
+		difference(){
+			cylinder(d=Fairing_ID+10, h=10);
+			
+			translate([0,0,-Overlap]) 
+				cylinder(d=Fairing_ID, h=10+Overlap*2, $fn=$preview? 90:360);
+					
+			translate([Fairing_ID/2-2,-20,-Overlap*2]) cube([30,20,10+Overlap*4]);
+		} // difference
+		
+		// Trim to Fairing_OD
+		translate([0,0,-5])
+		difference(){
+			cylinder(d=Fairing_OD+10, h=10);
+			translate([0,0,-Overlap]) 
+				cylinder(d=Fairing_OD+1, h=10+Overlap*2, $fn=$preview? 90:360);
+				// added 1 to get it flush
+		} // difference
+	} // difference
+	
+} // LargeFairing_BoltOn_Tenon
+
+//LargeFairing_BoltOn_Tenon();
 
 module Bolt_On_PJ_Clip(Fairing_OD=100, FairingWall_t=2.2){
 	// Used to repair a broken clip
@@ -330,7 +487,7 @@ module Bolt_On_PJ_Clip(Fairing_OD=100, FairingWall_t=2.2){
 
 //Bolt_On_PJ_Clip(Fairing_OD=PML75Body_OD, FairingWall_t=2.2);
 
-module PJ_Clip(Fairing_OD=100, FairingWall_t=2.2){
+module PJ_Clip(Fairing_OD=100, FairingWall_t=2.2, Xtra=0){
 	PJ_Clip_a=BigFairing_OD/Fairing_OD*PJ_Clip_a;
 	
 	// LockXtra=-0.6; // Cheet for Fairing54 -0.4 was still too tight, -0.6 work perfectly
@@ -350,9 +507,11 @@ module PJ_Clip(Fairing_OD=100, FairingWall_t=2.2){
 	// Locking end
 	hull(){
 		// Locking surface
-		rotate([0,0,-PJ_Clip_a+LockXtra]) translate([LockTip_X,-PJ_Jointer_d,0])
+		rotate([0,0,-PJ_Clip_a+LockXtra]) translate([LockTip_X+Xtra,-PJ_Jointer_d,0])
 			cylinder(d=PJ_Jointer_d, h=PJ_Clip_h, center=true);
-		rotate([0,0,-PJ_Clip_a+LockXtra]) translate([LockTip_X-0.2,-PJ_Jointer_d*2,0])
+		rotate([0,0,-PJ_Clip_a+LockXtra]) translate([LockTip_X+Xtra-0.2,-PJ_Jointer_d*2,0])
+			cylinder(d=PJ_Jointer_d, h=PJ_Clip_h, center=true);
+		rotate([0,0,-PJ_Clip_a+LockXtra]) translate([Back_Back_X,-PJ_Jointer_d*2-Xtra,0])
 			cylinder(d=PJ_Jointer_d, h=PJ_Clip_h, center=true);
 		rotate([0,0,-PJ_Clip_a+LockXtra]) translate([Back_Back_X,-PJ_Jointer_d*2,0])
 			cylinder(d=PJ_Jointer_d, h=PJ_Clip_h, center=true);
@@ -361,7 +520,7 @@ module PJ_Clip(Fairing_OD=100, FairingWall_t=2.2){
 	// Backing
 	hull(){
 		// Lock end
-		rotate([0,0,-PJ_Clip_a+LockXtra]) translate([Back_Back_X,-PJ_Jointer_d*2,0])
+		rotate([0,0,-PJ_Clip_a+LockXtra]) translate([Back_Back_X,-PJ_Jointer_d*2-Xtra,0])
 			cylinder(d=PJ_Jointer_d, h=PJ_Clip_h, center=true);
 		rotate([0,0,-PJ_Clip_a+LockXtra]) translate([Back_Face_X,-PJ_Jointer_d*2,0])
 			cylinder(d=PJ_Jointer_d, h=PJ_Clip_h, center=true);
@@ -388,7 +547,7 @@ module PJ_Clip(Fairing_OD=100, FairingWall_t=2.2){
 	} // hull
 } // PJ_Clip
 
-//PJ_Clip(Fairing_OD=SmallFairing_OD);
+//PJ_Clip(Fairing_OD=SmallFairing_OD, Xtra=0);
 //rotate([0,0,-0.2]) PJ_CW(Fairing_OD=SmallFairing_OD, FairingWall_T=2.2, Len=10);
 //PJ_CCW(Fairing_OD=SmallFairing_OD, FairingWall_T=2.2, Len=10);
 

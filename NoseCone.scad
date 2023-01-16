@@ -144,6 +144,32 @@ module OgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Wall_T=3){
 
 //OgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=180, Base_L=21, Wall_T=3);
 
+/*
+module BluntSecantOgiveShape(L=150, D=50, Base_L=10, Tip_R=5){
+	
+	R=D/2;
+	
+	translate([0,Base_L,0])
+	difference(){
+		hull(){
+			difference(){
+				intersection(){
+					square([R,L]);
+					circle(r=p, $fn=$preview? 90:720);
+				} // intersection
+				//translate([0,L-X0]) square([50,50]);
+			} // difference
+			//translate([0,L-X0, 0]) circle(r=Tip_R, $fn=$preview? 90:720);
+		} // hull
+	
+		translate([-100,-Overlap,0]) square([100,L+Overlap*2]);
+	} // difference
+	
+	square([R,Base_L+Overlap]);
+} // BluntSecantOgiveShape
+
+BluntSecantOgiveShape(L=190, D=137, Base_L=5, Tip_R=15);
+/**/
 module BluntOgiveShape(L=150, D=50, Base_L=10, Tip_R=5){
 	// Spherically blunted tangent ogive
 	R=D/2;
@@ -170,7 +196,7 @@ module BluntOgiveShape(L=150, D=50, Base_L=10, Tip_R=5){
 } // BluntOgiveShape
 
 //rotate_extrude() 
-//offset(-3) BluntOgiveShape();
+//offset(-3) BluntOgiveShape(L=190, D=137, Base_L=5, Tip_R=15);
 
 module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3, Cut_Z=0, LowerPortion=false){
 	R=OD/2;

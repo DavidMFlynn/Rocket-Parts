@@ -105,6 +105,21 @@ FairingConeOGive(Fairing_OD=Body_OD,
 //
 // *** Fairing ***
 /*
+LargeFairing(IsLeftHalf=true, 
+				Fairing_OD=Fairing_OD,
+				Wall_T=7,
+				Len=80); // test Fairing_Len
+/**/
+//
+/*
+LargeFairing(IsLeftHalf=false, 
+				Fairing_OD=Fairing_OD,
+				Wall_T=7,
+				Len=80); // test Fairing_Len
+/**/
+//
+/*
+// old style
 F54_FairingHalf(IsLeftHalf=true,
 				Fairing_OD=Fairing_OD,
 				Wall_T=FairingWall_T,
@@ -120,13 +135,13 @@ F54_FairingHalf(IsLeftHalf=false,
 // F54_SpringEndCap();
 //
 // *** Electronics Bay ***
-// R98_Electronics_Bay2();
+// R137_Electronics_Bay();
 // FairingBaseBulkPlate(Tube_ID=Body_ID, Fairing_ID=Fairing_ID, ShockCord_a=-1);
 // rotate([0,180,0]) AltDoor54(Tube_OD=Body_OD, IsLoProfile=true, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
 // rotate([0,180,0]) AltDoor54(Tube_OD=Body_OD, IsLoProfile=true, DoorXtra_X=0, DoorXtra_Y=0); // old
 // rotate([0,180,0]) CP_Door(Tube_OD=Body_OD);
 // Batt_Door(Tube_OD=Body_OD, HasSwitch=false);
-// Batt_Door(Tube_OD=Body_OD, HasSwitch=true);
+// Batt_Door6xAAA(Tube_OD=BT137Body_OD, InnerTube_OD=BT54Body_OD, HasSwitch=true);
 //
 // ------------
 // *** Cable Puller, 5 Req. ***
@@ -144,7 +159,6 @@ F54_FairingHalf(IsLeftHalf=false,
 // rotate([180,0,0]) TriggerBellCrank();
 // ------------
 //
-// DrogueMechBay();
 //
 //  *** SpringThing parts for dual deploy ***
 // ST_TubeEnd(Tube_OD=DualDepCouplerTube_OD, Tube_ID=DualDepCouplerTube_ID);
@@ -526,16 +540,19 @@ module ShowRocket(){
 //ShowRocket();
 
 
-module R98_Electronics_Bay2(){
+module R137_Electronics_Bay(){
 	Len=EBay_Len;
 	CablePuller_Z=81;
+	CableInset_Y=15;
 	BattSwDoor_Z=70;
 	TopSkirt_Len=15;
 	BottomSkirt_Len=15;
-	CP1_a=0;
-	Alt_a=180;
-	Batt1_a=90; // Altimeter Battery
-	Batt2_a=270; // Cable puller battery and switch
+	CP1_a=0; // SpringThing
+	CP2_a=180; // Stager
+	CP3_a=60; // Fairing
+	Alt_a=300;
+	Batt1_a=240; // Altimeter Battery
+	Batt2_a=120; // Cable puller battery and switch
 
 	// The Fairing clamps onto this.
 	translate([0,0,Len]) FairingBaseLockRing(Tube_OD=Body_OD, Tube_ID=Body_ID, Fairing_ID=Fairing_ID, Interface=Overlap, BlendToTube=true);
@@ -552,89 +569,53 @@ module R98_Electronics_Bay2(){
 		} // union
 
 		// Altimeter
-		translate([0,0,CablePuller_Z]) rotate([0,0,Alt_a])
+		translate([0,0,CablePuller_Z]) rotate([0,0,180+Alt_a])
 			Alt_BayFrameHole(Tube_OD=Body_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
 
 		// Cable Puller door hole
-		translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a])
+		translate([0,0,CablePuller_Z]) rotate([0,0,180+CP1_a])
+			CP_BayFrameHole(Tube_OD=Body_OD);
+		// Cable Puller door hole
+		translate([0,0,CablePuller_Z]) rotate([0,0,180+CP2_a])
+			CP_BayFrameHole(Tube_OD=Body_OD);
+		// Cable Puller door hole
+		translate([0,0,CablePuller_Z]) rotate([0,0,180+CP3_a])
 			CP_BayFrameHole(Tube_OD=Body_OD);
 
+		// Cable Puller cable holes
+		rotate([0,0,CP1_a]) translate([0,Body_OD/2-CableInset_Y,0]) cylinder(d=6, h=50);
+		rotate([0,0,CP2_a]) translate([0,Body_OD/2-CableInset_Y,0]) cylinder(d=6, h=50);
+		rotate([0,0,CP3_a]) translate([0,Body_OD/2-CableInset_Y,Len-50]) cylinder(d=6, h=50);
+		
 		// Battery and Switch door holes
-		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a])
+		translate([0,0,BattSwDoor_Z]) rotate([0,0,180+Batt1_a])
 			Batt_BayFrameHole(Tube_OD=Body_OD, HasSwitch=false);
-		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a])
+		translate([0,0,BattSwDoor_Z]) rotate([0,0,180+Batt2_a])
 			Batt_BayFrameHole(Tube_OD=Body_OD, HasSwitch=true);
 
 	} // difference
 
 	// Altimeter
-	translate([0,0,CablePuller_Z]) rotate([0,0,Alt_a])
+	translate([0,0,CablePuller_Z]) rotate([0,0,180+Alt_a])
 		Alt_BayDoorFrame(Tube_OD=Body_OD, Tube_ID=Body_ID, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=false);
 
 	// Cable Pullers
-	translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a])
+	translate([0,0,CablePuller_Z]) rotate([0,0,180+CP1_a])
+		CP_BayDoorFrame(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoor=false);
+	translate([0,0,CablePuller_Z]) rotate([0,0,180+CP2_a])
+		CP_BayDoorFrame(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoor=false);
+	translate([0,0,CablePuller_Z]) rotate([0,0,180+CP3_a])
 		CP_BayDoorFrame(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoor=false);
 
 	// Battery and Switch door2
-	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a])
+	translate([0,0,BattSwDoor_Z]) rotate([0,0,180+Batt1_a])
 		Batt_BayDoorFrame(Tube_OD=Body_OD, Tube_ID=Body_ID, HasSwitch=false, ShowDoor=false);
-	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a])
+	translate([0,0,BattSwDoor_Z]) rotate([0,0,180+Batt2_a])
 		Batt_BayDoorFrame(Tube_OD=Body_OD, Tube_ID=Body_ID, HasSwitch=true, ShowDoor=false);
 
-} // R98_Electronics_Bay2
+} // R137_Electronics_Bay
 
-//translate([0,0,EBay_Len]) R98_Electronics_Bay2();
-
-module DrogueMechBay(){
-	Len=EBay_Len;
-	CablePuller_Z=81;
-	BattSwDoor_Z=70;
-	TopSkirt_Len=15;
-	BottomSkirt_Len=15;
-	CP1_a=0;
-	CP2_a=180;
-	Batt1_a=90;
-	Batt2_a=270;
-
-
-	difference(){
-		union(){
-			Tube(OD=Body_OD, ID=Body_ID, Len=Len, myfn=$preview? 36:360);
-			translate([0,0,BottomSkirt_Len])
-				CenteringRing(OD=Body_OD-1, ID=EBayTube_OD+IDXtra*2, Thickness=5, nHoles=4);
-			translate([0,0,Len-5-TopSkirt_Len])
-				CenteringRing(OD=Body_OD-1, ID=EBayTube_OD+IDXtra*2, Thickness=5, nHoles=4);
-		} // union
-
-		// Cable Puller door holes
-		translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a])
-			rotate([0,180,0]) CP_BayFrameHole(Tube_OD=Body_OD);
-		translate([0,0,CablePuller_Z]) rotate([0,0,CP2_a])
-			rotate([0,180,0]) CP_BayFrameHole(Tube_OD=Body_OD);
-
-		// Battery and Switch door holes
-		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a])
-			Batt_BayFrameHole(Tube_OD=Body_OD, HasSwitch=true);
-		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a])
-			Batt_BayFrameHole(Tube_OD=Body_OD, HasSwitch=true);
-
-	} // difference
-
-	// Cable Pullers
-	translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a])
-		rotate([0,180,0]) CP_BayDoorFrame(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoor=false);
-	translate([0,0,CablePuller_Z]) rotate([0,0,CP2_a])
-		rotate([0,180,0]) CP_BayDoorFrame(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoor=false);
-
-	// Battery and Switch door2
-	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a])
-		Batt_BayDoorFrame(Tube_OD=Body_OD, Tube_ID=Body_ID, HasSwitch=true, ShowDoor=false);
-	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a])
-		Batt_BayDoorFrame(Tube_OD=Body_OD, Tube_ID=Body_ID, HasSwitch=true, ShowDoor=false);
-
-} // DrogueMechBay
-
-//DrogueMechBay();
+//translate([0,0,EBay_Len]) R137_Electronics_Bay();
 
 
 module DrogueSep(){

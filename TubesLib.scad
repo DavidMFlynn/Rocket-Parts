@@ -60,7 +60,7 @@ PML150Coupler_ID=5.86*25.4;
 PML98Body_OD=(3.9+0.062*2)*25.4;
 PML98Body_ID=3.9*25.4;
 PML98Coupler_OD=(3.78+0.062*2)*25.4;
-PML98Coupler_ID=3.78*25.4;
+PML98Coupler_ID=95.4; //measured LOC/PML, was 3.78*25.4;
 /*
 echo(PML98Body_OD=PML98Body_OD);
 echo(PML98Body_ID=PML98Body_ID);
@@ -125,6 +125,10 @@ module CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0){
 
 //CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5);
 //CenteringRing(OD=BT54Body_ID, ID=BT38Coupler_OD+IDXtra*2, Thickness=5, nHoles=0);
+//CenteringRing(OD=PML98Coupler_ID, ID=PML54Body_OD+IDXtra*2, Thickness=5, nHoles=5);
+//CenteringRing(OD=PML98Coupler_ID, ID=BT38Body_OD+IDXtra*2, Thickness=5, nHoles=5);
+//echo(PML98Coupler_ID=PML98Coupler_ID);
+//58x95.4
 
 module ClusterRing(OD=BT137Body_ID, Thickness=5,
 					CenterMotor_OD=BT54Body_OD, ClusterMotor_OD=PML38Body_OD, nClusterMotors=3,
@@ -166,6 +170,8 @@ module ShockCordMount(OD=PML98Body_ID, ID=BT54Mtr_OD, AnchorRod_OD=12.7){
 } // ShockCordMount
 
 //ShockCordMount();
+
+//ShockCordMount(OD=PML98Coupler_ID, ID=PML54Body_OD+IDXtra*2, AnchorRod_OD=12.7);
 
 module Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=300, myfn=$preview? 36:360){
 	difference(){

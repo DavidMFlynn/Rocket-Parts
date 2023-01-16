@@ -176,7 +176,6 @@ module LowerFinCan(){
 
 	difference(){
 		translate([0,0,80]) rotate([0,0,-90-180/nFins]) 
-			//RailButtonPost(OD=R98_Body_OD, MtrTube_OD=R98_MtrTube_OD, H=R98_Body_OD/2+5, Len=30);
 			RailGuidePost(OD=R98_Body_OD, MtrTube_OD=R98_MtrTube_OD+IDXtra*2, H=R98_Body_OD/2+2, TubeLen=70, Length = 40, BoltSpace=12.7);
 		translate([0,0,50]) TrapFin2Slots(Tube_OD=R98_Body_OD, nFins=nFins, 	
 			Post_h=R98_Fin_Post_h, Root_L=R98_Fin_Root_L, Root_W=R98_Fin_Root_W, Chamfer_L=R98_Fin_Chamfer_L);
@@ -184,7 +183,8 @@ module LowerFinCan(){
 
 } // LowerFinCan
 
-// LowerFinCan();
+// 
+LowerFinCan();
 
 module Rocket98Fin(){
 	TrapFin2(Post_h=R98_Fin_Post_h, Root_L=R98_Fin_Root_L, Tip_L=R98_Fin_Tip_L, 

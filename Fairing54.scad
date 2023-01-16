@@ -3,7 +3,7 @@
 // Filename: Fairing54.scad
 // by David M. Flynn
 // Created: 8/5/2022 
-// Revision: 1.0.17  11/25/2022
+// Revision: 1.1.0  1/7/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -26,7 +26,8 @@
 //
 //  ***** History *****
 //
-echo("Fairing54 1.0.17");
+echo("Fairing54 1.1.0");
+// 1.1.0   1/7/2023   Added Large Fairing w/ ULA style wall.
 // 1.0.17  11/25/2022 Added fixed stop the lock rings. FairingBaseLockRing() and NoseLockRing() have changed
 // 1.0.16  11/6/2022  Added shock cord options to FairingBaseBulkPlate
 // 1.0.15  10/27/2022 Added BlendToTube
@@ -77,6 +78,12 @@ F54_FairingHalf(IsLeftHalf=false,
 				Len=Fairing_Len);
 /**/
 //
+/*
+LargeFairing(IsLeftHalf=true, 
+				Fairing_OD=137,
+				Wall_T=7,
+				Len=Fairing_Len);
+/**/
 // rotate([180,0,0]) FairingBase(BaseXtra=0, Fairing_OD=Fairing_OD, Fairing_ID=Fairing_ID,
 //					BodyTubeOD=PML54Body_OD, 
 //					CouplerTube_OD=PML54Coupler_OD, CouplerTube_ID=PML54Coupler_ID); // Pring w/ support
@@ -99,6 +106,9 @@ F54_FairingHalf(IsLeftHalf=false,
 //
 // ***********************************
 //  ***** Routines *****
+//
+// FairingWallGrigBox(X=10, Y=15, Z=15, R=1.5, A=0);
+// GridWall(OD=BT137Body_OD, ID=BT137Body_OD-14, Len=100, Wall_t=1.2);
 //
 // FairingConeBaseRing(Fairing_OD=Fairing_OD, FairingWall_T=FairingWall_T, NC_Base=NC_Base, NC_Wall_t=NC_Wall_t);
 // F54_SpringHole();
@@ -301,7 +311,6 @@ module FairingAssemblyToolPt3(){
 
 //translate([PML98Body_OD/2+5,0,0]) FairingAssemblyToolPt3();
 
-
 module FairingAssemblyToolPt4(){
 	// the lever
 	H=18;
@@ -355,18 +364,21 @@ module ShowAsmTool(Fairing_OD=PML54Body_OD+IDXtra*2){
 
 module FairingConeBaseRing(Fairing_OD=Fairing_OD, 
 							FairingWall_T=FairingWall_T, 
-							NC_Base=NC_Base, 
+							NC_Base=NC_Base,
 							NC_Wall_t=NC_Wall_t){
 	
 	Fairing_ID=Fairing_OD-FairingWall_T*2;
+	NC_ID=Fairing_OD-NC_Wall_t*2;
 	
 	difference(){
-		cylinder(d=Fairing_OD-NC_Wall_t*2+Overlap, h=NC_Base+3, $fn=$preview? 90:360);
+		cylinder(d=Fairing_OD-FairingWall_T*2+Overlap, h=NC_Base+3, $fn=$preview? 90:360);
 				
 		translate([0,0,-Overlap]) 
 			cylinder(d=NC_Lock_ID(Fairing_ID)+IDXtra, h=NC_Base+Overlap*2, $fn=$preview? 90:360);
+			
+		//#if (NC_Lock_ID(Fairing_ID)>NC_ID)
 		translate([0,0,NC_Base-Overlap]) 
-			cylinder(d1=NC_Lock_ID(Fairing_ID), d2=Fairing_ID,h=3+Overlap*2, $fn=$preview? 90:360);
+			cylinder(d1=NC_Lock_ID(Fairing_ID), d2=NC_ID, h=3+Overlap*2, $fn=$preview? 90:360);
 			} // difference
 } // FairingConeBaseRing
 
@@ -439,9 +451,13 @@ module FairingConeOGive(Fairing_OD=Fairing_OD,
 	
 	difference(){
 		union(){
-			BluntOgiveNoseCone(ID=Base_ID, OD=Fairing_OD, L=NC_Len, 
+			difference(){
+				BluntOgiveNoseCone(ID=Base_ID, OD=Fairing_OD, L=NC_Len, 
 						Base_L=NC_Base, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t,
 						Cut_Z=Cut_Z, LowerPortion=LowerPortion);
+						
+				translate([0,0,-Overlap]) cylinder(d=Fairing_OD-FairingWall_T*2-2, h=8);
+			} // difference
 			
 			if (LowerPortion||(Cut_Z==0))
 			// coupler ring
@@ -460,6 +476,18 @@ module FairingConeOGive(Fairing_OD=Fairing_OD,
 } // FairingConeOGive
 
 //translate([0,0,Fairing_Len+Overlap]) FairingConeOGive(); 
+/*
+FairingConeOGive(Fairing_OD=BT137Body_OD,
+					FairingWall_T=2.2,
+					NC_Base=5,
+					NC_Len=205,
+					NC_Wall_t=7,
+					NC_Tip_r=20,
+					Cut_Z=0, LowerPortion=true);
+					
+//translate([0,0,-2]) NoseLockRing(Fairing_OD=BT137Body_OD, Fairing_ID =BT137Body_OD-4.4);
+/**/
+//NoseLockRing(Fairing_OD=BT137Body_OD, Fairing_ID =BT137Body_OD-4.4);
 /*
 FairingConeOGive(Fairing_OD=BT137Body_OD,
 					FairingWall_T=2.2,
@@ -589,7 +617,33 @@ module FairingBase(BaseXtra=0, Fairing_OD=Fairing_OD, Fairing_ID=Fairing_ID,
 	} // difference
 } // FairingBase
 
-//translate([0,0,-10]) FairingBase();
+//translate([0,0,-10]) 
+
+module BigFairingAdaptor(){
+	FairingBase(BaseXtra=25, Fairing_OD=BT137Body_OD, Fairing_ID=BT137Body_OD-4.4,
+					BodyTubeOD=PML98Body_OD, 
+					CouplerTube_OD=PML98Coupler_OD, CouplerTube_ID=PML98Coupler_ID);
+					
+	//translate([0,0,15]) rotate([180,0,0]) NoseLockRing(Fairing_OD=BT137Body_OD, Fairing_ID =BT137Body_OD-4.4);
+	
+	translate([0,0,12]) FairingBaseLockRing(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_OD-4.4, Fairing_ID=BT137Body_OD-4.4, Interface=Overlap, BlendToTube=false);
+	
+	CR_Z=4.5;
+	difference(){
+		translate([0,0,CR_Z]) 
+			CenteringRing(OD=BT137Body_OD, ID=BT38Body_OD+IDXtra*2, Thickness=9, nHoles=9);
+			
+		translate([0,0,12])
+		difference(){
+			 cylinder(d=BT137Body_OD+1,h=5);
+			 translate([0,0,-Overlap]) cylinder(d=BT137Body_OD-11,h=5+Overlap*2);
+		}
+		
+		translate([-BT137Body_OD/2+12,0,CR_Z-1]) cylinder(d=12, h=12);
+	} // diff
+} // BigFairingAdaptor
+
+//rotate([180,0,0]) BigFairingAdaptor();
 
 module FairingBaseBulkPlate(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, ShockCord_a=-90){
 	// Stops the parchute from falling into the E-Bay
@@ -692,14 +746,14 @@ module F54_Retainer(IsLeftHalf=true, Fairing_OD=Fairing_OD, Wall_T=FairingWall_T
 			// Nosecone retention
 			translate([0,0,-NC_Lock_H])
 			difference(){
-				cylinder(d=Fairing_OD-1, h=NC_Lock_H, $fn=$preview? 90:360);
+				translate([0,0,-1]) cylinder(d=Fairing_OD-1, h=NC_Lock_H+1, $fn=$preview? 90:360);
 				
 				// Center hole
 				translate([0,0,-Overlap]) 
 					cylinder(d=NC_Lock_ID(Fairing_ID)+1, h=NC_Lock_H+Overlap*2, $fn=$preview? 90:360);
 				
-				translate([0,0,-Overlap]) 
-					cylinder(d=Fairing_ID, h=0.6+Overlap*2, $fn=$preview? 90:360);
+				translate([0,0,-1-Overlap]) 
+					cylinder(d=Fairing_ID, h=1.6+Overlap*2, $fn=$preview? 90:360);
 				
 				// Blend into fairing
 				translate([0,0,0.6]) 
@@ -712,11 +766,11 @@ module F54_Retainer(IsLeftHalf=true, Fairing_OD=Fairing_OD, Wall_T=FairingWall_T
 
 		
 		if (IsLeftHalf){
-			translate([-Fairing_OD/2-1, 0, -NC_Lock_H-Overlap]) 
-				mirror([0,1,0]) cube([Fairing_OD+2, Fairing_OD/2+2, NC_Lock_H+Overlap*2]);
+			translate([-Fairing_OD/2-1, 0, -NC_Lock_H-1-Overlap]) 
+				mirror([0,1,0]) cube([Fairing_OD+2, Fairing_OD/2+2, NC_Lock_H+1+Overlap*2]);
 		} else {
-			translate([-Fairing_OD/2-1, 0, -NC_Lock_H-Overlap]) 
-				cube([Fairing_OD+2, Fairing_OD/2+2, NC_Lock_H+Overlap*2]);
+			translate([-Fairing_OD/2-1, 0, -NC_Lock_H-1-Overlap]) 
+				cube([Fairing_OD+2, Fairing_OD/2+2, NC_Lock_H+1+Overlap*2]);
 		}
 	} // difference
 } // F54_Retainer
@@ -816,7 +870,7 @@ module FairingWallGrigBox(X=10, Y=15, Z=15, R=1.5, A=0){
 } // FairingWallGrigBox
 
 //FairingWallGrigBox(X=10, Y=15, Z=15, R=1.5);
-
+			
 module GridWall(OD=BT137Body_OD, ID=BT137Body_OD-14, Len=100, Wall_t=1.2){
 	Box_X=10;
 	Box_Z=15;
@@ -846,8 +900,7 @@ module GridWall(OD=BT137Body_OD, ID=BT137Body_OD-14, Len=100, Wall_t=1.2){
 module LargeFairing(IsLeftHalf=true, 
 				Fairing_OD=Fairing_OD,
 				Wall_T=7,
-				Len=Fairing_Len,
-				HasArmingHole=true){
+				Len=Fairing_Len){
 	
 	TubeWall_T=2.2;
 	PJ_Spacing=(Len-25)/4;
@@ -857,6 +910,9 @@ module LargeFairing(IsLeftHalf=true,
 	Z2=Len-Z1;
 	M_H=12;
 	M_H2=16;
+	HingeInset=2.5;
+	WallInset_Z=6;
+	MortiseOffset=8.5;
 	
 	module LockingBallAccessHole(H=JointPin_d){
 		hull(){
@@ -871,12 +927,6 @@ module LargeFairing(IsLeftHalf=true,
 					rotate([-90,0,0]) F54_SpringEndCapHole(Xtra=2);
 	} // SpringSocket
 		
-	translate([0,0,Len])			
-		F54_Retainer(IsLeftHalf=IsLeftHalf, Fairing_OD=Fairing_OD, Wall_T=TubeWall_T);
-	
-	// Fairing base interface
-	mirror([0,0,1])
-		F54_Retainer(IsLeftHalf=IsLeftHalf, Fairing_OD=Fairing_OD, Wall_T=TubeWall_T);
 	
 	// Ball Tube
 	if (IsLeftHalf)
@@ -900,18 +950,45 @@ module LargeFairing(IsLeftHalf=true,
 			
 	difference(){
 		union(){
+			translate([0,0,Len])			
+				F54_Retainer(IsLeftHalf=IsLeftHalf, Fairing_OD=Fairing_OD, Wall_T=TubeWall_T);
+			mirror([0,0,1])
+				F54_Retainer(IsLeftHalf=IsLeftHalf, Fairing_OD=Fairing_OD, Wall_T=TubeWall_T);
+
 			if (IsLeftHalf){
-				translate([0,0,5])
-					GridWall(OD=Fairing_OD, ID=Fairing_ID, Len=Len-10, Wall_t=1.2);
-			}else{
-				rotate([0,0,180]) translate([0,0,5])
-					GridWall(OD=Fairing_OD, ID=Fairing_ID, Len=Len-10, Wall_t=1.2);
+				translate([0,0,WallInset_Z])
+					GridWall(OD=Fairing_OD, ID=Fairing_ID, Len=Len-WallInset_Z*2, Wall_t=1.2);
+					
+				// Keys to align fairing and nosecone
+				translate([-Fairing_OD/2+3, 6.5, 0]) cylinder(d=4, h=6);
+				translate([-Fairing_OD/2+3, 6.5, Len-6]) cylinder(d=4, h=6);
 				
-				translate([Fairing_OD/2-3,0,-Overlap]) cylinder(d=4-IDXtra*3, h=Len+Overlap);
+			}else{
+				rotate([0,0,180]) translate([0,0,WallInset_Z])
+					GridWall(OD=Fairing_OD, ID=Fairing_ID, Len=Len-WallInset_Z*2, Wall_t=1.2);
 			}
 			
 			Tube(OD=Fairing_OD, ID=Fairing_OD-2.4, Len=Len, myfn=$preview? 36:360);
 			
+			// Fairing clip mounts
+			if (IsLeftHalf){
+				translate([0,0,12.5+PJ_Spacing])
+					LargeFairing_PJ_Clip_Mounting(Fairing_OD=Fairing_OD, FairingWall_t=1.2);
+				translate([0,0,12.5+PJ_Spacing*3])
+					LargeFairing_PJ_Clip_Mounting(Fairing_OD=Fairing_OD, FairingWall_t=1.2);
+			}else{
+				translate([0,0,12.5]) rotate([180,0,0])
+					LargeFairing_PJ_Clip_Mounting(Fairing_OD=Fairing_OD, FairingWall_t=1.2);
+				translate([0,0,12.5+PJ_Spacing*2]) rotate([180,0,0])
+					LargeFairing_PJ_Clip_Mounting(Fairing_OD=Fairing_OD, FairingWall_t=1.2);
+				translate([0,0,12.5+PJ_Spacing*4]) rotate([180,0,0])
+					LargeFairing_PJ_Clip_Mounting(Fairing_OD=Fairing_OD, FairingWall_t=1.2);
+					
+				translate([0,0,Z1]) rotate([0,0,180]) 
+					LargeFairing_PJ_Clip_Mounting(Fairing_OD=Fairing_OD, FairingWall_t=1.2);
+				translate([0,0,Z2]) rotate([0,0,180]) 
+					LargeFairing_PJ_Clip_Mounting(Fairing_OD=Fairing_OD, FairingWall_t=1.2);
+			}
 		} // union
 		
 		// cut in half
@@ -923,16 +1000,23 @@ module LargeFairing(IsLeftHalf=true,
 				cube([Fairing_OD+2, Fairing_OD/2+2, Len+Overlap*2]);
 		}
 		
-		if (IsLeftHalf)
-			translate([Fairing_OD/2-3,0,-Overlap]) cylinder(d=4, h=Len+Overlap);
 		
 		if (IsLeftHalf){
-			if (HasArmingHole) translate([BallHole_X,6.5-Overlap,Z2-M_H2/2]) 
+			// Hinge
+			translate([Fairing_OD/2-HingeInset,0,-Overlap]) cylinder(d=3.6, h=Len+Overlap+2);
+			translate([Fairing_OD/2,-1.5,Len/2]) 
+				rotate([0,0,30]) cube([4,4,Len+Overlap+2],center=true);
+		
+			// cable path
+			translate([BallHole_X,6.5,Len/2]) 
+				cylinder(d=JointPin_d+IDXtra*3, h=Len-10, center=true);
+			
+			translate([BallHole_X,6.5-Overlap,Z2-M_H2/2]) 
 				rotate([0,0,-90]) LockingBallAccessHole(H=10);
 		
-			translate([-Fairing_OD/2+8.5,6.5-Overlap,Z1]) 
+			translate([-Fairing_OD/2+MortiseOffset,6.5-Overlap,Z1]) 
 				rotate([0,0,90]) MortiseBox(Mortise_h=M_H);
-			translate([-Fairing_OD/2+8.5,6.5-Overlap,Z2]) 
+			translate([-Fairing_OD/2+MortiseOffset,6.5-Overlap,Z2]) 
 				rotate([0,0,90]) MortiseBox(Mortise_h=M_H);
 				
 			translate([0,0,12.5+PJ_Spacing]){
@@ -942,6 +1026,12 @@ module LargeFairing(IsLeftHalf=true,
 				LargeFairing_PJ_Clip_Boss(Fairing_OD=Fairing_OD, FairingWall_t=TubeWall_T);
 				LargeFairing_PJ_Clip_BoltPattern(Fairing_OD=Fairing_OD) Bolt4ClearHole();}
 
+			translate([0,0,12.5]) rotate([180,0,0]) 
+				LargeFairing_PJ_Clip_Socket(Fairing_OD=Fairing_OD, FairingWall_t=TubeWall_T);
+			translate([0,0,12.5+PJ_Spacing*2]) rotate([180,0,0]) 
+				LargeFairing_PJ_Clip_Socket(Fairing_OD=Fairing_OD, FairingWall_t=TubeWall_T);
+			translate([0,0,12.5+PJ_Spacing*4]) rotate([180,0,0]) 
+				LargeFairing_PJ_Clip_Socket(Fairing_OD=Fairing_OD, FairingWall_t=TubeWall_T);
 		}else{
 			// Spring
 			if (IsLeftHalf==false) SpringSocket();
@@ -955,40 +1045,49 @@ module LargeFairing(IsLeftHalf=true,
 			translate([0,0,12.5+PJ_Spacing*4]) rotate([180,0,0]){ 
 				LargeFairing_PJ_Clip_Boss(Fairing_OD=Fairing_OD, FairingWall_t=TubeWall_T);
 				LargeFairing_PJ_Clip_BoltPattern(Fairing_OD=Fairing_OD) Bolt4ClearHole();}
+				
+			translate([0,0,12.5+PJ_Spacing]) 
+				LargeFairing_PJ_Clip_Socket(Fairing_OD=Fairing_OD, FairingWall_t=TubeWall_T);
+			translate([0,0,12.5+PJ_Spacing*3]) 
+				LargeFairing_PJ_Clip_Socket(Fairing_OD=Fairing_OD, FairingWall_t=TubeWall_T);
+			
+			// Tenons go here
+			translate([0,0,Z1]) rotate([0,0,180]){ 
+				LargeFairing_Tenon_Boss(Fairing_OD=Fairing_OD, FairingWall_t=TubeWall_T);
+				LargeFairing_PJ_Clip_BoltPattern(Fairing_OD=Fairing_OD) Bolt4ClearHole();}
+				
+			translate([0,0,Z2]) rotate([0,0,180]){ 
+				LargeFairing_Tenon_Boss(Fairing_OD=Fairing_OD, FairingWall_t=TubeWall_T);
+				LargeFairing_PJ_Clip_BoltPattern(Fairing_OD=Fairing_OD) Bolt4ClearHole();}
 		}
 	} // diff
 	
-	
+	// Hinge
+	if (IsLeftHalf==false)
+		translate([Fairing_OD/2-HingeInset,0,6]) cylinder(d=3, h=Len-12);
+				
+	//*
 	// Sockets and Tenons
 	difference(){
 		union(){
 			if (IsLeftHalf){
-				translate([-Fairing_OD/2+8.5,6.5,Z1]) rotate([0,0,90]) Socket(H=M_H);
-				translate([-Fairing_OD/2+8.5,6.5,Z2]) rotate([0,0,90]) Socket(H=M_H);
+				translate([-Fairing_OD/2+MortiseOffset,6.5,Z1]) rotate([0,0,90]) Socket(H=M_H);
+				translate([-Fairing_OD/2+MortiseOffset,6.5,Z2]) rotate([0,0,90]) Socket(H=M_H);
 				
-				SpringStop_Len=7;
 				// The spring pushes on this. Fixed 9/24/2022
 				mirror([1,0,0]) 
-					translate([Fairing_ID/2-F54_SpringEndCap_OD/2-2,0,Len/2])
+					translate([Fairing_ID/2-F54_SpringEndCap_OD/2,0,Len/2])
 						hull(){
-							rotate([-90,0,0]) cylinder(d=F54_SpringEndCap_OD+4, h=1);
-							translate([0,SpringStop_Len,0]) sphere(d=F54_SpringEndCap_OD);
+							rotate([-90,0,0]) cylinder(d=14, h=1);
+							translate([0,5,0]) sphere(d=10);
 							
 							translate([7,0,0]){
-								rotate([-90,0,0]) cylinder(d=F54_SpringEndCap_OD+10,h=1);
-								translate([0,SpringStop_Len+4,0]) sphere(d=F54_SpringEndCap_OD+4);}
+								rotate([-90,0,0]) cylinder(d=20,h=1);
+								translate([0,5,0]) sphere(d=10);}
 						} // hull
 						
-				//translate([0,0,12.5+PJ_Spacing]) PJ_Clip(Fairing_OD=Fairing_OD);
-				//translate([0,0,12.5+PJ_Spacing*3]) PJ_Clip(Fairing_OD=Fairing_OD);
-						
-				//rotate([0,0,-45]) translate([-Fairing_ID/2+8,0,Len-65]) 
-				//		rotate([0,-90,0]) CablePullerBoltPattern() cylinder(d=8, h=15);
-				
 			} else {
-				rotate([0,0,180]) SkirtedTenon(Tube_OD=Fairing_OD, Z=Z1);
-				rotate([0,0,180]) SkirtedTenon(Tube_OD=Fairing_OD, Z=Z2);
-				
+			
 				// Spring and SpringCap go in this. 
 				rotate([0,0,180])
 					translate([Fairing_ID/2-F54_SpringEndCap_OD/2,0, Len/2])
@@ -1011,8 +1110,8 @@ module LargeFairing(IsLeftHalf=true,
 		if (IsLeftHalf==false) SpringSocket();
 		
 		// cable path
-		translate([-Fairing_ID/2+F54_SpringEndCap_OD/2+2,6.5,Len/2]) 
-			cylinder(d=9, h=20, center=true);
+		translate([BallHole_X,6.5,Len/2]) 
+			cylinder(d=JointPin_d+IDXtra*4, h=20, center=true);
 		
 		// Trim all to outside of fairing
 		difference(){
@@ -1023,30 +1122,31 @@ module LargeFairing(IsLeftHalf=true,
 				cylinder(d=Fairing_OD,h=Len+Overlap*4, $fn=$preview? 36:360);
 		} // difference
 	} // difference
-	
+	/**/
 	
 	if (IsLeftHalf) {
-		translate([0,0,Len-20]) rotate([0,0,135]) LanyardToTube(ID=Fairing_ID, Foot=6);
+		translate([0,0,Len-21]) rotate([0,0,135]) LanyardToTube(ID=Fairing_ID, Foot=6);
 	} else {
-		translate([0,0,Len-20]) rotate([0,0,135+180]) LanyardToTube(ID=Fairing_ID, Foot=6);
+		translate([0,0,Len-21]) rotate([0,0,-135+180]) LanyardToTube(ID=Fairing_ID, Foot=6);
 	}
 	
 } // LargeFairing
 
+//translate([0,0,80.1]) NoseLockRing(Fairing_OD=BT137Body_OD, Fairing_ID =BT137Body_OD-4.4);
+//LargeBolt_On_PJ_Clip(Fairing_OD=BT137Body_OD, FairingWall_t=2.2);
+//LargeFairing_BoltOn_Tenon(Fairing_OD=BT137Body_OD, FairingWall_t=2.2);
 /*
-LargeFairing(IsLeftHalf=true, 
+translate([0,0.2,0]) LargeFairing(IsLeftHalf=true, 
 				Fairing_OD=BT137Body_OD,
 				Wall_T=7,
-				Len=Fairing_Len,
-				HasArmingHole=true);
+				Len=80);
 /**/
 
 /*
 LargeFairing(IsLeftHalf=false, 
 				Fairing_OD=BT137Body_OD,
 				Wall_T=7,
-				Len=Fairing_Len,
-				HasArmingHole=true);
+				Len=80);
 /**/
 		
 module F54_FairingHalf(IsLeftHalf=true, 

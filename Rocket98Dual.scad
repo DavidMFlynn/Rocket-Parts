@@ -95,8 +95,8 @@ F54_FairingHalf(IsLeftHalf=false,
 // FairingBaseBulkPlate(Tube_ID=R98_Body_ID, Fairing_ID=Fairing_ID, ShockCord_a=-1);
 // rotate([0,180,0]) AltDoor54(Tube_OD=R98_Body_OD, IsLoProfile=false, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
 // rotate([0,180,0]) CP_Door(Tube_OD=R98_Body_OD, BoltBossInset=3, HasArmingSlot=true);
-// rotate([0,180,0]) Batt_Door(Tube_OD=R98_Body_OD, InnerTube_OD=R98_BayInnerTube_OD, HasSwitch=false);
-// rotate([0,180,0]) Batt_Door(Tube_OD=R98_Body_OD, InnerTube_OD=R98_BayInnerTube_OD, HasSwitch=true);
+// Batt_Door(Tube_OD=R98_Body_OD, InnerTube_OD=R98_BayInnerTube_OD, HasSwitch=false);
+// Batt_Door(Tube_OD=R98_Body_OD, InnerTube_OD=R98_BayInnerTube_OD, HasSwitch=true);
 //
 // ------------
 // *** Cable Puller, 5 Req. ***
@@ -277,7 +277,7 @@ module ShowUpperBays(){
 //ShowUpperBays();
 
 module R98_Electronics_Bay2(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, 
-					Fairing_ID=Fairing_ID, InnerTube_OD=BT54Mtr_OD){
+					Fairing_ID=Fairing_ID, InnerTube_OD=BT38Body_OD, HasFairingLockRing=true){
 	Len=162;
 	CablePuller_Z=81;
 	BattSwDoor_Z=70;
@@ -289,6 +289,7 @@ module R98_Electronics_Bay2(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID,
 	Batt2_a=270; // Cable puller battery and switch
 	
 	// The Fairing clamps onto this. 
+	if (HasFairingLockRing)
 	translate([0,0,Len]) FairingBaseLockRing(Tube_OD=Tube_OD, Tube_ID=Tube_ID, Fairing_ID=Fairing_ID, Interface=Overlap, BlendToTube=true);
 	
 	difference(){
@@ -333,6 +334,7 @@ module R98_Electronics_Bay2(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID,
 } // R98_Electronics_Bay2
 
 //translate([0,0,162]) R98_Electronics_Bay2();
+//R98_Electronics_Bay2(HasFairingLockRing=false);
 
 module DrogueMechBay(){
 	Len=162;
