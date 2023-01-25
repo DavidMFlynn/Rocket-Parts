@@ -277,64 +277,121 @@ module ShowUpperBays(){
 //ShowUpperBays();
 
 module R98_Electronics_Bay2(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, 
-					Fairing_ID=Fairing_ID, InnerTube_OD=BT38Body_OD, HasFairingLockRing=true){
+					Fairing_ID=Fairing_ID, InnerTube_OD=BT38Body_OD, HasFairingLockRing=true,
+					ShowDoors=false){
 	Len=162;
 	CablePuller_Z=81;
 	BattSwDoor_Z=70;
 	TopSkirt_Len=15;
 	BottomSkirt_Len=15;
+	CR_Inset=12;
+	
+	
+	/*
+	//Standard
 	CP1_a=0;
 	Alt_a=180;
 	Batt1_a=90; // Altimeter Battery
 	Batt2_a=270; // Cable puller battery and switch
+	TubeOffset=0;
+	nCRHoles=4;
+	CRHole_a=0;
+	/**/
+	//*
+	//GoPro
+	CP1_a=60;
+	Alt_a=215;
+	Batt1_a=140; // Altimeter Battery
+	Batt2_a=290; // Cable puller battery and switch
+	TubeOffset=10;
+	nCRHoles=0;
+	nHoles=6;
+	/**/
 	
 	// The Fairing clamps onto this. 
 	if (HasFairingLockRing)
 	translate([0,0,Len]) FairingBaseLockRing(Tube_OD=Tube_OD, Tube_ID=Tube_ID, Fairing_ID=Fairing_ID, Interface=Overlap, BlendToTube=true);
 	
+	if ($preview&&ShowDoors) translate([0,TubeOffset,-1])
+		color("Blue") Tube(OD=InnerTube_OD, ID=InnerTube_OD-2, Len=Len+2, myfn=$preview? 36:360);
+	
 	difference(){
 		union(){
 			Tube(OD=Tube_OD, ID=Tube_ID, Len=Len, myfn=$preview? 36:360);
+			
 			translate([0,0,BottomSkirt_Len])
-				CenteringRing(OD=Tube_OD-1, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=4);
+				CenteringRing(OD=Tube_OD-1, ID=InnerTube_OD+IDXtra*2, 
+								Thickness=5, nHoles=nCRHoles, Offset=TubeOffset);
+			
 			translate([0,0,Len-5-TopSkirt_Len])
-				CenteringRing(OD=Tube_OD-1, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=4);
-	} // union
+				CenteringRing(OD=Tube_OD-1, ID=InnerTube_OD+IDXtra*2, 
+							Thickness=5, nHoles=nCRHoles, Offset=TubeOffset);
+		} // union
 		
+		//*
+		if (nCRHoles==0)
+		for (j=[1:nHoles-1]) rotate([0,0,360/nHoles*j])
+			translate([0,InnerTube_OD/2+(Tube_ID/2-InnerTube_OD/2)/2,0])
+				cylinder(d=(Tube_ID/2-InnerTube_OD/2)/2, h=Len);
+			/**/
+			
 		// Altimeter
-		translate([0,0,CablePuller_Z]) rotate([0,0,Alt_a]) 
+		translate([0,0,CablePuller_Z]) rotate([0,0,Alt_a+180]) 
 			Alt_BayFrameHole(Tube_OD=Tube_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
 	
 		// Cable Puller door hole
-		translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a])
+		translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a+180])
 			CP_BayFrameHole(Tube_OD=Tube_OD);
 		
 		// Battery and Switch door holes
-		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
+		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a+180]) 
 			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=false);
-		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
+		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a+180]) 
 			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
 		
+		// Cable Puller Cable hole
+		rotate([0,0,CP1_a])
+		translate([0,Tube_OD/2-CR_Inset/2-8,Len-5-TopSkirt_Len-Overlap]) cylinder(d=12, h=12);
 	} // difference
 	
+	
+	
 	// Altimeter
-	translate([0,0,CablePuller_Z]) rotate([0,0,Alt_a])
-		Alt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=false);
+	translate([0,0,CablePuller_Z]) rotate([0,0,Alt_a+180])
+		Alt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=ShowDoors);
 	
 	// Cable Pullers
-	translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a])
-		CP_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, ShowDoor=false);
+	translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a+180])
+		CP_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, ShowDoor=ShowDoors);
 	
 	// Battery and Switch door2
-	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
-		Batt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, HasSwitch=false, ShowDoor=false);
-	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
-		Batt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, HasSwitch=true, ShowDoor=false);
+	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a+180]) 
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, HasSwitch=false, ShowDoor=ShowDoors);
+	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a+180]) 
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, HasSwitch=true, ShowDoor=ShowDoors);
 	
 } // R98_Electronics_Bay2
 
 //translate([0,0,162]) R98_Electronics_Bay2();
-//R98_Electronics_Bay2(HasFairingLockRing=false);
+//R98_Electronics_Bay2(HasFairingLockRing=false, ShowDoors=true);
+
+module EBayCouplerCR(){
+	nHoles=6;
+	InnerTube_OD=BT38Body_OD;
+	Tube_ID=BT98Coupler_ID;
+	
+	difference(){
+		CenteringRing(OD=Tube_ID, ID=InnerTube_OD+IDXtra*2, 
+								Thickness=5, nHoles=0, Offset=10);
+		
+		translate([0,0,-Overlap])
+		for (j=[1:nHoles-1]) rotate([0,0,360/nHoles*j])
+			translate([0,InnerTube_OD/2+(Tube_ID/2-InnerTube_OD/2)/2,0])
+				cylinder(d=(Tube_ID/2-InnerTube_OD/2)/2, h=5+Overlap*2);
+	} // difference
+} // EBayCouplerCR
+
+//EBayCouplerCR();
 
 module DrogueMechBay(){
 	Len=162;

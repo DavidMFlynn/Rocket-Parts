@@ -3,7 +3,7 @@
 // Filename: TubesLib.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.8  12/29/2022
+// Revision: 0.9.9  1/18/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,7 +12,8 @@
 //
 //  ***** History *****
 //
-echo("TubesLib 0.9.8");
+echo("TubesLib 0.9.9");
+// 0.9.9  1/18/2023  Added Offset to CenteringRing()
 // 0.9.8  12/29/2022 Added ShockCordMount()
 // 0.9.7  12/2/2022  Added BT38Body tube
 // 0.9.6  11/20/2022 Added ClusterRing
@@ -28,7 +29,7 @@ echo("TubesLib 0.9.8");
 //
 // ShockCordMount(OD=PML98Body_ID, ID=BT54Mtr_OD, AnchorRod_OD=12.7);
 // Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=300, myfn=$preview? 36:360);
-// CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0);
+// CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0, Offset=0);
 // ClusterRing(OD=BT137Body_ID, Thickness=5, CenterMotor_OD=BT54Body_OD, ClusterMotor_OD=PML38Body_OD, nClusterMotors=3, Gap=7, Cant_a=2, Cant_Z=300)
 //
 // BT_RivetFixture(BT_Dia=PML98Body_OD, nRivets=3, Dia=5/32*25.4, Offset=25);
@@ -61,7 +62,7 @@ PML98Body_OD=(3.9+0.062*2)*25.4;
 PML98Body_ID=3.9*25.4;
 PML98Coupler_OD=(3.78+0.062*2)*25.4;
 PML98Coupler_ID=95.4; //measured LOC/PML, was 3.78*25.4;
-/*
+//*
 echo(PML98Body_OD=PML98Body_OD);
 echo(PML98Body_ID=PML98Body_ID);
 echo(PML98Coupler_OD=PML98Coupler_OD);
@@ -91,6 +92,11 @@ BT137Body_OD=BT137Body_ID+0.077*2*25.4;
 BT137Coupler_ID=5.198*25.4;
 BT137Coupler_OD=BT137Coupler_ID+0.084*2*25.4;
 
+BT98Body_OD=101.9;
+BT98Body_ID=98.9;
+BT98Coupler_OD=98.6;
+BT98Coupler_ID=95.7;
+
 BT75Body_ID=3.000*25.4;
 BT75Body_OD=BT75Body_ID+0.062*2*25.4;
 BT75Coupler_ID=2.880*25.4;
@@ -113,11 +119,11 @@ PML38Coupler_OD=(1.40+0.062*2)*25.4;
 PML38Coupler_ID=1.40*25.4;
 //echo(PML38Body_OD=PML38Body_OD);
 
-module CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0){
+module CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0, Offset=0){
 	difference(){
 		cylinder(d=OD, h=Thickness);
 		
-		translate([0,0,-Overlap]) cylinder(d=ID, h=Thickness+Overlap*2);
+		translate([0,Offset,-Overlap]) cylinder(d=ID, h=Thickness+Overlap*2);
 		if (nHoles>0) for (j=[0:nHoles-1]) rotate([0,0,360/nHoles*j])
 			translate([ID/2+(OD/2-ID/2)/2,0,-Overlap]) cylinder(d=(OD/2-ID/2)/2, h=Thickness+Overlap*2);
 	} // difference

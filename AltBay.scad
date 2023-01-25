@@ -179,7 +179,7 @@ module Alt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, DoorXtra_X=0
 				translate([0,0,-Tube_Len/2])
 					Tube(OD=Tube_OD, ID=Tube_ID, Len=Tube_Len, myfn=$preview? 36:360);
 				rotate([90,0,0]) 
-						RoundRect(X=Door_X+22, Y=Tube_Len, Z=Tube_OD, R=0.1);
+						RoundRect(X=Door_X+11, Y=Tube_Len, Z=Tube_OD, R=0.1);
 			} // intersection
 			
 			// Door frame
@@ -191,7 +191,7 @@ module Alt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, DoorXtra_X=0
 					translate([0,-Tube_ID/2+12,0]) rotate([90,0,0]) 
 						RoundRect(X=Door_X+3, Y=Door_Y+3, Z=Tube_OD, R=4+3);
 					translate([0,-Tube_ID/2,0]) rotate([90,0,0]) 
-						RoundRect(X=Tube_ID*2, Y=Door_Y+8, Z=Tube_OD, R=4+3);
+						RoundRect(X=Door_X+20, Y=Door_Y+8, Z=Tube_OD, R=4+3);
 				} // hull
 			} // intersection
 		} // union

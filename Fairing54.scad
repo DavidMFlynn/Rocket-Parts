@@ -213,33 +213,36 @@ module FairingAssemblyToolPt1(Fairing_OD=PML98Body_OD+IDXtra*2){
 	} // difference
 } // FairingAssemblyToolPt1
 
-//translate([0,0,18]) rotate([180,0,0]) FairingAssemblyToolPt1();
+//translate([0,0,18]) rotate([180,0,0]) FairingAssemblyToolPt1(Fairing_OD=BT137Body_OD+IDXtra*2);
 
 module FairingAssemblyToolPt2(Fairing_OD=PML98Body_OD+IDXtra*2){
 	H=18;
 	Thickness=10;
 	Pin_d=4;
-	End_a=19.5; // 54mm
+	//End_a=19.5; // 54mm
 	//End_a=15; // 75mm
 	//End_a=12; // 98mm <<< calculation needed 
-	//End_a=9; // 5.5"
-	CutBack_d=50;
+	End_a=9; // 5.5"
+	//CutBack_d=50;
+	CutBack_d=90; // 5.5"
 	
 	difference(){
 		cylinder(d=Fairing_OD+Thickness*2, h=H);
 		
-		// Cut
+		// Cut in half
 		translate([-Fairing_OD/2-Thickness-1,-Fairing_OD/2-Thickness-1, -Overlap])
 			cube([Fairing_OD+Thickness*2+2,Fairing_OD/2+Thickness+1, H+Overlap*2]);
 		
 		// Center hole
 		translate([0,0,-Overlap]) cylinder(d=Fairing_OD+IDXtra*2, h=H+Overlap*2);
 		
+		// Back hinge
 		translate([-Fairing_OD/2-Thickness/2, 0, -Overlap]) {
 			cylinder(d=Pin_d, h=H+Overlap*2);
 			translate([0,0,H/3]) cylinder(d=Thickness+2, h=H/3);
 		}
 		
+		// Clamping end
 		translate([0,0,-Overlap]) rotate([0,0,End_a]) mirror([0,1,0]) 
 			cube([Fairing_OD/2+Thickness+1,Fairing_OD/2+Thickness+1,H+Overlap*2]);
 		
@@ -267,7 +270,7 @@ module FairingAssemblyToolPt2(Fairing_OD=PML98Body_OD+IDXtra*2){
 	} // difference
 } // FairingAssemblyToolPt2
 
-//FairingAssemblyToolPt2(Fairing_OD=PML98Body_OD+IDXtra*2);
+//FairingAssemblyToolPt2(Fairing_OD=BT137Body_OD+IDXtra*2);
 
 module FairingAssemblyToolPt3(){
 	// the lever
@@ -275,8 +278,10 @@ module FairingAssemblyToolPt3(){
 	Thickness=10;
 	Pin_d=4;
 	Arm_T=4;
-	Handle_Len=70;
-	Pivot_Y=40;
+	//Handle_Len=70;
+	Handle_Len=90; // BT137
+	//Pivot_Y=40;
+	Pivot_Y=60; // BT137
 	
 	difference(){
 		union(){
@@ -317,7 +322,8 @@ module FairingAssemblyToolPt4(){
 	Thickness=10;
 	Pin_d=4;
 	Arm_T=4;
-	Arm_Len=30; // was 28
+	//Arm_Len=30; // was 28
+	Arm_Len=50; // BT137
 	
 	difference(){
 		union(){
@@ -583,12 +589,12 @@ FairingCone(Fairing_OD=PML98Body_OD,
 /**/
 
 
-module FairingBase(BaseXtra=0, Fairing_OD=Fairing_OD, Fairing_ID=Fairing_ID,
+module FairingBase(BaseXtra=0, SkirtXtra=0, Fairing_OD=Fairing_OD, Fairing_ID=Fairing_ID,
 					BodyTubeOD=PML54Body_OD, 
 					CouplerTube_OD=PML54Coupler_OD, CouplerTube_ID=PML54Coupler_ID){
 	
 	Trans_r=4;				
-	Len=6+Trans_r;
+	Len=6+Trans_r+SkirtXtra;
 						
 	BodyTubeSocket_L=15;
 						
@@ -613,37 +619,176 @@ module FairingBase(BaseXtra=0, Fairing_OD=Fairing_OD, Fairing_ID=Fairing_ID,
 			cylinder(d=CouplerTube_ID, h=BodyTubeSocket_L+BaseXtra+Len);
 		if (BaseXtra>0)
 		translate([0,0,4-BaseXtra-Overlap])
-			cylinder(d1=CouplerTube_ID, d2=Fairing_ID-6, h=BaseXtra+Overlap*2);
+			cylinder(d1=CouplerTube_ID, d2=Fairing_ID, h=BaseXtra+Overlap*2);
 	} // difference
 } // FairingBase
 
-//translate([0,0,-10]) 
+//translate([0,0,-10]) FairingBase();
+//FairingBase(BaseXtra=20, SkirtXtra=20, Fairing_OD=BT137Body_OD, Fairing_ID=BT137Body_OD-4.4,BodyTubeOD=PML98Body_OD, CouplerTube_OD=PML98Coupler_OD, CouplerTube_ID=PML98Coupler_ID);
 
-module BigFairingAdaptor(){
-	FairingBase(BaseXtra=25, Fairing_OD=BT137Body_OD, Fairing_ID=BT137Body_OD-4.4,
-					BodyTubeOD=PML98Body_OD, 
-					CouplerTube_OD=PML98Coupler_OD, CouplerTube_ID=PML98Coupler_ID);
-					
-	//translate([0,0,15]) rotate([180,0,0]) NoseLockRing(Fairing_OD=BT137Body_OD, Fairing_ID =BT137Body_OD-4.4);
+// *********************************
+//  *** Booster Pooper Parts ***
+
+//rotate([180,0,0]) BigFairingAdaptor(Fairing_OD=BT137Body_OD, BodyTubeOD=PML98Body_OD, CouplerTube_OD=PML98Coupler_OD, CouplerTube_ID=PML98Coupler_ID);
+						
+//BigFairingAdaptorCR(Fairing_OD=BT137Body_OD, InnerTube_OD=BT38Body_OD);
+
+//FairingBaseLockRing(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_OD-4.4, Fairing_ID=BT137Body_OD-4.4, Interface=-IDXtra, BlendToTube=false);
+
+// *********************************
+
+module GoProHero11Black(Xtra=IDXtra*3, Xtra_Z=0, IncludeVP=true, BackAccess=false){
+	Cam_X=72+Xtra;
+	Cam_Y=51+Xtra;
+	Cam_Z=28+Xtra;
+	Cam_R=6+Xtra/2;
+	LensBoss_XY=32.2+Xtra;
+	LensBoss_Z=Cam_Z+6;
 	
-	translate([0,0,12]) FairingBaseLockRing(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_OD-4.4, Fairing_ID=BT137Body_OD-4.4, Interface=Overlap, BlendToTube=false);
+	translate([0,0,-Xtra_Z]) RoundRect(X=Cam_X, Y=Cam_Y, Z=Cam_Z+Xtra_Z, R=Cam_R);
+	if (BackAccess) translate([0,0,-50])
+		RoundRect(X=Cam_X+1, Y=Cam_Y+1, Z=51, R=Cam_R);
 	
-	CR_Z=4.5;
-	difference(){
-		translate([0,0,CR_Z]) 
-			CenteringRing(OD=BT137Body_OD, ID=BT38Body_OD+IDXtra*2, Thickness=9, nHoles=9);
-			
-		translate([0,0,12])
-		difference(){
-			 cylinder(d=BT137Body_OD+1,h=5);
-			 translate([0,0,-Overlap]) cylinder(d=BT137Body_OD-11,h=5+Overlap*2);
-		}
+	translate([Cam_X/2-LensBoss_XY/2, Cam_Y/2-LensBoss_XY/2, 0])
+		RoundRect(X=LensBoss_XY, Y=LensBoss_XY, Z=LensBoss_Z, R=Cam_R);
 		
-		translate([-BT137Body_OD/2+12,0,CR_Z-1]) cylinder(d=12, h=12);
-	} // diff
+	// Buttons
+	if (BackAccess){
+		translate([0,0,Cam_Z/2]) rotate([0,90,0]) cylinder(d=6, h=100);
+		translate([-12,0,Cam_Z/2]) rotate([-90,0,0]) cylinder(d=6, h=100);
+		}
+	
+	// Picture button
+	
+	translate([-12,Cam_Y/2,0]) hull(){
+		RoundRect(X=16+Xtra/2,Y=2+Xtra/2,Z=21+Xtra/2,R=1);
+		translate([-8-Xtra/4+1,Xtra/4,21+Xtra/2]) sphere(r=1);
+		translate([8+Xtra/4-1,Xtra/4,21+Xtra/2]) sphere(r=1);
+		translate([-8-Xtra/4+1,-Xtra/4,21+Xtra/2]) sphere(r=1);
+		translate([8+Xtra/4-1,-Xtra/4,21+Xtra/2]) sphere(r=1);
+		}
+	if (BackAccess)
+		translate([-12,Cam_Y/2,-50]) RoundRect(X=16,Y=2,Z=21+50,R=1);
+		
+	// Batt door latch
+	translate([-Cam_X/2+1, -Cam_Y/2+Cam_R*0.7, -Xtra/2]) cylinder(d=5+Xtra/2, h=Cam_Z-2+Xtra/2);
+	if (BackAccess)
+		translate([-Cam_X/2+1, -Cam_Y/2+Cam_R*0.7, -50]) cylinder(d=5, h=Cam_Z-2+50);
+	
+	// View Path
+	if (IncludeVP)
+	translate([Cam_X/2-LensBoss_XY/2, Cam_Y/2-LensBoss_XY/2, LensBoss_Z-Overlap]){
+	RoundRect(X=LensBoss_XY-5, Y=LensBoss_XY-5, Z=1, R=Cam_R);
+		hull(){
+			translate([0,0,1-Overlap]) RoundRect(X=LensBoss_XY-5, Y=LensBoss_XY-5, Z=1, R=Cam_R);
+			translate([0,0,30]) RoundRect(X=LensBoss_XY+35, Y=LensBoss_XY+35, Z=1, R=Cam_R);
+		}}
+} // GoProHero11Black
+
+//GoProHero11Black(BackAccess=true);
+
+module ShowGoProFairingAdaptor(){
+	SkirtXtra=42;
+	
+	//translate([0,-32,20]) rotate([155,0,0]) color("Gray") GoProHero11Black();
+	//
+	translate([0,10,-50]) color("Blue") Tube(OD=BT38Body_OD, ID=BT38Body_ID, Len=100, myfn=$preview? 36:360);
+	
+	
+	translate([0,0,12.1+SkirtXtra]) color("Tan") FairingBaseLockRing(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_OD-4.4, Fairing_ID=BT137Body_OD-4.4, Interface=-IDXtra, BlendToTube=false);
+	
+	//translate([0,0,SkirtXtra]) BigFairingAdaptorCR(Fairing_OD=BT137Body_OD, InnerTube_OD=BT38Body_OD, Offset=10);
+	GoProFairingAdaptor();
+} // ShowGoProFairingAdaptor
+
+//ShowGoProFairingAdaptor();
+//BigFairingAdaptorCR(Fairing_OD=BT137Body_OD, InnerTube_OD=BT38Body_OD, Offset=10);
+//FairingBaseLockRing(Tube_OD=BT137Body_OD+0.5, Tube_ID=BT137Body_OD-4.4, Fairing_ID=BT137Body_OD-4.4, Interface=0, BlendToTube=false);
+
+module GoProFairingAdaptor(){
+	SkirtXtra=42;
+	CameraOffset_Y=-38;
+	CameraOffset_Z=24;
+	
+	difference(){
+		union(){
+			BigFairingAdaptor(Fairing_OD=BT137Body_OD, BodyTubeOD=PML98Body_OD,
+						CouplerTube_OD=PML98Coupler_OD, CouplerTube_ID=PML98Coupler_ID,
+						BaseXtra=20, SkirtXtra=SkirtXtra);
+			
+			
+			translate([0,CameraOffset_Y,CameraOffset_Z]) rotate([155,0,0]) 
+				GoProHero11Black(Xtra=5, Xtra_Z=3, IncludeVP=false, BackAccess=false);
+		} // union
+		
+		difference(){
+			translate([0,CameraOffset_Y,CameraOffset_Z]) rotate([155,0,0]) 
+				GoProHero11Black(Xtra=IDXtra*3, IncludeVP=true, BackAccess=true);
+				
+			translate([0,0,-35]) Tube(OD=PML98Body_OD, ID=PML98Body_OD-6, Len=CameraOffset_Z-3, myfn=$preview? 36:360);
+			//cylinder(d=PML98Body_OD, h=CameraOffset_Z);
+		} // difference
+	} // difference
+} // GoProFairingAdaptor
+
+// rotate([180,0,0]) GoProFairingAdaptor();
+
+// **********************************
+
+module BigFairingAdaptor(Fairing_OD=BT137Body_OD, BodyTubeOD=PML98Body_OD,
+						CouplerTube_OD=PML98Coupler_OD, CouplerTube_ID=PML98Coupler_ID,
+						BaseXtra=25, SkirtXtra=20){
+	nBolts=7;
+	CR_H=5;
+	CR_Inset_Z=11;
+	CR_Inset=16;
+	
+	difference(){	
+		union(){
+			// Centering Ring Mount
+			translate([0,0,SkirtXtra-CR_Inset_Z]) cylinder(d=Fairing_OD-1, h=15);
+			
+			FairingBase(BaseXtra=BaseXtra, SkirtXtra=SkirtXtra, Fairing_OD=Fairing_OD, Fairing_ID=Fairing_OD-4.4,
+					BodyTubeOD=BodyTubeOD, 
+					CouplerTube_OD=CouplerTube_OD, CouplerTube_ID=CouplerTube_ID);
+		} // union
+		
+		// Cable Puller Cable Hole
+		rotate([0,0,60]) translate([0,Fairing_OD/2-CR_Inset/2-6,SkirtXtra-12]) cylinder(d=12, h=12);
+		
+		// Centering Ring	
+		translate([0,0,SkirtXtra-1]) cylinder(d=Fairing_OD-CR_Inset+IDXtra*2, h=5+Overlap);
+		translate([0,0,SkirtXtra-3]) cylinder(d=Fairing_OD-CR_Inset-14, h=5);
+		translate([0,0,SkirtXtra-CR_Inset_Z-Overlap]) 
+			cylinder(d1=Fairing_OD-4, d2=Fairing_OD-CR_Inset-14, h=8+Overlap*2);
+		
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+180/nBolts])
+			translate([0,Fairing_OD/2-CR_Inset/2-4,SkirtXtra]) Bolt4Hole();
+	} // difference
+	
 } // BigFairingAdaptor
 
 //rotate([180,0,0]) BigFairingAdaptor();
+
+module BigFairingAdaptorCR(Fairing_OD=BT137Body_OD, InnerTube_OD=BT38Body_OD, Offset=0){
+	nBolts=7;
+	CR_H=5;
+	CR_Inset=16;
+	
+	difference(){
+		CenteringRing(OD=Fairing_OD-CR_Inset, ID=InnerTube_OD+IDXtra*2, Thickness=CR_H, nHoles=9, Offset=Offset);
+		
+		// Cable Puller Cable Hole
+		rotate([0,0,60]) translate([0,Fairing_OD/2-CR_Inset/2-6,-Overlap]) cylinder(d=9, h=12);
+		
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+180/nBolts])
+			translate([0,Fairing_OD/2-CR_Inset/2-4,CR_H]) Bolt4HeadHole();
+	} // diff
+} // BigFairingAdaptorCR
+
+//BigFairingAdaptorCR(Fairing_OD=BT137Body_OD, InnerTube_OD=BT38Body_OD);
+
+//translate([0,0,12]) FairingBaseLockRing(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_OD-4.4, Fairing_ID=BT137Body_OD-4.4, Interface=-IDXtra, BlendToTube=false);
 
 module FairingBaseBulkPlate(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, ShockCord_a=-90){
 	// Stops the parchute from falling into the E-Bay
@@ -697,6 +842,8 @@ module FairingBaseBulkPlate(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, ShockCord
 } // FairingBaseBulkPlate
 
 //FairingBaseBulkPlate(Tube_ID=102, Fairing_ID=102, ShockCord_a=-1);
+//FairingBaseBulkPlate(Tube_ID=BT137Body_OD, Fairing_ID=BT137Body_OD-4.4, ShockCord_a=-1);
+
 
 module FairingBaseLockRing(Tube_OD=Fairing_OD, Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, Interface=-IDXtra, BlendToTube=false){
 				

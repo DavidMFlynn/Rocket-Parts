@@ -262,7 +262,7 @@ module CP_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=fals
 				translate([0,0,-Tube_Len/2])
 					Tube(OD=Tube_OD, ID=Tube_ID, Len=Tube_Len, myfn=$preview? 36:360);
 				rotate([90,0,0]) 
-						RoundRect(X=Door_X+22, Y=Tube_Len, Z=Tube_OD, R=0.1);
+						RoundRect(X=Door_X+11, Y=Tube_Len, Z=Tube_OD, R=0.1);
 			} // intersection
 			
 			// Door frame
