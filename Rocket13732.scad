@@ -108,15 +108,17 @@ FairingConeOGive(Fairing_OD=Body_OD,
 LargeFairing(IsLeftHalf=true, 
 				Fairing_OD=Fairing_OD,
 				Wall_T=7,
-				Len=80); // test Fairing_Len
+				Len=Fairing_Len); // test Fairing_Len
 /**/
 //
 /*
 LargeFairing(IsLeftHalf=false, 
 				Fairing_OD=Fairing_OD,
 				Wall_T=7,
-				Len=80); // test Fairing_Len
+				Len=Fairing_Len); // test Fairing_Len
 /**/
+//LargeBolt_On_PJ_Clip(Fairing_OD=BT137Body_OD, FairingWall_t=2.2);
+//LargeFairing_BoltOn_Tenon(Fairing_OD=BT137Body_OD, FairingWall_t=2.2);
 //
 /*
 // old style
@@ -337,7 +339,7 @@ Booster_Body_Len=BoosterFinCanLength*2+EBay_Len+67+300;
 Fairing_OD=BT137Body_OD;
 FairingWall_T=2.2; // << needs more, truss wall?
 Fairing_ID=Fairing_OD-FairingWall_T*2;
-Fairing_Len=180; // Body of the fairing.
+Fairing_Len=120; // Body of the fairing.
 
 NoseconeSep_Z=0; // This much of the nosecone becomes part of the fairing.
 NC_Len=380;//500;
