@@ -79,6 +79,8 @@
 //
 // ShowSpringThing(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, InnerTube_OD=BT54Mtr_OD, InnerTube_ID=BT54Body_ID, InnerCouplerTube_OD=BT54Coupler_OD, InnerCouplerTube_ID=BT54Coupler_ID);
 //
+//ShowST_Assy(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, InnerTube_OD=BT54Mtr_OD, InnerTube2_OD=BT54Mtr_OD, InnerTube_ID=PML98Coupler_ID, Triggered=false);
+//
 // ***********************************
 
 include<TubesLib.scad>
@@ -282,23 +284,23 @@ module ST_BallDetentBody(){
 	
 	difference(){
 		union(){
-			translate([0,0,Body_Len-Nose_h-Overlap]) cylinder(d1=Body_d, d2=DetentBall_d, h=Nose_h);
+			translate([0,0,Body_Len-Nose_h-Overlap]) 
+				cylinder(d1=Body_d, d2=DetentBall_d, h=Nose_h);
 			cylinder(d=Body_d, h=Body_Len-Nose_h);
 		} // union
 		
 		hull(){
 			translate([0,0,-Overlap]) cylinder(d=DetentBall_d+LooseFit, h=Overlap);
-			translate([0,0,Body_Len-DetentBall_d/2+Protusion]) sphere(d=DetentBall_d+LooseFit);
+			translate([0,0,Body_Len-DetentBall_d/2+Protusion]) 
+				sphere(d=DetentBall_d+LooseFit);
 		} // hull
 		
-		
 		if ($preview){
-			translate([0,0,-Overlap]) cube([40,40,40]);
-			
-		}
+			translate([0,0,-Overlap]) cube([40,40,40]);}
 	} // difference
 	
-	if ($preview) translate([0,0,Body_Len-DetentBall_d/2+Protusion]) color("Red") sphere(d=DetentBall_d);
+	if ($preview) translate([0,0,Body_Len-DetentBall_d/2+Protusion]) 
+		color("Red") sphere(d=DetentBall_d);
 } // ST_BallDetentBody
 
 //ST_BallDetentBody();
@@ -309,7 +311,6 @@ module ST_BallDetentStopper(){
 	DetentSpring_Len=14; // Lightly compressed
 	Body_d=14;
 	Body_Len=27;
-	Nose_h=2;
 	Protusion=1.5;
 	BottomOfSpring_h=3+Body_Len-DetentBall_d/2+Protusion-DetentSpring_Len;
 	
@@ -377,7 +378,6 @@ module ST_CableBearing(){
 			translate([0,0,1+BB_W/2+0.2]) 
 				cylinder(d2=BB_OD+RimXtra_d, d1=BB_OD+2+IDXtra*2, h=BB_W/2);
 				
-				
 		} // difference
 	} // difference
 } // ST_CableBearing
@@ -426,14 +426,14 @@ module ST_CableRedirectTop(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, InnerTub
 					difference(){
 						rotate([-90,0,0]) cylinder(d=17, h=8, center=true);
 						translate([0,-10,0]) cube([20,20,20]);
-					}
+					} // difference
 					}
 					
 				// Trim ID
 				translate([0,0,-8]) cylinder(d=InnerTube_OD+IDXtra*2, h=18);
 				// Trim bottom
 				translate([0,0,-8]) cylinder(d=Skirt_ID, h=8);
-				}
+			} // difference
 				
 		} // union
 		
@@ -449,9 +449,9 @@ module ST_CableRedirectTop(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, InnerTub
 			Bolt4HeadHole();
 		rotate([0,0,BallDetent_a]) translate([0,BoltCircle_d(Tube_OD=Tube_OD)/2+3,5])
 			rotate([0,0,12]){
-			translate([10,0,0]) Bolt4HeadHole();
-			translate([-10,0,0]) Bolt4HeadHole();
-		}
+				translate([10,0,0]) Bolt4HeadHole();
+				translate([-10,0,0]) Bolt4HeadHole();
+			}
 		
 		// Ball Detent
 		rotate([0,0,BallDetent_a]) translate([0,BoltCircle_d(Tube_OD=Tube_OD)/2+3,-Overlap]) 
@@ -464,7 +464,8 @@ module ST_CableRedirectTop(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, InnerTub
 		rotate([0,0,Cable_a(CablePath_Y)]) translate([0,CablePath_Y,1]) rotate([0,0,Exit_a]) CablePath();
 		
 		// vertical tube for cable
-		rotate([0,0,Cable_a(CablePath_Y)]) translate([0,CablePath_Y,-20-Overlap]) cylinder(d=6, h=25+Overlap*2);
+		rotate([0,0,Cable_a(CablePath_Y)]) translate([0,CablePath_Y,-20-Overlap])
+			cylinder(d=6, h=25+Overlap*2);
 		
 		//Stager cable
 		rotate([0,0,Cable_a(CablePath_Y)+180]) hull(){
@@ -530,16 +531,16 @@ module ST_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 				} // difference
 				}
 			
-				difference(){
-					translate([0,0,-20]) {
-						CenteringRing(OD=Tube_ID-IDXtra, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=0);
-						Tube(OD=InnerTube_OD+Bolt4Inset*4, ID=InnerTube_OD+IDXtra*2, Len=10, myfn=$preview? 36:360);
-						Tube(OD=InnerTube2_OD+Bolt4Inset*4, ID=InnerTube2_OD+IDXtra*2, Len=20, myfn=$preview? 36:360);
-					}
-					// Ball Detent clearance
-					rotate([0,0,BallDetent_a]) translate([0,BoltCircle_d(Tube_OD=Tube_OD)/2+3,-16]) 
-						cylinder(d=14-Overlap, h=30);
-				} // difference
+			difference(){
+				translate([0,0,-20]) {
+					CenteringRing(OD=Tube_ID-IDXtra, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=0);
+					Tube(OD=InnerTube_OD+Bolt4Inset*4, ID=InnerTube_OD+IDXtra*2, Len=10, myfn=$preview? 36:360);
+					Tube(OD=InnerTube2_OD+Bolt4Inset*4, ID=InnerTube2_OD+IDXtra*2, Len=20, myfn=$preview? 36:360);
+				}
+				// Ball Detent clearance
+				rotate([0,0,BallDetent_a]) translate([0,BoltCircle_d(Tube_OD=Tube_OD)/2+3,-16]) 
+					cylinder(d=14-Overlap, h=30);
+			} // difference
 			
 			// vertical tube for cable
 			rotate([0,0,Cable_a(CablePath_Y)]) translate([0,CablePath_Y,-20]) cylinder(d=10, h=20);
@@ -557,7 +558,7 @@ module ST_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 						translate([0,Tube_OD/2,-20-Overlap]) cylinder(d=CablePath_ID+3, h=25+Overlap*2);
 						translate([0,Skirt_ID/2-4,-20-Overlap]) cylinder(d=CablePath_ID+3, h=25+Overlap*2);
 					} // hull
-				}
+				} // union
 				translate([0,0,-20]) cylinder(d=Tube_ID, h=20);
 			} // intersection
 				
@@ -711,14 +712,18 @@ module ST_LockRing(Tube_OD=PML98Body_OD, InnerTube_OD=BT54Body_OD){
 		// Ball insertion	
 		for (j=[0:nBalls-1]) 
 				hull(){
-					rotate([0,0,Offset_a+360/nBalls*j-BallInsertion_a]) translate([0, BallCircle_r+2.5, Race_W/2])
-						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
-					rotate([0,0,Offset_a+360/nBalls*j-BallInsertion_a]) translate([0, BallCircle_r, Race_W/2])
-						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
-					rotate([0,0,Offset_a+360/nBalls*j-BallInsertion_a]) translate([0, BallCircle_r+4.0, Race_W+1])
-						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
-					rotate([0,0,Offset_a+360/nBalls*j-BallInsertion_a]) translate([0, BallCircle_r, Race_W+1])
-						sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
+					rotate([0,0,Offset_a+360/nBalls*j-BallInsertion_a]) 
+						translate([0, BallCircle_r+2.5, Race_W/2])
+							sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
+					rotate([0,0,Offset_a+360/nBalls*j-BallInsertion_a]) 
+						translate([0, BallCircle_r, Race_W/2])
+							sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
+					rotate([0,0,Offset_a+360/nBalls*j-BallInsertion_a]) 
+						translate([0, BallCircle_r+4.0, Race_W+1])
+							sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
+					rotate([0,0,Offset_a+360/nBalls*j-BallInsertion_a]) 
+						translate([0, BallCircle_r, Race_W+1])
+							sphere(d=LockBall_d+IDXtra*2, $fn=$preview? 18:36);
 				} // hull
 				
 		
@@ -726,7 +731,9 @@ module ST_LockRing(Tube_OD=PML98Body_OD, InnerTube_OD=BT54Body_OD){
 			translate([0,BoltCircle_d(Tube_OD=Tube_OD)/2,Race_W]) Bolt4Hole(depth=Race_W);
 	} // difference
 	
-	if ($preview) for (j=[0:nBalls-1]) rotate([0,0,Offset_a+360/nBalls*j]) translate([0, BallCircle_r, 1+LockBall_d/2])	color("Red") sphere(d=LockBall_d);
+	if ($preview) for (j=[0:nBalls-1]) rotate([0,0,Offset_a+360/nBalls*j]) 
+		translate([0, BallCircle_r, 1+LockBall_d/2])	
+			color("Red") sphere(d=LockBall_d);
 } // ST_LockRing
 
 //ST_LockRing();
@@ -754,15 +761,20 @@ module ST_DetentOnly(Tube_OD=PML98Body_OD){
 				
 				// Ball Detent
 				rotate([0,0,Detent_a]) translate([0,BoltCircle_r+3,0]) cylinder(d=10, h=Plate_H);
-				rotate([0,0,Detent_a+DetentTravel_a]) translate([0,BoltCircle_r+3,0]) cylinder(d=10, h=Plate_H);
-				rotate([0,0,Detent_a-DetentTravel_a]) translate([0,BoltCircle_r+3,0]) cylinder(d=10, h=Plate_H);
+				rotate([0,0,Detent_a+DetentTravel_a]) 
+					translate([0,BoltCircle_r+3,0]) cylinder(d=10, h=Plate_H);
+				rotate([0,0,Detent_a-DetentTravel_a]) 
+					translate([0,BoltCircle_r+3,0]) cylinder(d=10, h=Plate_H);
 			} // hull
 			
 			// Ball Detent, raised portion
 			hull(){
-				rotate([0,0,Detent_a]) translate([0,BoltCircle_r+3,0]) cylinder(d=10, h=Plate_H+DetentXtra);
-				rotate([0,0,Detent_a+DetentTravel_a]) translate([0,BoltCircle_r+3,0]) cylinder(d=10, h=Plate_H+DetentXtra);
-				rotate([0,0,Detent_a-DetentTravel_a]) translate([0,BoltCircle_r+3,0]) cylinder(d=10, h=Plate_H+DetentXtra);
+				rotate([0,0,Detent_a]) 
+					translate([0,BoltCircle_r+3,0]) cylinder(d=10, h=Plate_H+DetentXtra);
+				rotate([0,0,Detent_a+DetentTravel_a]) 
+					translate([0,BoltCircle_r+3,0]) cylinder(d=10, h=Plate_H+DetentXtra);
+				rotate([0,0,Detent_a-DetentTravel_a]) 
+					translate([0,BoltCircle_r+3,0]) cylinder(d=10, h=Plate_H+DetentXtra);
 			} // hull
 				
 		} // union
@@ -814,19 +826,13 @@ module ST_LockBallRetainer(Tube_OD=PML98Body_OD, InnerTube_OD=BT54Body_OD){
 							cylinder(d=LockBall_d, h=Plate_H);
 			} // hull
 			
-		
-				
 			// Ball insertion	
 			for (j=[0:nBalls-1]) rotate([0,0,360/nBalls*j+BallInsertion_a])
 				translate([0, LockBallCircle_d(InnerTube_OD=InnerTube_OD)/2+3, -1.5])
 						cylinder(d=LockBall_d, h=Plate_H);
 				
 		} // union
-		
-		
-		//translate([0,0,-Race_W/2]) 
-		//	cylinder(d=Race_ID(InnerTube_OD=InnerTube_OD)+20, h=LockBall_d+IDXtra*2, center=true);
-		
+				
 		translate([0,0,-Race_W-Overlap]) 
 			cylinder(d=Race_ID(InnerTube_OD=InnerTube_OD), h=Race_W+Plate_H+Overlap*2);
 		
@@ -851,8 +857,9 @@ module ST_BallSpacer(Tube_OD=PML98Body_OD){
 		// center hole
 		translate([0,0,-Overlap]) cylinder(d=BallCircle_d-BearingBall_d*0.6, h=BearingBall_d/2+Thickness+Overlap*2);
 		
-		for (j=[0:nBalls-1]) rotate([0,0,360/nBalls*j]) translate([BallCircle_d/2,0,BearingBall_d/2+Thickness])
-			sphere(d=BearingBall_d+LooseFit, $fn=36);
+		for (j=[0:nBalls-1]) rotate([0,0,360/nBalls*j]) 
+			translate([BallCircle_d/2,0,BearingBall_d/2+Thickness])
+				sphere(d=BearingBall_d+LooseFit, $fn=36);
 			
 		for (j=[0:nBalls/2-1]) rotate([0,0,720/nBalls*j-180/nBalls]){
 			translate([BallCircle_d/2,0,0]) rotate([180,0,0]) Bolt2Hole();
@@ -874,19 +881,19 @@ module ST_MT_DrillingJig(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, InnerTube_
 	CablePath_Y=BoltCircle_d(Tube_OD)/2; 
 	
 	// Skirt
-			translate([0,0,-Skirt_Len]) 
-				Tube(OD=Tube_OD, ID=Skirt_ID+IDXtra, Len=Skirt_Len+Overlap*2, myfn=$preview? 36:360);
+	translate([0,0,-Skirt_Len]) 
+		Tube(OD=Tube_OD, ID=Skirt_ID+IDXtra, Len=Skirt_Len+Overlap*2, myfn=$preview? 36:360);
 			
-			translate([0,0,-13]) 
-				TubeStop(InnerTubeID=Skirt_ID-3, OuterTubeOD=Tube_OD, myfn=$preview? 36:360);
+	translate([0,0,-13]) 
+		TubeStop(InnerTubeID=Skirt_ID-3, OuterTubeOD=Tube_OD, myfn=$preview? 36:360);
 			
-			// Alignment key
-			intersection(){
-				translate([0,Skirt_ID/2,-16]) cylinder(d=4,h=5);
-					
-				translate([0,0,-18]) cylinder(d=Skirt_ID+1, h=40);
-			} // intersection
-	
+	// Alignment key
+	intersection(){
+		translate([0,Skirt_ID/2,-16]) cylinder(d=4,h=5);
+			
+		translate([0,0,-18]) cylinder(d=Skirt_ID+1, h=40);
+	} // intersection
+
 	
 	difference(){
 		union(){
@@ -894,11 +901,9 @@ module ST_MT_DrillingJig(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, InnerTube_
 			translate([0,0,Race_W/2-H/2]) cylinder(d=Tube_OD, h=4);
 			
 			// Cable Alignment
-			#rotate([0,0,Cable_a(CablePath_Y)]) translate([0,Tube_OD/2-5,Race_W/2-H/2]) cylinder(d=5, h=5);
+			rotate([0,0,Cable_a(CablePath_Y)]) 
+				translate([0,Tube_OD/2-5,Race_W/2-H/2]) cylinder(d=5, h=5);
 		} // union
-		
-		//for (j=[0:2]) rotate([0,0,120*j+Ball1_a]) translate([0,0,Race_W/2])
-		//	rotate([-90,0,0]) cylinder(d=BearingBall_d-2, h=InnerTube_OD);
 		
 		for (j=[0:nBalls-1]) rotate([0,0,Offset_a+360/nBalls*j]) translate([0,0,Race_W/2])
 			rotate([-90,0,0]) cylinder(d=BearingBall_d-2, h=InnerTube_OD);
