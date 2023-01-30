@@ -122,8 +122,8 @@ LargeFairing(IsLeftHalf=true,
 //
 // ***********************************
 
-include<NoseCone.scad>
-include<CablePuller.scad>
+use<NoseCone.scad>
+use<CablePuller.scad>
 include<FairingJointLib.scad>
 //include<CommonStuffSAEmm.scad>
 

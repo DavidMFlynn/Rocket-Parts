@@ -8,6 +8,7 @@
 // ***********************************
 //  ***** Notes *****
 //
+// Created to make stiffer large fairings.
 // I printed and tested this.
 // It will get refined when another one gets built.
 // 
@@ -43,11 +44,9 @@ echo("Fairing137 1.0.0");
 // ***********************************
 
 use<Fairing54.scad>
-//include<TubesLib.scad>
 include<FairingJointLib.scad>
-//use<NoseCone.scad>
-//include<FairingJointLib.scad>
-//include<CommonStuffSAEmm.scad>
+	//include<TubesLib.scad>
+	//include<CommonStuffSAEmm.scad>
 
 Overlap=0.05;
 IDXtra=0.2; // Add to ID for tight fit, x2 for loose fit
