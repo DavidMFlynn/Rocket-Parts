@@ -3,7 +3,7 @@
 // Filename: SpringThing2.scad
 // by David M. Flynn
 // Created: 10/17/2022 
-// Revision: 1.1.0   1/29/2023
+// Revision: 1.1.1   2/2/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -15,6 +15,7 @@
 // Also, in 137mm (Blue Tube 5.5 inch) 12/19/2022
 //
 //  ***** History *****
+// 1.1.1   2/2/2023   Fixes cable bearing shaft hole.
 // 1.1.0   1/29/2023  Added ST_CableBearing(). fixed: ST_LockBallRetainer(), ST_DetentOnly(), ST_CableRedirectTop(). Default to raceways=true in ST_Frame().
 // 1.0.0   12/19/2022 Works as printed in 98mm and 137mm.
 // 0.9.23  12/18/2022 Adjuster angle of ball detent bolts 12° to clear wire path of 5.5 inch version. 
@@ -422,7 +423,7 @@ module ST_CableRedirectTop(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, InnerTub
 			difference(){
 				rotate([0,0,Cable_a(CablePath_Y)-CableB_a])
 				translate([0,CablePath_Y-1,3]) rotate([0,0,-CableB_a]){
-					rotate([-90,0,0]) cylinder(d=8, h=16, center=true);
+					rotate([-90,0,0]) cylinder(d=9, h=20, center=true);
 					difference(){
 						rotate([-90,0,0]) cylinder(d=17, h=8, center=true);
 						translate([0,-10,0]) cube([20,20,20]);
@@ -441,7 +442,7 @@ module ST_CableRedirectTop(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, InnerTub
 		rotate([0,0,Cable_a(CablePath_Y)-CableB_a])
 			translate([0,CablePath_Y-1,3]) rotate([0,0,-CableB_a]){
 				rotate([-90,0,0]) cylinder(d=15, h=6, center=true);
-				rotate([-90,0,0]) cylinder(d=4+IDXtra*2, h=20, center=true);
+				rotate([-90,0,0]) cylinder(d=4+IDXtra*2, h=50, center=true);
 				}
 		
 		// Bolt holes
