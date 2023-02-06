@@ -3,13 +3,13 @@
 // Filename: Stager2Lib.scad
 // by David M. Flynn
 // Created: 10/10/2022 
-// Revision: 0.9.25  2/4/2023
+// Revision: 1.0.0  2/6/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 //
 // 2/2/2023 0.9.23 printed and assembled a full set of parts for 98mm/3.9" rocket. Worked!
-// I will print a 137mm version, if OK this will be version 1.0.0
+// Printed a 137mm version, it works.
 //
 // Specifically built for a 4 inch rocket.
 // It could be modified to a larger tube, but smaller would be hard. 
@@ -21,22 +21,24 @@
 // My first intended use is a 4 inch 2 stage rocket. 
 // At booster stage burnout: drop away from the sustainer and deploy a parachute.
 //
-// Parts
+// Parts 2 locks/3 locks
 // ---------------
-// 9 3/8" Delrin Balls for 2 locks, 13 for 3 locks
-// 6 #4-40 x 3/8" Socket head cap screws (Lock Ring)
-// 10 #4-40 x 3/8" Button head screws (saucer, ball detent, CableEndAndStop, add 4 for electrical conns) 
-// 8  #2-56 x 1/4" Socket head cap screws (ball spacer)
-// 4/6  #6-32 x 1/2" Button head cap screws (lock rods)
-// 2 5/16" Dia. x 1-1/4" strong spring, or 3 for 3 locks
+// 9/13 3/8" Delrin Balls for 2 locks
+// 6 #4-40 x 1/4" Socket head cap screws (Lock Ring)
+// 10 #4-40 x 1/4" Button head screws (saucer, ball detent, CableEndAndStop, add 4 for electrical conns) 
+// 6/8  #2-56 x 1/4" Socket head cap screws (ball spacer)
+// 4/6  #6-32 x 3/8" Button head cap screws (lock rods)
+// 2/3 5/16" Dia. x 1-1/4" strong spring
 // 1 5/16" Dia. x 3/4" 0.3" OD, 0.028" Wire, WB Jones p/n C10-028-024 light spring (ball detent)
 // length of 1/32" or 1mm wire rope and 2 copper crimp on ends
+// MR84 bearing 8mm OD x 4mm ID x 3mm thick
+// 4mm x 16mm undersize steel dowel pin
 // A 4 pin Molex connector is required for booster separation detection and sustainer ignition. 
 // 
 //  ***** Assembly Instructions *****
 // -------------------------------------------------
 //  Print all parts, PETG 0.4mm nozzle
-//    0.3mm layers, 30% huney comb infil, 3 perimeters, 3 botoom layers, 3 top layers
+//    0.3mm layers, 30% honey comb infil, 3 perimeters, 3 botoom layers, 3 top layers
 //  Insert 3/8" Delrin lock balls 4 per lock
 //  Insert lock ring, sit saucer in place 
 //  Prepair ball spacers, drill 1/16" or #2-56 tap drill, cleanup counter bores w/ 9/64" drill
@@ -47,7 +49,8 @@
 //
 //  ***** History *****
 //
-echo("StagerLib 0.9.25");
+echo("StagerLib 1.0.0");
+// 1.0.0   2/6/2023    It works good.
 // 0.9.25  2/4/2023    Added inner tube skirt to Stager_Drogue_Cup
 // 0.9.24  2/3/2023    Added Stager_Drogue_Cup()
 // 0.9.23  2/2/2023    Added Stager_CableBearing() easier to pull.
@@ -90,8 +93,8 @@ echo("StagerLib 0.9.25");
 // Stager_SaucerEConnHolder(Tube_OD=PML98Body_OD);
 // Stager_SaucerEConnHolder(Tube_OD=BT137Body_OD);
 
-// Stager_LockRing(Tube_OD=PML98Body_OD, nLocks=2, FlexComp_d=0.4);
-// Stager_LockRing(Tube_OD=BT137Body_OD, nLocks=3, FlexComp_d=0.8);
+// Stager_LockRing(Tube_OD=PML98Body_OD, nLocks=2, FlexComp_d=0.4); // 0.4 is tight but works
+// Stager_LockRing(Tube_OD=BT137Body_OD, nLocks=3, FlexComp_d=0.8); // -0.8 works is tight, 0 is too tight
 //
 // Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_Len=30, KeyOffset_a=0, HasRaceway=false, Raceway_a=270);
 // Stager_Mech(Tube_OD=BT137Body_OD, nLocks=3, Skirt_ID=BT137Body_ID, Skirt_Len=30, KeyOffset_a=0, HasRaceway=true, Raceway_a=300);

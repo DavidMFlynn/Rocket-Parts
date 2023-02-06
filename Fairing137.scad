@@ -3,7 +3,7 @@
 // Filename: Fairing137.scad
 // by David M. Flynn
 // Created: 1/26/2023 
-// Revision: 1.0.0  1/26/2023
+// Revision: 1.0.1  2/4/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -17,16 +17,27 @@
 //
 //  ***** History *****
 //
-echo("Fairing137 1.0.0");
+echo("Fairing137 1.0.1");
+// 1.0.1   2/4/2023   Test w/ PML98 tube, Fixed lanyard foot
 // 1.0.0   1/26/2023  Copied from Fairing54 Rev 1.1.0
 //
 // ***********************************
 //  ***** for STL output *****
 //
+// NoseLockRing(Fairing_OD=BT137Body_OD, Fairing_ID =BT137Body_OD-4.4);
+//
 // GoProFairingAdaptor();
+//
 // BigFairingAdaptor(Fairing_OD=BT137Body_OD, BodyTubeOD=PML98Body_OD, CouplerTube_OD=PML98Coupler_OD, CouplerTube_ID=PML98Coupler_ID, BaseXtra=25, SkirtXtra=20);
 // BigFairingAdaptorCR(Fairing_OD=BT137Body_OD, InnerTube_OD=BT38Body_OD, Offset=0);
-// LargeFairing(IsLeftHalf=true, Fairing_OD=Fairing_OD, Wall_T=7, Len=Fairing_Len);
+//
+// LargeFairing(IsLeftHalf=true, Fairing_OD=BT137Body_OD, Wall_T=7, Len=120);
+// LargeFairing(IsLeftHalf=false, Fairing_OD=PML98Body_OD, Wall_T=5, Len=160);
+//
+// LargeBolt_On_PJ_Clip(Fairing_OD=BT137Body_OD, FairingWall_t=2.2);
+// LargeBolt_On_PJ_Clip(Fairing_OD=PML98Body_OD, FairingWall_t=2.2);
+// LargeFairing_BoltOn_Tenon(Fairing_OD=BT137Body_OD, FairingWall_t=2.2);
+// LargeFairing_BoltOn_Tenon(Fairing_OD=PML98Body_OD, FairingWall_t=2.2);
 //
 // ***********************************
 //  ***** Routines *****
@@ -57,11 +68,6 @@ F54_Spring_OD=5/16*25.4;
 F54_Spring_FL=32;
 F54_Spring_CBL=14;
 F54_SpringEndCap_OD=F54_Spring_OD+3;
-
-Fairing_OD=BT137Body_OD;
-FairingWall_T=2.2;
-Fairing_ID=Fairing_OD-FairingWall_T*2;
-Fairing_Len=120;
 
 // *********************************
 
@@ -270,9 +276,9 @@ module GridWall(OD=BT137Body_OD, ID=BT137Body_OD-14, Len=100, Wall_t=1.2){
 //GridWall();
 
 module LargeFairing(IsLeftHalf=true, 
-				Fairing_OD=Fairing_OD,
+				Fairing_OD=BT137Body_OD,
 				Wall_T=7,
-				Len=Fairing_Len){
+				Len=120){
 	
 	TubeWall_T=2.2;
 	PJ_Spacing=(Len-25)/4;
@@ -497,9 +503,11 @@ module LargeFairing(IsLeftHalf=true,
 	/**/
 	
 	if (IsLeftHalf) {
-		translate([0,0,Len-21]) rotate([0,0,135]) LanyardToTube(ID=Fairing_ID, Foot=6);
+		translate([0,0,Len-21]) rotate([0,0,135]) 
+			LanyardToTube(ID=Fairing_ID, Foot=Fairing_OD/2-Fairing_ID/2-0.8);
 	} else {
-		translate([0,0,Len-21]) rotate([0,0,-135+180]) LanyardToTube(ID=Fairing_ID, Foot=6);
+		translate([0,0,Len-21]) rotate([0,0,-135+180]) 
+			LanyardToTube(ID=Fairing_ID, Foot=Fairing_OD/2-Fairing_ID/2-0.8);
 	}
 	
 } // LargeFairing

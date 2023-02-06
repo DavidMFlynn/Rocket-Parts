@@ -3,7 +3,7 @@
 // Filename: FairingJointLib.scad
 // by David M. Flynn
 // Created: 8/5/2022 
-// Revision: 0.9.10  1/13/2023
+// Revision: 0.9.11  2/4/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,7 +12,8 @@
 //
 //  ***** History *****
 //
-echo("FairingJointLib 0.9.10");
+echo("FairingJointLib 0.9.11");
+// 0.9.11  2/4/2023  removed hard coded number 137, 2 places
 // 0.9.10  1/13/2023 Changes tenon inset from 8.5 to Tenon_Y+FairingWall_t
 // 0.9.9  1/5/2023   Added BoltOnTenon
 // 0.9.8  9/12/2022  Fairing 75 is OK but changes will need to be tested with other sizes.
@@ -386,7 +387,7 @@ module LargeBolt_On_PJ_Clip(Fairing_OD=137, FairingWall_t=2.2){
 		} // union
 	
 		// Bolt holes
-		LargeFairing_PJ_Clip_BoltPattern(Fairing_OD=137) Bolt4Hole(depth=20);
+		LargeFairing_PJ_Clip_BoltPattern(Fairing_OD=Fairing_OD) Bolt4Hole(depth=20);
 		
 		// Trim to Fairing_ID
 		translate([0,0,-5])
@@ -423,7 +424,7 @@ module LargeFairing_BoltOn_Tenon(Fairing_OD=137, FairingWall_t=2.2){
 		} // Union
 		
 		// Bolt holes
-		LargeFairing_PJ_Clip_BoltPattern(Fairing_OD=137) Bolt4Hole(depth=20);
+		LargeFairing_PJ_Clip_BoltPattern(Fairing_OD=Fairing_OD) Bolt4Hole(depth=20);
 		
 		// Trim to Fairing_ID
 		translate([0,0,-5])
