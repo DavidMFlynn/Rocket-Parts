@@ -375,6 +375,76 @@ module R98_Electronics_Bay2(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID,
 //translate([0,0,162]) R98_Electronics_Bay2();
 //R98_Electronics_Bay2(HasFairingLockRing=false, ShowDoors=true);
 
+R54_Body_OD=PML54Body_OD;
+R54_Body_ID=PML54Body_ID;
+
+module R54_Electronics_Bay2(Tube_OD=R54_Body_OD, Tube_ID=R54_Body_ID, 
+					Fairing_ID=R54_Body_OD-4.4, HasFairingLockRing=true,
+					ShowDoors=false){
+	Len=162;
+	CablePuller_Z=81;
+	BattSwDoor_Z=70;
+	TopSkirt_Len=15;
+	BottomSkirt_Len=15;
+	CR_Inset=12;
+	
+	
+	CP1_a=0;
+	Alt_a=180;
+	nCRHoles=4;
+	
+	
+	
+	// The Fairing clamps onto this. 
+	if (HasFairingLockRing)
+	translate([0,0,Len]) FairingBaseLockRing(Tube_OD=Tube_OD, Tube_ID=Tube_ID, Fairing_ID=Fairing_ID, Interface=Overlap, BlendToTube=true);
+	
+	
+	difference(){
+		union(){
+			Tube(OD=Tube_OD, ID=Tube_ID, Len=Len, myfn=$preview? 36:360);
+			
+			//translate([0,0,BottomSkirt_Len])
+		//		CenteringRing(OD=Tube_OD-1, ID=InnerTube_OD+IDXtra*2, 
+			//					Thickness=5, nHoles=nCRHoles, Offset=TubeOffset);
+			
+			//translate([0,0,Len-5-TopSkirt_Len])
+			//	CenteringRing(OD=Tube_OD-1, ID=InnerTube_OD+IDXtra*2, 
+			//				Thickness=5, nHoles=nCRHoles, Offset=TubeOffset);
+		} // union
+		
+		
+			
+		// Altimeter
+		translate([0,0,CablePuller_Z]) rotate([0,0,Alt_a+180]) 
+			Alt_BayFrameHole(Tube_OD=Tube_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
+	
+		// Cable Puller door hole
+		translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a+180])
+			CP_BayFrameHole(Tube_OD=Tube_OD);
+		
+		
+		
+		// Cable Puller Cable hole
+		rotate([0,0,CP1_a])
+		translate([0,Tube_OD/2-CR_Inset/2-8,Len-5-TopSkirt_Len-Overlap]) cylinder(d=12, h=12);
+	} // difference
+	
+	
+	
+	// Altimeter
+	translate([0,0,CablePuller_Z]) rotate([0,0,Alt_a+180])
+		Alt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=ShowDoors);
+	
+	// Cable Pullers
+	translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a+180])
+		CP_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, ShowDoor=ShowDoors);
+	
+	
+} // R54_Electronics_Bay2
+
+//R54_Electronics_Bay2();
+
 module EBayCouplerCR(){
 	nHoles=6;
 	InnerTube_OD=BT38Body_OD;

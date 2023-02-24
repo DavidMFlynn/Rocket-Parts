@@ -3,7 +3,7 @@
 // Filename: TubesLib.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.9  1/18/2023
+// Revision: 0.9.10  2/23/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,7 +12,9 @@
 //
 //  ***** History *****
 //
-echo("TubesLib 0.9.9");
+function TubesLib_Rev()="TubesLib 0.9.10";
+echo(TubesLib_Rev());
+// 0.9.10  2/23/2023 Added MotorRetainer();
 // 0.9.9  1/18/2023  Added Offset to CenteringRing()
 // 0.9.8  12/29/2022 Added ShockCordMount()
 // 0.9.7  12/2/2022  Added BT38Body tube
@@ -27,6 +29,7 @@ echo("TubesLib 0.9.9");
 // ***********************************
 //  ***** for STL output *****
 //
+// MotorRetainer(Tube_OD=BT54Mtr_OD, Tube_ID=BT54Mtr_ID, Mtr_OD=54, MtrAC_OD=58);
 // ShockCordMount(OD=PML98Body_ID, ID=BT54Mtr_OD, AnchorRod_OD=12.7);
 // Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=300, myfn=$preview? 36:360);
 // CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0, Offset=0);
@@ -118,6 +121,27 @@ PML38Body_ID=1.525*25.4;
 PML38Coupler_OD=(1.40+0.062*2)*25.4;
 PML38Coupler_ID=1.40*25.4;
 //echo(PML38Body_OD=PML38Body_OD);
+
+module MotorRetainer(Tube_OD=BT54Mtr_OD, Tube_ID=BT54Mtr_ID, Mtr_OD=54, MtrAC_OD=58){
+	OAH=33;
+	GlueSleeve_Len=15;
+	Mtr_AC_Len=10;
+	Groove_H=1.5;
+	
+	difference(){
+		cylinder(d=Tube_OD+4, h=OAH);
+		
+		translate([0,0,-Overlap]) cylinder(d=Mtr_OD+IDXtra*3, h=OAH+Overlap);
+		translate([0,0,OAH-GlueSleeve_Len]) cylinder(d=Tube_OD, GlueSleeve_Len+Overlap);
+		translate([0,0,-Overlap]) cylinder(d=MtrAC_OD+IDXtra*3, h=GlueSleeve_Len+Overlap);
+		
+		translate([0,0,GlueSleeve_Len-Mtr_AC_Len-Groove_H]) cylinder(d=MtrAC_OD+2+IDXtra,h=Groove_H);
+	} // difference
+
+} // MotorRetainer
+
+//MotorRetainer(Tube_OD=BT54Mtr_OD, Tube_ID=BT54Mtr_ID, Mtr_OD=54, MtrAC_OD=58);
+//MotorRetainer(Tube_OD=BT38Body_OD, Tube_ID=BT38Body_ID, Mtr_OD=38, MtrAC_OD=42);
 
 module CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0, Offset=0){
 	difference(){

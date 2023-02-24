@@ -93,8 +93,8 @@ echo("StagerLib 1.0.0");
 // Stager_SaucerEConnHolder(Tube_OD=PML98Body_OD);
 // Stager_SaucerEConnHolder(Tube_OD=BT137Body_OD);
 
-// Stager_LockRing(Tube_OD=PML98Body_OD, nLocks=2, FlexComp_d=0.4); // 0.4 is tight but works
-// Stager_LockRing(Tube_OD=BT137Body_OD, nLocks=3, FlexComp_d=0.8); // -0.8 works is tight, 0 is too tight
+// Stager_LockRing(Tube_OD=PML98Body_OD, nLocks=2, FlexComp_d=0.8); 
+// Stager_LockRing(Tube_OD=BT137Body_OD, nLocks=3, FlexComp_d=0.8); 
 //
 // Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_Len=30, KeyOffset_a=0, HasRaceway=false, Raceway_a=270);
 // Stager_Mech(Tube_OD=BT137Body_OD, nLocks=3, Skirt_ID=BT137Body_ID, Skirt_Len=30, KeyOffset_a=0, HasRaceway=true, Raceway_a=300);

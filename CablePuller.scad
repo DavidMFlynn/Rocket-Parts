@@ -130,7 +130,7 @@ module Bearing(){
 
 // Bearing();
 
-module ShowCablePuller(){
+module ShowCablePuller(Tube_OD=PML98Body_OD){
 	//TO_a=-45;
 	TO_a=0;
 	
@@ -160,7 +160,7 @@ module ShowCablePuller(){
 	translate([CP_Bearing_OD*1.5+ArmLen, 7.5+4+CP_Bearing_OD/2, 7.5-2-CP_Bearing_H/2-1.5])
 		TriggerBellCrank();
 	
-	translate([8,0,36]) rotate([0,0,-90]) rotate([0,180,0]) CP_Door(Tube_OD=PML98Body_OD, BoltBossInset=3, HasArmingSlot=true);
+	translate([8,0,36]) rotate([0,0,-90]) rotate([0,180,0]) CP_Door(Tube_OD=Tube_OD, BoltBossInset=3, HasArmingSlot=true);
 } // ShowCablePuller
 
 //ShowCablePuller();
@@ -254,6 +254,7 @@ module CP_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=fals
 	Door_X=CP_Door_X;
 	Door_t=CP_DoorThickness;
 	BoltBossInset=10.5+2;
+	FrameInset=(Tube_OD>PML54Body_OD+1)? 12:Tube_OD/2;
 	
 	difference(){
 		union(){
@@ -271,7 +272,7 @@ module CP_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=fals
 					Tube(OD=Tube_OD-1, ID=Tube_ID-9, Len=Door_Y+6, myfn=$preview? 36:360);
 					
 				hull(){
-					translate([0,-Tube_ID/2+12,0]) rotate([90,0,0]) 
+					translate([0,-Tube_ID/2+FrameInset,0]) rotate([90,0,0]) //12
 						RoundRect(X=Door_X+3, Y=Door_Y+3, Z=Tube_OD, R=4+3);
 					translate([0,-Tube_ID/2,0]) rotate([90,0,0]) 
 						RoundRect(X=Tube_ID*2, Y=Door_Y+8, Z=Tube_OD, R=4+3);
@@ -294,7 +295,7 @@ module CP_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=fals
 				
 			// trim inside
 			hull(){
-				translate([0,-Tube_ID/2+12,0]) rotate([90,0,0]) 
+				translate([0,-Tube_ID/2+FrameInset,0]) rotate([90,0,0]) 
 					RoundRect(X=Door_X+3, Y=Door_Y+3, Z=Tube_OD, R=4+3);
 				translate([0,-Tube_ID/2,0]) rotate([90,0,0]) 
 					RoundRect(X=Tube_ID*2, Y=Door_Y+8, Z=Tube_OD, R=4+3);
@@ -319,12 +320,14 @@ module CP_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=fals
 	
 	if ($preview&&ShowDoor){ 
 		rotate([90,0,0]) CP_Door(Tube_OD=Tube_OD, BoltBossInset=2, HasArmingSlot=true);
-		translate([0,-Tube_OD/2+14,-8]) rotate([0,0,-90]) rotate([0,-90,0]) ShowCablePuller();
+		//translate([0,-Tube_OD/2+14,-8]) rotate([0,0,-90]) 
+		//	rotate([0,-90,0]) ShowCablePuller(Tube_OD=Tube_OD);
 	}
 	
 } // CP_BayDoorFrame
 
 //CP_BayDoorFrame(ShowDoor=false);
+//CP_BayDoorFrame(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, ShowDoor=true);
 
 module CP_Door(Tube_OD=PML98Body_OD, BoltBossInset=2, HasArmingSlot=false){
 	Door_Y=CP_Door_Y;

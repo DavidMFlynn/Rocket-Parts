@@ -3,7 +3,7 @@
 // Filename: NoseCone.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.6  1/4/2023
+// Revision: 0.9.7  2/23/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,7 +12,8 @@
 //
 //  ***** History *****
 //
-echo("NoseCone 0.9.6");
+echo("NoseCone 0.9.7");
+// 0.9.7  2/23/2023  Added HasUBolt to NoseconeBase, fixed nosecode inside again.
 // 0.9.6  1/4/2023   Added Bulkplate_BONC, Splice_BONC
 // 0.9.5  10/19/2022 edited Transition_OD
 // 0.9.4  9/18/2022  More fixes, optioned HasRivets
@@ -32,7 +33,7 @@ echo("NoseCone 0.9.6");
 // Splice_BONC(OD=58, H=10, L=160, Base_L=5, Tip_R=5, Wall_T=2.2, Cut_Z=80);  // fix a failed print
 // Bulkplate_BONC(OD=58, T=10, L=160, Base_L=5, Tip_R=5, Wall_T=2.2, Cut_Z=80);
 // BluntOgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=190, Base_L=21, Tip_R=22, Wall_T=2);
-// NoseconeBase(OD=PML98Body_ID, L=60, NC_Base=21);
+// NoseconeBase(OD=PML98Body_ID, L=60, NC_Base=21, HasUBolt=true);
 //
 // ***********************************
 //  ***** Routines *****
@@ -182,11 +183,11 @@ module BluntOgiveShape(L=150, D=50, Base_L=10, Tip_R=5){
 			difference(){
 				intersection(){
 					square([R,L]);
-					translate([-p+R,0]) circle(r=p, $fn=$preview? 90:720);
+					translate([-p+R,0]) circle(r=p, $fn=$preview? 180:720);
 				} // intersection
 				translate([0,L-X0]) square([50,50]);
 			} // difference
-			translate([0,L-X0, 0]) circle(r=Tip_R, $fn=$preview? 90:720);
+			translate([0,L-X0, 0]) circle(r=Tip_R, $fn=$preview? 180:720);
 		} // hull
 	
 		translate([-100,-Overlap,0]) square([100,L+Overlap*2]);
@@ -215,8 +216,8 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3, Cut
 		// Remove inside
 		rotate_extrude($fn=$preview? 90:720) 
 			offset(-Wall_T) BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
-		cylinder(d=Wall_T*3, h=Base_L+L-X0+Tip_R-Wall_T*2);
-		translate([0,0,Base_L+L-X0]) sphere(r=Tip_R-Wall_T,$fn=$preview? 36:360);
+		cylinder(d=Wall_T*2+Overlap, h=Base_L+L-X0+Tip_R-Wall_T*1.3);
+		//translate([0,0,Base_L+L-X0]) sphere(r=Tip_R-Wall_T,$fn=$preview? 36:360);
 		
 		if (Base_L>12) translate([0,0,Base_L/2])
 			RivetPattern(BT_Dia=OD, nRivets=3, Dia=5/32*25.4);
@@ -255,17 +256,28 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3, Cut
 			translate([0,0,Cut_Z-6]) cylinder(d=OD/2, h=12);
 			
 			// this needs fixed, should be calculated, 
-			Transition_OD=OD*0.7+7; // works for 102mm OD x 350mm L Cut @180mm
+			Transition_OD=OD*0.7-Wall_T*2+16; // works for 102mm OD x 350mm L Cut @180mm
 			translate([0,0,Cut_Z-7]) 
 				cylinder(d1=Transition_OD, d2=Transition_OD-12, h=8, $fn=$preview? 90:360);
 			
 			rotate_extrude($fn=$preview? 90:360) 
-				offset(-Wall_T*2-IDXtra*2) BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
+				offset(-Wall_T-2.2-IDXtra*2) BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
 			
 			if ($preview==true) translate([0,-100,-1]) cube([100,100,L+2]);
 		} // difference
 	
 } // BluntOgiveNoseCone
+
+//BluntOgiveNoseCone(ID=BT54Coupler_OD, OD=BT54Body_OD, L=190, 	Base_L=20, Tip_R=10, Wall_T=2.2, Cut_Z=0, LowerPortion=false);
+/*
+BluntOgiveNoseCone(ID=BT137Body_ID, 
+					OD=PML98Body_OD,
+					Base_L=5,
+					L=400, 
+					Wall_T=7,
+					Tip_R=16,
+					Cut_Z=190, LowerPortion=true);
+/**/
 
 /*
 BluntOgiveNoseCone(ID=PML98Body_ID, 
@@ -360,18 +372,24 @@ module BluntOgiveWeight(OD=58, L=160, Tip_R=5, Wall_T=3){
 
 //BluntOgiveWeight(OD=PML75Body_OD, L=195, Tip_R=7, Wall_T=2.2);
 
-module NoseconeBase(OD=PML98Body_ID, L=60, NC_Base=21){
-	Wall_T=2;
+module NoseconeBase(OD=PML98Body_ID, L=60, NC_Base=21, HasUBolt=true){
+	Wall_T=2.2;
 	UBolt_X=25.4;
+	Base_H=4;
 	
 	difference(){
 		cylinder(d=OD, h=L+NC_Base, $fn=$preview? 90:720);
 		
-		translate([0,0,4]) cylinder(d=OD-Wall_T*2,h=L+NC_Base, $fn=$preview? 90:720);
+		translate([0,0,Base_H]) cylinder(d=OD-Wall_T*2,h=L+NC_Base, $fn=$preview? 90:720);
 		
-		// ubolt
-		translate([-UBolt_X/2,0,4]) Bolt250ClearHole();
-		translate([UBolt_X/2,0,4]) Bolt250ClearHole();
+		if (HasUBolt){
+			// ubolt
+			translate([-UBolt_X/2,0,Base_H]) Bolt250ClearHole();
+			translate([UBolt_X/2,0,Base_H]) Bolt250ClearHole();
+		}else{
+			translate([0,OD/2-Wall_T-4,-Overlap]) RoundRect(X=16, Y=4, Z=Base_H+1, R=1.5);
+			translate([0,-OD/2+Wall_T+4,-Overlap]) RoundRect(X=16, Y=4, Z=Base_H+1, R=1.5);
+		}
 		
 		if (NC_Base>12) translate([0,0,L+NC_Base/2])
 			RivetPattern(BT_Dia=OD, nRivets=3, Dia=5/32*25.4);
@@ -380,7 +398,7 @@ module NoseconeBase(OD=PML98Body_ID, L=60, NC_Base=21){
 	} // difference
 } // NoseconeBase
 
-
+//NoseconeBase(OD=PML54Body_ID, L=60, NC_Base=21, HasUBolt=false);
 //translate([0,0,-60]) NoseconeBase(OD=PML75Coupler_OD, L=60, NC_Base=21);
 
 

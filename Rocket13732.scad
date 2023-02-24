@@ -102,6 +102,30 @@ FairingConeOGive(Fairing_OD=Body_OD,
 /**/
 // rotate([0,180,0]) NoseLockRing(Fairing_OD=Body_OD, Fairing_ID =Fairing_ID); // Brim+Support
 //
+/*
+// Stubby nosecone
+FairingConeOGive(Fairing_OD=BT137Body_OD,
+					FairingWall_T=2.2,
+					NC_Base=5,
+					NC_Len=205,
+					NC_Wall_t=7,
+					NC_Tip_r=20,
+					Cut_Z=0, LowerPortion=true);
+/**/
+/*
+// 2 part nosecone
+FairingConeOGive(Fairing_OD=BT137Body_OD,
+					FairingWall_T=2.2,
+					NC_Base=5,
+					NC_Len=400,
+					NC_Wall_t=7,
+					NC_Tip_r=16,
+					Cut_Z=190, LowerPortion=false, HasLanyard=false);
+/**/	
+//translate([0,0,-2]) NoseLockRing(Fairing_OD=BT137Body_OD, Fairing_ID =BT137Body_OD-4.4);
+
+//NoseLockRing(Fairing_OD=BT137Body_OD, Fairing_ID =BT137Body_OD-4.4);
+//Bulkplate_BONC(OD=141.2, T=10, L=400, Base_L=5, Tip_R=16, Wall_T=7, Cut_Z=190);
 //
 // *** Fairing ***
 /*

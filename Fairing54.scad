@@ -466,7 +466,7 @@ module FairingConeOGive(Fairing_OD=Fairing_OD,
 			if (LowerPortion||(Cut_Z==0))
 			// coupler ring
 			FairingConeBaseRing(Fairing_OD=Fairing_OD, FairingWall_T=FairingWall_T,
-					NC_Base=NC_Base, NC_Wall_t=NC_Wall_t);
+					NC_Base=NC_Base, NC_Wall_t=NC_Wall_t); //NC_Wall_t
 			
 		} // union
 
@@ -480,6 +480,18 @@ module FairingConeOGive(Fairing_OD=Fairing_OD,
 } // FairingConeOGive
 
 //translate([0,0,Fairing_Len+Overlap]) FairingConeOGive(); 
+
+/*
+// 2 part nosecone
+FairingConeOGive(Fairing_OD=BT137Body_OD,
+					FairingWall_T=2.2,
+					NC_Base=5,
+					NC_Len=400,
+					NC_Wall_t=7,
+					NC_Tip_r=16,
+					Cut_Z=190, LowerPortion=true, HasLanyard=false);
+/**/	
+
 /*
 FairingConeOGive(Fairing_OD=BT137Body_OD,
 					FairingWall_T=2.2,

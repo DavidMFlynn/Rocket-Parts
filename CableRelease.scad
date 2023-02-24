@@ -3,7 +3,7 @@
 // Filename: CableRelease.scad
 // by David M. Flynn
 // Created: 6/15/2022 
-// Revision: 1.0.0  6/19/2022
+// Revision: 1.1.0  2/22/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -15,7 +15,8 @@
 //
 //  ***** History *****
 //
-echo("CableRelease 1.0.0");
+echo("CableRelease 1.1.0");
+// 1.1.0  2/22/2023 Mod for HS-5245MG
 // 1.0.0  6/19/2022 Looser spring hole in locking pin. Ready Testing.
 // 0.9.3  6/18/2022 Small fixes.
 // 0.9.2  6/17/2022 Fixed LockPlateStop. First working version.
@@ -31,6 +32,12 @@ echo("CableRelease 1.0.0");
 // BallRetainer();
 // LockPlateStop();
 //
+// rotate([180,0,0]) HousingStop(OD=PML54Body_ID);
+// TopMountS5245Tray();
+// ServoWheelB(UsesHS5245MGServo=true);
+// LockPlateExtension(Len=12);
+// ServoWheel(HasLockingBar=true, HasHoles=false);
+//
 // TopMountSTray(NearTabXtra=5);
 // ServoWheel();
 // LockPlateExtension(Len=12);
@@ -43,7 +50,7 @@ echo("CableRelease 1.0.0");
 //
 // ***********************************
 
-include<LD-20MGServoLib.scad>
+use<LD-20MGServoLib.scad>
 include<TubesLib.scad>
 include<CommonStuffSAEmm.scad>
 
@@ -59,6 +66,32 @@ Shoulder_h=20;
 Spring_d=5/16*25.4;
 Housing_d=BallCircle_d+Ball_d*3;
 HousingID_d=Housing_d-6;
+
+BearingMR84_ID=4;
+BearingMR84_OD=8;
+BearingMR84_H=3;
+
+// HS-5245MG Servo
+S5245WheelBC_d=20;
+S5245WheelBC2_d=17;
+S5245BoltSpace_x=8;
+S5245BoltSpace_y=39;
+Servo5245_x=17; // Body size
+Servo5245_y=32.5; // Body size
+Servo5245ShaftOffset_y=7; // Center of servo to center of output shaft
+S5245WheelOffset_z=12; // Top of wheel to bottom of tray
+
+// MG996R Servo
+Wheel_d=31.5;
+nSWheelBolts=6;
+SWheelBC_d=21;
+SBoltSpace_x=10;
+SBoltSpace_y=49;
+Servo_x=20; // Body size
+Servo_y=40; // Body size
+ServoShaftOffset_y=10.5; // Center of servo to center of output shaft
+SWheelOffset_z=14; // Top of wheel to bottom of tray
+
 
 module BallGroove(BallCircle_d=BallCircle_d, Ball_d=Ball_d){
 	rotate_extrude() translate([BallCircle_d/2,0,0]) circle(d=Ball_d);
@@ -84,16 +117,6 @@ module ShowCR(){
 
 //ShowCR();
 
-// MG996R Servo
-Wheel_d=31.5;
-nSWheelBolts=6;
-SWheelBC_d=21;
-SBoltSpace_x=10;
-SBoltSpace_y=49;
-Servo_x=20; // Body size
-Servo_y=40; // Body size
-ServoShaftOffset_y=10.5; // Center of servo to center of output shaft
-SWheelOffset_z=14; // Top of wheel to bottom of tray
 
 module TopMountSTray(NearTabXtra=5){
 	STray_h=4;
@@ -157,6 +180,87 @@ module TopMountSTray(NearTabXtra=5){
 
 //TopMountSTray();
 
+module TopMountS5245Tray(){
+	// Custom off-center version w/ HS-5245MG servo for 54mm rocket
+	S5245Tray_h=4;
+	S5245Tray_y=50;
+	Guide_d=PML54Body_ID-IDXtra*2;
+	echo(Guide_d=Guide_d);
+	
+	AC_h=30;
+	
+	module AntiClimber(){
+		AC_w=9;
+		
+		difference(){
+			hull(){
+				translate([-AC_w/2, -Servo5245ShaftOffset_y-12, 0]) cube([AC_w, 24, S5245Tray_h]);
+				translate([-AC_w/2, -Servo5245ShaftOffset_y-9, AC_h-0.1]) cube([AC_w, 18, 0.1]);
+			} // hull
+			
+			translate([-AC_w/2-Overlap,-Servo5245ShaftOffset_y-5.5,AC_h-11])
+				cube([AC_w+Overlap*2,11,11+Overlap]);
+		} // difference
+	} // AntiClimber
+	
+	difference(){
+		translate([0,-Servo5245ShaftOffset_y+3,0]){
+			cylinder(d=Guide_d, h=S5245Tray_h);
+			Tube(OD=Guide_d, ID=Guide_d-4.4, Len=AC_h+11, myfn=$preview? 36:360);
+			
+			difference(){
+				translate([0,0,AC_h-8+Overlap]) cylinder(d=Guide_d, h=8+11);
+				
+				translate([0,0,AC_h-8]) cylinder(d1=Guide_d-4.4, d2=35, h=7);
+				translate([0,-3,AC_h-8]) cylinder(d=40, h=10);
+				translate([0,-3,AC_h-8]) RoundRect(X=44, Y=11, Z=10, R=3);
+			}
+		} 
+		
+		translate([0,-Servo5245ShaftOffset_y,AC_h]) {
+			cylinder(d=Housing_d+2+IDXtra*2, h=11+Overlap*2);
+			translate([-15,-Guide_d/2,0]) cube([30,20,20]);
+			}
+		
+		
+		// Locking Ring
+		translate([0,-Servo5245ShaftOffset_y,AC_h+8]) 
+			rotate_extrude() translate([Housing_d/2+1.75/2,0,0]) circle(d=1.75+IDXtra*3);
+		
+		// Shock Cord
+		translate([0,-Servo5245ShaftOffset_y+3,0])
+			rotate([0,0,45]) translate([0,Guide_d/2,-Overlap]) RoundRect(Y=8, X=18, Z=50, R=1.5);
+		
+		translate([0,0,S5245Tray_h/2]) 
+			cube([Servo5245_x, Servo5245_y, S5245Tray_h+Overlap*2], center=true);
+		
+		translate([0,0,S5245Tray_h]){
+			translate([S5245BoltSpace_x/2,S5245BoltSpace_y/2,0]) Bolt4Hole();
+			translate([S5245BoltSpace_x/2,-S5245BoltSpace_y/2,0]) Bolt4Hole();
+			translate([-S5245BoltSpace_x/2,S5245BoltSpace_y/2,0]) Bolt4Hole();
+			translate([-S5245BoltSpace_x/2,-S5245BoltSpace_y/2,0]) Bolt4Hole();
+		}
+		
+		translate([0,-Servo5245ShaftOffset_y,AC_h]) cylinder(d=48, h=6);
+	} // difference
+	
+	// Anticlimbers
+	difference(){
+		union(){
+			translate([15,0,0]) AntiClimber();
+			translate([-15,0,0]) AntiClimber();
+		} // union
+		translate([0,-Servo5245ShaftOffset_y,S5245Tray_h]) cylinder(d=Wheel_d+1, h=30);
+	} // difference
+	
+	//translate([0,-Servo5245ShaftOffset_y,S5245WheelOffset_z]) color("Blue") cylinder(d=Wheel_d, h=4);
+	
+	//if ($preview) translate([0,-Servo5245ShaftOffset_y+3,0])
+	//	color("LightBlue") Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=15, myfn=$preview? 36:360);
+} // TopMountS5245Tray
+
+//TopMountS5245Tray();
+
 module ShowServoWorks(){
 	translate([0,ServoShaftOffset_y,-SWheelOffset_z]) TopMountSTray();
 	 color("LightBlue") ServoWheel();
@@ -181,29 +285,30 @@ module ShowServoWorks(){
 module Ramp(Wheel_h=3){
 	nSteps=50;
 	Ramp_h=5;
-	Ramp_w=4;
+	Ramp_w=6;
 	
 	for (j=[0:nSteps-2]){
-				hull(){
-					rotate([0,0,j]) translate([0,-Wheel_d/2+0.5,0])
-						cube([0.01,Ramp_w,Wheel_h+Ramp_h/nSteps*j]);
-					rotate([0,0,j+1]) translate([0,-Wheel_d/2+0.5,0])
-						cube([0.01,Ramp_w,Wheel_h+Ramp_h/nSteps*(j+1)]);
-				} // hull
-				hull(){
-					rotate([0,0,3+nSteps*2-j]) translate([0,-Wheel_d/2+0.5,0])
-						cube([0.01,Ramp_w,Wheel_h+Ramp_h/nSteps*j]);
-					rotate([0,0,3+nSteps*2-(j+1)]) translate([0,-Wheel_d/2+0.5,0])
-						cube([0.01,Ramp_w,Wheel_h+Ramp_h/nSteps*(j+1)]);
-				} // hull
-			} // for
-			hull(){
-				j=nSteps-2;
-				rotate([0,0,j+1]) translate([0,-Wheel_d/2+0.5,0])
-						cube([0.01,Ramp_w,Wheel_h+Ramp_h/nSteps*(j+1)]);
-				rotate([0,0,3+nSteps*2-(j+1)]) translate([0,-Wheel_d/2+0.5,0])
-						cube([0.01,Ramp_w,Wheel_h+Ramp_h/nSteps*(j+1)]);
-			} // hull
+		hull(){
+			rotate([0,0,j]) translate([0,-Wheel_d/2+0.5,0])
+				cube([0.01,Ramp_w,Wheel_h+Ramp_h/nSteps*j]);
+			rotate([0,0,j+1]) translate([0,-Wheel_d/2+0.5,0])
+				cube([0.01,Ramp_w,Wheel_h+Ramp_h/nSteps*(j+1)]);
+		} // hull
+		hull(){
+			rotate([0,0,3+nSteps*2-j]) translate([0,-Wheel_d/2+0.5,0])
+				cube([0.01,Ramp_w,Wheel_h+Ramp_h/nSteps*j]);
+			rotate([0,0,3+nSteps*2-(j+1)]) translate([0,-Wheel_d/2+0.5,0])
+				cube([0.01,Ramp_w,Wheel_h+Ramp_h/nSteps*(j+1)]);
+		} // hull
+	} // for
+	
+	hull(){
+		j=nSteps-2;
+		rotate([0,0,j+1]) translate([0,-Wheel_d/2+0.5,0])
+				cube([0.01,Ramp_w,Wheel_h+Ramp_h/nSteps*(j+1)]);
+		rotate([0,0,3+nSteps*2-(j+1)]) translate([0,-Wheel_d/2+0.5,0])
+				cube([0.01,Ramp_w,Wheel_h+Ramp_h/nSteps*(j+1)]);
+	} // hull
 } // Ramp
 
 module ServoWheelBoltPattern(){
@@ -211,14 +316,12 @@ module ServoWheelBoltPattern(){
 			translate([SWheelBC_d/2,0,0]) children();
 } // ServoWheelBoltPattern
 
-module RoundRect(X=10, Y=10, Z=4, R=1){
-	hull(){
-		translate([-X/2+R, -Y/2+R, 0]) cylinder(r=R, h=Z);
-		translate([-X/2+R, Y/2-R, 0]) cylinder(r=R, h=Z);
-		translate([X/2-R, -Y/2+R, 0]) cylinder(r=R, h=Z);
-		translate([X/2-R, Y/2-R, 0]) cylinder(r=R, h=Z);		
-	} // hull
-} // RoundRect
+module ServoHS5245WheelBoltPattern(){
+	for (j=[0:1]) rotate([0,0,180*j+45])
+			translate([S5245WheelBC_d/2,0,0]) children();
+	for (j=[0:1]) rotate([0,0,180*j-45])
+			translate([S5245WheelBC2_d/2,0,0]) children();
+} // ServoHS5245WheelBoltPattern
 
 module ServoWheel(HasLockingBar=false, HasHoles=true){
 	Wheel_h=4;
@@ -237,7 +340,7 @@ module ServoWheel(HasLockingBar=false, HasHoles=true){
 		if (HasLockingBar==true) 
 			difference(){
 				translate([0,0,-Overlap]) 
-					cylinder(d=22,h=Wheel_h+Overlap*2);
+					cylinder(d=18,h=Wheel_h+Overlap*2);
 				for (j=[0:2]) rotate([0,0,120*j]) 
 					translate([10,0,-Overlap*2]) cylinder(d=8,h=Wheel_h+Overlap*4);
 			} // difference
@@ -257,6 +360,68 @@ module ServoWheel(HasLockingBar=false, HasHoles=true){
 
 //ServoWheel();
 //translate([0,0,11]) rotate([180,0,0]) ServoWheel(HasLockingBar=true, HasHoles=false);
+
+module ServoWheelB(UsesHS5245MGServo=true){
+	Wheel_h=4;
+	
+	module AxilMnt(){
+		Len=BearingMR84_H+7;
+		Base_W=BearingMR84_OD+4;
+		
+		difference(){
+			hull(){
+				translate([0,-Wheel_d/2,0]) rotate([-90,0,0]) cylinder(d=BearingMR84_OD, h=Len);
+				translate([-Base_W/2,-Wheel_d/2,-BearingMR84_OD/2]) cube([Base_W,Len,1]);
+			} // hull
+			
+			translate([0,0,BearingMR84_OD/2-0.5]) cylinder(d=Wheel_d+2, h=2);
+			translate([0,0,-10])
+			difference(){
+				cylinder(d=Wheel_d+10, h=20);
+				translate([0,0,-Overlap]) cylinder(d=Wheel_d, h=20+Overlap*2);
+			} // difference
+		} // difference
+	} // AxilMnt
+	
+	difference(){
+		union(){
+			cylinder(d=Wheel_d, h=Wheel_h);
+			
+			// Bearing axil
+			translate([0,0, Wheel_h+5-BearingMR84_OD/2]) AxilMnt();
+			
+			mirror([0,1,0])
+				translate([0,0, Wheel_h+5-BearingMR84_OD/2]) AxilMnt();
+		} // union
+		
+		// Bearings
+		translate([0, -Wheel_d/2+3, Wheel_h+5-BearingMR84_OD/2])
+			rotate([-90,0,0]) cylinder(d=BearingMR84_OD+2, h=BearingMR84_H+1);
+		mirror([0,1,0]) translate([0, -Wheel_d/2+3, Wheel_h+5-BearingMR84_OD/2])
+			rotate([-90,0,0]) cylinder(d=BearingMR84_OD+2, h=BearingMR84_H+1);
+			
+		// Axils
+		translate([0, -Wheel_d/2-1, Wheel_h+5-BearingMR84_OD/2])
+			rotate([-90,0,0]) cylinder(d=BearingMR84_ID+IDXtra, h=13);
+		mirror([0,1,0]) translate([0, -Wheel_d/2-1, Wheel_h+5-BearingMR84_OD/2])
+			rotate([-90,0,0]) cylinder(d=BearingMR84_ID+IDXtra, h=13);
+			
+		// center hole
+		translate([0,0,-Overlap]) cylinder(d=8,h=Wheel_h+Overlap*2);
+		
+		// Bolt holes
+		if (UsesHS5245MGServo){
+			translate([0,0,Wheel_h]) ServoHS5245WheelBoltPattern() Bolt4Hole();
+		}else{
+			translate([0,0,Wheel_h]) ServoWheelBoltPattern() Bolt4Hole();
+		}
+		
+	
+	} // difference
+	
+} // ServoWheelB
+
+//ServoWheelB();
 
 module BallRetainer(){
 	// Keep the balls in there. 
@@ -396,6 +561,30 @@ module LockPlateStop(){
 
 //LockPlateStop();
 
+module HousingStop(OD=PML54Body_ID){
+	Guide_d=OD-IDXtra*2;
+	//echo(Housing_d=Housing_d);
+	difference(){
+		union(){
+			translate([0,-Servo5245ShaftOffset_y+3,0]) {
+				Tube(OD=Guide_d, ID=OD-4.4, Len=15, myfn=$preview? 36:360);
+				
+				cylinder(d=Guide_d-1, h=8);
+			}
+		} // union
+		
+		translate([0,-Servo5245ShaftOffset_y,-Overlap]) cylinder(d=Housing_d-2, h=9);
+		translate([0,-Servo5245ShaftOffset_y,-Overlap]) cylinder(d=Housing_d+IDXtra*2, h=6);
+		
+		// Shock Cord
+		translate([0,-Servo5245ShaftOffset_y+3,-Overlap])
+			rotate([0,0,45]) translate([0,Guide_d/2,-Overlap]) RoundRect(Y=8, X=18, Z=50, R=1.5);
+	} // difference
+} // HousingStop
+
+//HousingStop(OD=PML54Body_ID);
+//translate([0,-Servo5245ShaftOffset_y,-10]) CR_Housing();
+
 module CR_Housing(){
 	Housing_z=16;
 	ThreadedBase_d=Housing_d+2;
@@ -439,7 +628,7 @@ module CR_Housing(){
 		translate([0,0,-Housing_z-4-6-Overlap]) 
 			cylinder(d=HousingID_d+IDXtra*3, h=6+Overlap*2);
 		translate([0,0,-Housing_z-4-2-IDXtra])
-			Locks(nLocks=3, OD=HousingID_d, Pin_d=3+IDXtra*2, Pin_h=2+IDXtra*2, Lock_a=50);
+			Locks(nLocks=3, OD=HousingID_d, Pin_d=3+IDXtra*2, Pin_h=2+IDXtra*2, Lock_a=70);
 		translate([0,0,-Housing_z-4-6-Overlap])
 			Locks(nLocks=3, OD=HousingID_d, Pin_d=3+IDXtra*2, Pin_h=6+Overlap*2, Lock_a=28);
 		
