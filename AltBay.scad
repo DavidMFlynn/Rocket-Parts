@@ -301,7 +301,7 @@ module AltBay54(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Tube_Len=120, ShowDo
 //AltBay54(ShowDoor=true);
 //AltBay54(ShowDoor=false);
 
-module AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false, DoorXtra_X=0, DoorXtra_Y=0){
+module AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false, DoorXtra_X=0, DoorXtra_Y=0, ShowAlt=true){
 	Door_Y=Alt54Door_Y+DoorXtra_Y;
 	Door_X=Alt54Door_X+DoorXtra_X;
 	Door_t=AltDoorThickness-0.7;
@@ -357,9 +357,10 @@ module AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false, DoorXtra_X=0, DoorXtra
 		translate([0,-Door_Y/2+4,Tube_OD/2]) Bolt4ClearHole();
 	} // difference
 
+	if ($preview) translate([0,0,Tube_OD/2-Door_t-BoltBossInset-1.6]) AltPCB();
 } // AltDoor54
 
-//rotate([90,0,0]) AltDoor54(Tube_OD=PML98Body_OD, IsLoProfile=false);
+//rotate([90,0,0]) AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false);
 //rotate([180,0,0]) AltDoor54(Tube_OD=PML98Body_OD, IsLoProfile=true);
 
 module UpperRailButtonPost(Body_OD=PML54Body_OD, Body_ID=PML54Body_ID, MtrTube_OD=PML38Body_OD, Extend=5){
@@ -475,6 +476,18 @@ Electronics_Bay(Tube_OD=PML75Body_OD, Tube_ID=PML75Body_ID, Fairing_ID=PML75Body
 /**/
 
 module AltPCB(){
+	module Conn4Pin(){
+		translate([0,-7.5,0])
+		hull(){
+			cube([7,15,6]);
+			cube([5,15,8]);
+		}
+	} // Conn4Pin
+	
+	module Conn8Pin(){
+		translate([-10,-6.35/2,0]) cube([20,6.35,11]);
+	}
+	
 	difference(){
 		union(){
 			translate([-Alt_X/2,-Alt_Y/2,0]) 
@@ -484,6 +497,10 @@ module AltPCB(){
 				color("LightGray") cylinder(d=7,h=3);
 			translate([0,-Alt_Y/2+AltLED_Y,AltPCB_h+Overlap])
 				color("Blue") cylinder(d=4,h=3);
+				
+			translate([6.5,Alt_Y/2-14,0]) mirror([0,0,1]) Conn4Pin();
+			translate([-6.5,Alt_Y/2-14,0]) mirror([1,0,1]) Conn4Pin();
+			translate([0,-Alt_Y/2+6,0]) mirror([0,0,1]) Conn8Pin();
 		} // union
 		
 		translate([0,0,AltPCB_h]) AltHoles() Bolt4ClearHole();

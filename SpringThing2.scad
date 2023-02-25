@@ -47,9 +47,10 @@
 //  ***** for STL output *****
 //
 // ST_TubeEnd(Tube_OD=BT54Coupler_OD, Tube_ID=BT54Coupler_ID); // print 2, glued to half section of coupler tube
-// ST_SpringGuide(InnerTube_ID=BT54Body_ID); // Sits on top of motor, glued to bottom of spring. 
-// ST_SpringMiddle(Tube_ID=BT54Coupler_OD); // optional double spring slider
+// ST_TubeLockLanyard(Skirt_ID=BT54Coupler_ID-2);
 // ST_TubeLock(Tube_OD=BT54Coupler_OD, Skirt_ID=BT54Coupler_ID-2, SkirtLen=0); // Glued to top of spring.
+// ST_SpringMiddle(Tube_ID=BT54Coupler_OD); // optional double spring slider
+// ST_SpringGuide(InnerTube_ID=BT54Body_ID); // Sits on top of motor, glued to bottom of spring. 
 //
 // ST_BallSpacer(Tube_OD=PML98Body_OD); // print 2, spaces balls in bearing
 // ST_BallKeeper(InnerTube_OD=BT54Body_OD); // ball alignment, glue to tube
@@ -243,7 +244,7 @@ module ST_SpringGuide(InnerTube_ID=BT54Body_ID){
 	
 	difference(){
 		union(){
-			cylinder(d=ST_DSpring_ID-1, h=ST_DSpring_CBL);
+			cylinder(d=ST_DSpring_ID-1, h=ST_DSpring_CBL-6); // -6 to mate with ST_SpringMiddle
 			translate([0,0,-Tail_Len+Overlap]) cylinder(d=InnerTube_ID-IDXtra*2, h=Tail_Len);
 		} // union
 		
@@ -1046,9 +1047,43 @@ module ST_TubeLock(Tube_OD=BT54Coupler_OD, Skirt_ID=BT54Coupler_ID-2, SkirtLen=0
 	} // difference
 } // ST_TubeLock
 
-//ST_TubeLock();
+//ST_TubeLock(Tube_OD=BT54Coupler_OD, Skirt_ID=BT54Coupler_ID-2, SkirtLen=15);
 //ST_TubeLock(Tube_OD=BT75Coupler_OD, Skirt_ID=BT75Coupler_ID-2, SkirtLen=30);
 
+
+module ST_TubeLockLanyard(Skirt_ID=BT54Coupler_ID-2){
+	nSpokes=6;
+	
+	difference(){
+		union(){
+			cylinder(d=Skirt_ID, h=10);
+			translate([0,0,-5]) cylinder(d1=ST_DSpring_ID, d2=ST_DSpring_ID+7, h=5+Overlap);
+		} // union
+		
+		difference(){
+			union(){
+				cylinder(d=Skirt_ID-4.4, h=10+Overlap*2);
+				translate([0,0,-5-Overlap]) 
+					cylinder(d1=ST_DSpring_ID, d2=ST_DSpring_ID+7, h=5+Overlap*2);
+			} // union
+			for (j=[0:nSpokes-1]) rotate([0,0,360/nSpokes*j+180/nSpokes]) 
+				translate([-2,0,-5-Overlap*2]) cube([4,Skirt_ID/2,15+Overlap*4]);
+			translate([0,0,-5-Overlap*2]) cylinder(d=14.4, h=15+Overlap*4);
+		} // difference
+		
+		hull(){
+			translate([0,0,-5-Overlap]) cylinder(d=5, h=15+Overlap*2);
+			translate([0,10,-5-Overlap]) cylinder(d=5, h=15+Overlap*2);
+		} // hull
+		
+		translate([0,0,2]){
+			sphere(d=10);
+			cylinder(d=10, h=12+Overlap);
+			}
+	} // difference
+} // ST_TubeLockLanyard
+
+//translate([0,0,12]) ST_TubeLockLanyard();
 
 
 
