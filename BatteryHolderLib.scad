@@ -28,7 +28,7 @@ echo("BatteryHolderLib 1.0.2");
 //
 //  Batt_Door(Tube_OD=PML98Body_OD, InnerTube_OD=PML54Body_OD, HasSwitch=false);
 //  Batt_Door6xAAA(Tube_OD=BT137Body_OD, InnerTube_OD=BT54Body_OD, HasSwitch=true);
-//  SingleBatteryPocket();
+//  SingleBatteryPocket(ShowBattery=true);
 //
 //  rotate([180,0,0]) TubeEndStackedDoubleBatteryHolder(TubeOD=PML38Body_OD, TubeID=PML38Body_ID); // Fits 38mm motor tube
 //  rotate([180,0,0]) TubeEndDoubleBatteryHolder(TubeID=PML54Body_ID, TubeOD=PML54Body_OD); // Fits 54mm motor tube
@@ -400,7 +400,7 @@ module Batt_Door6xAAA(Tube_OD=BT137Body_OD, InnerTube_OD=BT54Body_OD, HasSwitch=
 
 //Batt_Door6xAAA(Tube_OD=BT137Body_OD, InnerTube_OD=BT54Body_OD, HasSwitch=true);
 
-module SingleBatteryPocket(){
+module SingleBatteryPocket(ShowBattery=true){
 	Batt_h=45;
 	BattConn_h=8;
 	Batt_X=27;
@@ -427,7 +427,7 @@ module SingleBatteryPocket(){
 		translate([0,0,-Overlap]) cylinder(d=12, h=4);
 		
 	} // difference
-	if ($preview) translate([0,0,3]) BatteryCase();
+	if ($preview && ShowBattery) translate([0,0,3]) BatteryCase();
 	
 } // SingleBatteryPocket
 
