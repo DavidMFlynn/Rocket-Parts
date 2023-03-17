@@ -347,7 +347,311 @@ module DriveGear(){
 
 //DriveGear();
 
+//nDriveGearTeeth=40;
 
+module TowerTop(){
+	Base_X=50;
+	Base_Y=50;
+	Base_Z=25;
+	AlTube_d=12.7;
+	
+	module BasePattern(N=0){
+		if (N==0 || N==1) translate([-Base_X, Base_Y, 0]) children();
+		if (N==0 || N==2) translate([Base_X, Base_Y, 0]) children();
+		if (N==0 || N==3) translate([0, 0, 0]) children();
+	}
+	
+	module BearingMount(){
+	
+			translate([12,-17,(BearingR8_OD+6)/2]) 
+				rotate([0,90,0])
+					cylinder(d=BearingR8_OD+6, h=BearingR8_W+2);
+					
+			hull(){
+				translate([19,Base_Y,0]) cube([3,1,Base_Z]);
+				translate([19,-17,(BearingR8_OD+6)/2]) 
+					rotate([0,90,0]) cylinder(d=BearingR8_OD+6, h=3);
+			}
+			}
+			
+	
+	difference(){
+		union(){
+			BasePattern() cylinder(d=AlTube_d+6, h=Base_Z);
+			
+			translate([0,-17,(BearingR8_OD+6)/2]) 
+				rotate([0,90,0])
+					cylinder(d=BearingR8_OD+6, h=25, center=true);
+					
+			BearingMount();
+			mirror([1,0,0]) BearingMount();
+			
+			//hull() BasePattern() cylinder(d=20, h=6);
+			hull(){
+				BasePattern(1) cylinder(d=3, h=Base_Z);
+				BasePattern(2) cylinder(d=3, h=Base_Z);
+				}
+			hull(){
+				BasePattern(2) cylinder(d=3, h=Base_Z);
+				BasePattern(3) cylinder(d=3, h=Base_Z);
+				}
+			hull(){
+				BasePattern(1) cylinder(d=3, h=Base_Z);
+				BasePattern(3) cylinder(d=3, h=Base_Z);
+				}
+		} // union
+		
+		// Bearing hole
+		translate([0,-17,(BearingR8_OD+6)/2]){
+			rotate([0,90,0]) cylinder(d=AlTube_d+8, h=50, center=true);
+			translate([14,0,0]) rotate([0,90,0]) cylinder(d=BearingR8_OD+IDXtra*2, h=BearingR8_W+1);
+			translate([12-Overlap,0,0]) rotate([0,90,0]) cylinder(d=BearingR8_OD-1, h=BearingR8_W+1);
+			translate([-14,0,0]) rotate([0,-90,0]) cylinder(d=BearingR8_OD+IDXtra*2, h=BearingR8_W+1);
+			translate([-12+Overlap,0,0]) rotate([0,-90,0]) cylinder(d=BearingR8_OD-1, h=BearingR8_W+1);
+		}
+		
+		
+		translate([0,0,-Overlap]) BasePattern() cylinder(d=AlTube_d+IDXtra, h=10+Base_Z+Overlap*2);
+		//translate([0,0,6]) BasePattern() Bolt8ButtonHeadHole();
+	} // difference
+} // TowerTop
+
+//TowerTop();
+
+module TowerPivit(){
+	AlTube_d=12.7;
+	
+	difference(){
+		union(){
+			translate([34,0,0]) rotate([0,90,0]) cylinder(d=AlTube_d+6, h=20, center=true);
+			translate([-34,0,0]) rotate([0,90,0]) cylinder(d=AlTube_d+6, h=20, center=true);
+			translate([34,-15,0]) rotate([90,0,0]) cylinder(d=AlTube_d+6, h=30, center=true);
+			translate([-34,-15,0]) rotate([90,0,0]) cylinder(d=AlTube_d+6, h=30, center=true);
+			hull(){
+				translate([34,-25,0]) rotate([90,0,0]) cylinder(d=AlTube_d+6, h=10, center=true);
+				translate([-34,-25,0]) rotate([90,0,0]) cylinder(d=AlTube_d+6, h=10, center=true);
+			} // hull
+		} // union
+	
+		rotate([0,90,0]) cylinder(d=AlTube_d+IDXtra, h=120, center=true);
+		
+		translate([34,-25,0]) rotate([90,0,0]) cylinder(d=AlTube_d+IDXtra, h=30, center=true);
+		translate([-34,-25,0]) rotate([90,0,0]) cylinder(d=AlTube_d+IDXtra, h=30, center=true);
+	} // difference
+} // TowerPivit
+
+//translate([0,-17,(BearingR8_OD+6)/2]) TowerPivit();
+/*
+translate([23,-200,56]) rotate([0,90,0]) rotate([0,0,15]){
+ DriveRollerMount();
+ DriveMount();}
+/**/
+
+module TowerBase(){
+	Base_X=50;
+	Base_Y=50;
+	Base_Z=25;
+	AlTube_d=12.7;
+	
+	module BasePattern(N=0){
+		if (N==0 || N==1) translate([-Base_X, Base_Y, 0]) children();
+		if (N==0 || N==2) translate([Base_X, Base_Y, 0]) children();
+		if (N==0 || N==3) translate([0, 0, 0]) children();
+	}
+	
+	difference(){
+		union(){
+			BasePattern() cylinder(d=AlTube_d+6, h=Base_Z);
+			hull() BasePattern() cylinder(d=20, h=6);
+			hull(){
+				BasePattern(1) cylinder(d=6, h=Base_Z);
+				BasePattern(2) cylinder(d=6, h=Base_Z);
+				}
+			hull(){
+				BasePattern(2) cylinder(d=6, h=Base_Z);
+				BasePattern(3) cylinder(d=6, h=Base_Z);
+				}
+			hull(){
+				BasePattern(1) cylinder(d=6, h=Base_Z);
+				BasePattern(3) cylinder(d=6, h=Base_Z);
+				}
+		} // union
+		
+		translate([0,0,6]) BasePattern() cylinder(d=AlTube_d+IDXtra, h=Base_Z);
+		translate([0,0,6]) BasePattern() Bolt8ButtonHeadHole();
+	} // difference
+} // TowerBase
+
+//TowerBase();
+
+function DriveGearOffset()=GetPitch_Radius(nDriveGearTeeth, Gear_Pitch)+
+							GetPitch_Radius(20, Gear_Pitch);
+							
+module DriveRollerMount(){
+	AlTube_d=12.7;
+	
+	RollerGearOffset=GetPitch_Radius(nDriveGearTeeth, Gear_Pitch)+GetPitch_Radius(nRollerGearTeeth, Gear_Pitch);
+	
+	difference(){
+		union(){
+			translate([0,DriveGearOffset(),0]) rotate([0,0,30]) translate([0,-RollerGearOffset,0])
+				cylinder(d=AlTube_d+8, h=20);
+				
+			translate([0,DriveGearOffset(),0]) rotate([0,0,120]) translate([0,-RollerGearOffset,0]){
+				cylinder(d=AlTube_d+8, h=20);
+				
+				rotate([0,0,-135]) translate([0,0,20-(AlTube_d+6)/2]) 
+					rotate([-90,0,0]) cylinder(d=AlTube_d+6, h=30);
+					
+				rotate([0,0,-135]) translate([0,0,20-(AlTube_d+6)/2-68]) 
+					rotate([-90,0,0]) cylinder(d=AlTube_d+6, h=30);
+					
+				
+				hull(){
+						
+					rotate([0,0,-135]) translate([0,30,20-(AlTube_d+6)/2]) 
+						rotate([-90,0,0]) cylinder(d=AlTube_d+6, h=3);
+					
+					rotate([0,0,-135]) translate([0,30,20-(AlTube_d+6)/2-68]) 
+						rotate([-90,0,0]) cylinder(d=AlTube_d+6, h=3);
+				}
+				
+				hull(){
+					rotate([0,0,-135]) translate([0,-105,6]) 
+						cube([AlTube_d+6,Overlap,3], center=true); //cylinder(d=AlTube_d+6, h=3);
+						
+					rotate([0,0,-135]) translate([0,0,20-(AlTube_d+6)/2-68]) 
+						cube([AlTube_d+6,Overlap,3], center=true); //cylinder(d=AlTube_d+6, h=3);
+				}
+				hull(){
+					
+					rotate([0,0,-135]) translate([0,-95,0]) 
+						cylinder(d=3, h=20);
+						
+					rotate([0,0,-135]) translate([0,0,20-(AlTube_d+6)/2]) 
+						rotate([-90,0,0]) cylinder(d=3, h=30);
+					
+					rotate([0,0,-135]) translate([0,0,20-(AlTube_d+6)/2-68]) 
+						rotate([-90,0,0]) cylinder(d=3, h=30);
+				}
+				
+			}
+				
+			translate([0,0,10]) hull(){
+				DriveMountBoltPattern() cylinder(d=12, h=10);
+				translate([0,DriveGearOffset(),0]) rotate([0,0,30])
+					translate([0,-RollerGearOffset,0]) cylinder(d=12.7+8, h=10);
+			} // hull
+			
+			translate([0,0,10]) hull(){
+				translate([0,DriveGearOffset(),0]) rotate([0,0,30])
+					translate([0,-RollerGearOffset,0]) cylinder(d=12.7+8, h=10);
+			
+				translate([0,DriveGearOffset(),0]) rotate([0,0,120])
+					translate([0,-RollerGearOffset,0]) cylinder(d=12.7+8, h=10);
+			} // hull
+			
+			hull(){
+				translate([0,DriveGearOffset(),0]) rotate([0,0,30])
+					translate([0,-RollerGearOffset,0]) cylinder(d=8, h=20);
+			
+				translate([0,DriveGearOffset(),0]) rotate([0,0,120])
+					translate([0,-RollerGearOffset,0]) cylinder(d=8, h=20);
+			} // hull
+		} // union
+	
+	
+		translate([0,0,20]) DriveMountBoltPattern() Bolt8Hole();
+		
+		translate([0,DriveGearOffset(),-Overlap]) rotate([0,0,30]) 
+			translate([0,-RollerGearOffset,0])
+				cylinder(d=12.7+IDXtra, h=20+Overlap*2);
+				
+		translate([0,DriveGearOffset(),-Overlap]) rotate([0,0,120])
+			translate([0,-RollerGearOffset,0]){
+				cylinder(d=12.7+IDXtra, h=20+Overlap*2);
+				
+				rotate([0,0,-135]) translate([0,7,20-(AlTube_d+6)/2]) 
+					rotate([-90,0,0]) cylinder(d=AlTube_d+IDXtra, h=40);
+					
+				rotate([0,0,-135]) translate([0,7,20-(AlTube_d+6)/2-68]) 
+					rotate([-90,0,0]) cylinder(d=AlTube_d+IDXtra, h=40);
+					}
+			
+	} // difference
+} // DriveRollerMount
+
+//rotate([180,0,0]) DriveRollerMount();
+
+module DriveMountBoltPattern(){
+	translate([20,0,0]) children();
+	translate([-20,0,0]) children();
+	translate([0,-20,0]) children();
+} // DriveMountBoltPattern
+
+module DriveMount(){
+	// Borrowed from braiding machine
+	DM_Base_h=10;
+	BeltPulleySpacing=67;
+	MotorBC_d=22.5;
+	MotorFace_d=32;
+	MotorPlate_h=12;
+	
+	difference(){
+		union(){
+			hull(){
+				cylinder(d=BearingR8_OD, h=DM_Base_h);
+				translate([20,0,0]) cylinder(d=12, h=DM_Base_h);
+				translate([-20,0,0]) cylinder(d=12, h=DM_Base_h);
+				translate([0,10,DM_Base_h/2]) cube([50,1,DM_Base_h],center=true);
+			} // hull
+			hull(){
+				cylinder(d=BearingR8_OD, h=DM_Base_h);
+				translate([0,-20,0]) cylinder(d=12, h=DM_Base_h);
+			} // hull
+			hull(){
+				translate([0,12,DM_Base_h+Overlap]) cube([50,4,DM_Base_h*2+Overlap*2],center=true);
+				translate([0,DriveGearOffset(),0])
+					cylinder(d=BearingR8_OD+6, h=DM_Base_h*2);
+		
+			} // hull
+			
+			hull(){
+				translate([0,12,MotorPlate_h/2]) cube([50,4,MotorPlate_h],center=true);
+				translate([0,DriveGearOffset(),0]){
+					cylinder(d=BearingR8_OD+6, h=MotorPlate_h);
+					rotate([0,0,15])
+						translate([-BeltPulleySpacing,0,0]) 
+							cylinder(d=MotorFace_d+6, h=MotorPlate_h);
+					}
+			} // hull
+				
+		} // union
+	
+		translate([0,0,DM_Base_h]) cylinder(d=BearingR8_OD+IDXtra*2, h=DM_Base_h+Overlap);
+		DriveMountBoltPattern() rotate([180,0,0]) Bolt8HeadHole();
+		
+		
+		translate([0,DriveGearOffset(),-Overlap]){
+			cylinder(d=BearingR8_OD-1, h=DM_Base_h*2+Overlap*2);
+			cylinder(d=BearingR8_OD+IDXtra*2, h=BearingR8_W+Overlap);
+			translate([0,0,DM_Base_h*2-BearingR8_W]) 
+				cylinder(d=BearingR8_OD+IDXtra*2, h=BearingR8_W+Overlap*4);
+			}
+		
+		// motor
+		translate([0,DriveGearOffset(),0]) rotate([0,0,15]) translate([-BeltPulleySpacing,0,0]) {
+			for (j=[0:3]) rotate([0,0,90*j]) translate([0,MotorBC_d/2,0])
+				rotate([180,0,0]) Bolt8ButtonHeadHole();
+			translate([0,0,MotorPlate_h-4]) cylinder(d=MotorFace_d, h=MotorPlate_h);
+			translate([0,0,-Overlap]) cylinder(d=7, h=MotorPlate_h+Overlap*2);
+		}
+	} // difference
+	
+	if ($preview) translate([0,DriveGearOffset(),DM_Base_h*2+0.1]) DriveGear();
+} // DriveMount
+
+//DriveMount();
 
 
 
