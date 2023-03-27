@@ -10,7 +10,7 @@
 //
 //  2.1" Upscale of Estes Astron Omega
 //  Two Stage Rocket with 54mm Body.
-//  H242T-6 to H123W-P
+//  H242T-P to H123W-P
 //  Uses CableRelease as a spring thing
 //  Booster uses motor ejection or SpringThingBooster.scad
 //
@@ -46,7 +46,7 @@
 // rotate([180,0,0]) ST_TubeLockLanyard(Skirt_ID=ROmega_Coupler_ID-2-IDXtra);
 // ST_TubeLock(Tube_OD=ROmega_Coupler_OD, Skirt_ID=ROmega_Coupler_ID-2, SkirtLen=15);
 // ST_SpringMiddle(Tube_ID=ROmega_Coupler_OD);
-// ST_SpringGuide(InnerTube_ID=ROmega_Body_ID);
+// ST_SpringGuide(InnerTube_ID=ROmega_Body_ID); // not used
 //
 //  *** Cable Release Parts ***
 //
@@ -55,7 +55,7 @@
 // LockingPin();
 // BallRetainer();
 // LockPlateStop();
-// rotate([180,0,0]) HousingStop(OD=PML54Body_ID);
+// HousingStop(OD=PML54Body_ID, HasSpringGuide=true);
 // TopMountS5245Tray();
 // ServoWheelB(UsesHS5245MGServo=true);
 // LockPlateExtension(Len=12);
@@ -168,18 +168,19 @@ ScaleBooster_Body_Len=5*25.4*Scale; // too short to fit a parachute
 echo(ScaleBooster_Body_Len=ScaleBooster_Body_Len);
 
 PBay_Len=5*25.4*Scale;
-UpperTube_Len=265;
+UpperTube_Len=457-PBay_Len;
 LowerTube_Len=110; // Can be adjusted to fit motor tube length
 SusFinCan_Len=ROmega_Fin_Root_L+40;
 
 BoostFinCan_Len=ROmegaBooster_Fin_Root_L+40;
-InterstageTube_Len=183; // 183 = 60 for P, 220 gives 85 for paradhute
+InterstageTube_Len=210; // 183 = 60 for P, 220 gives 85 for paradhute
 Booster_Coupler_Len=46; // STB_SpringSeat=3, Spring=22, STB=22 
 Booster_Body_Len=BoostFinCan_Len+InterstageTube_Len;
 SustainerMotorTube_Len=SusFinCan_Len+LowerTube_Len+25;
 echo(Booster_Body_Len=Booster_Body_Len);
 ScaleBody_Len=(14.5+5)*25.4*Scale;
 echo(ScaleBody_Len=ScaleBody_Len);
+echo(" Including scale payload bay len =",PBay_Len);
 Body_Len=PBay_Len+UpperTube_Len+EBay_Len+LowerTube_Len+SusFinCan_Len;
 echo(Body_Len=Body_Len);
 
@@ -292,7 +293,7 @@ module ShowRocketOmega(ShowInternals=true){
 		PBay_Z=UpperTube_Z+UpperTube_Len;
 	
 	NC_Z=PBay_Z+PBay_Len;
-	Spring_Len=22*2+3+15+20;
+	Spring_Len=22*2+3+15+20;// (82mm)
 	ParachuteSleeve_Len=185;
 	//echo("Sustainer Upper Tube = ", PBay_Len+UpperTube_Len);
 	

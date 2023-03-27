@@ -464,7 +464,7 @@ module BatteryPocket6xAAA(){
 	
 } // BatteryPocket6xAAA
 
-module TubeEndStackedDoubleBatteryHolder(TubeOD=PML38Body_OD, TubeID=PML38Body_ID){
+module TubeEndStackedDoubleBatteryHolder(TubeOD=PML38Body_OD, TubeID=PML38Body_ID, nBatts=2){
 	// Sits in the E-Bay in the top of the motor tube. 
 	
 	Batt_h=45;
@@ -473,12 +473,12 @@ module TubeEndStackedDoubleBatteryHolder(TubeOD=PML38Body_OD, TubeID=PML38Body_I
 	Batt_Y=17;
 	Batt_r=3;
 	
-	Base_h=Batt_h+Batt_h+BattConn_h-1;
+	Base_h=Batt_h*nBatts+BattConn_h*(nBatts-1)-1;
 	OAH=Base_h+5;
 	Offset_Y=-1;
 	
 	module BatteryCase(){
-		color("Orange") RoundRect(Y=Batt_X, X=Batt_Y, Z=Batt_h*2+BattConn_h, R=Batt_r);
+		color("Orange") RoundRect(Y=Batt_X, X=Batt_Y, Z=Batt_h*nBatts+BattConn_h*(nBatts-1), R=Batt_r);
 	} // BatteryCase
 	
 	difference(){
@@ -509,6 +509,7 @@ module TubeEndStackedDoubleBatteryHolder(TubeOD=PML38Body_OD, TubeID=PML38Body_I
 } // TubeEndStackedDoubleBatteryHolder
 
 //TubeEndStackedDoubleBatteryHolder();
+//TubeEndStackedDoubleBatteryHolder(TubeOD=PML38Body_OD, TubeID=PML38Body_ID, nBatts=1);
 
 module BoltDown(){
 	Width=14;

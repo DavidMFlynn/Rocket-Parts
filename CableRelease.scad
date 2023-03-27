@@ -3,7 +3,7 @@
 // Filename: CableRelease.scad
 // by David M. Flynn
 // Created: 6/15/2022 
-// Revision: 1.1.0  2/22/2023
+// Revision: 1.1.1  3/25/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -15,7 +15,8 @@
 //
 //  ***** History *****
 //
-echo("CableRelease 1.1.0");
+echo("CableRelease 1.1.1");
+// 1.1.1  3/25/2023 Added HasSpringGuide to HousingStop()
 // 1.1.0  2/22/2023 Mod for HS-5245MG
 // 1.0.0  6/19/2022 Looser spring hole in locking pin. Ready Testing.
 // 0.9.3  6/18/2022 Small fixes.
@@ -32,7 +33,7 @@ echo("CableRelease 1.1.0");
 // BallRetainer();
 // LockPlateStop();
 //
-// rotate([180,0,0]) HousingStop(OD=PML54Body_ID);
+// rotate([180,0,0]) HousingStop(OD=PML54Body_ID, HasSpringGuide=false);
 // TopMountS5245Tray();
 // ServoWheelB(UsesHS5245MGServo=true);
 // LockPlateExtension(Len=12);
@@ -91,6 +92,12 @@ Servo_x=20; // Body size
 Servo_y=40; // Body size
 ServoShaftOffset_y=10.5; // Center of servo to center of output shaft
 SWheelOffset_z=14; // Top of wheel to bottom of tray
+
+// Deployment Spring big and light
+ST_DSpring_OD=44.30;
+ST_DSpring_ID=40.50;
+ST_DSpring_CBL=22; // coil bound length
+ST_DSpring_FL=200; // free length
 
 
 module BallGroove(BallCircle_d=BallCircle_d, Ball_d=Ball_d){
@@ -561,28 +568,51 @@ module LockPlateStop(){
 
 //LockPlateStop();
 
-module HousingStop(OD=PML54Body_ID){
+module HousingStop(OD=PML54Body_ID, HasSpringGuide=false){
 	Guide_d=OD-IDXtra*2;
+	TubeCenter_Y=-Servo5245ShaftOffset_y+3;
 	//echo(Housing_d=Housing_d);
 	difference(){
 		union(){
-			translate([0,-Servo5245ShaftOffset_y+3,0]) {
+			translate([0,TubeCenter_Y,0]) {
 				Tube(OD=Guide_d, ID=OD-4.4, Len=15, myfn=$preview? 36:360);
 				
 				cylinder(d=Guide_d-1, h=8);
 			}
+			
+			if (HasSpringGuide){
+				translate([0,TubeCenter_Y,6]){
+				cylinder(d=ST_DSpring_ID-2, h=17+3);
+				cylinder(d=Guide_d-1, h=4);}
+			}
 		} // union
 		
-		translate([0,-Servo5245ShaftOffset_y,-Overlap]) cylinder(d=Housing_d-2, h=9);
+		if (HasSpringGuide) translate([0,TubeCenter_Y,6-Overlap*2])
+				cylinder(d=ST_DSpring_ID-2-4.4, h=17+3+Overlap*4);
+			
+		if (HasSpringGuide){	
+			translate([0,-Servo5245ShaftOffset_y,-Overlap]) cylinder(d=Housing_d-2, h=6);
+		}else{
+			translate([0,-Servo5245ShaftOffset_y,-Overlap]) cylinder(d=Housing_d-2, h=9);
+		}
 		translate([0,-Servo5245ShaftOffset_y,-Overlap]) cylinder(d=Housing_d+IDXtra*2, h=6);
 		
 		// Shock Cord
-		translate([0,-Servo5245ShaftOffset_y+3,-Overlap])
-			rotate([0,0,45]) translate([0,Guide_d/2,-Overlap]) RoundRect(Y=8, X=18, Z=50, R=1.5);
+		translate([0,TubeCenter_Y,-Overlap])
+			rotate([0,0,45]) translate([0,Guide_d/2-0.5,-Overlap]) RoundRect(Y=8, X=18, Z=10, R=1.5);
+			
+		translate([0,TubeCenter_Y,9]) rotate([0,0,45]) translate([0,Guide_d/2,0])
+			rotate([90,0,0]) RoundRect(Y=4, X=18, Z=Guide_d/2, R=1.5);
+			
+		translate([0,TubeCenter_Y,9-2]) rotate([0,0,45]) translate([0,Guide_d/2-4.5,0])
+			difference(){
+				cube([18,4,4], center=true);
+				translate([0,-2,-2]) rotate([0,90,0]) cylinder(r=2, h=18, center=true);
+			} // difference
 	} // difference
 } // HousingStop
 
-//HousingStop(OD=PML54Body_ID);
+//HousingStop(OD=PML54Body_ID, HasSpringGuide=true);
 //translate([0,-Servo5245ShaftOffset_y,-10]) CR_Housing();
 
 module CR_Housing(){
