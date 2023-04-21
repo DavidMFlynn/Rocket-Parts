@@ -376,20 +376,23 @@ module Omega54EBay(ShowDoors=false){
 			Tube(OD=ROmega_Body_OD, ID=ROmega_Body_ID, Len=EBay_Len, myfn=$preview? 90:360);
 			translate([0,0,15]) 
 				CenteringRing(OD=ROmega_Body_OD-1, ID=ROmega_MtrTube_OD+IDXtra*3, 
-								Thickness=5, nHoles=4, Offset=0);
+								Thickness=5, nHoles=0, Offset=0);
 			translate([0,0,EBay_Len-20])
 				CenteringRing(OD=ROmega_Body_OD-1, ID=ROmega_MtrTube_OD+IDXtra*3, 
-								Thickness=5, nHoles=4, Offset=0);
+								Thickness=5, nHoles=0, Offset=0);
 			// Stringers
+			Stringer_X=10;
 			difference(){
 				for (j=[0:1]) rotate([0,0,90+180*j]) difference(){
-					translate([-4,-ROmega_Body_ID/2-Overlap,15])
-						cube([8,7,EBay_Len-30]);
+					translate([-Stringer_X/2,-ROmega_Body_ID/2-Overlap,15])
+						cube([Stringer_X,7,EBay_Len-30]);
+					/*
 					difference(){
 						translate([-2.3,-ROmega_Body_ID/2-Overlap*2,15-Overlap])
 							cube([4.6, 6, EBay_Len-30+Overlap*2]);
 						cylinder(d=ROmega_MtrTube_OD+IDXtra*3+1.7*2, h=EBay_Len);
 					} // difference
+					/**/
 				} // difference
 					
 				cylinder(d=ROmega_MtrTube_OD+IDXtra*3, h=EBay_Len);
@@ -398,6 +401,10 @@ module Omega54EBay(ShowDoors=false){
 		} // union
 		
 		//translate([0,0,EBay_Len/2]) cylinder(d=70, h=EBay_Len); // for viewing cut-away
+		
+		// Sustainer Igniter Wire
+		translate([ROmega_Body_ID/2-2.5,0,0]) cylinder(d=5, h=50);
+		translate([ROmega_Body_ID/2-2.5,0,49]) rotate([0,-15,0]) cylinder(d=5, h=30);
 		
 		// Rail Guide Bolts
 		translate([0,0,RailGuide_Z]) rotate([0,0,Rail_a]) 
@@ -410,13 +417,16 @@ module Omega54EBay(ShowDoors=false){
 			Batt_BayFrameHole(Tube_OD=ROmega_Body_OD, Door_X=43, HasSwitch=true);
 	} // difference
 	
-	translate([0,0,EBay_Len/2]) rotate([0,0,180])
-		Alt_BayDoorFrame(Tube_OD=ROmega_Body_OD, Tube_ID=ROmega_Body_ID, 
+			translate([0,0,EBay_Len/2]) rotate([0,0,180])
+				Alt_BayDoorFrame(Tube_OD=ROmega_Body_OD, Tube_ID=ROmega_Body_ID, 
 						DoorXtra_X=0, DoorXtra_Y=0, ShowDoor=ShowDoors);
 
-	translate([0,0,BattDoor_Z]) rotate([0,0,BattDoor_a])
-		Batt_BayDoorFrame(Tube_OD=ROmega_Body_OD, Tube_ID=ROmega_Body_ID, 
+		//*
+			translate([0,0,BattDoor_Z]) rotate([0,0,BattDoor_a])
+				Batt_BayDoorFrame(Tube_OD=ROmega_Body_OD, Tube_ID=ROmega_Body_ID, 
 						Door_X=43, HasSwitch=true, ShowDoor=false);
+		/**/
+	
 	//*
 	// Rail Guide
 	rotate([0,0,Rail_a])
@@ -425,6 +435,10 @@ module Omega54EBay(ShowDoors=false){
 			RailGuidePost(OD=ROmega_Body_OD, MtrTube_OD=ROmega_MtrTube_OD+IDXtra*3, 
 							H=ROmega_Body_OD/2+2, TubeLen=40, Length = 30, BoltSpace=12.7);
 		
+		// Rail Guide Bolts
+		translate([0,0,RailGuide_Z])
+			translate([0,ROmega_Body_OD/2+2,0]) RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
+			
 		rotate([0,0,90]) translate([0,ROmega_Body_OD/2,RailGuide_Z]) 
 			rotate([0,0,120]) cube([ROmega_Body_OD-10,ROmega_Body_OD*2,60],center=true);
 		

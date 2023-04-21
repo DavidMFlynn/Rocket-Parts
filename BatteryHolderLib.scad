@@ -41,8 +41,8 @@ echo("BatteryHolderLib 1.0.2");
 //
 //	BattDoorHole(Tube_OD=PML98Body_OD, HasSwitch=false);
 //  Batt_DoorBoltPattern(Tube_OD=PML98Body_OD, HasSwitch=false);
-//  Batt_BayFrameHole(Tube_OD=PML98Body_OD, HasSwitch=false);
-//  Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, HasSwitch=false, ShowDoor=false);
+//  Batt_BayFrameHole(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, HasSwitch=false);
+//  Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, Door_X=Batt_Door_X,  HasSwitch=false, ShowDoor=false);
 //
 //  SingleBatteryHolder(Tube_ID=PML75Body_ID);
 //  DoubleBatteryHolder(Tube_ID=PML75Body_ID);
@@ -109,14 +109,15 @@ module Batt_BayFrameHole(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, HasSwitch=fal
 	Door_Y=HasSwitch? Batt_Door_Y+CK_RotSw_d:Batt_Door_Y;
 	
 	
-	translate([0,-Tube_OD/2+10,0]) rotate([90,0,0]) 
-			RoundRect(X=Door_X+5, Y=Tube_Len-1, Z=20, R=0.1);
+	translate([0,-Tube_OD/2+14,0]) rotate([90,0,0]) 
+			RoundRect(X=Door_X+5, Y=Tube_Len-1, Z=Tube_OD/2, R=0.1);
 	
 	translate([0,-Tube_OD/2+35,0]) rotate([90,0,0]) 
 			RoundRect(X=Door_X-20, Y=Tube_Len-1, Z=30, R=0.1);
 } // Batt_BayFrameHole
 
 //Batt_BayFrameHole();
+//Batt_BayFrameHole(Tube_OD=PML54Body_OD, Door_X=43, HasSwitch=true);
 
 module Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, 
 						Door_X=Batt_Door_X, HasSwitch=false, ShowDoor=false){
@@ -142,7 +143,7 @@ module Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID,
 				translate([0,0,-Door_Y/2-3]) 
 					Tube(OD=Tube_OD-1, ID=Tube_ID-8, Len=Door_Y+6, myfn=$preview? 36:360);
 					
-				SmallTubeXtra=(Tube_ID<60)? 6:0;
+				SmallTubeXtra=(Tube_ID<80)? 6:0;
 				hull(){
 					translate([0,-Tube_ID/2+12+SmallTubeXtra,0]) rotate([90,0,0]) 
 						RoundRect(X=Door_X+3, Y=Door_Y+3, Z=Tube_OD, R=4+3);
@@ -182,12 +183,13 @@ module Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID,
 	} // difference
 	
 	if ($preview&&ShowDoor) rotate([90,0,0]) 
-		Batt_Door(Tube_OD=Tube_OD, InnerTube_OD=BT38Body_OD, HasSwitch=HasSwitch);
+		Batt_Door(Tube_OD=Tube_OD, InnerTube_OD=0, HasSwitch=HasSwitch);
 		
 	
 } // Batt_BayDoorFrame
 
 //Batt_BayDoorFrame(ShowDoor=true);
+//Batt_BayDoorFrame(Tube_OD=PML75Body_OD, Tube_ID=PML75Body_ID, Door_X=Batt_Door_X, HasSwitch=true, ShowDoor=false);
 //Batt_BayDoorFrame(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Door_X=Batt_Door_X-10, HasSwitch=true, ShowDoor=false);
 //rotate([90,0,0]) Batt_Door54(Tube_OD=PML54Body_OD, HasSwitch=true);
 
@@ -199,6 +201,7 @@ module Batt_Door(Tube_OD=PML98Body_OD, InnerTube_OD=PML54Body_OD, HasSwitch=fals
 	BoltBossInset=3;
 	Batt_Offset_Y=Door_Y/2-68;
 	
+	BattInset_Z=2.2; // was 1.5
 	Batt_h=45;
 	BattConn_h=8;
 	Batt_X=27;
@@ -231,7 +234,7 @@ module Batt_Door(Tube_OD=PML98Body_OD, InnerTube_OD=PML54Body_OD, HasSwitch=fals
 				
 				union(){
 					//Battery holder
-					 translate([0, Door_Y/2-Batt_h-BattConn_h-10, Tube_OD/2-Door_t-Batt_Y/2-1.5]) 
+					 translate([0, Door_Y/2-Batt_h-BattConn_h-10, Tube_OD/2-Door_t-Batt_Y/2-BattInset_Z]) 
 						rotate([-90,0,0]) SingleBatteryPocket();
 					
 					// Switch

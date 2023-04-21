@@ -46,6 +46,7 @@ F54_FairingHalf(IsLeftHalf=false,
 				Len=Fairing_Len);
 /**/
 //F54_SpringEndCap();
+//FairingBaseLockRing(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID-1, Fairing_ID=Fairing_ID, Interface=-IDXtra, BlendToTube=false); // repair part
 //
 // *** Electronics Bay ***
 // R98_Electronics_Bay2(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, Fairing_ID=Fairing_ID, InnerTube_OD=R98_BayInnerTube_OD);
@@ -79,6 +80,7 @@ F54_FairingHalf(IsLeftHalf=false,
 // ShowRocket98();
 //
 // ***********************************
+include<TubesLib.scad>
 include<Fairing54.scad>
 include<FinCan.scad>
 include<AltBay.scad>

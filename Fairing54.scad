@@ -85,9 +85,11 @@ LargeFairing(IsLeftHalf=true,
 				Wall_T=7,
 				Len=Fairing_Len);
 /**/
-// rotate([180,0,0]) FairingBase(BaseXtra=0, Fairing_OD=Fairing_OD, Fairing_ID=Fairing_ID,
-//					BodyTubeOD=PML54Body_OD, 
-//					CouplerTube_OD=PML54Coupler_OD, CouplerTube_ID=PML54Coupler_ID); // Pring w/ support
+/*
+rotate([180,0,0]) FairingBase(BaseXtra=0, Fairing_OD=Fairing_OD, Fairing_ID=Fairing_ID,
+					BodyTubeOD=PML54Body_OD, 
+					CouplerTube_OD=PML54Coupler_OD, CouplerTube_ID=PML54Coupler_ID); // Pring w/ support
+/**/
 // FairingBaseLockRing(Tube_OD=Fairing_OD, Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, Interface=-IDXtra, BlendToTube=false);
 // FairingBaseBulkPlate(Tube_ID=Fairing_ID, Fairing_ID=Fairing_ID, ShockCord_a=-100);
 //
@@ -121,7 +123,7 @@ LargeFairing(IsLeftHalf=true,
 // ShowAsmTool();
 //
 // ***********************************
-
+include<TubesLib.scad>
 use<NoseCone.scad>
 use<CablePuller.scad>
 include<FairingJointLib.scad>
