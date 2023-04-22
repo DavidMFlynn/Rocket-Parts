@@ -49,7 +49,7 @@ echo("SpringThingBooster Rev. 1.1.1");
 //  *** 75mm Quad Lock version
 //
 // STB_LockDisk(BallPerimeter_d=PML75Body_OD, nLockBalls=5);
-// STB_BallRetainerTop(BallPerimeter_d=PML75Body_OD, Body_OD=PML75Body_ID, nLockBalls=5);
+// rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=PML75Body_OD, Body_OD=PML75Body_ID, nLockBalls=5, HasIntegratedCouplerTube=true, Body_ID=PML75Body_ID);
 // STB_BallRetainerBottom(BallPerimeter_d=PML75Body_OD, Body_OD=PML75Body_ID, nLockBalls=5, HasSpringGroove=false);
 // rotate([180,0,0]) TubeEnd(BallPerimeter_d=PML75Body_OD, nLockBalls=5, Body_OD=PML75Body_OD, Body_ID=PML75Body_ID, Skirt_Len=20);
 //
@@ -641,8 +641,10 @@ module STB_BallRetainerTop(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID
 					cylinder(d1=Body_OD-5.4, d2=BallPerimeter_d-4.4, h=2+Overlap*2, $fn=$preview? 90:360);
 			} // difference
 			
-			if (HasIntegratedCouplerTube)
-				translate([0,0,10]) Tube(OD=Body_ID, ID=Body_OD-IDXtra-4.4, Len=CT_Len, myfn=$preview? 90:360);
+			if (HasIntegratedCouplerTube){
+				translate([0,0,10]) Tube(OD=Body_ID, ID=Body_ID-6, Len=25, myfn=$preview? 90:360);
+				translate([0,0,10]) Tube(OD=BallPerimeter_d, ID=Body_ID-4.4, Len=12, myfn=$preview? 90:360);
+				}
 				
 			// Servo Mount
 			ServoPosition()
@@ -661,7 +663,8 @@ module STB_BallRetainerTop(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID
 		}
 		
 		// Bolt holes
-		translate([0,0,Top_H]) STB_BR_BoltPattern(Body_OD=Body_OD, nLockBalls=nLockBalls) Bolt4HeadHole();
+		translate([0,0,Top_H]) STB_BR_BoltPattern(Body_OD=Body_OD, nLockBalls=nLockBalls) 
+			Bolt4HeadHole(depth=8, lHead=20);
 		
 		// Shock Cord
 		translate([0,0,-Overlap]) hull() 
@@ -718,7 +721,7 @@ module STB_BallRetainerTop(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID
 //STB_LockDisk(BallPerimeter_d=PML54Body_ID, nLockBalls=3);
 
 /*
-STB_BallRetainerTop(BallPerimeter_d=PML75Body_OD, Body_OD=PML75Body_ID, nLockBalls=5);
+STB_BallRetainerTop(BallPerimeter_d=PML75Body_OD, Body_OD=PML75Body_ID, nLockBalls=5, HasIntegratedCouplerTube=true, Body_ID=PML75Body_ID);
 
 //rotate([0,0,STB_Unlocked_a(BallPerimeter_d=PML75Body_OD)])
 {
