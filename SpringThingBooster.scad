@@ -52,6 +52,7 @@ echo("SpringThingBooster Rev. 1.1.1");
 // rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=PML75Body_OD, Body_OD=PML75Body_ID, nLockBalls=5, HasIntegratedCouplerTube=true, Body_ID=PML75Body_ID);
 // STB_BallRetainerBottom(BallPerimeter_d=PML75Body_OD, Body_OD=PML75Body_ID, nLockBalls=5, HasSpringGroove=false);
 // rotate([180,0,0]) TubeEnd(BallPerimeter_d=PML75Body_OD, nLockBalls=5, Body_OD=PML75Body_OD, Body_ID=PML75Body_ID, Skirt_Len=20);
+// STB_SpringEnd(Tube_ID=PML75Body_ID, CouplerTube_ID=BT75Coupler_ID);
 //
 //  *** Tools ***
 //
@@ -85,6 +86,7 @@ include<CommonStuffSAEmm.scad>
 
 Overlap=0.05;
 IDXtra=0.2; // Add to ID for tight fit, x2 for loose fit
+LooseFit=IDXtra*3;
 $fn=$preview? 24:90;
 
 BearingMR84_OD=8;
@@ -177,7 +179,7 @@ module STB_ShowBosterSpringThing(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coup
 
 //STB_ShowBosterSpringThing();
 
-module SpringEnd(Tube_ID=PML75Body_ID, CouplerTube_ID=BT75Coupler_ID){
+module STB_SpringEnd(Tube_ID=PML75Body_ID, CouplerTube_ID=BT75Coupler_ID){
 
 	Slider_h=16;
 	
@@ -190,9 +192,50 @@ module SpringEnd(Tube_ID=PML75Body_ID, CouplerTube_ID=BT75Coupler_ID){
 		translate([0,0,-Overlap]) cylinder(d=ST_DSpring_ID, h=Slider_h+Overlap*2);
 		translate([0,0,-Overlap]) cylinder(d=ST_DSpring_OD, h=3);
 	} // difference
-} // SpringEnd
+} // STB_SpringEnd
 
-// SpringEnd();
+// STB_SpringEnd();
+
+module STB_SpringMiddle(Tube_ID=BT54Coupler_OD){
+		
+	difference(){
+		translate([0,0,-ST_DSpring_CBL-2]) cylinder(d=Tube_ID-LooseFit, h=ST_DSpring_CBL*2+4);
+		
+		// center hole
+		translate([0,0,-ST_DSpring_CBL-2-Overlap]) cylinder(d=Tube_ID-4.4, h=ST_DSpring_CBL*2+4+Overlap*2);
+	} // difference
+	
+	difference(){
+		union(){
+			translate([0,0,-6]) cylinder(d=ST_DSpring_ID-1, h=ST_DSpring_CBL+6);
+			translate([0,0,-2]) cylinder(d=Tube_ID-LooseFit, h=2);
+		} // union
+		
+		// center hole
+		translate([0,0,-ST_DSpring_CBL-Overlap]) cylinder(d=35, h=ST_DSpring_CBL*2+Overlap*2);
+		
+	} // difference
+} // STB_SpringMiddle
+
+//STB_SpringMiddle();
+
+module STB_SpringGuide(InnerTube_ID=BT54Body_ID){
+	// Sits on top of Aerotech 54mm motor w/ plugged threaded forward closure and eye bolt
+	Tail_Len=22;
+	MotorTopDepth=Tail_Len-7;
+	
+	difference(){
+		union(){
+			cylinder(d=ST_DSpring_ID-1, h=ST_DSpring_CBL-6); // -6 to mate with ST_SpringMiddle
+			translate([0,0,-Tail_Len+Overlap]) cylinder(d=InnerTube_ID-LooseFit, h=Tail_Len);
+		} // union
+		
+		translate([0,0,-Tail_Len]) cylinder(d=39, h=MotorTopDepth);
+		translate([0,0,-Tail_Len]) cylinder(d=35, h=Tail_Len+ST_DSpring_CBL+Overlap*2);
+	} // difference
+} // STB_SpringGuide
+
+// STB_SpringGuide(InnerTube_ID=BT54Body_ID);
 
 module STB_SpringSeat(Body_OD=PML54Coupler_ID, Base_H=14){
 	

@@ -10,6 +10,39 @@
 //
 //  Rocket with 75mm Body and 54mm motor. 
 //  5 fins, uses SpringThingBooster on bottom of E-Bay
+//  This rocket was first built 4/23/2023
+//
+//  ***** Non-3D Printed Parts List *****
+//	#4-40 x 3/8" Button Head Cap Screws (10)			Door screws
+//	#4-40 x 1/4" Button Head Cap Screws (4)				Altimeter
+//  #4-40 x 1/2" Socket Head Cap Screws (5)				STB_LockDisk
+//	#2-56 x 1/4" Socket Head Cap Screws (2)				Servo
+//  #6-32 x 3/8" Button Head Cap Screws (4)				Rail Button Mount
+//  #8-32 x 3/4" Button Head Cap Screws (2)				Rail Buttons
+//  5/32" Plastic Rivets				(3)				Nosecone
+//
+//  Mission Control V3 Altimeter
+//  9V Alkaline Batteries (2)
+//  Rotary Switch for servo power
+//  Rocket Servo PCB
+//  MG90S Micro Servo, 12 gram high torque
+//  Magnets 3/16" Dia. x 1/8" cylinder N35 or N42 (2)	STB_LockDisk
+//  Steel Dowels 4mm Dia undrsized x 10mm (5)			STB_LockDisk
+//  Steel Dowels 4mm Dia undrsized x 16mm (3)			STB_LockDisk
+//  Delrin Balls 3/8" Dia				  (5)			STB_LockDisk
+//  Bearings 8mm Dia. x 4mm ID x 3mm, MR84 (7)			STB_LockDisk
+//
+//  Shock cord 1/2" Tubular Nylon x 10' ebay to parachute
+//	Shock cord 1/2" Tubular Nylon x 20' motor to parachute
+//  45" Parachute
+//
+//  Tail Cone
+//  Motor Retainer 
+//
+//  Body Tube: PML 75mm Quantum Tube x 510mm
+//  Motor Tube: Blue Tube 54mm x 500mm
+//  Coupler Tubes: Blue Tube 54mm coupler x 280mm, 50mm, 47mm, 35mm
+//
 //
 //  ***** History *****
 // 
@@ -35,7 +68,13 @@
 // STB_BallRetainerBottom(BallPerimeter_d=R75_Body_OD, Body_OD=R75_Body_ID, nLockBalls=5, HasSpringGroove=false);
 // rotate([180,0,0]) TubeEnd(BallPerimeter_d=R75_Body_OD, nLockBalls=5, Body_OD=R75_Body_OD, Body_ID=R75_Body_ID, Skirt_Len=20);
 //
+// *** Spring Control ***
+// STB_SpringEnd(Tube_ID=R75_Body_ID, CouplerTube_ID=R75_Coupler_ID);
+// STB_SpringMiddle(Tube_ID=R75_Body_ID);
+// STB_SpringGuide(InnerTube_ID=R75_MtrTube_ID);
+//
 // rotate([0,-90,0]) BoltOnRailButtonPost(OD=R75_Body_OD, H=R75_Body_OD/2+5);
+// RailButton(); // Print 4 halves + spares
 //
 // *** Fin Can ***
 // UpperFinCan();
@@ -50,6 +89,7 @@
 //  ***** for Viewing *****
 //
 // ShowRocket75();
+// ShowRocket75(ShowInternals=true);
 //
 // ***********************************
 
@@ -83,6 +123,8 @@ R75_Fin_Chamfer_L=22;
 
 R75_Body_OD=PML75Body_OD;
 R75_Body_ID=PML75Body_ID;
+R75_Coupler_OD=BT75Coupler_OD;
+R75_Coupler_ID=BT75Coupler_ID;
 R75_MtrTube_OD=BT54Body_OD;
 R75_MtrTube_ID=BT54Body_ID;
 
@@ -94,40 +136,72 @@ NC_Tip_r=8;
 NC_Base=23;
 NC_Wall_t=2.2;
 
-BodyTubeLen=400;
+BodyTubeLen=510;
+MotorTubeLen=500;
+FinCanCouplerLen=50;
+EjectorTubeLen=280;
+SpringEndTubeLen=47;
+NoseconeCouplerLen=35;
 
 
-module ShowRocket75(){
+module ShowRocket75(ShowInternals=false){
 	
 	UpperFinCan_Z=R75_Fin_Root_L+100+Overlap;
 	BodyTube_Z=UpperFinCan_Z+Overlap;
-	TopRailButton_Z=BodyTube_Z+100;
+	TopRailButton_Z=BodyTube_Z+150;
 	BallLock_Z=BodyTube_Z+BodyTubeLen+10;
 	EBay_Z=BallLock_Z+22+Overlap;
 	Nosecone_Z=EBay_Z+EBay_Len+Overlap;
 	
-	translate([0,0,Nosecone_Z]) color("Purple")
+	if (ShowInternals==false) translate([0,0,Nosecone_Z]) color("Purple")
 		BluntOgiveNoseCone(ID=BT75Coupler_OD, OD=R75_Body_OD, L=NC_Len, Base_L=NC_Base, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
 	
-	translate([0,0,EBay_Z]) rotate([0,0,30]) R75A_Electronics_Bay();
+	if (ShowInternals)
+		translate([0,0,Nosecone_Z-14]) color("Blue")
+			Tube(OD=R75_Coupler_OD, ID=R75_Coupler_ID, Len=NoseconeCouplerLen, myfn=90);
+	
+	
+		translate([0,0,EBay_Z]) rotate([0,0,30]) R75A_Electronics_Bay(ShowDoors=true);
 	
 	translate([0,0,BallLock_Z]) {
 		color("Green") 
 			STB_BallRetainerTop(BallPerimeter_d=R75_Body_OD, Body_OD=R75_Body_ID, 
 								nLockBalls=5, HasIntegratedCouplerTube=true, Body_ID=R75_Body_ID);
-		color("Orange")
+		if (ShowInternals==false) color("Orange")
 			TubeEnd(BallPerimeter_d=R75_Body_OD, nLockBalls=5, Body_OD=R75_Body_OD, 
 						Body_ID=R75_Body_ID, Skirt_Len=20);
 			}
 	
+	if (ShowInternals){
+		translate([0,0,MotorTubeLen+10+6]) color("Blue")
+			Tube(OD=R75_Coupler_OD, ID=R75_Coupler_ID, Len=SpringEndTubeLen, myfn=90);
+		translate([0,0,MotorTubeLen+10])
+			STB_SpringEnd(Tube_ID=R75_Body_ID, CouplerTube_ID=R75_Coupler_ID);
+			
+		// inside motor tube
+		// STB_SpringMiddle(Tube_ID=R75_Body_ID);
+		// STB_SpringGuide(InnerTube_ID=R75_MtrTube_ID)
+	}
+
 	translate([0,0,TopRailButton_Z]) rotate([0,0,-180/nFins]) 
 		BoltOnRailButtonPost(OD=R75_Body_OD, H=R75_Body_OD/2+5);
 	
+	if (ShowInternals==false)
 	translate([0,0,BodyTube_Z]) color("LightBlue") Tube(OD=R75_Body_OD, ID=R75_Body_ID, 
-			Len=BodyTubeLen-Overlap*2, myfn=$preview? 90:360);
+			Len=BodyTubeLen-Overlap*2, myfn=90);
+	
+	if (ShowInternals){
+		translate([0,0,UpperFinCan_Z-20]) color("Blue")
+			Tube(OD=R75_Coupler_OD, ID=R75_Coupler_ID, Len=FinCanCouplerLen, myfn=90);
+	
+		translate([0,0,8]) Tube(OD=R75_MtrTube_OD, ID=R75_MtrTube_ID, 
+			Len=MotorTubeLen, myfn=90);
+		translate([0,0,MotorTubeLen]) color("Tan")
+			CenteringRing(OD=R75_Body_ID, ID=R75_MtrTube_OD, Thickness=6, nHoles=0, Offset=0);
+	}
 	
 	translate([0,0,UpperFinCan_Z]) color("White") UpperFinCan();
-	color("LightGreen") LowerFinCan();
+	if (ShowInternals==false) color("LightGreen") LowerFinCan();
 	
 	// Tailcone, cast polyurathane
 	translate([0,0,0]) difference(){
@@ -144,6 +218,7 @@ module ShowRocket75(){
 } // ShowRocket75
 
 //ShowRocket75();
+//ShowRocket75(ShowInternals=true);
 
 module R75A_Electronics_Bay(Tube_OD=R75_Body_OD, Tube_ID=R75_Body_ID, 
 						InnerTube_OD=BT38Body_OD, HasFairingLockRing=false,
