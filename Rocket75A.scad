@@ -3,7 +3,7 @@
 // Filename: Rocket75A.scad
 // by David M. Flynn
 // Created: 4/19/2023 
-// Revision: 0.9.2  4/19/2023
+// Revision: 0.9.3  4/23/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -13,6 +13,7 @@
 //
 //  ***** History *****
 // 
+// 0.9.3  4/23/2023  Reworked ShowRocket75, added STLs for parts from SpringThingBooster
 // 0.9.2  4/19/2023  Copied from Rocket75
 // 0.9.1  9/28/2022  Adding last couple of parts.
 // 0.9.0  9/11/2022  First code.
@@ -20,23 +21,21 @@
 // ***********************************
 //  ***** for STL output *****
 //
-// *** Nosecode ***
-/*
-FairingConeOGive(Fairing_OD=R75_Body_OD, 
-					FairingWall_T=FairingWall_T,
-					NC_Base=NC_Base, 
-					NC_Len=NC_Len, 
-					NC_Wall_t=NC_Wall_t,
-					NC_Tip_r=NC_Tip_r);
-/**/
+// BluntOgiveNoseCone(ID=BT75Coupler_OD, OD=R75_Body_OD, L=NC_Len, Base_L=NC_Base, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
 //
 // *** Electronics Bay ***
-// FairingBaseBulkPlate(Tube_ID=R75_Body_ID, Fairing_ID=Fairing_ID);
-// 
 // R75A_Electronics_Bay();
 // AltDoor54(Tube_OD=R75_Body_OD, DoorXtra_X=2, DoorXtra_Y=2);
 // Batt_Door(Tube_OD=R75_Body_OD, InnerTube_OD=0, HasSwitch=true);
 // Batt_Door(Tube_OD=R75_Body_OD, InnerTube_OD=0, HasSwitch=false);
+//
+// *** Ball Lock *** 
+// STB_LockDisk(BallPerimeter_d=R75_Body_OD, nLockBalls=5);
+// rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=R75_Body_OD, Body_OD=R75_Body_ID, nLockBalls=5, HasIntegratedCouplerTube=true, Body_ID=R75_Body_ID);
+// STB_BallRetainerBottom(BallPerimeter_d=R75_Body_OD, Body_OD=R75_Body_ID, nLockBalls=5, HasSpringGroove=false);
+// rotate([180,0,0]) TubeEnd(BallPerimeter_d=R75_Body_OD, nLockBalls=5, Body_OD=R75_Body_OD, Body_ID=R75_Body_ID, Skirt_Len=20);
+//
+// rotate([0,-90,0]) BoltOnRailButtonPost(OD=R75_Body_OD, H=R75_Body_OD/2+5);
 //
 // *** Fin Can ***
 // UpperFinCan();
@@ -50,11 +49,11 @@ FairingConeOGive(Fairing_OD=R75_Body_OD,
 // ***********************************
 //  ***** for Viewing *****
 //
-// ShowRocket54();
+// ShowRocket75();
 //
 // ***********************************
 
-use<Fairing54.scad>
+use<NoseCone.scad>
 use<FinCan.scad>
 include<BatteryHolderLib.scad>
 use<AltBay.scad>
@@ -62,12 +61,10 @@ use<SpringThingBooster.scad>
 include<TubesLib.scad>
 
 //also included
- //include<NoseCone.scad>
- //include<FairingJointLib.scad>
+ //
  //include<RailGuide.scad>
  //include<Fins.scad>
  //
- //include<BearingLib.scad>
  //include<CommonStuffSAEmm.scad>
 
 Overlap=0.05;
@@ -89,62 +86,69 @@ R75_Body_ID=PML75Body_ID;
 R75_MtrTube_OD=BT54Body_OD;
 R75_MtrTube_ID=BT54Body_ID;
 
-EBay_Len=162;
+EBay_Len=148;
 
 NoseconeSep_Z=0; // This much of the nosecone becomes part of the fairing.
-NC_Len=195;
-NC_Tip_r=7;
-NC_Base=20;
+NC_Len=185;
+NC_Tip_r=8;
+NC_Base=23;
 NC_Wall_t=2.2;
 
-BodyTubeLen=300;
+BodyTubeLen=400;
 
 
 module ShowRocket75(){
 	
-	translate([0,0,R75_Fin_Root_L+100+EBay_Len+60+BodyTubeLen+Overlap*2]){
-		FairingConeOGive(Fairing_OD=R75_Body_OD, 
-						FairingWall_T=2.2,
-						NC_Base=NC_Base, 
-						NC_Len=NC_Len, 
-						NC_Wall_t=NC_Wall_t,
-						NC_Tip_r=NC_Tip_r);
-		
-		
-	}
+	UpperFinCan_Z=R75_Fin_Root_L+100+Overlap;
+	BodyTube_Z=UpperFinCan_Z+Overlap;
+	TopRailButton_Z=BodyTube_Z+100;
+	BallLock_Z=BodyTube_Z+BodyTubeLen+10;
+	EBay_Z=BallLock_Z+22+Overlap;
+	Nosecone_Z=EBay_Z+EBay_Len+Overlap;
 	
-	translate([0,0,R75_Fin_Root_L+100+60+BodyTubeLen]) rotate([0,0,30]) R75_Electronics_Bay();
+	translate([0,0,Nosecone_Z]) color("Purple")
+		BluntOgiveNoseCone(ID=BT75Coupler_OD, OD=R75_Body_OD, L=NC_Len, Base_L=NC_Base, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
 	
-	translate([0,0,R75_Fin_Root_L+100+Overlap]) color("LightBlue") Tube(OD=R75_Body_OD, ID=R75_Body_ID, 
+	translate([0,0,EBay_Z]) rotate([0,0,30]) R75A_Electronics_Bay();
+	
+	translate([0,0,BallLock_Z]) {
+		color("Green") 
+			STB_BallRetainerTop(BallPerimeter_d=R75_Body_OD, Body_OD=R75_Body_ID, 
+								nLockBalls=5, HasIntegratedCouplerTube=true, Body_ID=R75_Body_ID);
+		color("Orange")
+			TubeEnd(BallPerimeter_d=R75_Body_OD, nLockBalls=5, Body_OD=R75_Body_OD, 
+						Body_ID=R75_Body_ID, Skirt_Len=20);
+			}
+	
+	translate([0,0,TopRailButton_Z]) rotate([0,0,-180/nFins]) 
+		BoltOnRailButtonPost(OD=R75_Body_OD, H=R75_Body_OD/2+5);
+	
+	translate([0,0,BodyTube_Z]) color("LightBlue") Tube(OD=R75_Body_OD, ID=R75_Body_ID, 
 			Len=BodyTubeLen-Overlap*2, myfn=$preview? 90:360);
 	
-	translate([0,0,R75_Fin_Root_L+100+Overlap]) color("White") UpperFinCan();
+	translate([0,0,UpperFinCan_Z]) color("White") UpperFinCan();
 	color("LightGreen") LowerFinCan();
 	
+	// Tailcone, cast polyurathane
+	translate([0,0,0]) difference(){
+		cylinder(d1=64, d2=R75_Body_OD, h=34);
+		translate([0,0,-Overlap]) cylinder(d=R75_MtrTube_OD, h=50);
+	}
+	translate([0,0,-10]) color("Silver") Tube(OD=62.5, ID=54, 
+			Len=33, myfn=90);
 	//*
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j])
 		translate([R75_Body_OD/2-R75_Fin_Post_h, 0, R75_Fin_Root_L/2+50]) 
-			rotate([0,90,0]) color("Yellow") Rocket75Fin();
+			rotate([0,90,0]) color("Purple") Rocket75Fin();
 	/**/
 } // ShowRocket75
 
 //ShowRocket75();
 
-module R75_Electronics_Bay(){
-	Electronics_Bay(Tube_OD=PML75Body_OD, Tube_ID=PML75Body_ID, Fairing_ID=PML75Body_OD-4.4, 
-				EBay_Len=EBay_Len, HasCablePuller=true);
-	
-
-} // R75_Electronics_Bay
-
-//R75_Electronics_Bay();
-//translate([0,0,EBay_Len/2]) rotate([90,0,90]) AltDoor54(Tube_OD=PML75Body_OD);
-
-
 module R75A_Electronics_Bay(Tube_OD=R75_Body_OD, Tube_ID=R75_Body_ID, 
 						InnerTube_OD=BT38Body_OD, HasFairingLockRing=false,
 					ShowDoors=false){
-	Len=148;
+	Len=EBay_Len;
 	
 	BattSwDoor_Z=70;
 	TopSkirt_Len=15;
@@ -196,10 +200,7 @@ module R75A_Electronics_Bay(Tube_OD=R75_Body_OD, Tube_ID=R75_Body_ID,
 		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a+180]) 
 			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
 		
-		
 	} // difference
-	
-	
 	
 	// Altimeter
 	translate([0,0,CablePuller_Z]) rotate([0,0,Alt_a+180])
