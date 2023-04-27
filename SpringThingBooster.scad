@@ -3,10 +3,12 @@
 // Filename: SpringThingBooster.scad
 // by David M. Flynn
 // Created: 2/26/2023
-// Revision: 1.1.2   4/26/2023
+// Revision: 1.2.0   4/26/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
+//
+// A.K.A. Ball Lock
 //
 // Built to deploy a parachute from a booster with a spring.
 // 80mm of 54mm tube is required. 
@@ -35,7 +37,8 @@
 //  Steel Dowel Pin 4mm (Undersized) x 16mm (3 Req.)
 //
 //  ***** History *****
-echo("SpringThingBooster Rev. 1.1.2");
+echo("SpringThingBooster Rev. 1.2.0");
+// 1.2.0   4/26/2023  Added second servo for Level 3 backup electronics.
 // 1.1.2   4/26/2023  Fixes to the mess I made of the 54mm version.
 // 1.1.1   4/21/2023  Working on 75mm 5 balls
 // 1.1.0   4/16/2023  Added 75mm quad lock for body tube. It's all different now.
@@ -63,6 +66,14 @@ echo("SpringThingBooster Rev. 1.1.2");
 // STB_BallRetainerBottom(BallPerimeter_d=PML75Body_OD, Body_OD=PML75Body_ID, nLockBalls=5, HasSpringGroove=false);
 // rotate([180,0,0]) TubeEnd(BallPerimeter_d=PML75Body_OD, nLockBalls=5, Body_OD=PML75Body_OD, Body_ID=PML75Body_ID, Skirt_Len=20);
 // STB_SpringEnd(Tube_ID=PML75Body_ID, CouplerTube_ID=BT75Coupler_ID);
+//
+//  *** 98mm Lock version
+//
+// STB_LockDisk(BallPerimeter_d=PML98Body_OD, nLockBalls=6);
+// rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=PML98Body_OD, Body_OD=PML98Body_ID, nLockBalls=6, HasIntegratedCouplerTube=true, Body_ID=PML98Body_ID, HasSecondServo=true);
+// STB_BallRetainerBottom(BallPerimeter_d=PML98Body_OD, Body_OD=PML98Body_ID, nLockBalls=6, HasSpringGroove=false);
+// rotate([180,0,0]) TubeEnd(BallPerimeter_d=PML98Body_OD, nLockBalls=6, Body_OD=PML98Body_OD, Body_ID=PML98Body_ID, Skirt_Len=20);
+// STB_SpringEnd(Tube_ID=PML98Body_ID, CouplerTube_ID=BT98Coupler_ID);
 //
 //  *** Tools ***
 //
@@ -695,7 +706,8 @@ STB_BallRetainerTop(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID, nLock
 
 module STB_BallRetainerTop(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID, nLockBalls=nLockBalls,
 			HasIntegratedCouplerTube=false,
-			Body_ID=PML54Body_ID){
+			Body_ID=PML54Body_ID,
+			HasSecondServo=false){
 	Plate_T=3;
 	LockDisk_d=STB_LockPinBC_d(BallPerimeter_d)+BearingMR84_OD;
 	
@@ -706,13 +718,15 @@ module STB_BallRetainerTop(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID
 	Servo_Z=18;
 	Servo_r=BallPerimeter_d/2-LockBall_d-BearingMR84_OD/2-ServoArm_Len;
 	
-	module ServoPosition(){
+	module ServoPosition(SecondServo=false){
+		SecondServo_a=SecondServo? 360/nLockBalls*2:0;
+		
 		if (BallPerimeter_d<=PML54Body_OD){
 			translate([-10,4,Servo_Z]) rotate([180,0,-90])  children();
 		}else{
 		Servo_a=360/nLockBalls-STB_CalcChord_a(Dia=Servo_r*2, Dist=BearingMR84_OD/2+5);
 		
-		rotate([0,0,Servo_a])
+		rotate([0,0,Servo_a+SecondServo_a])
 		translate([0,Servo_r,Servo_Z]) rotate([0,0,-135]) rotate([180,0,0]) children();
 		}
 		//#translate([-10,4,4]) cylinder(d=10, h=3);
@@ -726,8 +740,11 @@ module STB_BallRetainerTop(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID
 		}
 	} // ServoArm
 	
-	if ($preview)
-		translate([0,0,-14]) ServoPosition() rotate([0,0,0]) ServoArm();
+	if ($preview){
+		translate([0,0,-14]) ServoPosition() rotate([0,0,20]) ServoArm();
+		if (HasSecondServo)
+				translate([0,0,-14]) ServoPosition(SecondServo=true) rotate([0,0,20]) ServoArm();
+				}
 	
 	difference(){
 		union(){
@@ -751,7 +768,10 @@ module STB_BallRetainerTop(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID
 			// Servo Mount
 			ServoPosition()
 				ServoSG90TopBlock(Xtra_Len=0, Xtra_Width=2.4, Xtra_Height=6);
-				
+			
+			if (HasSecondServo)
+				ServoPosition(SecondServo=true) 
+					ServoSG90TopBlock(Xtra_Len=0, Xtra_Width=2.4, Xtra_Height=6);
 		} // union
 		
 		ManualArmingHole(BallPerimeter_d=BallPerimeter_d);
@@ -793,6 +813,8 @@ module STB_BallRetainerTop(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID
 		
 		// Servo
 		ServoPosition() ServoSG90(TopMount=false,HasGear=false); 
+		if (HasSecondServo)
+				ServoPosition(SecondServo=true) ServoSG90(TopMount=false,HasGear=false); 
 		
 		//notch for magnet latch
 		rotate([0,0,STB_MagnetPost_a(BallPerimeter_d, nLockBalls)]) translate([Magnet_h/2,0,0])
@@ -827,6 +849,15 @@ STB_BallRetainerTop(BallPerimeter_d=PML75Body_OD, Body_OD=PML75Body_ID, nLockBal
 {
 STB_LockDisk(BallPerimeter_d=PML75Body_OD, nLockBalls=5);
 STB_ShowLockBearings(BallPerimeter_d=PML75Body_OD, nLockBalls=5);
+}
+/**/
+/*
+STB_BallRetainerTop(BallPerimeter_d=PML98Body_OD, Body_OD=PML98Body_ID, nLockBalls=6, HasIntegratedCouplerTube=true, Body_ID=PML98Body_ID, HasSecondServo=true);
+
+//rotate([0,0,STB_Unlocked_a(BallPerimeter_d=PML98Body_OD)])
+{
+STB_LockDisk(BallPerimeter_d=PML98Body_OD, nLockBalls=6);
+STB_ShowLockBearings(BallPerimeter_d=PML98Body_OD, nLockBalls=6);
 }
 /**/
 
