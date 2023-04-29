@@ -301,7 +301,7 @@ module R98_Electronics_Bay2(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID,
 	
 	// Cable Pullers
 	translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a])
-		CP_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, ShowDoor=false);
+		CP_BayDoorFrame(Tube_OD=Tube_OD, ShowDoor=false);
 	
 	// Battery and Switch door2
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 

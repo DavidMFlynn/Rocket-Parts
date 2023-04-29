@@ -249,7 +249,7 @@ module ShowUpperBays(){
 	
 	translate([0,0,SpringThing_Z]){
 		//translate([0,0,19]) ST_CableRedirect();
-		rotate([0,180,0]) DrogueSpringThing();
+		//rotate([0,180,0]) DrogueSpringThing();
 		//translate([0,0,-17]) ST_UpperCenteringRing();
 	}
 	
@@ -362,7 +362,7 @@ module R98_Electronics_Bay2(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID,
 	
 	// Cable Pullers
 	translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a+180])
-		CP_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, ShowDoor=ShowDoors);
+		CP_BayDoorFrame(Tube_OD=Tube_OD, ShowDoor=ShowDoors);
 	
 	// Battery and Switch door2
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a+180]) 
@@ -392,8 +392,6 @@ module R54_Electronics_Bay2(Tube_OD=R54_Body_OD, Tube_ID=R54_Body_ID,
 	CP1_a=0;
 	Alt_a=180;
 	nCRHoles=4;
-	
-	
 	
 	// The Fairing clamps onto this. 
 	if (HasFairingLockRing)
@@ -504,9 +502,9 @@ module DrogueMechBay(){
 	
 	// Cable Pullers
 	translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a])
-		rotate([0,180,0]) CP_BayDoorFrame(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, ShowDoor=false);
+		rotate([0,180,0]) CP_BayDoorFrame(Tube_OD=R98_Body_OD, ShowDoor=false);
 	translate([0,0,CablePuller_Z]) rotate([0,0,CP2_a]) 
-		rotate([0,180,0]) CP_BayDoorFrame(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, ShowDoor=false);
+		rotate([0,180,0]) CP_BayDoorFrame(Tube_OD=R98_Body_OD, ShowDoor=false);
 	
 	// Battery and Switch door2
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 

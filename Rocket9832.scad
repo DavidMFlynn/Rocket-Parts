@@ -890,9 +890,9 @@ module BoosterUpperFinCan(){
 	
 	// Cable Pullers
 	translate([0,0,CablePuller_Z]) rotate([0,0,90-180/nFins]) 
-		CP_BayDoorFrame(Tube_OD=R9832_Body_OD, Tube_ID=R9832_Body_ID, ShowDoor=false);
+		CP_BayDoorFrame(Tube_OD=R9832_Body_OD, ShowDoor=false);
 	translate([0,0,CablePuller_Z]) rotate([0,0,90-180/nFins+360/nFins]) 
-		CP_BayDoorFrame(Tube_OD=R9832_Body_OD, Tube_ID=R9832_Body_ID, ShowDoor=false);
+		CP_BayDoorFrame(Tube_OD=R9832_Body_OD, ShowDoor=false);
 	
 	// Altimeter
 	translate([0,0,CablePuller_Z]) rotate([0,0,90-180/nFins+360/nFins*2])

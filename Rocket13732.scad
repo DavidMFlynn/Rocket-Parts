@@ -542,7 +542,7 @@ module ShowMidSection(){
 				Wall_T=FairingWall_T,
 				Len=Fairing_Len);
 				
-	translate([0,0,EBay_Z]) color("LightBlue") R98_Electronics_Bay2();
+	translate([0,0,EBay_Z]) color("LightBlue") R137_Electronics_Bay();
 	
 	translate([0,0,TopOfFinCan_Z]){
 		rotate([0,180,0]) color("Blue") Stager_Saucer(Tube_OD=Body_OD, nLocks=3, HasElectrical=true);
@@ -627,11 +627,11 @@ module R137_Electronics_Bay(){
 
 	// Cable Pullers
 	translate([0,0,CablePuller_Z]) rotate([0,0,180+CP1_a])
-		CP_BayDoorFrame(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoor=false);
+		CP_BayDoorFrame(Tube_OD=Body_OD, ShowDoor=false);
 	translate([0,0,CablePuller_Z]) rotate([0,0,180+CP2_a])
-		CP_BayDoorFrame(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoor=false);
+		CP_BayDoorFrame(Tube_OD=Body_OD, ShowDoor=false);
 	translate([0,0,CablePuller_Z]) rotate([0,0,180+CP3_a])
-		CP_BayDoorFrame(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoor=false);
+		CP_BayDoorFrame(Tube_OD=Body_OD, ShowDoor=false);
 
 	// Battery and Switch door2
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,180+Batt1_a])
@@ -943,9 +943,9 @@ module Booster_Electronics_Bay(ShowDoors=false){
 	/**/
 	// Cable Pullers
 	translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a])
-		CP_BayDoorFrame(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoor=ShowDoors);
+		CP_BayDoorFrame(Tube_OD=Body_OD, ShowDoor=ShowDoors);
 	translate([0,0,CablePuller_Z]) rotate([0,0,CP2_a])
-		CP_BayDoorFrame(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoor=ShowDoors);
+		CP_BayDoorFrame(Tube_OD=Body_OD, ShowDoor=ShowDoors);
 
 	// Battery and Switch door2
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a])

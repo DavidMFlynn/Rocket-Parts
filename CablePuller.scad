@@ -3,7 +3,7 @@
 // Filename: CablePuller.scad
 // by David M. Flynn
 // Created: 8/21/2022 
-// Revision: 1.1.11  1/3/2023
+// Revision: 1.2.0  4/29/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -26,7 +26,8 @@
 //
 //  ***** History *****
 //
-echo("CablePuller 1.1.11");
+echo("CablePuller 1.2.0");
+// 1.2.0  4/29/2023   New door design, uses DoorLib.scad
 // 1.1.11  1/3/2023   Added 1.25mm space for the spring
 // 1.1.10  1/3/2023   Added CP_SpringWindingTool()
 // 1.1.9  1/1/2023    Changed door the use BoltInServoMount()
@@ -82,7 +83,6 @@ echo("CablePuller 1.1.11");
 // CP_DoorBoltPattern(Tube_OD=PML98Body_OD) Bolt4Hole();
 // CP_BayFrameHole(Tube_OD=PML98Body_OD);
 // CP_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=false);
-// function Calc_a(Dist=1,R=2)=Dist/(R*2*PI)*360;
 //
 // ***********************************
 //  ***** for Viewing *****
@@ -92,6 +92,7 @@ echo("CablePuller 1.1.11");
 // ***********************************
 
 include<TubesLib.scad>
+use<DoorLib.scad>
 include<CommonStuffSAEmm.scad>
 
 Overlap=0.05;
@@ -201,129 +202,47 @@ module CP_SpringWindingTool(){
 //CP_SpringWindingTool();
 
 module CPDoorHole(Tube_OD=PML98Body_OD){
-	Door_Y=CP_Door_Y+1;
-	Door_X=CP_Door_X+1;
+	Door_Y=CP_Door_Y;
+	Door_X=CP_Door_X;
 	Door_t=CP_DoorThickness;
 	
-	intersection(){
-		translate([0,-Door_Y/2,0]) rotate([-90,0,0]) 
-			Tube(OD=Tube_OD+1, ID=Tube_OD-Door_t*2, Len=Door_Y, myfn=$preview? 36:360);
-		RoundRect(X=Door_X, Y=Door_Y, Z=Tube_OD, R=4+0.5);
-	} // intersection
+	DoorHole(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t, Tube_OD=Tube_OD);
+	
 } // CPDoorHole
 
-//rotate([90,0,0]) CPDoorHole(Tube_OD=PML98Body_OD);
+//CPDoorHole(Tube_OD=PML98Body_OD);
 //translate([0,-20,PML98Body_OD/2-6]) rotate([0,0,90]) CablePullerBoltPattern() cylinder(d=Bolt4Inset*2, h=4);
 
 module CP_DoorBoltPattern(Tube_OD=PML98Body_OD){
 	Door_Y=CP_Door_Y;
 	Door_X=CP_Door_X;
-	DoorBolt_a=asin((Door_X/2)/(Tube_OD/2))-asin(Bolt4Inset/(Tube_OD/2));
 	
-	rotate([0,DoorBolt_a,0]) translate([0,Door_Y/2-4,Tube_OD/2]) children();
-	rotate([0,DoorBolt_a,0]) translate([0,-Door_Y/2+4,Tube_OD/2]) children();
-	rotate([0,DoorBolt_a,0]) translate([0,0,Tube_OD/2]) children();
+	DoorBoltPattern(Door_X=Door_X, Door_Y=Door_Y, Tube_OD=Tube_OD, HasSixBolts=true) children();
 	
-	mirror([1,0,0]){
-		rotate([0,DoorBolt_a,0]) translate([0,0,Tube_OD/2]) children();
-		rotate([0,DoorBolt_a,0]) translate([0,Door_Y/2-4,Tube_OD/2]) children();
-		rotate([0,DoorBolt_a,0]) translate([0,-Door_Y/2+4,Tube_OD/2]) children();
-	} // mirror
 } // CP_DoorBoltPattern
 
 //CP_DoorBoltPattern(Tube_OD=PML98Body_OD) Bolt4Hole();
 //CP_Door(Tube_OD=PML98Body_OD);
 
 module CP_BayFrameHole(Tube_OD=PML98Body_OD){
-	Tube_Len=CP_Door_Y+2;
 	Door_Y=CP_Door_Y;
 	Door_X=CP_Door_X;
+	Door_t=CP_DoorThickness;
 	
-	translate([0,-Tube_OD/2+10,0]) rotate([90,0,0]) 
-			RoundRect(X=Door_X+5, Y=Tube_Len-1, Z=15, R=0.1);
+	DoorFrameHole(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t, Tube_OD=Tube_OD);
 	
-	translate([0,-Tube_OD/2+20,0]) rotate([90,0,0]) 
-			RoundRect(X=Door_X-2, Y=Tube_Len-1, Z=20, R=0.1);
 } // CP_BayFrameHole
 
 //CP_BayFrameHole();
 
-module CP_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=false){
-	Tube_Len=CP_Door_Y+7;
+module CP_BayDoorFrame(Tube_OD=PML98Body_OD, ShowDoor=false){
 	Door_Y=CP_Door_Y;
 	Door_X=CP_Door_X;
 	Door_t=CP_DoorThickness;
-	BoltBossInset=10.5+2;
-	FrameInset=(Tube_OD>PML54Body_OD+1)? 12:Tube_OD/2;
 	
-	difference(){
-		union(){
-			// Tube section
-			intersection(){
-				translate([0,0,-Tube_Len/2])
-					Tube(OD=Tube_OD, ID=Tube_ID, Len=Tube_Len, myfn=$preview? 36:360);
-				rotate([90,0,0]) 
-						RoundRect(X=Door_X+11, Y=Tube_Len, Z=Tube_OD, R=0.1);
-			} // intersection
-			
-			// Door frame
-			intersection(){
-				translate([0,0,-Door_Y/2-3]) 
-					Tube(OD=Tube_OD-1, ID=Tube_ID-9, Len=Door_Y+6, myfn=$preview? 36:360);
-					
-				hull(){
-					translate([0,-Tube_ID/2+FrameInset,0]) rotate([90,0,0]) //12
-						RoundRect(X=Door_X+3, Y=Door_Y+3, Z=Tube_OD, R=4+3);
-					translate([0,-Tube_ID/2,0]) rotate([90,0,0]) 
-						RoundRect(X=Tube_ID*2, Y=Door_Y+8, Z=Tube_OD, R=4+3);
-				} // hull
-			} // intersection
-		} // union
-		
-		rotate([90,0,0]) RoundRect(X=Door_X-4, Y=Door_Y-4, Z=Tube_OD, R=4-2);
-		
-		rotate([90,0,0]) CPDoorHole(Tube_OD=Tube_OD);
-	} // difference
+	DoorFrame(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t, Tube_OD=Tube_OD, HasSixBolts=true);
 	
-	// Door Bolts
-	difference(){
-		// Bolt bosses
-		intersection(){
-			// trim outside
-			translate([0,0,-Door_Y/2-3]) 
-					Tube(OD=Tube_OD-1, ID=Tube_ID-9, Len=Door_Y+6, myfn=$preview? 36:360);
-				
-			// trim inside
-			hull(){
-				translate([0,-Tube_ID/2+FrameInset,0]) rotate([90,0,0]) 
-					RoundRect(X=Door_X+3, Y=Door_Y+3, Z=Tube_OD, R=4+3);
-				translate([0,-Tube_ID/2,0]) rotate([90,0,0]) 
-					RoundRect(X=Tube_ID*2, Y=Door_Y+8, Z=Tube_OD, R=4+3);
-			} // hull
-		
-			
-			rotate([90,0,0]) 
-				CP_DoorBoltPattern(Tube_OD=Tube_OD) translate([0,0,-6.5]) hull(){
-					cylinder(d=Bolt4Inset*2, h=6);
-					translate([Bolt4Inset+2,0,0]) cylinder(d=Bolt4Inset*2+2, h=6);
-				}
-			
-		} // intersection
-		
-		rotate([90,0,0]) CPDoorHole(Tube_OD=Tube_OD);
-		
-		// mounting bolts
-		rotate([90,0,0]) 
-			CP_DoorBoltPattern(Tube_OD=Tube_OD) Bolt4Hole();
-		
-	} // difference
-	
-	if ($preview&&ShowDoor){ 
-		rotate([90,0,0]) CP_Door(Tube_OD=Tube_OD, BoltBossInset=2, HasArmingSlot=true);
-		//translate([0,-Tube_OD/2+14,-8]) rotate([0,0,-90]) 
-		//	rotate([0,-90,0]) ShowCablePuller(Tube_OD=Tube_OD);
-	}
-	
+	if (ShowDoor) CP_Door(Tube_OD=PML98Body_OD, BoltBossInset=3, HasArmingSlot=true);
 } // CP_BayDoorFrame
 
 //CP_BayDoorFrame(ShowDoor=false);
@@ -336,73 +255,58 @@ module CP_Door(Tube_OD=PML98Body_OD, BoltBossInset=2, HasArmingSlot=false){
 	//BoltBossInset=2; // was 3, use 2 to clear 54mm motor tube w/ 98mm body tube
 	CP_Offset_Y=Door_Y/2-68;
 	DoorEdge_a=asin((Door_X/2)/(Tube_OD/2));
-	
-	//translate([12,-Door_Y/2+27,Tube_OD/2-8]) rotate([0,90,180]) BoltInServoMount();
-	
-	//translate([9,-Door_Y/2+27,Tube_OD/2-8]) rotate([0,90,0]) ServoMount(Extend=2);
-	
+		
 	difference(){
 		union(){
-			// a section of tube
-			intersection(){
-				translate([0,-Door_Y/2,0]) rotate([-90,0,0]) 
-					Tube(OD=Tube_OD, ID=Tube_OD-Door_t*2, Len=Door_Y, myfn=$preview? 36:360);
-				
-				RoundRect(X=Door_X, Y=Door_Y, Z=Tube_OD, R=4);
-			} // intersection
+			// blank door
+			Door(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t, Tube_OD=Tube_OD, HasSixBolts=true);
 			
 			intersection(){
-				translate([0,-Door_Y/2,0]) rotate([-90,0,0]) 
+				translate([0,0,-Door_Y/2]) 
 						cylinder(d=Tube_OD-1, h=Door_Y);
 						
-				
 				// Bolt bosses
 				union(){
-				translate([12,-Door_Y/2+27,Tube_OD/2-9]) rotate([0,90,180]) BoltInServoMountBase();
-				translate([0,CP_Offset_Y,Tube_OD/2-Door_t-BoltBossInset]) 
-						rotate([0,0,90]) CablePullerBoltPattern() cylinder(d=8, h=BoltBossInset+3);
+					translate([12,-Tube_OD/2-3,-Door_Y/2+27]) rotate([90,0,-90]) BoltInServoMountBase();
+				
+					translate([0,-Tube_OD/2+Door_t+BoltBossInset,CP_Offset_Y]) 
+						rotate([0,-90,90]) CablePullerBoltPattern() cylinder(d=8, h=BoltBossInset+3);
 						}
 					
 			} // intersection
 		} // union
-	
-		// Trim back for better bed adhetion
-		rotate([0,-DoorEdge_a,0]) translate([0,0,Tube_OD/2]) rotate([0,DoorEdge_a,0]) 
-			translate([-1,-Door_Y/2-1,-Door_t-5]) cube([Door_X+2, Door_Y+2, 5.5]);
-		
+			
 		// Servo Mount Mounting Holes
-		translate([12,-Door_Y/2+27,Tube_OD/2-8]) rotate([0,90,180]) 
-			BoltInServoMountBoltPattern() Bolt4Hole();
+		translate([12,-Tube_OD/2+10,-Door_Y/2+27]) rotate([90,0,-90]) 
+			BoltInServoMountBoltPattern() rotate([180,0,0]) Bolt4Hole();
 			
 		// Trim door clear of servo base
-		translate([12,-Door_Y/2+27,Tube_OD/2-9-3.5+Overlap]) rotate([0,90,180]) BoltInServoMountBase();
+		translate([12,-Tube_OD/2+0.5-Overlap,-Door_Y/2+27]) rotate([90,0,-90]) BoltInServoMountBase();
 		
 		// CablePuller bolt holes
-		translate([0,CP_Offset_Y,Tube_OD/2-Door_t-BoltBossInset]) 
-			rotate([0,0,90]) CablePullerBoltPattern() {
+		translate([0,-Tube_OD/2+Door_t+BoltBossInset,CP_Offset_Y]) 
+			rotate([0,-90,90]) CablePullerBoltPattern() {
 				rotate([180,0,0]) Bolt4Hole(depth=BoltBossInset+2); 
 				rotate([180,0,0]) cylinder(d=8, h=2);
 			}
 		
 		// Arming slot
-		if (HasArmingSlot) translate([0,CP_Offset_Y+ArmLen+CP_SpringBody_YZ,0]){
+		if (HasArmingSlot) translate([0,0,CP_Offset_Y+ArmLen+CP_SpringBody_YZ]){
 			// Trigger hole
-			translate([15,-11,0]) cylinder(d=3, h=Tube_OD/2+1);
+			rotate([90,0,0]) translate([15,-11,0]) cylinder(d=3, h=Tube_OD/2+1);
 			// Arming slot
 			hull(){
-				cylinder(d=3, h=Tube_OD/2+1);
-				translate([0,20,0]) cylinder(d=3, h=Tube_OD/2+1);
+				rotate([90,0,0]) cylinder(d=3, h=Tube_OD/2+1);
+				translate([0,0,20]) rotate([90,0,0]) cylinder(d=3, h=Tube_OD/2+1);
 			} // hull
 		}
 			
-		// Door mounting bolts
-		CP_DoorBoltPattern(Tube_OD=Tube_OD) Bolt4ClearHole(); //translate([0,0,0.5]) Bolt4ButtonHeadHole();
 	} // difference
-
 } // CP_Door
 
 //rotate([90,0,0]) 
-//rotate([0,180,0]) CP_Door(Tube_OD=PML98Body_OD, BoltBossInset=3, HasArmingSlot=true);
+//rotate([0,180,0])
+// CP_Door(Tube_OD=PML98Body_OD, BoltBossInset=3, HasArmingSlot=true);
 //CP_Door(Tube_OD=BT137Body_OD, BoltBossInset=3, HasArmingSlot=true);
 
 module BoltInServoMountBase(){
