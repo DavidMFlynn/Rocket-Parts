@@ -3,11 +3,12 @@
 // David M. Flynn
 // Filename: LD-20MGServoLib.scad
 // Created: 7/16/2018
-// Rev: 1.2.2 8/24/2020	
+// Rev: 1.2.3  4/27/2023
 // Units: millimeters
 // **************************************************
 // History:
-	echo("LD-20MGServoLib 1.2.1");
+	echo("LD-20MGServoLib 1.2.2");
+// 1.2.3 4/27/2023  Added ServoHX5010TopBlock
 // 1.2.2 8/24/2020	Added Xtra_h=0, range is -2..lots to ServoTray_HX5010_2
 // 1.2.1 12/16/2019	ServoTray_HX5010_2(); for tight spaces
 // 1.2.0 12/15/2019	added ServoTray_HX5010(UseH_Slots=false) and ServoTray_HX5010Holes(UseH_Slots=false)
@@ -26,6 +27,7 @@
 // Routines
 //	Servo_LD20MG(BottomMount=false,TopAccess=false);
 //  Servo_HX5010(BottomMount=false,TopAccess=false,Xtra_w=1.2, Xtra_h=1);
+//  ServoHX5010TopBlock(Xtra_Len=4, Xtra_Width=4, Xtra_Height=0);
 //  ServoTray_HX5010Holes(UseH_Slots=false) Bolt4Hole();
 //	LD20MGServoWheel();
 // **************************************************
@@ -103,6 +105,46 @@ module Servo_LD20MG(BottomMount=true,TopAccess=true){
 
 //Servo_LD20MG(BottomMount=false,TopAccess=false);
 
+module ServoHX5010TopBlock(Xtra_Len=4, Xtra_Width=4, Xtra_Height=0){
+	Servo_Shaft_Offset=9.4; // this moves double
+	Servo_BoltSpace=10;
+	Servo_BoltSpace2=49.4;
+	Servo_x=54.75;
+	Servo_h1=27.7; // bottom of servo to bottom of mount
+	Servo_w=20.2;
+	Servo_Body_l=41.0;
+	Servo_Deck_h=2.6;
+	Servo_TopStep_h=10.2;
+	Servo_TopOfWheel=18.5;
+	
+	difference(){
+		translate([Servo_Shaft_Offset-Servo_x/2-Xtra_Len/2, -Servo_w/2-Xtra_Width/2, Servo_TopStep_h]) 
+			cube([Servo_x+Xtra_Len, Servo_w+Xtra_Width, Servo_TopStep_h+Xtra_Height]);
+			
+		// top rectangle
+		translate([Servo_Shaft_Offset-Servo_Body_l/2, -Servo_w/2, Servo_TopStep_h-Overlap]) 
+			cube([Servo_Body_l, Servo_w, Servo_TopStep_h+1]);
+		
+		translate([Servo_Shaft_Offset-Servo_BoltSpace2/2,Servo_BoltSpace/2,0]) 
+			rotate([180,0,0]) Bolt4Hole();
+		translate([Servo_Shaft_Offset-Servo_BoltSpace2/2,-Servo_BoltSpace/2,0]) 
+			rotate([180,0,0]) Bolt4Hole();
+		translate([Servo_Shaft_Offset+Servo_BoltSpace2/2,Servo_BoltSpace/2,0])
+			rotate([180,0,0]) Bolt4Hole();
+		translate([Servo_Shaft_Offset+Servo_BoltSpace2/2,-Servo_BoltSpace/2,0]) 
+			rotate([180,0,0]) Bolt4Hole();
+		
+		cylinder(d=Servo_w, h=Servo_TopOfWheel);
+		
+		hull(){
+			cylinder(d=6.35,h=11.5);
+			translate([7,0,0])cylinder(d=6.35,h=11.5);
+		}
+	} // difference
+} // ServoHX5010TopBlock
+
+//ServoHX5010TopBlock();
+//ServoHX5010TopBlock(Xtra_Len=0, Xtra_Width=2.4, Xtra_Height=6);
 
 module Servo_HX5010(BottomMount=true,TopAccess=true,Xtra_w=0.2, Xtra_h=1){
 	Servo_Shaft_Offset=9.4; // this moves double
@@ -141,21 +183,16 @@ module Servo_HX5010(BottomMount=true,TopAccess=true,Xtra_w=0.2, Xtra_h=1){
 	}
 	
 	// Bolt holes
-	translate([-Servo_BoltSpace2/2,Servo_BoltSpace/2,0]) Bolt4Hole();
-	translate([-Servo_BoltSpace2/2,-Servo_BoltSpace/2,0]) Bolt4Hole();
-	translate([Servo_BoltSpace2/2,Servo_BoltSpace/2,0]) Bolt4Hole();
-	translate([Servo_BoltSpace2/2,-Servo_BoltSpace/2,0]) Bolt4Hole();
+	translate([-Servo_BoltSpace2/2,Servo_BoltSpace/2,0]) Bolt4Hole(depth=20);
+	translate([-Servo_BoltSpace2/2,-Servo_BoltSpace/2,0]) Bolt4Hole(depth=20);
+	translate([Servo_BoltSpace2/2,Servo_BoltSpace/2,0]) Bolt4Hole(depth=20);
+	translate([Servo_BoltSpace2/2,-Servo_BoltSpace/2,0]) Bolt4Hole(depth=20);
 		
 	if (BottomMount==true){
-		translate([-Servo_BoltSpace2/2,Servo_BoltSpace/2,0]) rotate([180,0,0])Bolt4Hole();
-		translate([-Servo_BoltSpace2/2,-Servo_BoltSpace/2,0]) rotate([180,0,0])Bolt4Hole();
-		translate([Servo_BoltSpace2/2,Servo_BoltSpace/2,0]) rotate([180,0,0])Bolt4Hole();
-		translate([Servo_BoltSpace2/2,-Servo_BoltSpace/2,0]) rotate([180,0,0])Bolt4Hole();
-	} else{
-		translate([-Servo_BoltSpace2/2,Servo_BoltSpace/2,0]) Bolt4Hole();
-		translate([-Servo_BoltSpace2/2,-Servo_BoltSpace/2,0]) Bolt4Hole();
-		translate([Servo_BoltSpace2/2,Servo_BoltSpace/2,0]) Bolt4Hole();
-		translate([Servo_BoltSpace2/2,-Servo_BoltSpace/2,0]) Bolt4Hole();
+		translate([-Servo_BoltSpace2/2,Servo_BoltSpace/2,0]) rotate([180,0,0]) Bolt4Hole(depth=20);
+		translate([-Servo_BoltSpace2/2,-Servo_BoltSpace/2,0]) rotate([180,0,0]) Bolt4Hole(depth=20);
+		translate([Servo_BoltSpace2/2,Servo_BoltSpace/2,0]) rotate([180,0,0]) Bolt4Hole(depth=20);
+		translate([Servo_BoltSpace2/2,-Servo_BoltSpace/2,0]) rotate([180,0,0]) Bolt4Hole(depth=20);
 	}
 	
 	if (BottomMount==true){
@@ -171,7 +208,9 @@ module Servo_HX5010(BottomMount=true,TopAccess=true,Xtra_w=0.2, Xtra_h=1){
 	}
 } // Servo_HX5010
 
-//Servo_HX5010(BottomMount=false,TopAccess=false,Xtra_w=1.2, Xtra_h=1);
+//Servo_HX5010(BottomMount=true,TopAccess=false, Xtra_w=1.2, Xtra_h=1);
+//Servo_HX5010(BottomMount=true,TopAccess=false, Xtra_w=1.2, Xtra_h=0);
+//Servo_HX5010(BottomMount=false,TopAccess=true, Xtra_w=1.2, Xtra_h=1);
 
 module ServoTray_HX5010(Xtra_h=0, UseH_Slots=false){
 	PushUp=Xtra_h;

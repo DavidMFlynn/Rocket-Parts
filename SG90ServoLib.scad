@@ -3,11 +3,12 @@
 // David M. Flynn
 // Filename: SG90ServoLib.scad
 // Created: 4/28/2018
-// Rev: 1.1.1 2/27/2023
+// Rev: 1.1.2 4/27/2023
 // Units: millimeters
 // **************************************************
 // History:
-	echo("SG90ServoLib 1.1.1");
+	echo("SG90ServoLib 1.1.2");
+// 1.1.2 4/27/2023 Extended Bolt2Hole depth to 16mm
 // 1.1.1 2/27/2023 Added ServoSG90TopBlock()
 // 1.1.0 8/17/2018 Added SG90ServoWheelBoltPattern and TopMount=false
 // 1.0.1 5/1/2018 Adjusted SG90ServoWheel for better fit.
@@ -52,8 +53,8 @@ module ServoSG90TopBlock(Xtra_Len=4, Xtra_Width=4, Xtra_Height=0){
 		// top rectangle
 		translate([kWheelOffset-kBody_l/2, -kWidth/2, kDeck_z-Overlap]) cube([kBody_l,kWidth,kTopBox_h+1]);
 		
-		translate([kWheelOffset-kBoltCl/2,0,0]) rotate([180,0,0])Bolt2Hole();
-		translate([kWheelOffset+kBoltCl/2,0,0]) rotate([180,0,0])Bolt2Hole();
+		translate([kWheelOffset-kBoltCl/2,0,0]) rotate([180,0,0]) Bolt2Hole(depth=16);
+		translate([kWheelOffset+kBoltCl/2,0,0]) rotate([180,0,0]) Bolt2Hole(depth=16);
 		
 		cylinder(d=kWidth, h=kWheel_z);
 		
@@ -64,7 +65,7 @@ module ServoSG90TopBlock(Xtra_Len=4, Xtra_Width=4, Xtra_Height=0){
 	} // difference
 } // ServoSG90TopBlock
 
-//ServoSG90TopBlock();
+//ServoSG90TopBlock(Xtra_Height=6);
 
 module ServoSG90(TopMount=false, HasGear=true){
 	
@@ -76,10 +77,10 @@ module ServoSG90(TopMount=false, HasGear=true){
 		// body
 		translate([-kBody_l/2,-kWidth/2,-kBody_h]) cube([kBody_l,kWidth,kBody_h+Overlap]);
 		
-		translate([-kBoltCl/2,0,0]) Bolt2Hole();
-		translate([kBoltCl/2,0,0]) Bolt2Hole();
-		translate([-kBoltCl/2,0,0]) rotate([180,0,0])Bolt2Hole();
-		translate([kBoltCl/2,0,0]) rotate([180,0,0])Bolt2Hole();
+		translate([-kBoltCl/2,0,0]) Bolt2Hole(depth=16);
+		translate([kBoltCl/2,0,0]) Bolt2Hole(depth=16);
+		translate([-kBoltCl/2,0,0]) rotate([180,0,0])Bolt2Hole(depth=16);
+		translate([kBoltCl/2,0,0]) rotate([180,0,0])Bolt2Hole(depth=16);
 		
 		if (TopMount==true){
 			translate([-kDeck_x/2-0.5,-kWidth/2-0.5,-kBody_h]) cube([kDeck_x+1,kWidth+1,kBody_h+Overlap]);
