@@ -290,7 +290,8 @@ module R75A_Electronics_Bay(Tube_OD=R75_Body_OD, Tube_ID=R75_Body_ID,
 	
 } // R75A_Electronics_Bay
 
-//R75A_Electronics_Bay(ShowDoors=true);
+//
+R75A_Electronics_Bay(ShowDoors=false);
 
 module UpperFinCan(){
 	// Upper Half of Fin Can

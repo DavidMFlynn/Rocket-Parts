@@ -89,7 +89,7 @@ module DoorHole(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD){
 // DoorHole();
 
 module DoorFrameHole(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD){
-	DoorHole(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t+1, Tube_OD=PML98Body_OD);
+	DoorHole(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t+1, Tube_OD=Tube_OD);
 } // DoorFrameHole
 
 // DoorFrameHole();
