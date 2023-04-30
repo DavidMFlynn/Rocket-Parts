@@ -62,7 +62,8 @@ echo("SpringThingBooster Rev. 1.2.2");
 // STB_BallRetainerBottom(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID);
 // STB_SpringSeat(Body_OD=PML54Coupler_ID, Base_H=14);
 //
-//  *** 75mm Lock version
+// ---------------------------
+//  *** 75mm Lock version ***
 //
 // STB_LockDisk(BallPerimeter_d=PML75Body_OD, nLockBalls=5);
 // rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=PML75Body_OD, Body_OD=PML75Body_ID, nLockBalls=5, HasIntegratedCouplerTube=true, Body_ID=PML75Body_ID);
@@ -70,7 +71,8 @@ echo("SpringThingBooster Rev. 1.2.2");
 // rotate([180,0,0]) TubeEnd(BallPerimeter_d=PML75Body_OD, nLockBalls=5, Body_OD=PML75Body_OD, Body_ID=PML75Body_ID, Skirt_Len=20);
 // STB_SpringEnd(Tube_ID=PML75Body_ID, CouplerTube_ID=BT75Coupler_ID);
 //
-//  *** 98mm Lock version
+// ----------------------------
+//  *** 98mm Lock version ***
 //
 // STB_LockDisk(BallPerimeter_d=PML98Body_OD, nLockBalls=6);
 // rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=PML98Body_OD, Body_OD=PML98Body_ID, nLockBalls=6, HasIntegratedCouplerTube=true, Body_ID=PML98Body_ID, HasSecondServo=true, UsesBigServo=true);
@@ -78,6 +80,7 @@ echo("SpringThingBooster Rev. 1.2.2");
 // rotate([180,0,0]) TubeEnd(BallPerimeter_d=PML98Body_OD, nLockBalls=6, Body_OD=PML98Body_OD, Body_ID=PML98Body_ID, Skirt_Len=20);
 // STB_SpringEnd(Tube_ID=PML98Body_ID, CouplerTube_ID=BT98Coupler_ID);
 //
+// ---------------
 //  *** Tools ***
 //
 //  ** Drill the end of the coupler tube before gluing on the body tube. **
@@ -154,7 +157,7 @@ function STB_Unlocked_a(BallPerimeter_d=PML54Body_ID)=STB_CalcChord_a(Dia=STB_Lo
 
 function STB_UnlockedPost_a(BallPerimeter_d=BT54Body_ID, nLockBalls=nLockBalls)=
 			STB_Unlocked_a(BallPerimeter_d)+360/nLockBalls+
-				STB_CalcChord_a(Dia=STB_LockPinBC_d(BallPerimeter_d), Dist=BearingMR84_OD/2+Dowel_d/2);
+				STB_CalcChord_a(Dia=STB_LockPinBC_d(BallPerimeter_d), Dist=BearingMR84_OD/2+Dowel_d/2+IDXtra*2);
 				
 function STB_MagnetPost_a(BallPerimeter_d=PML54Coupler_ID, nLockBalls=nLockBalls)=
 			STB_UnlockedPost_a(BallPerimeter_d, nLockBalls)+
@@ -971,8 +974,6 @@ module STB_BallRetainerBottom(BallPerimeter_d=BT54Body_ID, Body_OD=PML54Coupler_
 				cylinder(d=3, h=Bottom_H+Overlap*2);
 	} // difference
 	
-	//echo(STB_UnlockedPost_a(BallPerimeter_d, nLockBalls));
-	//echo(STB_MagnetPost_a(BallPerimeter_d, nLockBalls));
 	// Magnetic latch
 	difference(){
 		rotate([0,0,STB_MagnetPost_a(BallPerimeter_d, nLockBalls)]) translate([Magnet_h/2,0,0])

@@ -59,7 +59,8 @@ F54_FairingHalf(IsLeftHalf=false,
 // AltDoor54(Tube_OD=R98_Body_OD);
 // DoubleBatteryHolder(Tube_ID=PML98Body_ID, HasBoltHoles=true); // oops!
 //
-// *** Cable Puller ***
+// ----------------------
+//  *** Cable Puller ***
 // ThroughOut();
 // rotate([0,90,0]) SpringBody();
 // CableRetainer();
@@ -67,6 +68,7 @@ F54_FairingHalf(IsLeftHalf=false,
 // CageBottom();
 // AddServo(); // CageTop w/ servo mount
 //
+// -------------------------------------------------------------------------------------------
 //  *** Optional: Ball Lock for base of electronics bay to make this a dual deploy rocket ***
 // STB_LockDisk(BallPerimeter_d=R98_Body_OD, nLockBalls=6);
 // rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=R98_Body_OD, Body_OD=R98_Body_ID, nLockBalls=6, HasIntegratedCouplerTube=true, Body_ID=R98_Body_ID, HasSecondServo=true, UsesBigServo=true);
