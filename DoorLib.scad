@@ -3,7 +3,7 @@
 // Filename: DoorLib.scad
 // by David M. Flynn
 // Created: 4/29/2023 
-// Revision: 0.9.0  4/29/2023
+// Revision: 0.9.1  4/29/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-echo("DoorLib 0.9.0");
+echo("DoorLib 0.9.1");
 //
+// 0.9.1  4/29/2023   Bolt holes are optional.
 // 0.9.0  4/29/2023   First code. New door design.
 //
 // ***********************************
@@ -26,9 +27,9 @@ echo("DoorLib 0.9.0");
 //
 // DoorHole(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD);
 // DoorFrameHole(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD);
-// DoorFrame(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBolts=true);
+// DoorFrame(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBolts=true, HasBoltBosses=true);
 // DoorBoltPattern(Door_X=30, Door_Y=50, Tube_OD=PML98Body_OD, HasSixBolts=true) Bolt4Hole();
-// Door(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBolts=true);
+// Door(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBolts=true, HasBoltHoles=true);
 //
 // ***********************************
 //  ***** for Viewing *****
@@ -94,7 +95,7 @@ module DoorFrameHole(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD){
 
 // DoorFrameHole();
 
-module DoorFrame(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBolts=true){
+module DoorFrame(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBolts=true, HasBoltBosses=true){
 	DY=Door_Y+4;
 	DX=Door_X+4;
 	DR=4+2;
@@ -125,7 +126,7 @@ module DoorFrame(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBol
 		// Sill
 		DoorHole(Door_X=Door_X-4, Door_Y=Door_Y-4, Door_t=Door_t+3, Tube_OD=Tube_OD);
 	} // difference
-
+	
 	module Flanges(){
 		rotate([0,0,DoorBolt_a(Door_X=Door_X, Tube_OD=Tube_OD)]) translate([0,-Tube_OD/2,0]) { 
 			hull(){
@@ -146,6 +147,7 @@ module DoorFrame(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBol
 	} // Flanges
 	
 	// Bolt flanges
+	if (HasBoltBosses)
 	difference(){
 		union(){
 			Flanges();
@@ -192,7 +194,7 @@ module DoorBoltPattern(Door_X=30, Door_Y=50, Tube_OD=PML98Body_OD, HasSixBolts=t
 
 // DoorBoltPattern() Bolt4ButtonHeadHole();
 
-module Door(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBolts=true){
+module Door(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBolts=true, HasBoltHoles=true){
 	DY=Door_Y;
 	DX=Door_X;
 	DR=4;
@@ -217,6 +219,7 @@ module Door(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBolts=tr
 				cylinder(d=Tube_OD, h=DY+Overlap*2, $fn=$preview? 90:360);
 		} // difference
 		
+		if (HasBoltHoles)
 		DoorBoltPattern(Door_X=Door_X, Door_Y=Door_Y, Tube_OD=Tube_OD, HasSixBolts=HasSixBolts) 
 			Bolt4ClearHole();
 			

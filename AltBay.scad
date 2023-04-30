@@ -3,7 +3,7 @@
 // Filename: AltBay.scad
 // by David M. Flynn
 // Created: 6/23/2022 
-// Revision: 0.9.15 12/11/2022
+// Revision: 0.9.16  4/29/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,6 +12,7 @@
 //
 //  ***** History *****
 //
+// 0.9.16  4/29/2023  Now using DoorLib.scad
 // 0.9.15 12/11/2022  Adjusted door thickness w/o changing frame or hole. 
 // 0.9.14 11/28/2022  Standardized door thickness. 
 // 0.9.13 11/9/2022   Made low profile door 2mm not so much. 
@@ -32,7 +33,7 @@
 // ***********************************
 //  ***** for STL output *****
 //
-// AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false, DoorXtra_X=0, DoorXtra_Y=0);
+// rotate([-90,0,0]) AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false, DoorXtra_X=2, DoorXtra_Y=2, ShowAlt=true);
 //
 // rotate([90,0,0]) AltHolder();
 // AltBayBottom(CT_Len=75);
@@ -52,8 +53,8 @@
 //  Alt_BayFrameHole(Tube_OD=PML98Body_OD, DoorXtra_X=0, DoorXtra_Y=0);
 //  Alt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, DoorXtra_X=0, DoorXtra_Y=0, ShowDoor=false);
 //
-//  AltBay54(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Tube_Len=120);
-//  AltDoor54(Tube_OD=PML54Body_OD, DoorXtra_X=0, DoorXtra_Y=0);
+//  AltBay54(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Tube_Len=136, DoorXtra_X=0, DoorXtra_Y=0, ShowDoor=false);
+//  AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false, DoorXtra_X=0, DoorXtra_Y=0, ShowAlt=true);
 //
 //  UpperRailButtonPost(Body_OD=PML54Body_OD, Body_ID=PML54Body_ID, MtrTube_OD=PML38Body_OD, Extend=5);
 //  Electronics_Bay(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Fairing_ID=Fairing_ID, HasCablePuller=true);
@@ -71,7 +72,8 @@
 
 include<Fairing54.scad>
 //include<TubesLib.scad>
-include<ChargeHolder.scad>
+use<ChargeHolder.scad>
+use<DoorLib.scad>
 //include<CommonStuffSAEmm.scad>
 
 Overlap=0.05;
@@ -128,14 +130,11 @@ module AltDoorHole54(Tube_OD=PML54Body_OD, DoorXtra_X=0, DoorXtra_Y=0){
 	Door_X=Alt54Door_X+DoorXtra_X+1;
 	Door_t=AltDoorThickness;
 	
-	intersection(){
-		translate([0,-Door_Y/2,0]) rotate([-90,0,0]) 
-			Tube(OD=Tube_OD+1, ID=Tube_OD-Door_t*2, Len=Door_Y, myfn=$preview? 36:360);
-		RoundRect(X=Door_X, Y=Door_Y, Z=Tube_OD, R=4+0.5);
-	} // intersection
+	DoorHole(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t, Tube_OD=Tube_OD);
+	
 } // AltDoorHole54
 
-//rotate([90,0,0]) AltDoorHole54(Tube_OD=PML54Body_OD);
+//AltDoorHole54(Tube_OD=PML54Body_OD);
 
 
 module Alt_DoorBoltPattern(Tube_OD=PML98Body_OD, DoorXtra_Y=0){
@@ -150,15 +149,13 @@ module Alt_DoorBoltPattern(Tube_OD=PML98Body_OD, DoorXtra_Y=0){
 
 
 module Alt_BayFrameHole(Tube_OD=PML98Body_OD, DoorXtra_X=0, DoorXtra_Y=0){
-	Tube_Len=Alt54Door_Y+DoorXtra_Y+2;
+	
 	Door_Y=Alt54Door_Y+DoorXtra_Y;
 	Door_X=Alt54Door_X+DoorXtra_X;
+	Door_t=AltDoorThickness;
 	
-	translate([0,-Tube_OD/2+10,0]) rotate([90,0,0]) 
-			RoundRect(X=Door_X+5, Y=Tube_Len-1, Z=30, R=0.1);
+	DoorFrameHole(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t, Tube_OD=Tube_OD);
 	
-	translate([0,-Tube_OD/2+35,0]) rotate([90,0,0]) 
-			RoundRect(X=Door_X-2, Y=Tube_Len-1, Z=30, R=0.1);
 } // Alt_BayFrameHole
 
 //Alt_BayFrameHole();
@@ -173,37 +170,18 @@ module Alt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, DoorXtra_X=0
 	AltOffset_Y=7;
 	
 	difference(){
-		union(){
-			// Tube section
-			intersection(){
-				translate([0,0,-Tube_Len/2])
-					Tube(OD=Tube_OD, ID=Tube_ID, Len=Tube_Len, myfn=$preview? 36:360);
-				rotate([90,0,0]) 
-						RoundRect(X=Door_X+11, Y=Tube_Len, Z=Tube_OD, R=0.1);
-			} // intersection
-			
-			// Door frame
-			intersection(){
-				translate([0,0,-Door_Y/2-3]) 
-					Tube(OD=Tube_OD-1, ID=Tube_ID-8, Len=Door_Y+6, myfn=$preview? 36:360);
+		DoorFrame(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t, 
+					Tube_OD=Tube_OD, HasSixBolts=true, HasBoltBosses=false);
 					
-				hull(){
-					translate([0,-Tube_ID/2+12,0]) rotate([90,0,0]) 
-						RoundRect(X=Door_X+3, Y=Door_Y+3, Z=Tube_OD, R=4+3);
-					translate([0,-Tube_ID/2,0]) rotate([90,0,0]) 
-						RoundRect(X=Door_X+20, Y=Door_Y+8, Z=Tube_OD, R=4+3);
-				} // hull
-			} // intersection
-		} // union
 				
 		// Bolt bosses
 		rotate([90,0,0]) 
 			translate([0,Alt_Y/2-Door_Y/2+AltOffset_Y,Tube_OD/2-Door_t-BoltBossInset]) 
 						AltHoles() cylinder(d=10, h=BoltBossInset+4);
 	
-		rotate([90,0,0]) RoundRect(X=Door_X-4, Y=Door_Y-4, Z=Tube_OD, R=4-2);
+		//rotate([90,0,0]) RoundRect(X=Door_X-4, Y=Door_Y-4, Z=Tube_OD, R=4-2);
 		
-		rotate([90,0,0]) AltDoorHole54(Tube_OD=Tube_OD, DoorXtra_X=DoorXtra_X, DoorXtra_Y=DoorXtra_Y);
+		AltDoorHole54(Tube_OD=Tube_OD, DoorXtra_X=DoorXtra_X, DoorXtra_Y=DoorXtra_Y);
 	} // difference
 	
 	// Door Bolts
@@ -214,92 +192,45 @@ module Alt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, DoorXtra_X=0
 					Tube(OD=Tube_OD-1, ID=Tube_ID-13, Len=Door_Y+6, myfn=$preview? 36:360);
 			hull(){
 				translate([0,-Tube_ID/2+Door_t+4,0]) rotate([90,0,0]) 
-					RoundRect(X=8, Y=Door_Y+3, Z=Tube_OD, R=1);
+					RoundRect(X=8, Y=Door_Y+3, Z=6, R=1);
 				translate([0,-Tube_ID/2,0]) rotate([90,0,0]) 
-					RoundRect(X=12, Y=Door_Y+12, Z=Tube_OD, R=1);
+					RoundRect(X=12, Y=Door_Y+12, Z=1, R=1);
 			} // hull
 		} // intersection
 		
-		rotate([90,0,0]) RoundRect(X=16, Y=Alt_Y, Z=Tube_OD, R=1);
-		rotate([90,0,0]) AltDoorHole54(Tube_OD=Tube_OD, DoorXtra_X=DoorXtra_X, DoorXtra_Y=DoorXtra_Y);
+		rotate([90,0,0]) RoundRect(X=16, Y=Alt_Y, Z=Tube_OD/2, R=1);
+		AltDoorHole54(Tube_OD=Tube_OD, DoorXtra_X=DoorXtra_X, DoorXtra_Y=DoorXtra_Y);
 		
 		// door mounting bolts
 		Alt_DoorBoltPattern(Tube_OD=Tube_OD, DoorXtra_Y=DoorXtra_Y) Bolt4Hole();
 		
 	} // difference
 	
-	if ($preview&&ShowDoor) rotate([90,0,0]) AltDoor54(Tube_OD=Tube_OD, DoorXtra_X=DoorXtra_X, DoorXtra_Y=DoorXtra_Y);
+	if ($preview&&ShowDoor) AltDoor54(Tube_OD=Tube_OD, DoorXtra_X=DoorXtra_X, DoorXtra_Y=DoorXtra_Y);
 } // Alt_BayDoorFrame
 
 //Alt_BayDoorFrame(ShowDoor=false);
+//Alt_BayDoorFrame(Tube_OD=PML75Body_OD, Tube_ID=PML75Body_ID, DoorXtra_X=2, DoorXtra_Y=2, ShowDoor=false);
 
-module AltBay54(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Tube_Len=120, ShowDoor=false){
-	Door_Y=Alt54Door_Y;
-	Door_X=Alt54Door_X;
+module AltBay54(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Tube_Len=136, DoorXtra_X=0, DoorXtra_Y=0, ShowDoor=false){
+
+	Door_Y=Alt54Door_Y+DoorXtra_Y;
+	Door_X=Alt54Door_X+DoorXtra_X;
 	Door_t=AltDoorThickness;
-	BoltBossInset=10.5+2;
-	AltOffset_Y=7;
 	
 	difference(){
-		union(){
-			Tube(OD=Tube_OD, ID=Tube_ID, Len=Tube_Len, myfn=$preview? 36:360);
-			
-			// Door frame
-			intersection(){
-				translate([0,0,Tube_Len/2-Door_Y/2-3]) 
-					Tube(OD=Tube_OD-1, ID=Tube_ID-7, Len=Door_Y+6, myfn=$preview? 36:360);
-					
-				hull(){
-					translate([0,-Tube_ID/2+12,Tube_Len/2]) rotate([90,0,0]) 
-						RoundRect(X=Door_X+3, Y=Door_Y+3, Z=Tube_OD, R=4+3);
-					translate([0,-Tube_ID/2,Tube_Len/2]) rotate([90,0,0]) 
-						RoundRect(X=Tube_ID*2, Y=Door_Y+8, Z=Tube_OD, R=4+3);
-				} // hull
-			} // intersection
-			
-			
-		} // union
+		translate([0,0,-Tube_Len/2]) Tube(OD=Tube_OD, ID=Tube_ID, Len=Tube_Len, myfn=$preview? 90:360);
 		
-		// Bolt bosses
-		translate([0,0,Tube_Len/2]) rotate([90,0,0]) 
-		translate([0,Alt_Y/2-Door_Y/2+AltOffset_Y,Tube_OD/2-Door_t-BoltBossInset]) 
-						AltHoles() cylinder(d=10, h=BoltBossInset+4);
-		
-		translate([0,0,Tube_Len/2]) rotate([90,0,0]) 
-						RoundRect(X=Alt_X+1, Y=Door_Y-4, Z=Tube_OD, R=4-2);
-		
-		translate([0,0,Tube_Len/2]) rotate([90,0,0]) AltDoorHole54(Tube_OD=Tube_OD);
+		Alt_BayFrameHole(Tube_OD=Tube_OD, DoorXtra_X=DoorXtra_X, DoorXtra_Y=DoorXtra_Y);
 	} // difference
 	
-	// Door Bolts
-	difference(){
-		
-		intersection(){
-			translate([0,0,Tube_Len/2-Door_Y/2-3]) 
-					Tube(OD=Tube_OD-1, ID=Tube_ID-13, Len=Door_Y+6, myfn=$preview? 36:360);
-			hull(){
-				translate([0,-Tube_ID/2+Door_t+4,Tube_Len/2]) rotate([90,0,0]) 
-					RoundRect(X=8, Y=Door_Y+3, Z=Tube_OD, R=1);
-				translate([0,-Tube_ID/2,Tube_Len/2]) rotate([90,0,0]) 
-					RoundRect(X=12, Y=Door_Y+12, Z=Tube_OD, R=1);
-			} // hull
-		} // intersection
-		
-		translate([0,0,Tube_Len/2]) rotate([90,0,0]) 
-					RoundRect(X=16, Y=Alt_Y, Z=Tube_OD, R=1);
-		translate([0,0,Tube_Len/2]) rotate([90,0,0]) AltDoorHole54(Tube_OD=Tube_OD);
-		
-		// mounting bolts
-		translate([0,0,Tube_Len/2]) Alt_DoorBoltPattern(Tube_OD=Tube_OD) Bolt4Hole();
-		
-	} // difference
+	Alt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorXtra_X=DoorXtra_X, DoorXtra_Y=DoorXtra_Y, ShowDoor=ShowDoor);
 	
-	if ($preview&&ShowDoor) translate([0,0,Tube_Len/2]) rotate([90,0,0]) AltDoor54(Tube_OD=Tube_OD);
-	if ($preview&&ShowDoor) translate([0,-Tube_OD/2+Door_t+10.5+AltPCB_h,Tube_Len/2]) rotate([90,0,0]) AltPCB();
 } // AltBay54
 
 //AltBay54(ShowDoor=true);
 //AltBay54(ShowDoor=false);
+//AltBay54(Tube_OD=PML75Body_OD, Tube_ID=PML75Body_ID, Tube_Len=136, DoorXtra_X=2, DoorXtra_Y=2, ShowDoor=true);
 
 module AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false, DoorXtra_X=0, DoorXtra_Y=0, ShowAlt=true){
 	Door_Y=Alt54Door_Y+DoorXtra_Y;
@@ -312,26 +243,29 @@ module AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false, DoorXtra_X=0, DoorXtra
 	
 	difference(){
 		union(){
+			Door(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t, Tube_OD=Tube_OD, HasSixBolts=true, HasBoltHoles=false);
+			
+			/*
 			intersection(){
 				translate([0,-Door_Y/2,0]) rotate([-90,0,0]) 
 					Tube(OD=Tube_OD, ID=Tube_OD-Door_t*2, Len=Door_Y, myfn=$preview? 36:360);
 				RoundRect(X=Door_X, Y=Door_Y, Z=Tube_OD, R=4);
 			} // intersection
-			
+			/**/
 			intersection(){
 				
-				translate([0,-Door_Y/2,0]) rotate([-90,0,0]) 
+				translate([0,0,-Door_Y/2])
 						cylinder(d=Tube_OD-1, h=Door_Y);
 				union(){
 					// LED and Arming holes
-					translate([0,-Door_Y/2+AltOffset_Y+AltArmingScrew_Y,Tube_OD/2-Door_t-LEDSW_Boss_H])
-						cylinder(d=5+6, h=10);
-					translate([0,-Door_Y/2+AltOffset_Y+AltLED_Y,Tube_OD/2-Door_t-LEDSW_Boss_H]) 
-						cylinder(d=5+6, h=10);
+					translate([0, -Tube_OD/2+Door_t+LEDSW_Boss_H, -Door_Y/2+AltOffset_Y+AltArmingScrew_Y])
+						rotate([90,0,0]) cylinder(d=5+6, h=10);
+					translate([0, -Tube_OD/2+Door_t+LEDSW_Boss_H, -Door_Y/2+AltOffset_Y+AltLED_Y]) 
+						rotate([90,0,0]) cylinder(d=5+6, h=10);
 				
 					// Bolt bosses
-					translate([0,Alt_Y/2-Door_Y/2+AltOffset_Y,Tube_OD/2-Door_t-BoltBossInset]) 
-						AltHoles() cylinder(d=8, h=BoltBossInset+3);
+					translate([0, -Tube_OD/2+Door_t+BoltBossInset, Alt_Y/2-Door_Y/2+AltOffset_Y]) 
+						rotate([90,0,0]) AltHoles() cylinder(d=8, h=BoltBossInset+3);
 					} // union
 			} // intersection
 		} // union
@@ -339,25 +273,25 @@ module AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false, DoorXtra_X=0, DoorXtra
 		// PCB parts
 		
 		// Pressure transducer
-		translate([0,-Door_Y/2+AltOffset_Y,Tube_OD/2-Door_t-BoltBossInset]) {
-			translate([-11,27,0]) cube([12,14,11],center=true);
+		translate([0, -Tube_OD/2+Door_t+BoltBossInset, -Door_Y/2+AltOffset_Y]) {
+			rotate([90,0,0]) translate([-11,27,0]) cube([12,14,11],center=true);
 		}
 		
 		// Altimeter holes
-		translate([0,-Door_Y/2+AltOffset_Y,0]){
-			translate([0,Alt_Y/2,Tube_OD/2-Door_t-BoltBossInset]) 
-				AltHoles() rotate([180,0,0]) Bolt4Hole(depth=BoltDepth); //Bolt4ButtonHeadHole();
+		translate([0, 0, -Door_Y/2+AltOffset_Y]){
+			translate([0, -Tube_OD/2+Door_t+BoltBossInset, Alt_Y/2]) 
+				rotate([90,0,0]) AltHoles() rotate([180,0,0]) Bolt4Hole(depth=BoltDepth); //Bolt4ButtonHeadHole();
 			
-			translate([0,AltArmingScrew_Y,0]) cylinder(d=5, h=Tube_OD);
-			translate([0,AltLED_Y,0]) cylinder(d=5, h=Tube_OD);
+			translate([0,0,AltArmingScrew_Y]) rotate([90,0,0]) cylinder(d=5, h=Tube_OD);
+			translate([0,0,AltLED_Y]) rotate([90,0,0]) cylinder(d=5, h=Tube_OD);
 		}
 
 		// mounting bolts
-		translate([0,Door_Y/2-4,Tube_OD/2]) Bolt4ClearHole();
-		translate([0,-Door_Y/2+4,Tube_OD/2]) Bolt4ClearHole();
+		translate([0, -Tube_OD/2, Door_Y/2-4]) rotate([90,0,0]) Bolt4ClearHole();
+		translate([0, -Tube_OD/2, -Door_Y/2+4]) rotate([90,0,0]) Bolt4ClearHole();
 	} // difference
 
-	if ($preview) translate([0,0,Tube_OD/2-Door_t-BoltBossInset-1.6]) AltPCB();
+	if ($preview) translate([0,-Tube_OD/2+Door_t+BoltBossInset+1.6,0]) rotate([90,0,0]) AltPCB();
 } // AltDoor54
 
 //rotate([90,0,0]) AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false);

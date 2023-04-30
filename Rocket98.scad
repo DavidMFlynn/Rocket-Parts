@@ -56,7 +56,10 @@ F54_FairingHalf(IsLeftHalf=false,
 // *** Electronics Bay ***
 // R98_Electronics_Bay2(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, Fairing_ID=Fairing_ID, InnerTube_OD=R98_BayInnerTube_OD);
 // FairingBaseBulkPlate(Tube_ID=R98_Body_ID, Fairing_ID=Fairing_ID, ShockCord_a=-100);
-// AltDoor54(Tube_OD=R98_Body_OD);
+// rotate([-90,0,0]) CP_Door(Tube_OD=R98_Body_OD, BoltBossInset=3, HasArmingSlot=true);
+// rotate([-90,0,0]) AltDoor54(Tube_OD=R98_Body_OD, IsLoProfile=false, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowAlt=true);
+// 
+// rotate([-90,0,0]) Batt_Door(Tube_OD=R98_Body_OD, InnerTube_OD=0, HasSwitch=true);
 // DoubleBatteryHolder(Tube_ID=PML98Body_ID, HasBoltHoles=true); // oops!
 //
 // ----------------------
@@ -256,6 +259,84 @@ module R98_Electronics_Bay3(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID,
 } // R98_Electronics_Bay3
 
 //R98_Electronics_Bay3();
+
+module R98_Electronics_Bay4(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, 
+					Fairing_ID=Fairing_ID, InnerTube_OD=BT38Body_OD){
+					
+	// Make Rainbow One dual deploy
+	
+	Len=162;
+	Altimeter_Z=78;
+	CablePuller_Z=81;
+	BattSwDoor_Z=74;
+	TopSkirt_Len=15;
+	BottomSkirt_Len=15;
+	Alt1_a=0;
+	Alt2_a=180;
+	CP1_a=180;
+	Batt1_a=90; // Rocket Servo 1 Battery & Switch
+	Batt2_a=270; // Rocket Servo 2 Battery & Switch
+	nCRHoles=4;
+	
+	/*
+	// The Fairing clamps onto this. 
+	translate([0,0,Len]) FairingBaseLockRing(Tube_OD=Tube_OD, Tube_ID=Tube_ID, Fairing_ID=Fairing_ID, Interface=Overlap, BlendToTube=true);
+	/**/
+	
+	difference(){
+		union(){
+			Tube(OD=Tube_OD, ID=Tube_ID, Len=Len, myfn=$preview? 36:360);
+			
+			translate([0,0,BottomSkirt_Len]) rotate([0,0,45])
+				CenteringRing(OD=Tube_OD-1, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=nCRHoles);
+			translate([0,0,Len-5-TopSkirt_Len]) rotate([0,0,45])
+				CenteringRing(OD=Tube_OD-1, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=nCRHoles);
+	} // union
+		
+		// Altimeter 1
+		translate([0,0,Altimeter_Z]) rotate([0,0,Alt1_a]) 
+			Alt_BayFrameHole(Tube_OD=Tube_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
+			
+		// Cable Puller door hole
+		translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a])
+			CP_BayFrameHole(Tube_OD=Tube_OD);
+			
+		// Altimeter 2
+		//translate([0,0,Altimeter_Z]) rotate([0,0,Alt2_a]) 
+		//	Alt_BayFrameHole(Tube_OD=Tube_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
+		
+		// Battery and Switch door holes
+		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
+			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
+		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
+			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
+		
+	} // difference
+	
+	// Altimeter 1
+	translate([0,0,Altimeter_Z]) rotate([0,0,Alt1_a])
+		Alt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=false);
+	
+	// Cable Puller
+	translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a])
+		CP_BayDoorFrame(Tube_OD=Tube_OD, ShowDoor=false);
+		
+	// Altimeter 2
+	//translate([0,0,Altimeter_Z]) rotate([0,0,Alt2_a])
+	//	Alt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=false);
+	
+	// Battery and Switch door2
+	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, HasSwitch=true, ShowDoor=false);
+	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, HasSwitch=true, ShowDoor=false);
+	
+} // R98_Electronics_Bay4
+
+// R98_Electronics_Bay4();
+// translate([0,0,81]) rotate([0,0,180]) CP_Door(Tube_OD=R98_Body_OD, BoltBossInset=3, HasArmingSlot=true);
+// translate([0,0,74]) rotate([0,0,90]) Batt_Door(Tube_OD=R98_Body_OD, InnerTube_OD=0, HasSwitch=true);
+// FairingBaseLockRing(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, Fairing_ID=Fairing_ID, Interface=-IDXtra, BlendToTube=false);
 
 module R98_Electronics_Bay2(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, 
 					Fairing_ID=Fairing_ID, InnerTube_OD=BT38Body_OD){
