@@ -3,7 +3,7 @@
 // Filename: SpringThingBooster.scad
 // by David M. Flynn
 // Created: 2/26/2023
-// Revision: 1.2.2   4/28/2023
+// Revision: 1.2.3   5/1/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -38,7 +38,8 @@
 //  Steel Dowel Pin 4mm (Undersized) x 16mm (3 Req.)
 //
 //  ***** History *****
-echo("SpringThingBooster Rev. 1.2.2");
+echo("SpringThingBooster Rev. 1.2.3");
+// 1.2.3   5/1/2023   improved STB_ShowBosterSpringThing
 // 1.2.2   4/28/2023  Fixed Big Servo position
 // 1.2.1   4/27/2023  Added UsesBigServo parameter to STB_BallRetainerTop for >=98mm tubes
 // 1.2.0   4/26/2023  Added second servo for Level 3 backup electronics.
@@ -100,6 +101,16 @@ echo("SpringThingBooster Rev. 1.2.2");
 //
 // STB_ShowExpandedBosterSpringThing(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID);
 // STB_ShowBosterSpringThing();
+// 
+/*
+	STB_ShowBosterSpringThing(BallPerimeter_d=PML98Body_OD, 
+		Body_OD=PML98Body_ID, 
+		Body_ID=PML98Body_ID,
+		HasIntegratedCouplerTube=true,
+		nLockBalls=6, 
+		HasCover=false,
+	HasSpringGroove=false, InLockedPosition=true, UsesBigServo=true);
+/**/
 //
 // STB_ShowLockBearings(BallPerimeter_d=PML54Body_ID);
 // STB_ShowMyBalls(BallPerimeter_d=PML54Body_ID, nLockBalls=nLockBalls, InLockedPosition=true);
@@ -194,29 +205,77 @@ module STB_ShowExpandedBosterSpringThing(BallPerimeter_d=PML54Body_ID, Body_OD=P
 //STB_ShowExpandedBosterSpringThing();
 //STB_ShowExpandedBosterSpringThing(BallPerimeter_d=PML75Body_ID, Body_OD=PML75Body_ID, nLockBalls=4);
 
-module STB_ShowBosterSpringThing(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID, nLockBalls=nLockBalls){
+module STB_ShowBosterSpringThing(BallPerimeter_d=PML54Body_ID, 
+			Body_OD=PML54Coupler_ID, Body_ID=PML54Body_ID,
+			nLockBalls=nLockBalls,
+			HasCover=false,
+			HasIntegratedCouplerTube=false,
+			HasSpringGroove=false,
+			InLockedPosition=true,
+			HasSecondServo=false,
+			UsesBigServo=false){
 
+	Lock_a=InLockedPosition? 0:STB_Unlocked_a(BallPerimeter_d);
+	
 	difference(){
 		union(){
+			if (HasCover)
 			translate([0,0,52.5]) color("Orange") STB_Cover(Body_OD=Body_OD);
-			translate([0,0,0.1]) color("LightBlue") STB_BallRetainerTop(BallPerimeter_d=BallPerimeter_d, Body_OD=Body_OD);
 			
-			//rotate([0,0,Unlocked_a])  // unlocked
-			{ STB_LockDisk(BallPerimeter_d=BallPerimeter_d, nLockBalls=nLockBalls); 
-				STB_ShowLockBearings(BallPerimeter_d=BallPerimeter_d); }
+			if (HasCover)
+			STB_BallRetainerTopExtras(BallPerimeter_d=BallPerimeter_d, 
+									Body_OD=Body_OD, nLockBalls=nLockBalls);
+									
+			translate([0,0,0.1]) color("LightBlue") 
+				STB_BallRetainerTop(BallPerimeter_d=BallPerimeter_d, Body_OD=Body_OD, nLockBalls=nLockBalls,
+					HasIntegratedCouplerTube=HasIntegratedCouplerTube,
+					Body_ID=Body_ID,
+					HasSecondServo=HasSecondServo,
+					UsesBigServo=UsesBigServo);
 			
-			color("Green") STB_BallRetainerBottom(BallPerimeter_d=BallPerimeter_d, Body_OD=Body_OD);
 			
-			translate([0,0,-33]) color("Gray") STB_SpringSeat(Body_OD=PML54Coupler_ID, Base_H=14);
+			
+			//translate([0,0,-33]) color("Gray") STB_SpringSeat(Body_OD=PML54Coupler_ID, Base_H=14);
 		} // union
 		
 		translate([-100,-50,-50]) cube([100,50,150]);
 	} // difference
+	
+	rotate([0,0,Lock_a])
+		{ STB_LockDisk(BallPerimeter_d=BallPerimeter_d, nLockBalls=nLockBalls); 
+			STB_ShowLockBearings(BallPerimeter_d=BallPerimeter_d, nLockBalls=nLockBalls); }
+		
+	color("White")
+	STB_ShowMyBalls(BallPerimeter_d=BallPerimeter_d, nLockBalls=nLockBalls, 
+			InLockedPosition=InLockedPosition);
+	
+	color("Green") 
+		STB_BallRetainerBottom(BallPerimeter_d=BallPerimeter_d, 
+							Body_OD=Body_OD, nLockBalls=nLockBalls, 
+								HasSpringGroove=HasSpringGroove);
+			
+	
 } // STB_ShowBosterSpringThing
 
-//STB_ShowBosterSpringThing();
+/*
+STB_ShowBosterSpringThing(BallPerimeter_d=PML54Body_ID, 
+	Body_OD=PML54Coupler_ID, Body_ID=PML54Body_ID, 
+	nLockBalls=3,
+	HasCover=true,
+	HasSpringGroove=true);
+/**/
+	
+/*
+STB_ShowBosterSpringThing(BallPerimeter_d=PML98Body_OD, 
+	Body_OD=PML98Body_ID, 
+	Body_ID=PML98Body_ID,
+	HasIntegratedCouplerTube=true,
+	nLockBalls=6, 
+	HasCover=false,
+	HasSpringGroove=false, InLockedPosition=true, HasSecondServo=true, UsesBigServo=true);
+/**/
 
-module STB_SpringEnd(Tube_ID=PML75Body_ID, CouplerTube_ID=BT75Coupler_ID){
+module STB_SpringEnd(Tube_ID=PML75Body_ID, CouplerTube_ID=BT75Coupler_ID, SleeveLen=0){
 
 	Slider_h=16;
 	
@@ -229,9 +288,38 @@ module STB_SpringEnd(Tube_ID=PML75Body_ID, CouplerTube_ID=BT75Coupler_ID){
 		translate([0,0,-Overlap]) cylinder(d=ST_DSpring_ID, h=Slider_h+Overlap*2);
 		translate([0,0,-Overlap]) cylinder(d=ST_DSpring_OD, h=3);
 	} // difference
+	
+	if (SleeveLen>0)
+		Tube(OD=Tube_ID-IDXtra*2, ID=CouplerTube_ID-IDXtra-Overlap, Len=SleeveLen, myfn=$preview? 90:360);
 } // STB_SpringEnd
 
 // STB_SpringEnd();
+
+// Custom for Rainbow One
+//STB_SpringEnd(Tube_ID=98.5, CouplerTube_ID=BT98Coupler_ID, SleeveLen=60);
+
+module STB_SpringCupTOMT(Tube_ID=PML75Body_ID){
+	Slider_h=6;
+	
+	difference(){
+		union(){
+			cylinder(d=Tube_ID-IDXtra*2, h=Slider_h);
+			translate([0,0,-ST_DSpring_CBL+3]) 
+				Tube(OD=ST_DSpring_OD+1+4.4, ID=ST_DSpring_OD+1, Len=20, myfn=$preview? 36:360);
+		} // union
+		
+		//translate([0,0,5]) Tube(OD=Tube_ID, ID=CouplerTube_ID-IDXtra, Len=20, myfn=$preview? 36:360);
+		
+		
+		
+		//translate([0,0,6]) cylinder(d1=ST_DSpring_ID, d2=Tube_ID-4.4+Overlap, h=10+Overlap);
+		translate([0,0,-Overlap]) cylinder(d=ST_DSpring_ID, h=Slider_h+Overlap*2);
+		translate([0,0,-Overlap]) cylinder(d=ST_DSpring_OD, h=3);
+	} // difference
+} // STB_SpringCupTOMT
+
+// Custom for Rainbow One
+// rotate([180,0,0]) STB_SpringCupTOMT(Tube_ID=98.5);
 
 module STB_SpringMiddle(Tube_ID=BT54Coupler_OD){
 		
@@ -893,7 +981,7 @@ STB_LockDisk(BallPerimeter_d=PML75Body_OD, nLockBalls=5);
 STB_ShowLockBearings(BallPerimeter_d=PML75Body_OD, nLockBalls=5);
 }
 /**/
-//*
+/*
 STB_BallRetainerTop(BallPerimeter_d=PML98Body_OD, Body_OD=PML98Body_ID, nLockBalls=6, HasIntegratedCouplerTube=true, Body_ID=PML98Body_ID, HasSecondServo=true, UsesBigServo=true);
 //*
 //rotate([0,0,STB_Unlocked_a(BallPerimeter_d=PML98Body_OD)])

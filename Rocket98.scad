@@ -260,14 +260,34 @@ module R98_Electronics_Bay3(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID,
 
 //R98_Electronics_Bay3();
 
+module TubeHold(){
+		Tube_OD=12.7;
+		Socket_Len=16;
+		
+		difference(){
+			union(){
+				hull(){
+					rotate([90,0,0]) cylinder(d=Tube_OD+6, h=Socket_Len, center=true);
+					translate([0,0,-Tube_OD/2-2.5]) cube([Tube_OD+12, Socket_Len, 1], center=true);
+				} // hull
+				translate([0,0,-Tube_OD/2-3-5]) cylinder(d=14, h=6);
+			} // union
+			
+			rotate([90,0,0]) cylinder(d=Tube_OD+IDXtra, h=Socket_Len+10, center=true);
+		} // difference
+	} // TubeHold
+	
+//rotate([0,0,45]) translate([0,-R98_Body_OD/2+16,165-6])TubeHold();
+
+			
 module R98_Electronics_Bay4(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, 
 					Fairing_ID=Fairing_ID, InnerTube_OD=BT38Body_OD){
 					
 	// Make Rainbow One dual deploy
 	
-	Len=162;
+	Len=165;
 	Altimeter_Z=78;
-	CablePuller_Z=81;
+	CablePuller_Z=Len/2;
 	BattSwDoor_Z=74;
 	TopSkirt_Len=15;
 	BottomSkirt_Len=15;
@@ -277,21 +297,26 @@ module R98_Electronics_Bay4(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID,
 	Batt1_a=90; // Rocket Servo 1 Battery & Switch
 	Batt2_a=270; // Rocket Servo 2 Battery & Switch
 	nCRHoles=4;
+	CRHole_a=0;
 	
 	/*
 	// The Fairing clamps onto this. 
 	translate([0,0,Len]) FairingBaseLockRing(Tube_OD=Tube_OD, Tube_ID=Tube_ID, Fairing_ID=Fairing_ID, Interface=Overlap, BlendToTube=true);
 	/**/
 	
+	
+	
 	difference(){
 		union(){
 			Tube(OD=Tube_OD, ID=Tube_ID, Len=Len, myfn=$preview? 36:360);
 			
-			translate([0,0,BottomSkirt_Len]) rotate([0,0,45])
+			
+			
+			translate([0,0,BottomSkirt_Len]) rotate([0,0,CRHole_a])
 				CenteringRing(OD=Tube_OD-1, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=nCRHoles);
-			translate([0,0,Len-5-TopSkirt_Len]) rotate([0,0,45])
+			translate([0,0,Len-5-TopSkirt_Len]) rotate([0,0,CRHole_a])
 				CenteringRing(OD=Tube_OD-1, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=nCRHoles);
-	} // union
+		} // union
 		
 		// Altimeter 1
 		translate([0,0,Altimeter_Z]) rotate([0,0,Alt1_a]) 

@@ -243,15 +243,9 @@ module AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false, DoorXtra_X=0, DoorXtra
 	
 	difference(){
 		union(){
-			Door(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t, Tube_OD=Tube_OD, HasSixBolts=true, HasBoltHoles=false);
-			
-			/*
-			intersection(){
-				translate([0,-Door_Y/2,0]) rotate([-90,0,0]) 
-					Tube(OD=Tube_OD, ID=Tube_OD-Door_t*2, Len=Door_Y, myfn=$preview? 36:360);
-				RoundRect(X=Door_X, Y=Door_Y, Z=Tube_OD, R=4);
-			} // intersection
-			/**/
+			Door(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t, Tube_OD=Tube_OD,
+					HasSixBolts=true, HasBoltHoles=false);
+		
 			intersection(){
 				
 				translate([0,0,-Door_Y/2])
@@ -295,7 +289,8 @@ module AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false, DoorXtra_X=0, DoorXtra
 } // AltDoor54
 
 //rotate([90,0,0]) AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false);
-//rotate([180,0,0]) AltDoor54(Tube_OD=PML98Body_OD, IsLoProfile=true);
+//rotate([180,0,0]) 
+AltDoor54(Tube_OD=PML98Body_OD, IsLoProfile=true);
 
 module UpperRailButtonPost(Body_OD=PML54Body_OD, Body_ID=PML54Body_ID, MtrTube_OD=PML38Body_OD, Extend=5){
 		
