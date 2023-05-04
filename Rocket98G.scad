@@ -183,8 +183,7 @@ module LowerFinCan(){
 
 } // LowerFinCan
 
-// 
-LowerFinCan();
+// LowerFinCan();
 
 module Rocket98Fin(){
 	TrapFin2(Post_h=R98_Fin_Post_h, Root_L=R98_Fin_Root_L, Tip_L=R98_Fin_Tip_L, 

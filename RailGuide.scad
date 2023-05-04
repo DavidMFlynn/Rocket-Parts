@@ -96,17 +96,17 @@ module RailGuideBoltPattern(BoltSpace=12.7){
 
 
 
-module BoltOnRailGuide(Length = 40, BoltSpace=12.7, RoundEnds=true){
+module BoltOnRailGuide(Length = 40, BoltSpace=12.7, RoundEnds=true, ExtraBack=0){
 	Back_T=3;
 	
 	difference(){
 		union(){
 			if (RoundEnds){
 				hull(){
-				translate([0,0,-Length/2+RG_Back_w/2]) 
-					rotate([-90,0,0]) cylinder(d=RG_Back_w, h=Back_T);
-				translate([0,0,Length/2-RG_Back_w/2]) 
-					rotate([-90,0,0]) cylinder(d=RG_Back_w, h=Back_T);
+				translate([0,-ExtraBack,-Length/2+RG_Back_w/2]) 
+					rotate([-90,0,0]) cylinder(d=RG_Back_w, h=Back_T+ExtraBack);
+				translate([0,-ExtraBack,Length/2-RG_Back_w/2]) 
+					rotate([-90,0,0]) cylinder(d=RG_Back_w, h=Back_T+ExtraBack);
 				} // hull
 			}else{
 			translate([0,Back_T/2,-Length/2])
@@ -207,6 +207,38 @@ module RailGuidePost(OD=PML98Body_OD, MtrTube_OD=PML54Body_OD, H=5.5*25.4/2, Tub
 //RailGuidePost();
 //translate([0,5.5*25.4/2,0]) BoltOnRailGuide(Length = 40, BoltSpace=12.7);
 
+module BoltOnRailGuidePost(OD=PML98Body_OD, H=5.5*25.4/2,
+						Length = 30, BoltSpace=12.7){
+	Size_Z=Length+10;
+	
+	difference(){
+		union(){
+			translate([0,0,-Size_Z/2]) Tube(OD=OD+4.4, ID=OD, Len=Size_Z, myfn=$preview? 36:360);
+			
+			hull(){
+				translate([0,0,Size_Z/2-1]) 
+					rotate([-90,0,0]) cylinder(d=2, h=OD/2);
+				translate([0,0,-Size_Z/2+1]) 
+					rotate([-90,0,0]) cylinder(d=2, h=OD/2);
+				
+				translate([0,0,Length/2]) 
+					rotate([-90,0,0]) cylinder(d=18, h=OD/2);
+				translate([0,0,-Length/2]) 
+					rotate([-90,0,0]) cylinder(d=18, h=OD/2);
+				
+				translate([0,0,Length/2-RG_Back_w/2]) 
+					rotate([-90,0,0]) cylinder(d=RG_Back_w, h=H);
+				translate([0,0,-Length/2+RG_Back_w/2]) 
+					rotate([-90,0,0]) cylinder(d=RG_Back_w, h=H);
+				
+			} // hull
+		} // union
+		
+		translate([0,H,0]) RailGuideBoltPattern(BoltSpace=BoltSpace) Bolt6Hole(depth=H);
+	} // difference
+} // BoltOnRailGuidePost
+
+//BoltOnRailGuidePost(OD=PML98Body_OD, H=PML98Body_OD/2+2, Length = 30, BoltSpace=12.7);
 
 module RialGuide(TubeOD = 98, Length = 40, Offset = 3){
 	
@@ -244,31 +276,43 @@ module RialGuide(TubeOD = 98, Length = 40, Offset = 3){
 // RialGuide();
 
 
-module TubeBoltedRailGuide(TubeOD=PML98Body_OD, Length = 30, Offset = 3){
+module TubeBoltedRailGuide(TubeOD=PML98Body_OD, Length = 30, Offset = 2){
 	Size_Z=50;
+	Size_Y=30;
 	
-	rotate([0,0,-90]) RialGuide(TubeOD = TubeOD+IDXtra*2, Length = Length, Offset = Offset-IDXtra*2);
+	function CalcChord_a(Dia=10, Dist=1)=Dist/(Dia*PI)*360;
 	
+	Bolt_a=CalcChord_a(TubeOD,Size_Y/2-6);
+	
+	rotate([0,0,-90]) translate([0,TubeOD/2+Offset-3,0])
+		BoltOnRailGuide(Length = Length, BoltSpace=12.7, RoundEnds=true, ExtraBack=Offset-4);
+		
 	difference(){
-		translate([0,0,-Size_Z/2]) Tube(OD=TubeOD+4.4, ID=TubeOD+IDXtra*2, Len=Size_Z, myfn=$preview? 36:360);
-			
+		intersection(){
+			translate([0,0,-Size_Z/2]) Tube(OD=TubeOD+4.4, ID=TubeOD+IDXtra*2, 
+				Len=Size_Z, myfn=$preview? 36:360);
+			rotate([0,90,0]) RoundRect(X=Size_Z, Y=Size_Y, Z=TubeOD, R=4);
+		} // intersection
 		
-		// Trim Mounting Plate
-		translate([-TubeOD/2-5,-TubeOD/2-5,-Size_Z/2-Overlap]) cube([TubeOD*0.75,TubeOD+10,Size_Z+Overlap*2]);
-		translate([0,15,-Size_Z/2-Overlap]) cube([TubeOD*0.75,TubeOD+10,Size_Z+Overlap*2]);
-		translate([0,-15,-Size_Z/2-Overlap]) mirror([0,1,0]) cube([TubeOD*0.75,TubeOD+10,Size_Z+Overlap*2]);
-		
-		rotate([0,0,10]) translate([TubeOD/2+3,0,Size_Z/3]) rotate([0,90,0]) Bolt8Hole();
-		rotate([0,0,-10]) translate([TubeOD/2+3,0,Size_Z/3]) rotate([0,90,0]) Bolt8Hole();
-		rotate([0,0,10]) translate([TubeOD/2+3,0,-Size_Z/3]) rotate([0,90,0]) Bolt8Hole();
-		rotate([0,0,-10]) translate([TubeOD/2+3,0,-Size_Z/3]) rotate([0,90,0]) Bolt8Hole();
+		rotate([0,0,Bolt_a]){ 
+			translate([TubeOD/2+3,0,Size_Z/2-6]) 
+				rotate([0,90,0]) Bolt6ClearHole();
+			translate([TubeOD/2+3,0,-Size_Z/2+6]) 
+				rotate([0,90,0]) Bolt6ClearHole();
+		}
+		rotate([0,0,-Bolt_a]){
+			translate([TubeOD/2+3,0,Size_Z/2-6]) 
+				rotate([0,90,0]) Bolt6ClearHole();
+			translate([TubeOD/2+3,0,-Size_Z/2+6]) 
+				rotate([0,90,0]) Bolt6ClearHole();
+		}
 		
 		
 	} // difference
 	
 } // TubeBoltedRailGuide
 
-// TubeBoltedRailGuide();
+// rotate([0,-90,0]) TubeBoltedRailGuide(TubeOD=PML98Body_OD, Length = 35,  Offset = 5.5);
 
 
 
