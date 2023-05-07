@@ -3,7 +3,7 @@
 // Filename: Rocket98.scad
 // by David M. Flynn
 // Created: 10/4/2022 
-// Revision: 1.1.0  4/27/2023
+// Revision: 1.1.1  5/7/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,6 +12,7 @@
 //  A.K.A. The Red One
 //
 //  ***** History *****
+// 1.1.1  5/7/2023   Updated.
 // 1.1.0  4/27/2023  Added Ball Lock for dual deploy option.
 // 1.0.2  12/15/2022 Updated electronics bay
 // 1.0.1  10/11/2022 Added Rail Guides
@@ -94,10 +95,12 @@ F54_FairingHalf(IsLeftHalf=false,
 // ***********************************
 //  ***** for Viewing *****
 //
-// ShowRocket98();
+// 
+ShowRocket98();
 //
 // ***********************************
 include<TubesLib.scad>
+use<RailGuide.scad>
 use<Fairing54.scad>
 use<FinCan.scad>
 use<NoseCone.scad>
@@ -108,7 +111,6 @@ use<SpringThingBooster.scad>
 
 //also included
  //include<FairingJointLib.scad>
- //include<RailGuide.scad>
  //include<Fins.scad>
  //include<TubesLib.scad>
  //include<BearingLib.scad>
@@ -161,8 +163,13 @@ Alt_DoorXtra_Y=2;
 
 
 module ShowRocket98(){
+	UpperFinCan_Z=R98_Fin_Root_L+75+Overlap;
+	BodyTube_Z=UpperFinCan_Z+Overlap*2;
+	EBay_Z=BodyTube_Z+BodyTubeLen;
+	Fairing_Z=EBay_Z+EBay_Len+Overlap*2;
+	NoseCone_Z=Fairing_Z+Fairing_Len+Overlap*2;
 	
-	translate([0,0,R98_Fin_Root_L+100+EBay_Len+BodyTubeLen+Fairing_Len+Overlap*2]){
+	translate([0,0,NoseCone_Z]){
 		FairingConeOGive(Fairing_OD=R98_Body_OD, 
 						FairingWall_T=FairingWall_T,
 						NC_Base=NC_Base, 
@@ -173,23 +180,23 @@ module ShowRocket98(){
 		translate([0,0,-NC_Lock_H]) NoseLockRing(Fairing_ID =Fairing_ID);
 	}
 	
-	translate([0,0,R98_Fin_Root_L+100+BodyTubeLen+EBay_Len+Overlap])
+	translate([0,0,Fairing_Z])
 		F54_FairingHalf(IsLeftHalf=true, 
 				Fairing_OD=Fairing_OD,
 				Wall_T=FairingWall_T,
 				Len=Fairing_Len);
 	
-	translate([0,0,R98_Fin_Root_L+100+BodyTubeLen]) rotate([0,0,30]) R98_Electronics_Bay2();
+	translate([0,0,EBay_Z]) rotate([0,0,30]) R98_Electronics_Bay2();
 	
-	translate([0,0,R98_Fin_Root_L+100+Overlap]) color("LightBlue") Tube(OD=R98_Body_OD, ID=R98_Body_ID, 
+	translate([0,0,BodyTube_Z]) color("LightBlue") Tube(OD=R98_Body_OD, ID=R98_Body_ID, 
 			Len=BodyTubeLen-Overlap*2, myfn=$preview? 90:360);
 	
-	translate([0,0,R98_Fin_Root_L+100+Overlap]) color("White") UpperFinCan();
+	translate([0,0,UpperFinCan_Z]) color("White") UpperFinCan();
 	color("LightGreen") LowerFinCan();
 	
 	//*
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j])
-		translate([R98_Body_OD/2-R98_Fin_Post_h, 0, R98_Fin_Root_L/2+50]) 
+		translate([R98_Body_OD/2-R98_Fin_Post_h, 0, R98_Fin_Root_L/2+55]) 
 			rotate([0,90,0]) color("Yellow") Rocket98Fin();
 	/**/
 } // ShowRocket98
@@ -436,7 +443,7 @@ module UpperFinCan(){
 	// Upper Half of Fin Can
 	
 	rotate([180,0,0]) 
-		FinCan3(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, MtrTube_OD=R98_MtrTube_OD+IDXtra*2, nFins=nFins,
+		FinCan(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, MtrTube_OD=R98_MtrTube_OD+IDXtra*2, nFins=nFins,
 			Post_h=R98_Fin_Post_h, Root_L=R98_Fin_Root_L, Root_W=R98_Fin_Root_W, 
 			Chamfer_L=R98_Fin_Chamfer_L, HasTailCone=false); 
 
@@ -447,7 +454,7 @@ module UpperFinCan(){
 module LowerFinCan(){
 	
 	difference(){
-		FinCan3(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, MtrTube_OD=R98_MtrTube_OD+IDXtra*2, nFins=nFins, 
+		FinCan(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, MtrTube_OD=R98_MtrTube_OD+IDXtra*2, nFins=nFins, 
 			Post_h=R98_Fin_Post_h, Root_L=R98_Fin_Root_L, Root_W=R98_Fin_Root_W, 
 			Chamfer_L=R98_Fin_Chamfer_L, 
 			HasTailCone=true,
