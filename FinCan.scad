@@ -33,7 +33,7 @@ rotate([180,0,0])
 					HasIntegratedCouplerTube=true);
 /**/
 
-//*
+/*
 rotate([180,0,0])
 	FinCan(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, MtrTube_OD=PML54Body_OD, nFins=5, 
 					Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18,

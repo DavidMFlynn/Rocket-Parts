@@ -3,7 +3,7 @@
 // Filename: Rocket75A.scad
 // by David M. Flynn
 // Created: 4/19/2023 
-// Revision: 0.9.3  4/23/2023
+// Revision: 0.9.4  5/7/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -46,6 +46,7 @@
 //
 //  ***** History *****
 // 
+// 0.9.4  5/7/2023   Updated.
 // 0.9.3  4/23/2023  Reworked ShowRocket75, added STLs for parts from SpringThingBooster
 // 0.9.2  4/19/2023  Copied from Rocket75
 // 0.9.1  9/28/2022  Adding last couple of parts.
@@ -93,12 +94,13 @@
 //
 // ***********************************
 
+include<TubesLib.scad>
 use<NoseCone.scad>
+use<RailGuide.scad>
 use<FinCan.scad>
-include<BatteryHolderLib.scad>
+use<BatteryHolderLib.scad>
 use<AltBay.scad>
 use<SpringThingBooster.scad>
-include<TubesLib.scad>
 
 //also included
  //
@@ -146,7 +148,8 @@ NoseconeCouplerLen=35;
 
 module ShowRocket75(ShowInternals=false){
 	
-	UpperFinCan_Z=R75_Fin_Root_L+100+Overlap;
+	LowerFinCan_Z=30;
+	UpperFinCan_Z=R75_Fin_Root_L+70+Overlap;
 	BodyTube_Z=UpperFinCan_Z+Overlap;
 	TopRailButton_Z=BodyTube_Z+150;
 	BallLock_Z=BodyTube_Z+BodyTubeLen+10;
@@ -201,15 +204,17 @@ module ShowRocket75(ShowInternals=false){
 	}
 	
 	translate([0,0,UpperFinCan_Z]) color("White") UpperFinCan();
-	if (ShowInternals==false) color("LightGreen") LowerFinCan();
+	if (ShowInternals==false) 
+		translate([0,0,LowerFinCan_Z]) color("LightGreen") LowerFinCan();
 	
 	// Tailcone, cast polyurathane
-	translate([0,0,0]) difference(){
+	translate([0,0,5]) difference(){
 		cylinder(d1=64, d2=R75_Body_OD, h=34);
 		translate([0,0,-Overlap]) cylinder(d=R75_MtrTube_OD, h=50);
 	}
-	translate([0,0,-10]) color("Silver") Tube(OD=62.5, ID=54, 
-			Len=33, myfn=90);
+	// Motor retainer
+	translate([0,0,-5]) color("Silver") 
+		Tube(OD=62.5, ID=54, Len=33, myfn=90);
 	//*
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j])
 		translate([R75_Body_OD/2-R75_Fin_Post_h, 0, R75_Fin_Root_L/2+50]) 
@@ -290,14 +295,13 @@ module R75A_Electronics_Bay(Tube_OD=R75_Body_OD, Tube_ID=R75_Body_ID,
 	
 } // R75A_Electronics_Bay
 
-//
-R75A_Electronics_Bay(ShowDoors=false);
+//R75A_Electronics_Bay(ShowDoors=false);
 
 module UpperFinCan(){
 	// Upper Half of Fin Can
 	
 	rotate([180,0,0]) 
-		FinCan3(Tube_OD=R75_Body_OD, Tube_ID=R75_Body_ID, MtrTube_OD=R75_MtrTube_OD+IDXtra*2, nFins=nFins,
+		FinCan(Tube_OD=R75_Body_OD, Tube_ID=R75_Body_ID, MtrTube_OD=R75_MtrTube_OD+IDXtra*2, nFins=nFins,
 			Post_h=R75_Fin_Post_h, Root_L=R75_Fin_Root_L, Root_W=R75_Fin_Root_W, 
 			Chamfer_L=R75_Fin_Chamfer_L, HasTailCone=false); 
 
@@ -309,7 +313,7 @@ module LowerFinCan(){
 	RailGuide_Z=55;
 	
 	difference(){
-		FinCan3(Tube_OD=R75_Body_OD, Tube_ID=R75_Body_ID, MtrTube_OD=R75_MtrTube_OD+IDXtra*2, nFins=nFins, 
+		FinCan(Tube_OD=R75_Body_OD, Tube_ID=R75_Body_ID, MtrTube_OD=R75_MtrTube_OD+IDXtra*2, nFins=nFins, 
 			Post_h=R75_Fin_Post_h, Root_L=R75_Fin_Root_L, Root_W=R75_Fin_Root_W, 
 			Chamfer_L=R75_Fin_Chamfer_L, 
 			HasTailCone=false,
@@ -318,7 +322,7 @@ module LowerFinCan(){
 					MtrRetainer_Inset=5); // Lower Half of Fin Can
 		
 		// modified to fit resin tailcone
-		translate([0,0,-Overlap]) cylinder(d=R75_Body_OD+1, h=40-5.5);
+		translate([0,0,-Overlap]) cylinder(d=R75_Body_OD+1, h=10);
 		
 		translate([0,0,RailGuide_Z]) rotate([0,0,-180/nFins]) 
 			translate([R75_Body_OD/2+5,0,0]) rotate([0,90,0]) Bolt8Hole(depth=30);

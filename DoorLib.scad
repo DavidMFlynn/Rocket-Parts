@@ -140,7 +140,7 @@ module DoorFrame(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBol
 		// Outside
 		difference(){
 			translate([0,0,-DY/2-6]) 
-				cylinder(d=Tube_OD*2, h=DY+12);
+				cylinder(d=Tube_OD*3, h=DY+12);
 			translate([0,0,-DY/2-6-Overlap]) 
 				cylinder(d=Tube_OD-1, h=DY+12+Overlap*2, $fn=$preview? 90:360);
 		} // difference

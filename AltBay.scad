@@ -70,9 +70,11 @@
 // 
 // ***********************************
 
-include<Fairing54.scad>
-//include<TubesLib.scad>
+include<TubesLib.scad>
+use<RailGuide.scad>
+use<Fairing54.scad>
 use<ChargeHolder.scad>
+use<CablePuller.scad>
 use<DoorLib.scad>
 //include<CommonStuffSAEmm.scad>
 
@@ -219,12 +221,13 @@ module AltBay54(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Tube_Len=136, DoorXt
 	Door_t=AltDoorThickness;
 	
 	difference(){
-		translate([0,0,-Tube_Len/2]) Tube(OD=Tube_OD, ID=Tube_ID, Len=Tube_Len, myfn=$preview? 90:360);
+		Tube(OD=Tube_OD, ID=Tube_ID, Len=Tube_Len, myfn=$preview? 90:360);
 		
-		Alt_BayFrameHole(Tube_OD=Tube_OD, DoorXtra_X=DoorXtra_X, DoorXtra_Y=DoorXtra_Y);
+		translate([0,0,Tube_Len/2]) Alt_BayFrameHole(Tube_OD=Tube_OD, DoorXtra_X=DoorXtra_X, DoorXtra_Y=DoorXtra_Y);
 	} // difference
 	
-	Alt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorXtra_X=DoorXtra_X, DoorXtra_Y=DoorXtra_Y, ShowDoor=ShowDoor);
+	translate([0,0,Tube_Len/2]) 
+		Alt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorXtra_X=DoorXtra_X, DoorXtra_Y=DoorXtra_Y, ShowDoor=ShowDoor);
 	
 } // AltBay54
 
@@ -289,8 +292,7 @@ module AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false, DoorXtra_X=0, DoorXtra
 } // AltDoor54
 
 //rotate([90,0,0]) AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false);
-//rotate([180,0,0]) 
-AltDoor54(Tube_OD=PML98Body_OD, IsLoProfile=true);
+//rotate([180,0,0]) AltDoor54(Tube_OD=PML98Body_OD, IsLoProfile=true);
 
 module UpperRailButtonPost(Body_OD=PML54Body_OD, Body_ID=PML54Body_ID, MtrTube_OD=PML38Body_OD, Extend=5){
 		
@@ -314,9 +316,10 @@ module Electronics_Bay(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Fairing_ID=PM
 	CP_Za=(Tube_OD<PML75Body_OD)? 135:180;
 	
 	// The Fairing clamps onto this. 
-	translate([0,0,TopOfTube]) FairingBaseLockRing(Tube_OD=Tube_OD, Tube_ID=Tube_ID, Fairing_ID=Fairing_ID, Interface=Overlap);
+	translate([0,0,TopOfTube]) 
+		FairingBaseLockRing(Tube_OD=Tube_OD, Tube_ID=Tube_ID, Fairing_ID=Fairing_ID, Interface=Overlap);
 	translate([0,0,EBay_Len-2.5]) rotate([180,0,0]) 
-				TubeStop(InnerTubeID=Tube_ID-5, OuterTubeOD=Tube_OD, myfn=$preview? 36:360);
+		TubeStop(InnerTubeID=Tube_ID-5, OuterTubeOD=Tube_OD, myfn=$preview? 36:360);
 	
 	// Standard E-Bay module
 	difference(){

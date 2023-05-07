@@ -3,7 +3,7 @@
 // Filename: Rocket75.scad
 // by David M. Flynn
 // Created: 9/11/2022 
-// Revision: 0.9.1  9/28/2022
+// Revision: 0.9.2  5/7/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,6 +12,7 @@
 //
 //  ***** History *****
 // 
+// 0.9.2  5/7/2023   Updated.
 // 0.9.1  9/28/2022  Adding last couple of parts.
 // 0.9.0  9/11/2022  First code.
 //
@@ -63,7 +64,8 @@ F54_FairingHalf(IsLeftHalf=false,
 // ***********************************
 //  ***** for Viewing *****
 //
-// ShowRocket75();
+// 
+ShowRocket75();
 //
 // ***********************************
 
@@ -129,8 +131,14 @@ F54_SpringEndCap_OD=F54_Spring_OD+3;
 
 
 module ShowRocket75(){
+	Fin_Z=R75_Fin_Root_L/2+55;
+	UpperFinCan_Z=R75_Fin_Root_L+75+Overlap;
+	BodyTube_Z=UpperFinCan_Z+Overlap;
+	EBay_Z=BodyTube_Z+BodyTubeLen+60;
+	Fairing_Z=EBay_Z+EBay_Len+Overlap;
+	Nosecone_Z=Fairing_Z+Fairing_Len+Overlap;
 	
-	translate([0,0,R75_Fin_Root_L+100+EBay_Len+60+BodyTubeLen+Fairing_Len+Overlap*2]){
+	translate([0,0,Nosecone_Z]){
 		FairingConeOGive(Fairing_OD=R75_Body_OD, 
 						FairingWall_T=FairingWall_T,
 						NC_Base=NC_Base, 
@@ -141,23 +149,23 @@ module ShowRocket75(){
 		translate([0,0,-NC_Lock_H]) NoseLockRing(Fairing_ID =Fairing_ID);
 	}
 	
-	translate([0,0,R75_Fin_Root_L+100+60+BodyTubeLen+EBay_Len+Overlap])
+	translate([0,0,Fairing_Z])
 		F54_FairingHalf(IsLeftHalf=true, 
 				Fairing_OD=Fairing_OD,
 				Wall_T=FairingWall_T,
 				Len=Fairing_Len);
 	
-	translate([0,0,R75_Fin_Root_L+100+60+BodyTubeLen]) rotate([0,0,30]) R75_Electronics_Bay();
+	translate([0,0,EBay_Z]) rotate([0,0,30]) R75_Electronics_Bay();
 	
-	translate([0,0,R75_Fin_Root_L+100+Overlap]) color("LightBlue") Tube(OD=R75_Body_OD, ID=R75_Body_ID, 
+	translate([0,0,BodyTube_Z]) color("LightBlue") Tube(OD=R75_Body_OD, ID=R75_Body_ID, 
 			Len=BodyTubeLen-Overlap*2, myfn=$preview? 90:360);
 	
-	translate([0,0,R75_Fin_Root_L+100+Overlap]) color("White") UpperFinCan();
+	translate([0,0,UpperFinCan_Z]) color("White") UpperFinCan();
 	color("LightGreen") LowerFinCan();
 	
 	//*
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j])
-		translate([R75_Body_OD/2-R75_Fin_Post_h, 0, R75_Fin_Root_L/2+50]) 
+		translate([R75_Body_OD/2-R75_Fin_Post_h, 0, Fin_Z]) 
 			rotate([0,90,0]) color("Yellow") Rocket75Fin();
 	/**/
 } // ShowRocket75
@@ -178,7 +186,7 @@ module UpperFinCan(){
 	// Upper Half of Fin Can
 	
 	rotate([180,0,0]) 
-		FinCan3(Tube_OD=R75_Body_OD, Tube_ID=R75_Body_ID, MtrTube_OD=R75_MtrTube_OD+IDXtra*2, nFins=nFins,
+		FinCan(Tube_OD=R75_Body_OD, Tube_ID=R75_Body_ID, MtrTube_OD=R75_MtrTube_OD+IDXtra*2, nFins=nFins,
 			Post_h=R75_Fin_Post_h, Root_L=R75_Fin_Root_L, Root_W=R75_Fin_Root_W, 
 			Chamfer_L=R75_Fin_Chamfer_L, HasTailCone=false); 
 
@@ -189,7 +197,7 @@ module UpperFinCan(){
 module LowerFinCan(){
 	
 	difference(){
-		FinCan3(Tube_OD=R75_Body_OD, Tube_ID=R75_Body_ID, MtrTube_OD=R75_MtrTube_OD+IDXtra*2, nFins=nFins, 
+		FinCan(Tube_OD=R75_Body_OD, Tube_ID=R75_Body_ID, MtrTube_OD=R75_MtrTube_OD+IDXtra*2, nFins=nFins, 
 			Post_h=R75_Fin_Post_h, Root_L=R75_Fin_Root_L, Root_W=R75_Fin_Root_W, 
 			Chamfer_L=R75_Fin_Chamfer_L, 
 			HasTailCone=true,

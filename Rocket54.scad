@@ -3,7 +3,7 @@
 // Filename: Rocket54.scad
 // by David M. Flynn
 // Created: 9/6/2022 
-// Revision: 0.9.3  10/3/2022
+// Revision: 0.9.4  5/7/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -13,6 +13,7 @@
 //
 //  ***** History *****
 // 
+// 0.9.4  5/7/2023  Updated to show as built
 // 0.9.3  10/3/2022 Battery Holder
 // 0.9.2  10/2/2022 75mm Fairing and E-Bay
 // 0.9.1  9/8/2022  Shalower fin slots. 
@@ -81,20 +82,18 @@ FairingBase(BaseXtra=10, Fairing_OD=Fairing_OD, Fairing_ID=PML75Body_ID,
 // ShowRocket54();
 //
 // ***********************************
-
-include<BatteryHolderLib.scad>
-include<Fairing54.scad>
-include<FinCan.scad>
-include<AltBay.scad>
+include<TubesLib.scad>
+use<RailGuide.scad>
+use<BatteryHolderLib.scad>
+use<Fairing54.scad>
+use<FinCan.scad>
+use<AltBay.scad>
 
 //also included
  //include<NoseCone.scad>
- //include<ChargeHolder.scad>
  //include<CablePuller.scad>
  //include<FairingJointLib.scad>
- //include<RailGuide.scad>
  //include<Fins.scad>
- //include<TubesLib.scad>
  //include<BearingLib.scad>
  //include<CommonStuffSAEmm.scad>
 
@@ -134,28 +133,45 @@ NC_Lock_ID=NC_Lock_OD-6;
 
 Fairing_Len=150; // Body of the fairing. Overall len is Fairing_Len + NC_Base + NoseconeSep_Z
 
-BodyTubeLen=300;
+BodyTubeLen=900;
 
 module ShowRocket54(){
+	UpperFinCan_Z=R54_Fin_Root_L+75+Overlap;
+	BT_Z=UpperFinCan_Z+Overlap;
+	EBay_Z=BT_Z+BodyTubeLen+55;
+	Fairing_Z=EBay_Z+EBay_Len+Overlap*2;
+	NoseCone_Z=Fairing_Z+Fairing_Len;
+	
 	Fin_X=(R54_Body_OD/2-R54_Fin_Post_h>R54_MtrTube_OD/2)? R54_Body_OD/2-R54_Fin_Post_h:R54_MtrTube_OD/2;
 	
-	translate([0,0,340+BodyTubeLen+EBay_Len+Fairing_Len+Overlap*3]){
-		FairingConeOGive();
-		NoseLockRing();
+	translate([0,0,NoseCone_Z]){
+		FairingConeOGive(Fairing_OD=Fairing_OD, 
+					FairingWall_T=FairingWall_T,
+					NC_Base=5, 
+					NC_Len=270, 
+					NC_Wall_t=2,
+					NC_Tip_r=NC_Tip_r, 
+					Cut_Z=0, LowerPortion=false);
+		NoseLockRing(Fairing_ID =Fairing_ID);
 	}
 	
-	translate([0,0,340+BodyTubeLen+EBay_Len+Overlap*2]) 
+	translate([0,0,Fairing_Z]) 
 		F54_FairingHalf(IsLeftHalf=true, 
 				Fairing_OD=Fairing_OD,
 				Wall_T=FairingWall_T,
 				Len=Fairing_Len);
 	
-	translate([0,0,340+BodyTubeLen+Overlap]) rotate([0,0,180/nFins]) R54_Electronics_Bay();
+	translate([0,0,EBay_Z]) rotate([0,0,180/nFins]) R54_Electronics_Bay75();
 	
-	translate([0,0,280+Overlap]) color("LightBlue") Tube(OD=R54_Body_OD, ID=R54_Body_ID, 
+	translate([0,0,BT_Z+BodyTubeLen+25]) 
+	FairingBase(BaseXtra=10, Fairing_OD=Fairing_OD, Fairing_ID=PML75Body_ID,
+				BodyTubeOD=R54_Body_OD, 
+					CouplerTube_OD=PML54Coupler_OD+IDXtra*2, CouplerTube_ID=PML54Coupler_ID);
+					
+	translate([0,0,BT_Z]) color("LightBlue") Tube(OD=R54_Body_OD, ID=R54_Body_ID, 
 			Len=BodyTubeLen-Overlap*2, myfn=$preview? 90:360);
 	
-	translate([0,0,R54_Fin_Root_L+100+Overlap]) color("White") UpperFinCan();
+	translate([0,0,UpperFinCan_Z]) color("White") UpperFinCan();
 	color("LightGreen") LowerFinCan();
 	//*
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j])
@@ -191,7 +207,7 @@ module UpperFinCan(){
 	// Upper Half of Fin Can
 	
 	rotate([180,0,0]) 
-		FinCan3(Tube_OD=R54_Body_OD, Tube_ID=R54_Body_ID, MtrTube_OD=R54_MtrTube_OD+IDXtra*2, nFins=nFins,
+		FinCan(Tube_OD=R54_Body_OD, Tube_ID=R54_Body_ID, MtrTube_OD=R54_MtrTube_OD+IDXtra*2, nFins=nFins,
 			Post_h=R54_Fin_Post_h, Root_L=R54_Fin_Root_L, Root_W=R54_Fin_Root_W, 
 			Chamfer_L=R54_Fin_Chamfer_L, HasTailCone=false); 
 
@@ -202,7 +218,7 @@ module UpperFinCan(){
 module LowerFinCan(){
 	
 	difference(){
-		FinCan3(Tube_OD=R54_Body_OD, Tube_ID=R54_Body_ID, MtrTube_OD=R54_MtrTube_OD+IDXtra*2, nFins=nFins, 
+		FinCan(Tube_OD=R54_Body_OD, Tube_ID=R54_Body_ID, MtrTube_OD=R54_MtrTube_OD+IDXtra*2, nFins=nFins, 
 			Post_h=R54_Fin_Post_h, Root_L=R54_Fin_Root_L, Root_W=R54_Fin_Root_W, 
 			Chamfer_L=R54_Fin_Chamfer_L, 
 			HasTailCone=true,
