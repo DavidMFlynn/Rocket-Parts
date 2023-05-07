@@ -3,7 +3,7 @@
 // Filename: DoorLib.scad
 // by David M. Flynn
 // Created: 4/29/2023 
-// Revision: 0.9.1  4/29/2023
+// Revision: 1.0.0  5/7/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-echo("DoorLib 0.9.1");
+echo("DoorLib 1.0.0");
 //
+// 1.0.0  5/7/2023    Tested doors made with this library.
 // 0.9.1  4/29/2023   Bolt holes are optional.
 // 0.9.0  4/29/2023   First code. New door design.
 //
@@ -55,14 +56,16 @@ $fn=$preview? 24:90;
 
 Bolt4Inset=4;
 
-function Calc_a(Dist=1,D=2)=Dist/(D*PI)*360;
-function DoorEdge_a(Door_X=30, Tube_OD=PML98Body_OD)=asin((Door_X/2)/(Tube_OD/2));
+function Calc_a(Dist=1,D=2)=Dist/(D*PI)*360; // angle of a distance allong a circle w/ diameter D
+function DoorEdge_a(Door_X=30, Tube_OD=PML98Body_OD)=asin((Door_X/2)/(Tube_OD/2)); // angle to edge of door
 function DoorBolt_a(Door_X=30, Tube_OD=PML98Body_OD)=asin((Door_X/2)/(Tube_OD/2))-asin(Bolt4Inset/(Tube_OD/2));
 
 module DoorHole(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD){
+	// A hole 1mm larger than the door.
+	
 	DY=Door_Y+1;
 	DX=Door_X+1;
-	DR=4+0.5;
+	DR=4+0.5; // Door corner Radius
 	
 	difference(){
 		hull(){
@@ -70,6 +73,9 @@ module DoorHole(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD){
 				rotate([90,0,0]) translate([-Door_X/2+DR,0,-10]) RoundRect(X=DX-DR*2, Y=DY, Z=20, R=DR);
 			rotate([0,0,-DoorEdge_a(Door_X=Door_X, Tube_OD=Tube_OD)]) translate([0,-Tube_OD/2,0])
 				rotate([90,0,0]) translate([Door_X/2-DR,0,-10]) RoundRect(X=DX-DR*2, Y=DY, Z=20, R=DR);
+			translate([0,-Tube_OD/2,0])
+				rotate([90,0,0]) translate([0,0,-10]) RoundRect(X=DX-DR*2, Y=DY, Z=20, R=DR);
+			
 		} // hull
 		
 		// Inside
@@ -102,6 +108,25 @@ module DoorFrame(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBol
 	BoltBoss_t=2.2;
 	Sill_t=1.5;
 	
+	module Flanges(){
+		rotate([0,0,DoorBolt_a(Door_X=Door_X, Tube_OD=Tube_OD)]) translate([0,-Tube_OD/2,0]) { 
+			hull(){
+				translate([0,0,Door_Y/2-4]) rotate([-90,0,0]) cylinder(r=Bolt4Inset, h=Door_t+BoltBoss_t);
+				translate([4,2,Door_Y/2-4]) rotate([-90,0,0]) cylinder(r=Bolt4Inset, h=Door_t-1);
+				translate([0,2,Door_Y/2]) rotate([-90,0,0]) cylinder(r=Bolt4Inset, h=Door_t-1);
+			}
+			hull(){
+				translate([0,0,-Door_Y/2+4]) rotate([-90,0,0]) cylinder(r=Bolt4Inset, h=Door_t+BoltBoss_t);
+				translate([4,2,-Door_Y/2+4]) rotate([-90,0,0]) cylinder(r=Bolt4Inset, h=Door_t-1);
+				translate([0,2,-Door_Y/2]) rotate([-90,0,0]) cylinder(r=Bolt4Inset, h=Door_t-1);
+			}
+			if (HasSixBolts) hull(){
+				rotate([-90,0,0]) cylinder(r=Bolt4Inset, h=Door_t+BoltBoss_t);
+				translate([4,2,0]) rotate([-90,0,0]) cylinder(r=Bolt4Inset+1, h=Door_t-1);
+			}
+		}
+	} // Flanges
+	
 	difference(){
 		hull(){
 			DoorHole(Door_X=DX+10, Door_Y=DY+10, Door_t=1, Tube_OD=Tube_OD);
@@ -127,25 +152,6 @@ module DoorFrame(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBol
 		DoorHole(Door_X=Door_X-4, Door_Y=Door_Y-4, Door_t=Door_t+3, Tube_OD=Tube_OD);
 	} // difference
 	
-	module Flanges(){
-		rotate([0,0,DoorBolt_a(Door_X=Door_X, Tube_OD=Tube_OD)]) translate([0,-Tube_OD/2,0]) { 
-			hull(){
-				translate([0,0,Door_Y/2-4]) rotate([-90,0,0]) cylinder(r=Bolt4Inset, h=Door_t+BoltBoss_t);
-				translate([4,2,Door_Y/2-4]) rotate([-90,0,0]) cylinder(r=Bolt4Inset, h=Door_t-1);
-				translate([0,2,Door_Y/2]) rotate([-90,0,0]) cylinder(r=Bolt4Inset, h=Door_t-1);
-			}
-			hull(){
-				translate([0,0,-Door_Y/2+4]) rotate([-90,0,0]) cylinder(r=Bolt4Inset, h=Door_t+BoltBoss_t);
-				translate([4,2,-Door_Y/2+4]) rotate([-90,0,0]) cylinder(r=Bolt4Inset, h=Door_t-1);
-				translate([0,2,-Door_Y/2]) rotate([-90,0,0]) cylinder(r=Bolt4Inset, h=Door_t-1);
-			}
-			if (HasSixBolts) hull(){
-				rotate([-90,0,0]) cylinder(r=Bolt4Inset, h=Door_t+BoltBoss_t);
-				translate([4,2,0]) rotate([-90,0,0]) cylinder(r=Bolt4Inset+1, h=Door_t-1);
-			}
-		}
-	} // Flanges
-	
 	// Bolt flanges
 	if (HasBoltBosses)
 	difference(){
@@ -170,6 +176,8 @@ module DoorFrame(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBol
 		} // difference
 	} // difference
 } // DoorFrame
+
+//DoorFrame();
 
 /*
 difference(){

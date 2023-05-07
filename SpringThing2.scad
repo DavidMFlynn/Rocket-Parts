@@ -48,7 +48,7 @@
 //
 // ST_TubeEnd(Tube_OD=BT54Coupler_OD, Tube_ID=BT54Coupler_ID); // print 2, glued to half section of coupler tube
 // ST_TubeLockLanyard(Skirt_ID=BT54Coupler_ID-2);
-// ST_TubeLock(Tube_OD=BT54Coupler_OD, Skirt_ID=BT54Coupler_ID-2, SkirtLen=0); // Glued to top of spring.
+// ST_TubeLock(Tube_OD=BT54Coupler_OD, Skirt_ID=BT54Coupler_ID-2, SkirtLen=15); // Glued to top of spring.
 // ST_SpringMiddle(Tube_ID=BT54Coupler_OD); // optional double spring slider
 // ST_SpringGuide(InnerTube_ID=BT54Body_ID); // Sits on top of motor, glued to bottom of spring. 
 //

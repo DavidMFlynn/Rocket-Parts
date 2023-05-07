@@ -262,22 +262,32 @@ module R98_Electronics_Bay3(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID,
 
 module TubeHold(){
 		Tube_OD=12.7;
-		Socket_Len=16;
+		
+		MountingPost_d=14.5;
+		Socket_Len=MountingPost_d;
+		Wall_t=2.2;
+		PostOffset=2;
 		
 		difference(){
 			union(){
 				hull(){
-					rotate([90,0,0]) cylinder(d=Tube_OD+6, h=Socket_Len, center=true);
-					translate([0,0,-Tube_OD/2-2.5]) cube([Tube_OD+12, Socket_Len, 1], center=true);
+					rotate([90,0,0]) cylinder(d=Tube_OD+Wall_t*2, h=Socket_Len, center=true);
+					translate([0,0,-Tube_OD/2-Wall_t+0.5]) cube([Tube_OD+8, Socket_Len, 1], center=true);
 				} // hull
-				translate([0,0,-Tube_OD/2-3-5]) cylinder(d=14, h=6);
+				
+					translate([0,PostOffset,-Tube_OD/2-Wall_t-5]) cylinder(d=MountingPost_d, h=6);
+					
+				hull(){
+					translate([0,PostOffset,-Tube_OD/2-Wall_t]) cylinder(d=MountingPost_d, h=1);
+					cylinder(d=Socket_Len, h=1);
+				} // hull
 			} // union
 			
-			rotate([90,0,0]) cylinder(d=Tube_OD+IDXtra, h=Socket_Len+10, center=true);
+			translate([0,-2,0]) rotate([90,0,0]) cylinder(d=Tube_OD+IDXtra, h=Socket_Len, center=true);
 		} // difference
 	} // TubeHold
 	
-//rotate([0,0,45]) translate([0,-R98_Body_OD/2+16,165-6])TubeHold();
+//rotate([0,0,45]) translate([0,-R98_Body_OD/2+16,165-6]) TubeHold();
 
 			
 module R98_Electronics_Bay4(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, 
