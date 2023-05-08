@@ -36,11 +36,11 @@
 // ***********************************
 //  ***** for Viewing *****
 //
-// 
-ShowRocketOmega();
+// ShowRocketOmega();
 //
 // ***********************************
 include<TubesLib.scad>
+use<RailGuide.scad>
 use<SpringThing2.scad>
 use<Fairing54.scad>
 use<FinCan.scad>
@@ -53,7 +53,6 @@ use<BatteryHolderLib.scad>
  //include<ChargeHolder.scad>
  //include<CablePuller.scad>
  //include<FairingJointLib.scad>
- //include<RailGuide.scad>
  //include<Fins.scad>
  //include<TubesLib.scad>
  //include<BearingLib.scad>
@@ -64,6 +63,7 @@ IDXtra=0.2;
 $fn=$preview? 24:90;
 
 Scale=BT137Body_OD/41.58; // Body tube diameters
+//Scale=PML75Body_OD/41.58; // Body tube diameters
 echo(Scale=Scale);
 
 nFins=4;
@@ -110,6 +110,7 @@ Fairing_ID=Fairing_OD-FairingWall_T*2;
 
 NoseconeSep_Z=0; // This much of the nosecone becomes part of the fairing.
 NC_Len=350;
+NC_Wall_t=2.2;
 NC_Tip_r=5;
 NC_Base=5;
 NC_Lock_H=5;
@@ -144,11 +145,80 @@ ShowSpringThing(Tube_OD=ROmega_Body_OD, Tube_ID=ROmega_Body_ID,
 				InnerCouplerTube_OD=ROmega_MtrCoupleTube_OD, InnerCouplerTube_ID=ROmega_MtrCoupleTube_ID);
 /**/
 
+// *** Cineroc Dimensions ***
+
+C_NoseconeTip_d=0.75*25.4*Scale;
+C_Nosecone_Len=3.425*25.4*Scale;
+C_Nosecone_d=1.8*25.4*Scale;
+C_NoseconeBase_L=0.125*25.4*Scale;
+C_Body_Len=4.375*25.4*Scale;
+C_Base_Len=1.0*25.4*Scale;
+C_BaseShoulder_Len=0.125*25.4*Scale;
+
+module Cineroc_Cone(){
+	CT_L=15;
+	
+	difference(){
+		union(){
+			hull(){
+				translate([0,0,C_Nosecone_Len-C_NoseconeTip_d/2]) 
+					sphere(d=C_NoseconeTip_d, $fn=$preview? 24:90);
+				cylinder(d=C_Nosecone_d, h=C_NoseconeBase_L, $fn=$preview? 90:360);
+			} // hull
+			
+			translate([0,0,-CT_L]) 
+				cylinder(d=C_Nosecone_d-NC_Wall_t*2-IDXtra*2, h=CT_L+Overlap, $fn=$preview? 90:360);
+		} // union
+		
+		translate([0,0,-CT_L-Overlap]) cylinder(d=C_Nosecone_d-NC_Wall_t*4-IDXtra*2, h=CT_L+Overlap*2);
+		
+		hull(){
+			cylinder(d=C_Nosecone_d-NC_Wall_t*4, h=Overlap);
+			translate([0,0,C_NoseconeBase_L-Overlap]) cylinder(d=C_Nosecone_d-NC_Wall_t*2, h=Overlap);
+			translate([0,0,C_Nosecone_Len-C_NoseconeTip_d/2]) 
+					sphere(d=C_NoseconeTip_d-NC_Wall_t*2, $fn=$preview? 24:90);
+		} // hull
+	} // difference
+} // Cineroc_Cone
+
+//Cineroc_Cone();
+
+module Cineroc_Body(){
+	echo("Cineroc Body Dia. = ", C_Nosecone_d);
+	
+	Tube(OD=C_Nosecone_d, ID=C_Nosecone_d-NC_Wall_t*2, Len=C_Body_Len, myfn=$preview? 36:360);
+} // Cineroc_Body
+
+//translate([0,0,-C_Body_Len]) Cineroc_Body();
+
+module Cineroc_Base(){
+	CT_L=15;
+	
+	difference(){
+		union(){
+			cylinder(d=C_Nosecone_d-NC_Wall_t*2-IDXtra*2, h=CT_L, $fn=$preview? 90:360);
+				
+			hull(){
+				translate([0,0,-C_BaseShoulder_Len])
+					cylinder(d=C_Nosecone_d, h=C_BaseShoulder_Len, $fn=$preview? 90:360);
+				translate([0,0,-C_Base_Len])
+					cylinder(d=ROmega_Body_OD, h=Overlap, $fn=$preview? 90:360);
+			} // hull
+		} // union
+		
+		translate([0,0,-Overlap]) cylinder(d=C_Nosecone_d-NC_Wall_t*4-IDXtra*2, h=CT_L+Overlap*2);
+		
+		translate([0,0,-C_Base_Len-Overlap]) cylinder(d=ROmega_Coupler_OD, h=C_Base_Len+Overlap*2, $fn=$preview? 90:360);
+	} // difference
+} // Cineroc_Base
+
+//translate([0,0,-C_Body_Len]) Cineroc_Base();
+
 module LowerFinCan(){
 	RailGuide_Z=110;
 	
 	difference(){
-		FinCan3(Tube_OD=ROmega_Body_OD, Tube_ID=ROmega_Body_ID, MtrTube_OD=ROmega_MtrTube_OD+IDXtra*2, nFins=nFins, 
+		FinCan(Tube_OD=ROmega_Body_OD, Tube_ID=ROmega_Body_ID, MtrTube_OD=ROmega_MtrTube_OD+IDXtra*2, nFins=nFins, 
 			Post_h=ROmega_Fin_Post_h, Root_L=ROmega_Fin_Root_L, Root_W=ROmega_Fin_Root_W, 
 			Chamfer_L=ROmega_Fin_Chamfer_L, 
 			HasTailCone=false,
@@ -201,7 +271,7 @@ module BoosterUpperFinCan(){
 	
 	difference(){
 		rotate([180,0,0]) 
-			FinCan3(Tube_OD=ROmega_Body_OD, Tube_ID=ROmega_Body_ID, 
+			FinCan(Tube_OD=ROmega_Body_OD, Tube_ID=ROmega_Body_ID, 
 				MtrTube_OD=ROmega_MtrTube_OD+IDXtra*2, nFins=nFins,
 				Post_h=ROmegaBooster_Fin_Post_h, Root_L=ROmegaBooster_Fin_Root_L, 
 				Root_W=ROmegaBooster_Fin_Root_W, 
