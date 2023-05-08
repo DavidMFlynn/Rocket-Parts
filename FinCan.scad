@@ -30,7 +30,8 @@ rotate([180,0,0])
 	FinCan(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, MtrTube_OD=PML54Body_OD, nFins=5, 
 					Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18,
 					HasTailCone=false,
-					HasIntegratedCouplerTube=true);
+					HasIntegratedCouplerTube=true,
+					Xtra_Len=0);
 /**/
 
 /*
@@ -41,7 +42,8 @@ rotate([180,0,0])
 					MtrRetainer_OD=63,
 					MtrRetainer_L=16,
 					MtrRetainer_Inset=5,
-					HasIntegratedCouplerTube=false);
+					HasIntegratedCouplerTube=false,
+					Xtra_Len=0);
 /**/
 // 
 //
@@ -64,7 +66,8 @@ rotate([180,0,0])
 					MtrRetainer_OD=63,
 					MtrRetainer_L=16,
 					MtrRetainer_Inset=5,
-					HasIntegratedCouplerTube=false);
+					HasIntegratedCouplerTube=false,
+					Xtra_Len=0);
 /**/
 // ***********************************
 
@@ -127,12 +130,13 @@ module FinCan(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, MtrTube_OD=PML54Body_O
 					MtrRetainer_OD=63,
 					MtrRetainer_L=16,
 					MtrRetainer_Inset=5,
-					HasIntegratedCouplerTube=false){
+					HasIntegratedCouplerTube=false,
+					Xtra_Len=0){
 					
 	TailCone_Len=50;
 	CR_t=5;	//Centering Ring Thickness
 	EndExtra=HasTailCone? TailCone_Len:15;
-	OAL=Root_L/2+EndExtra+CR_t;
+	OAL=Root_L/2+EndExtra+CR_t+Xtra_Len;
 	
 	difference(){
 		union(){
@@ -160,17 +164,19 @@ module FinCan(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, MtrTube_OD=PML54Body_O
 			} // if
 			
 			for (j=[0:nFins])hull(){
-				translate([0,0,EndExtra]) cylinder(d=Root_W+4.4, h=Root_L/2+CR_t);
+				translate([0,0,EndExtra]) cylinder(d=Root_W+4.4, h=Root_L/2+CR_t+Xtra_Len);
 				rotate([0,0,360/nFins*j]) translate([Tube_OD/2,0,EndExtra]) 
-					cylinder(d=Root_W+4.4, h=Root_L/2+CR_t);
+					cylinder(d=Root_W+4.4, h=Root_L/2+CR_t+Xtra_Len);
 			}
 		} // union
 		
 		translate([0,0,-Overlap]) cylinder(d=MtrTube_OD+IDXtra*2, h=OAL+Overlap*2);
 		
 		difference(){
-			translate([0,0,EndExtra-Overlap]) cylinder(d=Tube_OD+40, h=Root_L/2+10+Overlap*2);
-			translate([0,0,EndExtra-Overlap*2]) cylinder(d=Tube_OD, h=Root_L/2+10+Overlap*4, $fn=$preview? 36:360);
+			translate([0,0,EndExtra-Overlap]) 
+				cylinder(d=Tube_OD+40, h=OAL-EndExtra+Overlap*2);
+			translate([0,0,EndExtra-Overlap*2]) 
+				cylinder(d=Tube_OD, h=OAL-EndExtra+Overlap*4, $fn=$preview? 36:360);
 		} // difference
 		
 		translate([0,0,OAL])
@@ -179,6 +185,14 @@ module FinCan(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, MtrTube_OD=PML54Body_O
 		
 	} // difference
 } // FinCan
+
+/*
+FinCan(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, MtrTube_OD=PML54Body_OD, nFins=5, 
+					Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18,
+					HasTailCone=false,
+					HasIntegratedCouplerTube=false,
+					Xtra_Len=20);
+/**/
 
 /*
 FinCan(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, MtrTube_OD=PML54Body_OD, nFins=5, 

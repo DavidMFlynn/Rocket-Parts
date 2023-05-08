@@ -3,7 +3,7 @@
 // Filename: Rocket98G.scad
 // by David M. Flynn
 // Created: 10/4/2022 
-// Revision: 1.1.0  11/9/2022
+// Revision: 1.1.1  5/7/2022
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,6 +12,7 @@
 //  See Rocket98Dual.scad for forward section.
 //
 //  ***** History *****
+// 1.1.1  5/7/2022   Update
 // 1.1.0  11/9/2022  Copied from Rocket98, New file, New fin shape. 
 // 1.0.1  10/11/2022 Added Rail Guides
 // 1.0.0  10/4/2022  First code.
@@ -61,13 +62,14 @@ FairingConeOGive(Fairing_OD=R98_Body_OD,
 //
 // ***********************************
 use<Rocket98Dual.scad>
+use<RailGuide.scad>
 include<FinCan.scad>
 
 //also included
  //include<NoseCone.scad>
  //include<CablePuller.scad>
  //include<FairingJointLib.scad>
- //include<RailGuide.scad>
+ //
  //include<Fins.scad>
  //include<TubesLib.scad>
  //include<BearingLib.scad>
@@ -124,21 +126,25 @@ NC_Lock_H=5;
 NC_Wall_t=2.2;
 
 module ShowRocket98(){
+	UpperFinCan_Z=R98_Fin_Root_L+75+Overlap*2;
+	BodyTube_Z=UpperFinCan_Z+Overlap*2;
+	UpperBay_Z=BodyTube_Z+BodyTubeLen;
 	
-	//translate([0,0,R98_Fin_Root_L+100+BodyTubeLen+1]) ShowUpperBays();
+	//translate([0,0,UpperBay_Z]) ShowUpperBays();
 	
-	translate([0,0,R98_Fin_Root_L+100+Overlap]) color("LightBlue") Tube(OD=R98_Body_OD, ID=R98_Body_ID, 
+	translate([0,0,BodyTube_Z]) color("LightBlue") Tube(OD=R98_Body_OD, ID=R98_Body_ID, 
 			Len=BodyTubeLen-Overlap*2, myfn=$preview? 90:360);
 	
+	// Motor Tube
 	translate([0,0,10]) color("Tan") Tube(OD=R98_MtrTube_OD, ID=R98_MtrTube_ID, 
 			Len=18*25.4, myfn=$preview? 90:360);
 	
-	translate([0,0,R98_Fin_Root_L+100+Overlap]) color("White") UpperFinCan();
+	translate([0,0,UpperFinCan_Z]) color("White") UpperFinCan();
 	color("LightGreen") LowerFinCan();
 	
 	//*
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j])
-		translate([R98_Body_OD/2-R98_Fin_Post_h, 0, R98_Fin_Root_L/2+50]) 
+		translate([R98_Body_OD/2-R98_Fin_Post_h, 0, R98_Fin_Root_L/2+55]) 
 			rotate([0,90,0]) color("Yellow") Rocket98Fin();
 	/**/
 } // ShowRocket98
@@ -149,7 +155,7 @@ module UpperFinCan(){
 	// Upper Half of Fin Can
 	
 	rotate([180,0,0]) 
-		FinCan3(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, MtrTube_OD=R98_MtrTube_OD+IDXtra*2, nFins=nFins,
+		FinCan(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, MtrTube_OD=R98_MtrTube_OD+IDXtra*2, nFins=nFins,
 			Post_h=R98_Fin_Post_h, Root_L=R98_Fin_Root_L, Root_W=R98_Fin_Root_W, 
 			Chamfer_L=R98_Fin_Chamfer_L, HasTailCone=false); 
 
@@ -160,7 +166,7 @@ module UpperFinCan(){
 module LowerFinCan(){
 	
 	difference(){
-		FinCan3(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, MtrTube_OD=R98_MtrTube_OD+IDXtra*2, nFins=nFins, 
+		FinCan(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, MtrTube_OD=R98_MtrTube_OD+IDXtra*2, nFins=nFins, 
 			Post_h=R98_Fin_Post_h, Root_L=R98_Fin_Root_L, Root_W=R98_Fin_Root_W, 
 			Chamfer_L=R98_Fin_Chamfer_L, 
 			HasTailCone=true,

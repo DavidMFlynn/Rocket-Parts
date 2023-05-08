@@ -359,17 +359,20 @@ module ShowChuteTube(){
 //ShowChuteTube();
 
 module ShowBooster9832(){
+	UpperFinCan_Z=R9832Booster_Fin_Root_L+45;
 	
 	translate([0,0,Booster_Body_Len-35]) color("Blue") Stager_Saucer(Tube_OD=R9832_Body_OD, nLocks=2);
 	translate([0,0,Booster_Body_Len-35]) Stager_Mech(Tube_OD=R9832_Body_OD, nLocks=2, Skirt_ID=R9832_Body_ID, Skirt_Len=20);
 	
 	translate([0,0,290]) ShowChuteTube();
 	
-	translate([0,0,R9832Booster_Fin_Root_L+60]) BoosterUpperFinCan();
+	translate([0,0,320]) rotate([0,0,60]) DrogueSpringThing();
+	
+	translate([0,0,UpperFinCan_Z]) BoosterUpperFinCan();
 	
 	//*
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j])
-		translate([R9832_Body_OD/2-R9832_Fin_Post_h, 0, R9832Booster_Fin_Root_L/2+10]) 
+		translate([R9832_Body_OD/2-R9832_Fin_Post_h, 0, R9832Booster_Fin_Root_L/2+15]) 
 			rotate([0,90,0]) color("Orange") Rocket9832BoosterFin();
 	/**/
 	
@@ -378,6 +381,8 @@ module ShowBooster9832(){
 	//translate([0,0,-40]) ShowMotorJ460T();
 	translate([0,0,-40]) ShowMotorJ800T();
 } // ShowBooster9832
+
+//ShowBooster9832();
 
 FinCanExTube_Len=105;
 
@@ -770,7 +775,7 @@ module UpperFinCan(){
 	
 	
 		rotate([180,0,0]) 
-			FinCan3(Tube_OD=R9832_Body_OD, Tube_ID=R9832_Body_ID, 
+			FinCan(Tube_OD=R9832_Body_OD, Tube_ID=R9832_Body_ID, 
 				MtrTube_OD=R9832_MtrTube_OD+IDXtra*2, nFins=nFins,
 				Post_h=R9832_Fin_Post_h, Root_L=R9832_Fin_Root_L, 
 				Root_W=R9832_Fin_Root_W, 
@@ -787,7 +792,7 @@ module LowerFinCan(){
 	
 	difference(){
 		union(){
-			FinCan3(Tube_OD=R9832_Body_OD, Tube_ID=R9832_Body_ID, 
+			FinCan(Tube_OD=R9832_Body_OD, Tube_ID=R9832_Body_ID, 
 				MtrTube_OD=R9832_MtrTube_OD+IDXtra*2, nFins=nFins, 
 				Post_h=R9832_Fin_Post_h, Root_L=R9832_Fin_Root_L, Root_W=R9832_Fin_Root_W, 
 				Chamfer_L=R9832_Fin_Chamfer_L, 
@@ -866,15 +871,16 @@ ST_UpperCenteringRing(Tube_OD=PML98Body_OD, Tube_ID=PML98Coupler_ID, Skirt_ID=PM
 module BoosterUpperFinCan(){
 	// Upper Half of Fin Can
 	
-	CablePuller_Z=-R9832Booster_Fin_Root_L/2+16;
+	CablePuller_Z=-R9832Booster_Fin_Root_L/2+37;
 	
 	difference(){
 		rotate([180,0,0]) 
-			FinCan3(Tube_OD=R9832_Body_OD, Tube_ID=R9832_Body_ID, 
+			FinCan(Tube_OD=R9832_Body_OD, Tube_ID=R9832_Body_ID, 
 				MtrTube_OD=R9832_BoosterMtrTube_OD+IDXtra*2, nFins=nFins,
 				Post_h=R9832Booster_Fin_Post_h, Root_L=R9832Booster_Fin_Root_L, 
 				Root_W=R9832Booster_Fin_Root_W, 
-				Chamfer_L=R9832Booster_Fin_Chamfer_L, HasTailCone=false); 
+				Chamfer_L=R9832Booster_Fin_Chamfer_L, HasTailCone=false,
+				Xtra_Len=11); 
 		
 		// Cable Pullers
 		translate([0,0,CablePuller_Z]) rotate([0,0,90-180/nFins]) 
@@ -926,11 +932,11 @@ module BoosterLowerFinCan(){
 	BattDoor_Z=128;
 	BattSwDoor_Z=115;
 	
-	RailGuide_Z=60;
+	RailGuide_Z=65;
 	
 	difference(){
 		
-		FinCan3(Tube_OD=R9832_Body_OD, Tube_ID=R9832_Body_ID, 
+		FinCan(Tube_OD=R9832_Body_OD, Tube_ID=R9832_Body_ID, 
 			MtrTube_OD=R9832_BoosterMtrTube_OD+IDXtra*2, nFins=nFins,
 			Post_h=R9832Booster_Fin_Post_h, Root_L=R9832Booster_Fin_Root_L, 
 			Root_W=R9832Booster_Fin_Root_W, 

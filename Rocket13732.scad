@@ -289,10 +289,12 @@ F54_FairingHalf(IsLeftHalf=false,
 // ShowUpperBays();
 //
 // ***********************************
+include<TubesLib.scad>
+use<RailGuide.scad>
 use<Fairing54.scad>
 use<FinCan.scad>
 use<Stager2Lib.scad>
-include<AltBay.scad>
+use<AltBay.scad>
 use<CablePuller.scad>
 use<BatteryHolderLib.scad>
 use<SpringThing2.scad>
@@ -303,9 +305,8 @@ use<RacewayLib.scad>
  //include<ChargeHolder.scad>
  //include<CablePuller.scad>
  //include<FairingJointLib.scad>
- //include<RailGuide.scad>
+ 
  //include<Fins.scad>
- //include<TubesLib.scad>
  //include<BearingLib.scad>
  //include<CommonStuffSAEmm.scad>
 
@@ -350,7 +351,7 @@ DualDepTube_ID=BT75Body_ID;
 DualDepCouplerTube_OD=BT75Coupler_OD;
 DualDepCouplerTube_ID=BT75Coupler_ID;
 
-EBay_Len=162;
+EBay_Len=166;
 TailCone_Len=60;
 BoosterFinCanLength=Booster_Fin_Root_L/2+10+TailCone_Len;
 SustainerFinCanLength=S_Fin_Root_L/2+10+TailCone_Len;
@@ -483,7 +484,7 @@ module ShowBooster(){
 
 //ShowBooster();
 
-FinCanExTube_Len=150;
+FinCanExTube_Len=450;
 FC_Inset=-14;
 TopOfFinCan_Z=Booster_Body_Len+FC_Inset+SustainerFinCanLength*2+FinCanExTube_Len+70;
 
@@ -889,12 +890,10 @@ ST_UpperCenteringRing(Tube_OD=PML98Body_OD, Tube_ID=PML98Coupler_ID, Skirt_ID=PM
 } /**/
 
 
-
-
 module Booster_Electronics_Bay(ShowDoors=false){
 	Len=EBay_Len;
-	CablePuller_Z=81;
-	BattSwDoor_Z=70;
+	CablePuller_Z=EBay_Len/2;
+	BattSwDoor_Z=72;
 	TopSkirt_Len=15;
 	BottomSkirt_Len=15;
 	CP1_a=0;
@@ -1142,9 +1141,9 @@ module BoosterLowerFinCan(Doubles=false){
 
 			// Tailcone
 			hull(){
-				cylinder(d=MtrRetainer_OD+4.4, h=Overlap);
+				cylinder(d=MtrRetainer_OD+4.4, h=Overlap, $fn=$preview? 90:360);
 
-				translate([0,0,TailCone_Len]) rotate_extrude()
+				translate([0,0,TailCone_Len]) rotate_extrude($fn=$preview? 90:360)
 					translate([Body_OD/2-7.5,0,0]) circle(d=15);
 			} // hull
 		} // union
