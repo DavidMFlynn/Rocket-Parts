@@ -3,7 +3,7 @@
 // Filename: Stager2Lib.scad
 // by David M. Flynn
 // Created: 10/10/2022 
-// Revision: 1.0.0  2/6/2023
+// Revision: 1.0.1  5/16/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -49,7 +49,8 @@
 //
 //  ***** History *****
 //
-echo("StagerLib 1.0.0");
+echo("StagerLib 1.0.1");
+// 1.0.1  5/16/2023    Added Height parameter to Stager_CableRedirect()
 // 1.0.0   2/6/2023    It works good.
 // 0.9.25  2/4/2023    Added inner tube skirt to Stager_Drogue_Cup
 // 0.9.24  2/3/2023    Added Stager_Drogue_Cup()
@@ -106,7 +107,7 @@ echo("StagerLib 1.0.0");
 // Stager_CableRedirectTop(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, InnerTube_OD=BT54Mtr_OD, HasRaceway=true, Raceway_a=270);
 // Stager_CableRedirectTop(Tube_OD=BT137Body_OD, Skirt_ID=BT137Body_ID, InnerTube_OD=BT75Body_OD, HasRaceway=true, Raceway_a=300);
 // Stager_CableBearing();
-// Stager_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, Tube_ID=PML98Coupler_ID, InnerTube_OD=BT54Mtr_OD, HasRaceway=true, Raceway_a=270);
+// Stager_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, Tube_ID=PML98Coupler_ID, InnerTube_OD=BT54Mtr_OD, HasRaceway=true, Raceway_a=270, Height=20);
 // Stager_CableRedirect(Tube_OD=BT137Body_OD, Skirt_ID=BT137Body_ID, Tube_ID=BT137Coupler_ID, InnerTube_OD=BT75Body_OD, HasRaceway=true, Raceway_a=300);
 // Stager_CableEndAndStop(Tube_OD=PML98Body_OD);
 // Stager_CableEndAndStop(Tube_OD=BT137Body_OD);
@@ -284,11 +285,11 @@ module BallDetentBody(){
 
 //ST_BallDetentBody();
 
-module Stager_BallDetentStopper(){
+module Stager_BallDetentStopper(Body_Len=27){
 	DetentSpring_d=7.7;
 	DetentSpring_Len=14; // Lightly compressed
 	Body_d=14;
-	Body_Len=27;
+	
 	Nose_h=2;
 	Protusion=1.5;
 	BottomOfSpring_h=3+Body_Len-DetentBall_d/2+Protusion-DetentSpring_Len;
@@ -302,7 +303,7 @@ module Stager_BallDetentStopper(){
 	
 } // Stager_BallDetentStopper
 
-//translate([0,0,-3]) Stager_BallDetentStopper();
+//translate([0,0,-3]) Stager_BallDetentStopper(Body_Len=21);
 
 module Stager_CableBearing(){
 	BB_OD=8;
@@ -460,7 +461,8 @@ module Stager_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 							Tube_ID=PML98Coupler_ID, 
 							InnerTube_OD=BT54Mtr_OD,
 							HasRaceway=false,
-							Raceway_a=270){
+							Raceway_a=270,
+							Height=20){
 								
 	// Orientation: Cable is at 0°
 	nBolts=8;
@@ -486,20 +488,24 @@ module Stager_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 	} // CablePath
 	
 	
-	rotate([0,0,BallDetent_a]) translate([0,BoltCircle_d(Tube_OD=Tube_OD)/2+3,-16.5]){
-		translate([0,0,-3.5]) Stager_BallDetentStopper();
+	// Ball Detent Spring Holder
+	rotate([0,0,BallDetent_a]) translate([0,BoltCircle_d(Tube_OD=Tube_OD)/2+3,-Height+3.5]){
+		translate([0,0,-3.5]) Stager_BallDetentStopper(Body_Len=Height+7);
 		difference(){
 			union(){
 				hull(){
 					rotate([0,0,100]) BallDetentBody();
-					translate([10,0,0]) cylinder(d=8, h=16.5);
-					translate([-10,0,0]) cylinder(d=8, h=16.5);
+					translate([10,0,0]) cylinder(d=8, h=Height-3.5);
+					translate([-10,0,0]) cylinder(d=8, h=Height-3.5);
 				} // hull
 			} // union
-			translate([0,0,5]) cylinder(d=DetentBall_d+IDXtra*2, h=17);
-			translate([0,0,16.5]) cylinder(d=30, h=20);
-			translate([10,0,16.5]) Bolt4Hole();
-			translate([-10,0,16.5]) Bolt4Hole();
+			// Spring goes here
+			cylinder(d=DetentBall_d+IDXtra*2, h=Height-3);
+			// Trim top
+			translate([0,0,Height-3.5]) cylinder(d=30, h=Height+10);
+			// Bolt holes
+			translate([10,0,Height-3.5]) Bolt4Hole();
+			translate([-10,0,Height-3.5]) Bolt4Hole();
 		} // difference
 	}
 	
@@ -507,26 +513,28 @@ module Stager_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 	difference(){
 		union(){
 			
-			translate([0,0,-20]) {
+			translate([0,0,-Height]) {
 				rotate([0,0,-20]) CenteringRing(OD=Tube_ID-IDXtra*2, ID=InnerTube_OD+IDXtra*2, 
 										Thickness=5, nHoles=0);
-				Tube(OD=InnerTube_OD+Bolt4Inset*4, ID=InnerTube_OD+IDXtra*2, Len=20, myfn=$preview? 36:360);
-				//Tube(OD=InnerTube_OD+4.4, ID=InnerTube_OD+IDXtra*2, Len=21, myfn=$preview? 36:360);
+				Tube(OD=InnerTube_OD+Bolt4Inset*4, ID=InnerTube_OD+IDXtra*2,
+						Len=Height, myfn=$preview? 36:360);
 			}
 			
 			// vertical tube
-			rotate([0,0,Cable_a]) translate([0,CablePath_Y,-20]) cylinder(d=10, h=20);
+			rotate([0,0,Cable_a]) translate([0,CablePath_Y,-Height]) cylinder(d=10, h=Height);
 			
 			if (HasRaceway) 
 			intersection(){
 					
 					//wires
 					rotate([0,0,Raceway_a]) hull(){
-						translate([0,Tube_OD/2,-20-Overlap]) cylinder(d=CablePath_ID+3, h=25+Overlap*2);
-						translate([0,Skirt_ID/2-4,-20-Overlap]) cylinder(d=CablePath_ID+3, h=25+Overlap*2);
+						translate([0,Tube_OD/2,-Height-Overlap]) 
+							cylinder(d=CablePath_ID+3, h=Height+Overlap*2);
+						translate([0,Skirt_ID/2-4,-Height-Overlap]) 
+							cylinder(d=CablePath_ID+3, h=Height+Overlap*2);
 					} // hull
 				
-				translate([0,0,-20]) cylinder(d=Tube_ID, h=20);
+				translate([0,0,-Height]) cylinder(d=Tube_ID, h=Height);
 			} // intersection
 			
 		} // union
@@ -547,24 +555,24 @@ module Stager_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 		
 		// Wire path
 		if (HasRaceway) rotate([0,0,Raceway_a]) hull(){
-			translate([0,Skirt_ID/2,-20-Overlap]) cylinder(d=CablePath_ID, h=25+Overlap*2);
-			translate([0,Skirt_ID/2-4,-20-Overlap]) cylinder(d=CablePath_ID, h=25+Overlap*2);
+			translate([0,Skirt_ID/2,-Height-Overlap]) cylinder(d=CablePath_ID, h=Height+Overlap*2);
+			translate([0,Skirt_ID/2-4,-Height-Overlap]) cylinder(d=CablePath_ID, h=Height+Overlap*2);
 		}
 		
 		// Ball Detent
-		rotate([0,0,BallDetent_a]) translate([0,BoltCircle_d(Tube_OD=Tube_OD)/2+3,-21]) 
-			cylinder(d=14-Overlap, h=30);
+		rotate([0,0,BallDetent_a]) translate([0,BoltCircle_d(Tube_OD=Tube_OD)/2+3,-Height-1]) 
+			cylinder(d=14-Overlap, h=Height+2);
 
 		
 		// vertical tube for cable
-		rotate([0,0,Cable_a]) translate([0,CablePath_Y,-20-Overlap]) cylinder(d=6, h=25+Overlap*2);
+		rotate([0,0,Cable_a]) translate([0,CablePath_Y,-Height-Overlap]) cylinder(d=6, h=Height+Overlap*2);
 		
 		
 	} // difference
 	
 } // Stager_CableRedirect
 
-//Stager_CableRedirect(HasRaceway=true);
+//Stager_CableRedirect(HasRaceway=false, Height=20);
 
 module Stager_LockRing(Tube_OD=PML98Body_OD, nLocks=2, FlexComp_d=0.8){
 	// use FlexComp_d=0.4 for 98mm, FlexComp_d=0.8 for 137mm

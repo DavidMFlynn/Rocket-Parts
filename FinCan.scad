@@ -3,7 +3,7 @@
 // Filename: FinCan.scad
 // by David M. Flynn
 // Created: 6/14/2022 
-// Revision: 0.9.6  5/7/2023
+// Revision: 0.9.7  5/15/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-echo("FinCan 0.9.6");
+echo("FinCan 0.9.7");
 //
+// 0.9.7  5/15/2023 Fixed TailCone top.
 // 0.9.6  5/7/2023  Still working on it, FinCan3 is now just FinCan.
 // 0.9.5  10/4/2022 Moved rail button posts to RailGuide.scad 
 // 0.9.4  9/6/2022  Cleaned up RailButtonPost()
@@ -118,6 +119,11 @@ module TailCone(OD=PML98Body_OD, ID=PML54Body_OD, Len=50,
 						h=MtrRetainer_L+MtrRetainer_Inset+Overlap*2, $fn=$preview? 36:360);
 		// Trim end
 		cylinder(d=OD, h=MtrRetainer_Inset);
+		
+		// Trim Top
+		translate([0,0,Len]) cylinder(d=OD+1, h=20);
+		
+		//if ($preview) cube([60,60,200]);
 	} // difference
 	
 } // TailCone
@@ -183,6 +189,7 @@ module FinCan(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, MtrTube_OD=PML54Body_O
 		TrapFin2Slots(Tube_OD=Tube_OD, nFins=nFins, 
 				Post_h=Post_h, Root_L=Root_L, Root_W=Root_W, Chamfer_L=Chamfer_L);
 		
+		//if ($preview) cube([60,60,200]);
 	} // difference
 } // FinCan
 
