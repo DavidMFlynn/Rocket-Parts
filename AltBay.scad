@@ -3,7 +3,7 @@
 // Filename: AltBay.scad
 // by David M. Flynn
 // Created: 6/23/2022 
-// Revision: 0.9.16  4/29/2023
+// Revision: 0.9.17  5/21/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,6 +12,7 @@
 //
 //  ***** History *****
 //
+// 0.9.17  5/21/2023  Fixed frame ridge error.
 // 0.9.16  4/29/2023  Now using DoorLib.scad
 // 0.9.15 12/11/2022  Adjusted door thickness w/o changing frame or hole. 
 // 0.9.14 11/28/2022  Standardized door thickness. 
@@ -128,8 +129,8 @@ module AltHoles(){
 // AltHoles() Bolt4Hole();
 
 module AltDoorHole54(Tube_OD=PML54Body_OD, DoorXtra_X=0, DoorXtra_Y=0){
-	Door_Y=Alt54Door_Y+DoorXtra_Y+1;
-	Door_X=Alt54Door_X+DoorXtra_X+1;
+	Door_Y=Alt54Door_Y+DoorXtra_Y;
+	Door_X=Alt54Door_X+DoorXtra_X;
 	Door_t=AltDoorThickness;
 	
 	DoorHole(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t, Tube_OD=Tube_OD);
