@@ -3,7 +3,7 @@
 // Filename: Rocket9852.scad
 // by David M. Flynn
 // Created: 5/13/2023 
-// Revision: 0.9.8  5/17/2023
+// Revision: 0.9.9  5/21/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -13,7 +13,7 @@
 //
 //  Warning! This is a complex rocket, skill level 11!
 //  The only pyrotecnics used in this rocket are the motors.
-//  Motors J275W/I229T-P and J90W-P/I115W-P. 
+//  Motors J460T/J275W and J180T/J90W-P/I115W-P. 
 //  Threaded forward closures are required to connect the shock cord to. 
 //
 //  The Sustainer has a Mission Control V3 for detection of booster separation,
@@ -50,6 +50,7 @@
 // Booster Lower Fin Can
 //
 //  ***** History *****
+// 0.9.9  5/21/2023   Stubby nosecone.
 // 0.9.8  5/17/2023   Sustainer electronic bays.
 // 0.9.7  5/13/2023   Copied from Rocket9852.scad
 //
@@ -57,6 +58,17 @@
 //  ***** for STL output *****
 //
 /*
+// Stubby nosecone
+FairingConeOGive(Fairing_OD=R9852_Body_OD, 
+					FairingWall_T=FairingWall_T,
+					NC_Base=NC_Base, 
+					NC_Len=205, 
+					NC_Wall_t=NC_Wall_t,
+					NC_Tip_r=12,
+					Cut_Z=0, LowerPortion=true);
+/**/
+/*
+// Long two piece nosecone
 FairingConeOGive(Fairing_OD=R9852_Body_OD, 
 					FairingWall_T=FairingWall_T,
 					NC_Base=NC_Base, 
@@ -74,7 +86,8 @@ FairingConeOGive(Fairing_OD=R9852_Body_OD,
 					NC_Tip_r=NC_Tip_r,
 					Cut_Z=180, LowerPortion=false);
 /**/
-// NoseLockRing(Fairing_ID =Fairing_ID);
+//
+//rotate([180,0,0]) NoseLockRing(Fairing_OD=Fairing_OD, Fairing_ID =Fairing_ID);
 //
 // -------------------------
 //  *** Fairing ***
@@ -93,12 +106,13 @@ FairingConeOGive(Fairing_OD=R9852_Body_OD,
 //
 // R98_Electronics_Bay4();
 // FairingBaseBulkPlate(Tube_ID=R9852_Body_ID, Fairing_ID=Fairing_ID, ShockCord_a=-1);
-// AltDoor54(Tube_OD=R9852_Body_OD, IsLoProfile=false, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
-// AltDoor54(Tube_OD=R9852_Body_OD, IsLoProfile=false, DoorXtra_X=0, DoorXtra_Y=0); // old
-// CP_Door(Tube_OD=R9852_Body_OD, BoltBossInset=3, HasArmingSlot=true);
+// rotate([-90,0,0]) AltDoor54(Tube_OD=R9852_Body_OD, IsLoProfile=false, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
+// rotate([-90,0,0]) CP_Door(Tube_OD=R9852_Body_OD, BoltBossInset=3, HasArmingSlot=true);
 // BoltInServoMount();
-// Batt_Door(Tube_OD=R9852_Body_OD, HasSwitch=false);
-// Batt_Door(Tube_OD=R9852_Body_OD, InnerTube_OD=R9852_DualDepTube_OD, HasSwitch=true);
+// rotate([-90,0,0]) Batt_Door(Tube_OD=R9852_Body_OD, HasSwitch=false);
+// rotate([-90,0,0]) Batt_Door(Tube_OD=R9852_Body_OD, InnerTube_OD=R9852_DualDepTube_OD, HasSwitch=true);
+//
+// rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=PML98Body_OD, Body_OD=PML98Body_ID, nLockBalls=6, HasIntegratedCouplerTube=true, IntegratedCouplerLenXtra=17, Body_ID=PML98Body_ID, HasSecondServo=true, UsesBigServo=true, Engagement_Len=20);
 //
 // ------------
 // *** Cable Puller, 2 Req. ***
@@ -157,7 +171,7 @@ FairingConeOGive(Fairing_OD=R9852_Body_OD,
 
 // rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=PML98Body_OD, Body_OD=PML98Body_ID, nLockBalls=6, HasIntegratedCouplerTube=true, IntegratedCouplerLenXtra=-15, Body_ID=PML98Body_ID, HasSecondServo=true, UsesBigServo=true, Engagement_Len=20);
 // STB_BallRetainerBottom(BallPerimeter_d=PML98Body_OD, Body_OD=PML98Body_ID, nLockBalls=6, HasSpringGroove=false, Engagement_Len=20);
-// rotate([180,0,0]) TubeEnd(BallPerimeter_d=PML98Body_OD, nLockBalls=6, Body_OD=PML98Body_OD, Body_ID=PML98Body_ID, Skirt_Len=20);
+// rotate([180,0,0]) STB_TubeEnd(BallPerimeter_d=PML98Body_OD, nLockBalls=6, Body_OD=PML98Body_OD, Body_ID=PML98Body_ID, Skirt_Len=20);
 // STB_SpringEnd(Tube_ID=PML98Body_ID, CouplerTube_ID=BT98Coupler_ID);
 //
 // -------------
@@ -398,7 +412,7 @@ module ShowRocket9852(){
 				
 	translate([0,0,UpperEBay_Z]) R98_Electronics_Bay4();
 	
-	translate([0,0,STB_Droge_Z]) TubeEnd(BallPerimeter_d=PML98Body_OD, nLockBalls=6, Body_OD=PML98Body_OD, Body_ID=PML98Body_ID, Skirt_Len=20);
+	translate([0,0,STB_Droge_Z]) STB_TubeEnd(BallPerimeter_d=PML98Body_OD, nLockBalls=6, Body_OD=PML98Body_OD, Body_ID=PML98Body_ID, Skirt_Len=20);
 	
 	translate([0,0,DrogueTube_Z])
 		color("LightBlue") Tube(OD=R9852_Body_OD, ID=R9852_Body_ID, Len=FinCanExTube_Len, myfn=$preview? 36:360);
