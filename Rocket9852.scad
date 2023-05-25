@@ -3,7 +3,7 @@
 // Filename: Rocket9852.scad
 // by David M. Flynn
 // Created: 5/13/2023 
-// Revision: 0.9.9  5/21/2023
+// Revision: 0.9.10  5/25/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -14,7 +14,7 @@
 //  Warning! This is a complex rocket, skill level 11!
 //  The only pyrotecnics used in this rocket are the motors.
 //  Motors J460T/J275W and J180T/J90W-P/I115W-P. 
-//  Threaded forward closures are required to connect the shock cord to. 
+//  Threaded forward closures are required to connect the shock cord to the motor. 
 //
 //  The Sustainer has a Mission Control V3 for detection of booster separation,
 //  motor ignition if staged. A second MCv3 for apogee deployment and main deployment. Uses
@@ -22,14 +22,14 @@
 //  drogue deployment.
 //
 //  The Booster has a Mission Control V3 for stage separation and
-//  apogee deployment using cable puller. Has a Stager and SpringThingBooster for Main only deployment.
+//  apogee deployment using SpringThingBooster. Has a Stager and SpringThingBooster for Main only deployment.
 //
 //  ***** Where does it go? *****
 //  From top down the orientation of the main parts. 
 //
 //  Nosecone 
 //
-//  Fairing, cable at 180°
+//  Fairing
 //
 //  Upper Electronics Bay 
 //
@@ -50,6 +50,7 @@
 // Booster Lower Fin Can
 //
 //  ***** History *****
+// 0.9.10  5/25/2023  Got upper rail guide?
 // 0.9.9  5/21/2023   Stubby nosecone.
 // 0.9.8  5/17/2023   Sustainer electronic bays.
 // 0.9.7  5/13/2023   Copied from Rocket9852.scad
@@ -115,6 +116,9 @@ FairingConeOGive(Fairing_OD=R9852_Body_OD,
 // rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=PML98Body_OD, Body_OD=PML98Body_ID, nLockBalls=6, HasIntegratedCouplerTube=true, IntegratedCouplerLenXtra=17, Body_ID=PML98Body_ID, HasSecondServo=true, UsesBigServo=true, Engagement_Len=20);
 //
 // ------------
+// *** Body Tube: PML 3.9" QT, 455mm Long ***
+// *** Motor Tube: Blue Tube 2.0, 54mm Body Tube, 235mm Long ***
+// ------------
 // *** Cable Puller, 2 Req. ***
 // ThroughOut();
 // rotate([0,90,0]) SpringBody();
@@ -172,10 +176,14 @@ FairingConeOGive(Fairing_OD=R9852_Body_OD,
 // rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=PML98Body_OD, Body_OD=PML98Body_ID, nLockBalls=6, HasIntegratedCouplerTube=true, IntegratedCouplerLenXtra=-15, Body_ID=PML98Body_ID, HasSecondServo=true, UsesBigServo=true, Engagement_Len=20);
 // STB_BallRetainerBottom(BallPerimeter_d=PML98Body_OD, Body_OD=PML98Body_ID, nLockBalls=6, HasSpringGroove=false, Engagement_Len=20);
 // rotate([180,0,0]) STB_TubeEnd(BallPerimeter_d=PML98Body_OD, nLockBalls=6, Body_OD=PML98Body_OD, Body_ID=PML98Body_ID, Skirt_Len=20);
-// STB_SpringEnd(Tube_ID=PML98Body_ID, CouplerTube_ID=BT98Coupler_ID);
 //
 // -------------
-//
+// STB_SpringEnd(Tube_ID=R9852_Body_ID, CouplerTube_ID=BT98Coupler_ID, SleeveLen=0);
+// rotate([180,0,0]) STB_SpringCupTOMT(Tube_ID=R9852_Body_ID-8-IDXtra*3); // Top Of Motor Tube Spring Holder
+// -------------
+// *** Motor Tube: Blue Tube 2.0, 54mm Body Tube, 272-274mm Long ***
+// *** Body Tube: PML 3.9" QT, 140mm Long ***
+// -------------
 // BoosterUpperFinCan();
 // Rocket9852BoosterFin();
 // rotate([180,0,0]) BoosterLowerFinCan();
@@ -573,6 +581,7 @@ module PhantomSustainer(){
 module Lower_Electronics_Bay(Tube_OD=R9852_Body_OD, Tube_ID=R9852_Body_ID, InnerTube_OD=BT54Body_OD){
 	
 	Len=140;
+	RailGuide_Z=Len-26;
 	
 	TopSkirt_Len=0;
 	BottomSkirt_Len=15;
@@ -580,8 +589,6 @@ module Lower_Electronics_Bay(Tube_OD=R9852_Body_OD, Tube_ID=R9852_Body_ID, Inner
 	CablePuller_Z=67+BottomSkirt_Len;
 	BattSwDoor_Z=Len-45;
 	Alt1_a=0;
-	//Alt2_a=180;
-	//CP1_a=180;
 	Batt1_a=180; // Alt 1 Battery
 	Batt2_a=270; // Rocket Servo 2 Battery & Switch
 	nCRHoles=4;
@@ -594,56 +601,49 @@ module Lower_Electronics_Bay(Tube_OD=R9852_Body_OD, Tube_ID=R9852_Body_ID, Inner
 			translate([0,0,Len-Overlap])
 			Tube(OD=Tube_ID, ID=Tube_ID-8, Len=15, myfn=$preview? 36:360);
 			
-			//translate([0,0,BottomSkirt_Len]) rotate([0,0,CRHole_a])
-				//CenteringRing(OD=Tube_OD-1, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=nCRHoles);
 			translate([0,0,Len-5-TopSkirt_Len]) rotate([0,0,CRHole_a])
 				CenteringRing(OD=Tube_OD-1, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=nCRHoles);
+				
+			// Rail Guide
+			difference(){
+				translate([0,0,RailGuide_Z]) rotate([0,0,-90]) 
+					RailGuidePost(OD=R9852_Body_OD, MtrTube_OD=R9852_MtrTube_OD+IDXtra*2, 
+						H=R9852_Body_OD/2+2, TubeLen=50, Length = 30, BoltSpace=12.7);
+				
+				
+				translate([0,0,RailGuide_Z-25-Overlap]) cylinder(d=Tube_OD-1, h=50+Overlap*2);
+			} // difference
 		} // union
 		
+		translate([0,0,RailGuide_Z]) rotate([0,0,-90]) 
+			translate([0,R9852_Body_OD/2+2,0]) RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
+			
 		// Altimeter 1
 		translate([0,0,Altimeter_Z]) rotate([0,0,Alt1_a]) 
 			Alt_BayFrameHole(Tube_OD=Tube_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
 			
-		// Cable Puller door hole
-		//translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a])
-		//	CP_BayFrameHole(Tube_OD=Tube_OD);
-			
-		// Altimeter 2
-		//translate([0,0,Altimeter_Z]) rotate([0,0,Alt2_a]) 
-		//	Alt_BayFrameHole(Tube_OD=Tube_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
-		
 		// Battery and Switch door holes
 		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
 			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=false);
 		//translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
 			//Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
 		
-		//
-		if ($preview) translate([0,0,-Overlap]) cube([60,60,200]);
+		//if ($preview) translate([0,0,-Overlap]) cube([60,60,200]);
 	} // difference
 	
 	// Altimeter 1
 	translate([0,0,Altimeter_Z]) rotate([0,0,Alt1_a])
 		Alt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=false);
-	
-	// Cable Puller
-	//translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a])
-		//CP_BayDoorFrame(Tube_OD=Tube_OD, ShowDoor=false);
 		
-	// Altimeter 2
-	//translate([0,0,Altimeter_Z]) rotate([0,0,Alt2_a])
-	//	Alt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=false);
-	
 	// Battery and Switch door2
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
 		Batt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, HasSwitch=false, ShowDoor=false);
-	//translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
-	//	Batt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, HasSwitch=true, ShowDoor=false);
 	
 } // Lower_Electronics_Bay
 
 //translate([0,0,-14.8]) 
-//rotate([180,0,0]) Lower_Electronics_Bay();
+//rotate([180,0,0]) 
+Lower_Electronics_Bay();
 //UpperFinCan();
 
 module UpperFinCan(){

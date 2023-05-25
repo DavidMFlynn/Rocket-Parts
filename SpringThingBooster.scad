@@ -65,6 +65,8 @@ echo("SpringThingBooster Rev. 1.2.5");
 // STB_BallRetainerBottom(BallPerimeter_d=BT54Body_ID, Body_OD=PML54Coupler_ID, nLockBalls=nLockBalls, HasSpringGroove=true, Engagement_Len=20);
 // STB_SpringSeat(Body_OD=PML54Coupler_ID, Base_H=14);
 //
+// STB_SpringCupTOMT(Tube_ID=PML75Body_ID); // Top Of Motor Tube Spring Holder
+//
 // ---------------------------
 //  *** 75mm Lock version ***
 //
@@ -72,7 +74,7 @@ echo("SpringThingBooster Rev. 1.2.5");
 // rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=PML75Body_OD, Body_OD=PML75Body_ID, nLockBalls=5, HasIntegratedCouplerTube=true, Body_ID=PML75Body_ID, HasSecondServo=false, UsesBigServo=false, Engagement_Len=20);
 // STB_BallRetainerBottom(BallPerimeter_d=PML75Body_OD, Body_OD=PML75Body_ID, nLockBalls=5, HasSpringGroove=false, Engagement_Len=20);
 // rotate([180,0,0]) STB_TubeEnd(BallPerimeter_d=PML75Body_OD, nLockBalls=5, Body_OD=PML75Body_OD, Body_ID=PML75Body_ID, Skirt_Len=20);
-// STB_SpringEnd(Tube_ID=PML75Body_ID, CouplerTube_ID=BT75Coupler_ID);
+// STB_SpringEnd(Tube_ID=PML75Body_ID, CouplerTube_ID=BT75Coupler_ID, SleeveLen=0);
 //
 // ----------------------------
 //  *** 98mm Lock version ***
@@ -81,7 +83,7 @@ echo("SpringThingBooster Rev. 1.2.5");
 // rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=PML98Body_OD, Body_OD=PML98Body_ID, nLockBalls=6, HasIntegratedCouplerTube=true, IntegratedCouplerLenXtra=17, Body_ID=PML98Body_ID, HasSecondServo=true, UsesBigServo=true, Engagement_Len=20);
 // STB_BallRetainerBottom(BallPerimeter_d=PML98Body_OD, Body_OD=PML98Body_ID, nLockBalls=6, HasSpringGroove=false, Engagement_Len=20);
 // rotate([180,0,0]) STB_TubeEnd(BallPerimeter_d=PML98Body_OD, nLockBalls=6, Body_OD=PML98Body_OD, Body_ID=PML98Body_ID, Skirt_Len=20);
-// STB_SpringEnd(Tube_ID=PML98Body_ID, CouplerTube_ID=BT98Coupler_ID);
+// STB_SpringEnd(Tube_ID=PML98Body_ID, CouplerTube_ID=BT98Coupler_ID, SleeveLen=0);
 //
 // ----------------------------
 //  *** 137mm Lock version ***
@@ -93,7 +95,7 @@ echo("SpringThingBooster Rev. 1.2.5");
 // rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=BT137BallPerimeter_d, Body_OD=BT137Body_ID, nLockBalls=nBT137Balls, HasIntegratedCouplerTube=true, Body_ID=BT137Body_ID, HasSecondServo=true, UsesBigServo=true, Engagement_Len=25);
 // STB_BallRetainerBottom(BallPerimeter_d=BT137BallPerimeter_d, Body_OD=BT137Body_ID, nLockBalls=nBT137Balls, HasSpringGroove=false, Engagement_Len=25);
 // rotate([180,0,0]) STB_TubeEnd(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls, Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, Skirt_Len=25);
-// STB_SpringEnd(Tube_ID=BT137Body_ID, CouplerTube_ID=BT137Coupler_ID);
+// STB_SpringEnd(Tube_ID=BT137Body_ID, CouplerTube_ID=BT137Coupler_ID, SleeveLen=0);
 //
 // ---------------
 //  *** Tools ***
@@ -321,13 +323,15 @@ module STB_SpringEnd(Tube_ID=PML75Body_ID, CouplerTube_ID=BT75Coupler_ID, Sleeve
 		Tube(OD=Tube_ID-IDXtra*2, ID=CouplerTube_ID-IDXtra-Overlap, Len=SleeveLen, myfn=$preview? 90:360);
 } // STB_SpringEnd
 
-// STB_SpringEnd(Tube_ID=PML98Body_ID, CouplerTube_ID=BT98Coupler_ID);
+// STB_SpringEnd(Tube_ID=PML98Body_ID, CouplerTube_ID=BT98Coupler_ID, SleeveLen=0);
 
 // Custom for Rainbow One
 //STB_SpringEnd(Tube_ID=98.5, CouplerTube_ID=BT98Coupler_ID, SleeveLen=60);
 
 module STB_SpringCupTOMT(Tube_ID=PML75Body_ID){
+   // Top Of Motor Tube Spring Holder
 	Slider_h=6;
+	nRopeHoles=8;
 	
 	difference(){
 		union(){
@@ -338,7 +342,8 @@ module STB_SpringCupTOMT(Tube_ID=PML75Body_ID){
 		
 		//translate([0,0,5]) Tube(OD=Tube_ID, ID=CouplerTube_ID-IDXtra, Len=20, myfn=$preview? 36:360);
 		
-		
+		for (j=[0:nRopeHoles-1]) rotate([0,0,360/nRopeHoles*j])
+			translate([0,ST_DSpring_OD/2+10,-Overlap]) cylinder(d=5, h=Slider_h+Overlap*2);
 		
 		//translate([0,0,6]) cylinder(d1=ST_DSpring_ID, d2=Tube_ID-4.4+Overlap, h=10+Overlap);
 		translate([0,0,-Overlap]) cylinder(d=ST_DSpring_ID, h=Slider_h+Overlap*2);
@@ -348,6 +353,7 @@ module STB_SpringCupTOMT(Tube_ID=PML75Body_ID){
 
 // Custom for Rainbow One
 // rotate([180,0,0]) STB_SpringCupTOMT(Tube_ID=98.5);
+//STB_SpringCupTOMT(Tube_ID=78.5);
 
 module STB_SpringMiddle(Tube_ID=BT54Coupler_OD){
 		
