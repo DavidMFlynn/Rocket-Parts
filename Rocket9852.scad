@@ -3,7 +3,7 @@
 // Filename: Rocket9852.scad
 // by David M. Flynn
 // Created: 5/13/2023 
-// Revision: 0.9.10  5/25/2023
+// Revision: 0.9.12  5/28/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -50,6 +50,8 @@
 // Booster Lower Fin Can
 //
 //  ***** History *****
+// 0.9.12  5/28/2023  New dual deploy using 2 ball locks.
+// 0.9.11  5/27/2023  Converted to Blue Tube
 // 0.9.10  5/25/2023  Got upper rail guide?
 // 0.9.9  5/21/2023   Stubby nosecone.
 // 0.9.8  5/17/2023   Sustainer electronic bays.
@@ -253,11 +255,11 @@ R9852Booster_Fin_Span=R9852_Fin_Span*BoosterFinScale;
 R9852Booster_Fin_TipOffset=R9852_Fin_TipOffset*BoosterFinScale;
 R9852Booster_Fin_Chamfer_L=R9852_Fin_Chamfer_L*BoosterFinScale;
 
-R9852_Body_OD=PML98Body_OD;
-R9852_Body_ID=PML98Body_ID;
-R9852_Coupler_ID=PML98Coupler_ID;
-R9852_MtrTube_OD=PML54Body_OD;
-R9852_MtrTube_ID=PML54Body_ID;
+R9852_Body_OD=BT98Body_OD;
+R9852_Body_ID=BT98Body_ID;
+R9852_Coupler_ID=BT98Coupler_ID;
+R9852_MtrTube_OD=BT54Body_OD;
+R9852_MtrTube_ID=BT54Body_ID;
 R9852_BoosterMtrTube_OD=BT54Mtr_OD;
 R9852_DualDepTube_OD=BT54Body_OD;
 R9852_DualDepTube_ID=BT54Body_ID;
@@ -450,6 +452,39 @@ module ShowRocket9852(){
 
 //ShowRocket9852();
 
+module DDNoseconeBase(){
+	AlTube_OD=12.7;
+	
+	Len=30;
+	AlTube_Z=Len/2+5;
+	
+	difference(){
+		union(){
+			Tube(OD=R9852_Body_ID, ID=R9852_Body_ID-4.4, Len=Len, myfn=$preview? 36:360);
+			
+			translate([0,0,AlTube_Z-AlTube_OD/2-4]) 
+			rotate([0,0,22.5]) STB_SpringCupTOMT(Tube_ID=R9852_Body_ID-1);
+			
+			translate([0,0,AlTube_Z])
+			difference(){
+				 rotate([0,90,0]) 
+					cylinder(d=AlTube_OD+6, h=R9852_Body_ID-2, center=true);
+					
+				 rotate([0,90,0]) 
+					cylinder(d=AlTube_OD+10, h=R9852_Body_ID-25, center=true);
+			} // difference
+			
+			
+		} // union
+	
+		translate([0,0,AlTube_Z])
+		rotate([0,90,0]) 
+					cylinder(d=AlTube_OD, h=R9852_Body_ID+2, center=true);
+	} // difference
+} // DDNoseconeBase
+
+//rotate([180,0,0]) DDNoseconeBase();
+
 module TubeHold(){
 		Tube_OD=12.7;
 		
@@ -479,8 +514,7 @@ module TubeHold(){
 	
 //rotate([0,0,45]) translate([0,-R98_Body_OD/2+16,165-6]) TubeHold();
 		
-module R98_Electronics_Bay4(Tube_OD=R9852_Body_OD, Tube_ID=R9852_Body_ID, 
-					Fairing_ID=Fairing_ID, InnerTube_OD=BT38Body_OD){
+module R98_Electronics_Bay4(Tube_OD=R9852_Body_OD, Tube_ID=R9852_Body_ID, InnerTube_OD=BT38Body_OD){
 					
 	// Dual Deploy Upper Electronics Bay
 	
@@ -555,6 +589,93 @@ module R98_Electronics_Bay4(Tube_OD=R9852_Body_OD, Tube_ID=R9852_Body_ID,
 // translate([0,0,81]) rotate([0,0,180]) CP_Door(Tube_OD=R98_Body_OD, BoltBossInset=3, HasArmingSlot=true);
 // translate([0,0,74]) rotate([0,0,90]) Batt_Door(Tube_OD=R98_Body_OD, InnerTube_OD=0, HasSwitch=true);
 // FairingBaseLockRing(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, Fairing_ID=Fairing_ID, Interface=-IDXtra, BlendToTube=false);
+
+module R98_Electronics_Bay5(Tube_OD=R9852_Body_OD, Tube_ID=R9852_Body_ID, InnerTube_OD=BT38Body_OD){
+					
+	// Alt: Dual Deploy Upper Electronics Bay
+	// Uses 2 ball lock units
+	
+	Len=153;
+	Altimeter_Z=Len/2;
+	//CablePuller_Z=Len/2;
+	BattDoor_Z=45+15;
+	BattSwDoor_Z=57+15;
+	TopSkirt_Len=15;
+	BottomSkirt_Len=15;
+	Alt1_a=0;
+	//Alt2_a=180;
+	//CP1_a=180;
+	Batt1_a=90; // Altimeter Battery
+	Batt2_a=180; // Rocket Servo 2 Battery & Switch
+	Batt3_a=270; // Rocket Servo 2 Battery & Switch
+	nCRHoles=4;
+	CRHole_a=0;
+	CR_Thickness=5;
+	
+	difference(){
+		union(){
+			Tube(OD=Tube_OD, ID=Tube_ID, Len=Len, myfn=$preview? 36:360);
+			
+			// Lower skirt
+			translate([0,0,BottomSkirt_Len]) rotate([0,0,CRHole_a])
+				CenteringRing(OD=Tube_OD-1, ID=InnerTube_OD+IDXtra*2, Thickness=CR_Thickness, 
+					nHoles=nCRHoles);
+			//translate([0,0,-BottomSkirt_Len]) 
+			//	Tube(OD=Tube_ID, ID=Tube_ID-8, Len=BottomSkirt_Len+Overlap, myfn=$preview? 36:360);
+					
+			// upper skirt
+			translate([0,0,Len-CR_Thickness-TopSkirt_Len]) rotate([0,0,CRHole_a])
+				CenteringRing(OD=Tube_OD-1, ID=InnerTube_OD+IDXtra*2, Thickness=CR_Thickness, 
+					nHoles=nCRHoles);
+			//translate([0,0,Len-Overlap])
+			//	Tube(OD=Tube_ID, ID=Tube_ID-8, Len=TopSkirt_Len, myfn=$preview? 36:360);
+		} // union
+		
+		// Altimeter 1
+		translate([0,0,Altimeter_Z]) rotate([0,0,Alt1_a]) 
+			Alt_BayFrameHole(Tube_OD=Tube_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
+			
+		// Cable Puller door hole
+		//translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a])
+		//	CP_BayFrameHole(Tube_OD=Tube_OD);
+			
+		// Altimeter 2
+		//translate([0,0,Altimeter_Z]) rotate([0,0,Alt2_a]) 
+		//	Alt_BayFrameHole(Tube_OD=Tube_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
+		
+		// Battery and Switch door holes
+		translate([0,0,BattDoor_Z]) rotate([0,0,Batt1_a]) 
+			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=false);
+		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
+			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
+		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt3_a]) 
+			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
+		
+	} // difference
+	
+	// Altimeter 1
+	translate([0,0,Altimeter_Z]) rotate([0,0,Alt1_a])
+		Alt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=false);
+	
+	// Cable Puller
+	//translate([0,0,CablePuller_Z]) rotate([0,0,CP1_a])
+	//	CP_BayDoorFrame(Tube_OD=Tube_OD, ShowDoor=false);
+		
+	// Altimeter 2
+	//translate([0,0,Altimeter_Z]) rotate([0,0,Alt2_a])
+	//	Alt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=false);
+	
+	// Battery and Switch door2
+	translate([0,0,BattDoor_Z]) rotate([0,0,Batt1_a]) 
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, HasSwitch=false, ShowDoor=false);
+	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, HasSwitch=true, ShowDoor=false);
+	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt3_a]) 
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, HasSwitch=true, ShowDoor=false);
+	
+} // R98_Electronics_Bay5
+
+//R98_Electronics_Bay5();
 
 module PhantomSustainer(){
 	// Combine with a Drogue_Cup to launch w/o the sustainer
@@ -642,8 +763,7 @@ module Lower_Electronics_Bay(Tube_OD=R9852_Body_OD, Tube_ID=R9852_Body_ID, Inner
 } // Lower_Electronics_Bay
 
 //translate([0,0,-14.8]) 
-//rotate([180,0,0]) 
-Lower_Electronics_Bay();
+//rotate([180,0,0]) Lower_Electronics_Bay();
 //UpperFinCan();
 
 module UpperFinCan(){
