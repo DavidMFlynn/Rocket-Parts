@@ -3,7 +3,7 @@
 // Filename: Rocket9852.scad
 // by David M. Flynn
 // Created: 5/13/2023 
-// Revision: 0.9.12  5/28/2023
+// Revision: 0.9.13  5/31/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -50,6 +50,7 @@
 // Booster Lower Fin Can
 //
 //  ***** History *****
+// 0.9.13  5/31/2023  Added shock cord mount to Booster_Stager_CableRedirect().
 // 0.9.12  5/28/2023  New dual deploy using 2 ball locks.
 // 0.9.11  5/27/2023  Converted to Blue Tube
 // 0.9.10  5/25/2023  Got upper rail guide?
@@ -157,8 +158,9 @@ FairingConeOGive(Fairing_OD=R9852_Body_OD,
 // Stager_InnerRace(Tube_OD=R9852_Body_OD);
 // Stager_BallSpacer(Tube_OD=R9852_Body_OD); // print 2
 // Stager_CableRedirectTop(Tube_OD=R9852_Body_OD, Skirt_ID=R9852_Body_ID, InnerTube_OD=BT54Mtr_OD, HasRaceway=true, Raceway_a=270);
+// Booster_Stager_CableRedirect();
 // Stager_CableBearing();
-// Stager_CableRedirect(Tube_OD=R9852_Body_OD, Skirt_ID=R9852_Body_ID, Tube_ID=R9852_Coupler_ID, InnerTube_OD=BT54Body_OD, HasRaceway=true, Raceway_a=270);
+// 
 // Stager_CableEndAndStop(Tube_OD=R9852_Body_OD);
 // Stager_Detent();
 //
@@ -864,6 +866,7 @@ Stager_Mech(Tube_OD=R9852_Body_OD, nLocks=2, Skirt_ID=R9852_Body_ID, Skirt_Len=B
 
 module Booster_Stager_CableRedirect(){
 	Height=14; // make it fit in the top of the EBay
+	Tube_d=12.7; // Shock cord mount
 
 	echo(R9852_Body_ID=R9852_Body_ID-8-IDXtra*3);
 	
@@ -877,6 +880,9 @@ module Booster_Stager_CableRedirect(){
 			
 			translate([0,0,-Overlap]) cylinder(d=R9852_Body_ID-8-IDXtra*3, h=Height+Overlap*4);
 		} // difference
+		
+		translate([0,0,-Height/2])
+		rotate([0,90,0]) cylinder(d=Tube_d, h=R9852_Body_OD, center=true);
 	} // difference
 } // Booster_Stager_CableRedirect
 
