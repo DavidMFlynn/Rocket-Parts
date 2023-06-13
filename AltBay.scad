@@ -48,7 +48,7 @@
 // ***********************************
 //  ***** Routines *****
 //
-//  AltHoles(); // Altimeter mounting holes. 
+//  AltHoles() Bolt4Hole(); // Altimeter mounting holes. 
 //  AltDoorHole54(Tube_OD=PML54Body_OD, DoorXtra_Y=0);
 //
 //  Alt_BayFrameHole(Tube_OD=PML98Body_OD, DoorXtra_X=0, DoorXtra_Y=0);
@@ -408,6 +408,16 @@ Electronics_Bay(Tube_OD=PML75Body_OD, Tube_ID=PML75Body_ID, Fairing_ID=PML75Body
 						EBay_Len=130, HasCablePuller=true);
 /**/
 
+
+AltUSB_Y=29;
+AltUSB_Z=1.5;
+
+module USB_Connector_Hole(){
+	translate([Alt_X/2-1,-Alt_Y/2+AltUSB_Y,AltPCB_h+AltUSB_Z]) rotate([0,90,0]) children();
+} // USB_Connector_Hole
+
+//USB_Connector_Hole() RoundRect(X=8, Y=11, Z=10, R=1);
+
 module AltPCB(){
 	module Conn4Pin(){
 		translate([0,-7.5,0])
@@ -440,7 +450,8 @@ module AltPCB(){
 	} // difference
 } // AltPCB
 	
-//AltPCB();
+//
+AltPCB();
 
 module TubeSocket(L=10, Wall_T=1.2, HasBoltGuide=false){
 	

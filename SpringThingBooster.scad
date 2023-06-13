@@ -3,7 +3,7 @@
 // Filename: SpringThingBooster.scad
 // by David M. Flynn
 // Created: 2/26/2023
-// Revision: 1.2.5   5/22/2023
+// Revision: 1.2.8   6/11/23
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -38,7 +38,10 @@
 //  Steel Dowel Pin 4mm (Undersized) x 16mm (3 Req.)
 //
 //  ***** History *****
-echo("SpringThingBooster Rev. 1.2.5");
+echo("SpringThingBooster Rev. 1.2.8");
+// 1.2.8   6/11/2023  Changed small servo arm length to 4mm.
+// 1.2.7   6/5/2023   Removed overrides.
+// 1.2.6   6/3/2023   Larger shock cord for 137 size.
 // 1.2.5   5/22/2023  Renamed:STB_TubeEnd, Added rope holes to STB_TubeEnd.
 // 1.2.4   5/4/2023   Added Stiffener to STB_LockDisk for BT137 version
 // 1.2.3   5/1/2023   improved STB_ShowBosterSpringThing
@@ -88,14 +91,17 @@ echo("SpringThingBooster Rev. 1.2.5");
 // ----------------------------
 //  *** 137mm Lock version ***
 //
-// LockBall_d=1/2 * 25.4; // override
+// LockBall_d=1/2 * 25.4;
 // nBT137Balls=7;
 // 
 // STB_LockDisk(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls);
-// rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=BT137BallPerimeter_d, Body_OD=BT137Body_ID, nLockBalls=nBT137Balls, HasIntegratedCouplerTube=true, Body_ID=BT137Body_ID, HasSecondServo=true, UsesBigServo=true, Engagement_Len=25);
+// rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=BT137BallPerimeter_d, Body_OD=BT137Body_ID, nLockBalls=nBT137Balls, IntegratedCouplerLenXtra=-19, HasIntegratedCouplerTube=true, Body_ID=BT137Body_ID, HasSecondServo=true, UsesBigServo=true, Engagement_Len=25);
 // STB_BallRetainerBottom(BallPerimeter_d=BT137BallPerimeter_d, Body_OD=BT137Body_ID, nLockBalls=nBT137Balls, HasSpringGroove=false, Engagement_Len=25);
 // rotate([180,0,0]) STB_TubeEnd(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls, Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, Skirt_Len=25);
-// STB_SpringEnd(Tube_ID=BT137Body_ID, CouplerTube_ID=BT137Coupler_ID, SleeveLen=0);
+//
+// STB_SpringEnd(Tube_ID=BT137Coupler_OD, CouplerTube_ID=BT137Coupler_ID, SleeveLen=0, nSprings=3, nRopeHoles=6);
+// STB_SpringMiddle(Tube_ID=BT54Coupler_OD);
+// STB_SpringPlate(OD=BT137Coupler_OD, nSprings=3, nRopeHoles=6);
 //
 // ---------------
 //  *** Tools ***
@@ -145,11 +151,11 @@ LooseFit=IDXtra*3;
 $fn=$preview? 24:90;
 
 // -----------------------
-// 	Override as needed
-//
-//
-LockBall_d=3/8*25.4;
-//LockBall_d=1/2 * 25.4; // override
+// Now a function
+//LockBall_d=3/8*25.4;
+//LockBall_d=1/2 * 25.4;
+
+
 BT137BallPerimeter_d=BT137Body_OD+1;
 Magnet_d=4.8;
 Magnet_h=3.2;
@@ -183,9 +189,11 @@ ST_DSpring_FL=200; // free length
 LockDisk_H=10; // length of dowel pins
 LockDiskHole_H=LockDisk_H+1;
 
+function STB_LockBall_d(BallPerimeter_d=PML54Coupler_OD)=(BallPerimeter_d>110)? 1/2 * 25.4:3/8*25.4;
+
 function STB_CalcChord_a(Dia=10, Dist=1)=Dist/(Dia*PI)*360;
 
-function STB_LockPinBC_d(BallPerimeter_d=PML54Coupler_OD)=BallPerimeter_d-LockBall_d*2-BearingMR84_OD;
+function STB_LockPinBC_d(BallPerimeter_d=PML54Coupler_OD)=BallPerimeter_d-STB_LockBall_d(BallPerimeter_d=BallPerimeter_d)*2-BearingMR84_OD;
 
 function STB_LockedPost_a(BallPerimeter_d=BT54Body_ID)=
 			-STB_CalcChord_a(Dia=STB_LockPinBC_d(BallPerimeter_d), Dist=BearingMR84_OD/2+Dowel_d/2+0.4);
@@ -201,14 +209,23 @@ function STB_MagnetPost_a(BallPerimeter_d=PML54Coupler_ID, nLockBalls=nLockBalls
 			STB_CalcChord_a(Dia=STB_LockPinBC_d(BallPerimeter_d), Dist=Dowel_d/2+Magnet_h);
 //echo(STB_Unlocked_a());
 
+function STB_SpringOffset(N=3, D=PML54Body_OD)=lookup(N,[[1, 0],[2,D/2],[3,D*tan(30)]]);
+
+function STB_SCord_T(p=BT54Body_ID)=lookup(p,[ 
+		[PML54Body_ID,3],
+		[PML75Body_OD,3],
+		[PML98Body_OD,3],
+		[BT137Body_OD,5]
+		]);
+
 module STB_LockedStopPosition(BallPerimeter_d=BallPerimeter_d){
-	translate([BearingMR84_OD/2+Dowel_d/2+IDXtra, BallPerimeter_d/2-LockBall_d-BearingMR84_OD/2,0])
+	translate([BearingMR84_OD/2+Dowel_d/2+IDXtra, BallPerimeter_d/2-STB_LockBall_d(BallPerimeter_d=BallPerimeter_d)-BearingMR84_OD/2,0])
 		children();
 } // STB_LockedStopPosition
 	
 module STB_UnlockedStopPosition(BallPerimeter_d=PML54Coupler_ID, nLockBalls=nLockBalls){
 	rotate([0,0,STB_Unlocked_a(BallPerimeter_d)+360/nLockBalls])
-	translate([-BearingMR84_OD/2-Dowel_d/2-IDXtra, BallPerimeter_d/2-LockBall_d-BearingMR84_OD/2,0])
+	translate([-BearingMR84_OD/2-Dowel_d/2-IDXtra, BallPerimeter_d/2-STB_LockBall_d(BallPerimeter_d=BallPerimeter_d)-BearingMR84_OD/2,0])
 		children();
 } // STB_UnlockedStopPosition
 
@@ -301,22 +318,76 @@ STB_ShowBosterSpringThing(BallPerimeter_d=PML98Body_OD,
 	HasSpringGroove=false, InLockedPosition=true, HasSecondServo=true, UsesBigServo=true);
 /**/
 
-module STB_SpringEnd(Tube_ID=PML75Body_ID, CouplerTube_ID=BT75Coupler_ID, SleeveLen=0){
+
+
+//echo("STB_SpringOffset()=",STB_SpringOffset());
+
+module STB_SpringPlate(OD=128, nSprings=1, nRopeHoles=8){
+// made to fit 137mm nosecone
+	InnerTube_ID=BT54Body_ID;
+	Spring_Y=(nSprings>1)? STB_SpringOffset(N=nSprings, D=PML54Body_OD):0;
+	
+	Tail_Len=6;
+	MotorTopDepth=Tail_Len-7;
+	
+	Lashing_Y=(nSprings>1)? 4:10;
+	
+	difference(){
+		translate([0,0,-Tail_Len]) cylinder(d=OD, h=Tail_Len);
+		
+		for (j=[0:nSprings-1]) rotate([0,0,360/nSprings*j]) translate([0,Spring_Y,0]){
+			translate([0,0,-Tail_Len-Overlap]) cylinder(d=ST_DSpring_ID-1, h=Tail_Len+Overlap*2);
+			translate([0,0,-2])
+			Tube(OD=PML54Body_OD+IDXtra*2, ID=PML54Body_ID, Len=6, myfn=$preview? 36:360);
+		}
+		for (j=[0:nRopeHoles-1]) rotate([0,0,360/nRopeHoles*j+30])
+			translate([0,Spring_Y+ST_DSpring_OD/2+Lashing_Y,-Tail_Len-Overlap])
+				cylinder(d=5, h=Tail_Len+Overlap*2);
+	} // difference
+	
+	for (j=[0:nSprings-1]) rotate([0,0,360/nSprings*j]) translate([0,Spring_Y,0]){
+		//Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=20, myfn=$preview? 36:360);
+	difference(){
+		union(){
+			cylinder(d=ST_DSpring_ID-1, h=ST_DSpring_CBL-6); // -6 to mate with ST_SpringMiddle
+			translate([0,0,-Tail_Len+Overlap]) cylinder(d=InnerTube_ID-IDXtra, h=Tail_Len);
+		} // union
+		
+		translate([0,0,-Tail_Len]) cylinder(d=39, h=MotorTopDepth);
+		translate([0,0,-Tail_Len]) cylinder(d=35, h=Tail_Len+ST_DSpring_CBL+Overlap*2);
+	} // difference
+	}
+	
+} // STB_SpringPlate
+
+//STB_SpringPlate(OD=128, nSprings=3, nRopeHoles=6);
+
+module STB_SpringEnd(Tube_ID=PML75Body_ID, CouplerTube_ID=BT75Coupler_ID, SleeveLen=0, nSprings=1, nRopeHoles=8){
 
 	Slider_h=16;
-	nRopeHoles=8;
+	
+	Spring_Y=(nSprings>1)? STB_SpringOffset(N=nSprings, D=PML54Body_OD):0;
+	Lashing_Y=(nSprings>1)? 4:10;
 	
 	difference(){
 		cylinder(d=Tube_ID-IDXtra*2, h=Slider_h);
 		
+		// Slider tube glues here
 		translate([0,0,5]) Tube(OD=Tube_ID, ID=CouplerTube_ID-IDXtra, Len=20, myfn=$preview? 36:360);
 		
+		// Tube face
 		translate([0,0,6]) cylinder(d1=ST_DSpring_ID, d2=Tube_ID-4.4+Overlap, h=10+Overlap);
-		translate([0,0,-Overlap]) cylinder(d=ST_DSpring_ID, h=Slider_h+Overlap*2);
-		translate([0,0,-Overlap]) cylinder(d=ST_DSpring_OD, h=3);
 		
-		for (j=[0:nRopeHoles-1]) rotate([0,0,360/nRopeHoles*j]) translate([0,ST_DSpring_OD/2+10,-Overlap])
-			cylinder(d=5, h=Slider_h+Overlap*2);
+		// Spring holes
+		for (j=[0:nSprings-1]) rotate([0,0,360/nSprings*j]) translate([0,Spring_Y,0]){
+			translate([0,0,-Overlap]) cylinder(d=ST_DSpring_ID, h=Slider_h+Overlap*2);
+			translate([0,0,-Overlap]) cylinder(d=ST_DSpring_OD, h=3);
+			}
+		
+		if (nRopeHoles>1)
+		for (j=[0:nRopeHoles-1]) rotate([0,0,360/nRopeHoles*j+30])
+			translate([0,Spring_Y+ST_DSpring_OD/2+Lashing_Y,-Overlap])
+				cylinder(d=5, h=Slider_h+Overlap*2);
 	} // difference
 	
 	if (SleeveLen>0)
@@ -324,6 +395,8 @@ module STB_SpringEnd(Tube_ID=PML75Body_ID, CouplerTube_ID=BT75Coupler_ID, Sleeve
 } // STB_SpringEnd
 
 // STB_SpringEnd(Tube_ID=PML98Body_ID, CouplerTube_ID=BT98Coupler_ID, SleeveLen=0);
+
+//STB_SpringEnd(Tube_ID=BT137Coupler_OD, CouplerTube_ID=BT137Coupler_ID, SleeveLen=0, nSprings=3, nRopeHoles=6);
 
 // Custom for Rainbow One
 //STB_SpringEnd(Tube_ID=98.5, CouplerTube_ID=BT98Coupler_ID, SleeveLen=60);
@@ -418,7 +491,7 @@ module STB_CT_Section(CT_OD=PML54Coupler_OD, CT_ID=PML54Coupler_ID){
 		translate([0,0,-25]) Tube(OD=CT_OD, ID=CT_ID, Len=40, myfn=$preview? 36:360);
 		
 		for (j=[0:nLockBalls-1]) rotate([0,0,360/nLockBalls*j]) 
-			translate([0,CT_OD/2+1,0]) rotate([90,0,0]) cylinder(d=LockBall_d, h=10);
+			translate([0,CT_OD/2+1,0]) rotate([90,0,0]) cylinder(d=STB_LockBall_d(BallPerimeter_d=BallPerimeter_d), h=10);
 	} // difference
 } // STB_CT_Section
 
@@ -426,11 +499,11 @@ module STB_CT_Section(CT_OD=PML54Coupler_OD, CT_ID=PML54Coupler_ID){
 //STB_CT_Section(CT_OD=PML75Coupler_OD, CT_ID=PML75Coupler_ID);
 
 module STB_ShowMyBalls(BallPerimeter_d=PML54Body_ID, nLockBalls=nLockBalls, InLockedPosition=true){
-	BallInset=InLockedPosition? LockBall_d/2:LockBall_d/2+3;
+	BallInset=InLockedPosition? STB_LockBall_d(BallPerimeter_d=BallPerimeter_d)/2:STB_LockBall_d(BallPerimeter_d=BallPerimeter_d)/2+3;
 	
 	for (j=[0:nLockBalls-1]) rotate([0,0,360/nLockBalls*j]) 
 			translate([0,BallPerimeter_d/2-BallInset,0]) 
-				color("Red") sphere(d=LockBall_d);
+				color("Red") sphere(d=STB_LockBall_d(BallPerimeter_d=BallPerimeter_d));
 
 } // STB_ShowMyBalls
 
@@ -451,7 +524,7 @@ module STB_ShowLockBearings(BallPerimeter_d=PML54Body_ID, nLockBalls=nLockBalls)
 
 module STB_LockDisk(BallPerimeter_d=PML54Body_ID, nLockBalls=nLockBalls){
 	Xtra_r=0.2; // a little tighter
-	MagnetOvershoot_a=STB_CalcChord_a(Dia=BallPerimeter_d-LockBall_d*2, Dist=0.6);
+	MagnetOvershoot_a=STB_CalcChord_a(Dia=BallPerimeter_d-STB_LockBall_d(BallPerimeter_d=BallPerimeter_d)*2, Dist=0.6);
 	
 
 	difference(){
@@ -515,12 +588,19 @@ module STB_LockDisk(BallPerimeter_d=PML54Body_ID, nLockBalls=nLockBalls){
 //rotate([0,0,Unlocked_a]) 
 //{ STB_LockDisk(); STB_ShowLockBearings(); }
 
+
 module STB_ShockCordHolePattern(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID){
 	Offset_a=STB_LockedPost_a(BallPerimeter_d=BallPerimeter_d)-
-		STB_CalcChord_a(Dia=STB_LockPinBC_d(BallPerimeter_d=BallPerimeter_d), Dist=Dowel_d/2+3);
+		STB_CalcChord_a(Dia=STB_LockPinBC_d(BallPerimeter_d=BallPerimeter_d), Dist=Dowel_d/2+STB_SCord_T(BallPerimeter_d));
 	
-	SCord_W=(BallPerimeter_d<=PML54Body_OD)? 9.5:12;
+	SCord_W=lookup(BallPerimeter_d,[ 
+		[PML54Body_ID,9],
+		[PML75Body_OD,12],
+		[PML98Body_OD,12],
+		[BT137Body_OD,19]
+		]);
 	
+	echo(SCord_W=SCord_W);
 	rotate([0,0,Offset_a]){
 		translate([0,Body_OD/2-6,0]) children();
 		translate([0,Body_OD/2-6-SCord_W,0]) children();
@@ -528,11 +608,12 @@ module STB_ShockCordHolePattern(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupl
 } // STB_ShockCordHolePattern
 
 //hull() STB_ShockCordHolePattern() cylinder(d=3, h=3);
+//hull() STB_ShockCordHolePattern(BallPerimeter_d=BT137Body_OD+1, Body_OD=BT137Body_ID) cylinder(d=3, h=3);
 
-module STB_BR_BoltPattern(Body_OD=PML54Coupler_ID, nLockBalls=nLockBalls){
+module STB_BR_BoltPattern(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID, nLockBalls=nLockBalls){
 	// Body bolt pattern
 	
-	Offset_a=(Body_OD<=PML54Body_OD)? 180/nLockBalls-24:STB_CalcChord_a(Dia=Body_OD-LockBall_d, Dist=LockBall_d/2+4);
+	Offset_a=(Body_OD<=PML54Body_OD)? 180/nLockBalls-24:STB_CalcChord_a(Dia=Body_OD-STB_LockBall_d(BallPerimeter_d=BallPerimeter_d), Dist=STB_LockBall_d(BallPerimeter_d=BallPerimeter_d)/2+4);
 	
 	for (j=[0:nLockBalls-1]) 
 		rotate([0,0,360/nLockBalls*j+Offset_a]) translate([0,Body_OD/2-Bolt4Inset,0]) children();
@@ -550,7 +631,7 @@ module STB_DrillingJig(BallPerimeter_d=BT54Body_ID, nLockBalls=nLockBalls, Body_
 		} // union
 	
 		for (j=[0:nLockBalls-1]) rotate([0,0,360/nLockBalls*j]) 
-			rotate([-90,0,0]) cylinder(d=LockBall_d-2, h=Body_OD);
+			rotate([-90,0,0]) cylinder(d=STB_LockBall_d(BallPerimeter_d=BallPerimeter_d)-2, h=Body_OD);
 			
 		STB_ManualDisArmingHole(BallPerimeter_d=BallPerimeter_d, nLockBalls=nLockBalls);
 		STB_ManualArmingHole(BallPerimeter_d=BallPerimeter_d);
@@ -562,25 +643,30 @@ module STB_DrillingJig(BallPerimeter_d=BT54Body_ID, nLockBalls=nLockBalls, Body_
 // STB_DrillingJig();
 // STB_DrillingJig(BallPerimeter_d=PML75Body_OD, Body_OD=PML75Body_OD, Skirt_Len=20);
 
-module STB_TubeEnd(BallPerimeter_d=PML75Body_OD, nLockBalls=nLockBalls, Body_OD=PML75Body_OD, Body_ID=PML75Body_ID, Skirt_Len=20){
+module STB_TubeEnd(BallPerimeter_d=PML75Body_OD, nLockBalls=nLockBalls, 
+			Body_OD=PML75Body_OD, Body_ID=PML75Body_ID, Skirt_Len=20){
 
-	ODXtra=4;
+	ChamferLen=4;
+	Ring_OD=BallPerimeter_d+4.4;
+	RingLen=Skirt_Len+10-ChamferLen;
 	
 	difference(){
 		union(){
 			translate([0,0,-Skirt_Len/2-10]) 
-				Tube(OD=Body_OD+ODXtra, ID=Body_ID+IDXtra*3, Len=Skirt_Len+10-ODXtra+Overlap, myfn=$preview? 90:360);
+				Tube(OD=Ring_OD, ID=Body_ID+IDXtra*3, Len=RingLen+Overlap, myfn=$preview? 90:360);
 			
-			translate([0,0,Skirt_Len/2-ODXtra])
+			translate([0,0,Skirt_Len/2-ChamferLen])
 			difference(){
-				cylinder(d1=Body_OD+ODXtra, d2=Body_OD, h=ODXtra, $fn=$preview? 90:360);
-				translate([0,0,-Overlap]) cylinder(d=Body_ID+IDXtra*3, h=ODXtra+Overlap*2, $fn=$preview? 90:360);
+				cylinder(d1=Ring_OD, d2=Body_OD, h=ChamferLen, $fn=$preview? 90:360);
+				
+				translate([0,0,-Overlap])
+					cylinder(d=Body_ID+IDXtra*3, h=ChamferLen+Overlap*2, $fn=$preview? 90:360);
 			} // difference
 			
-			translate([0,0,-Skirt_Len/2-10-ODXtra+1])
+			translate([0,0,-Skirt_Len/2-10-ChamferLen+1])
 			difference(){
-				cylinder(d2=Body_OD+ODXtra, d1=Body_OD+1.2, h=ODXtra-1, $fn=$preview? 90:360);
-				translate([0,0,-Overlap]) cylinder(d=Body_OD+IDXtra*2, h=ODXtra+Overlap*2, $fn=$preview? 90:360);
+				cylinder(d2=Ring_OD, d1=Body_OD+IDXtra*2+1.2, h=ChamferLen-1, $fn=$preview? 90:360);
+				translate([0,0,-Overlap]) cylinder(d=Body_OD+IDXtra*2, h=ChamferLen+Overlap*2, $fn=$preview? 90:360);
 			} // difference
 		} // union
 		
@@ -594,19 +680,22 @@ module STB_TubeEnd(BallPerimeter_d=PML75Body_OD, nLockBalls=nLockBalls, Body_OD=
 			hull(){
 				rotate([0,0,360/nLockBalls*j+k]) 
 					translate([0,BallPerimeter_d/2+1,-DispPerStep*k+Offset])
-						rotate([90,0,0]) cylinder(d=LockBall_d, h=5);
+						rotate([90,0,0]) cylinder(d=STB_LockBall_d(BallPerimeter_d=BallPerimeter_d), h=5);
 				rotate([0,0,360/nLockBalls*j+k+1]) 
 					translate([0,BallPerimeter_d/2+1,-DispPerStep*(k+1)+Offset])
-						rotate([90,0,0]) cylinder(d=LockBall_d, h=5);
+						rotate([90,0,0]) cylinder(d=STB_LockBall_d(BallPerimeter_d=BallPerimeter_d), h=5);
 			} // hull
 			
 		STB_ManualDisArmingHole(BallPerimeter_d=BallPerimeter_d, nLockBalls=nLockBalls);
 		STB_ManualArmingHole(BallPerimeter_d=BallPerimeter_d);
 	} // difference
+	
+	//echo("STB_LockBall_d=",STB_LockBall_d(BallPerimeter_d=BallPerimeter_d));
 } // STB_TubeEnd
 
 //STB_TubeEnd(BallPerimeter_d=PML75Body_OD, Body_OD=PML75Body_OD, Body_ID=PML75Body_ID, Skirt_Len=20, nLockBalls=5);
 
+//STB_TubeEnd(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls, Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, Skirt_Len=25);
 
 module STB_CoverBoltPattern(Body_OD=PML54Body_ID){
 	for (j=[0:1]) rotate([0,0,180*j-53]) translate([0,Body_OD/2-6,0]) children();
@@ -636,7 +725,8 @@ module STB_Cover(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Body_ID){
 		
 		// Shock Cord
 		rotate([0,0,10])translate([0,0,Cover_h-Overlap]) 
-			hull() STB_ShockCordHolePattern(BallPerimeter_d=BallPerimeter_d, Body_OD=Body_OD) cylinder(d=3, h=Plate_T+Overlap*2);
+			hull() STB_ShockCordHolePattern(BallPerimeter_d=BallPerimeter_d, Body_OD=Body_OD) 
+				cylinder(d=STB_SCord_T(BallPerimeter_d), h=Plate_T+Overlap*2);
 			
 		// Bolts
 		translate([0,0,3]) STB_CoverBoltPattern(Body_OD=Body_OD) Bolt4HeadHole(depth=8,lHead=Cover_h+Plate_T);
@@ -803,11 +893,11 @@ module STB_BallRetainerTopExtras(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coup
 			
 		// Shock Cord
 		hull() STB_ShockCordHolePattern(BallPerimeter_d=BallPerimeter_d, Body_OD=Body_OD) 
-			cylinder(d=3, h=Top_H+5);
+			cylinder(d=STB_SCord_T(BallPerimeter_d), h=Top_H+5);
 			
 		// Bolt holes
-		translate([0,0,LockBall_d/2+Plate_T]) 
-			STB_BR_BoltPattern(Body_OD=Body_OD, nLockBalls=nLockBalls) Bolt4HeadHole();
+		translate([0,0,STB_LockBall_d(BallPerimeter_d=BallPerimeter_d)/2+Plate_T]) 
+			STB_BR_BoltPattern(BallPerimeter_d=BallPerimeter_d, Body_OD=Body_OD, nLockBalls=nLockBalls) Bolt4HeadHole();
 	} // difference
 	
 	// Battery mount
@@ -861,9 +951,9 @@ module STB_BallRetainerTop(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID
 	Top_H=LockDiskHole_H/2+Plate_T;
 	Skirt_H=40;
 	CT_Len=Engagement_Len/2+2;
-	ServoArm_Len=10;
+	ServoArm_Len=UsesBigServo? 10:4; // was =10; 6/11/23
 	Servo_Z=18;
-	Servo_r=BallPerimeter_d/2-LockBall_d-BearingMR84_OD/2-ServoArm_Len;
+	Servo_r=BallPerimeter_d/2-STB_LockBall_d(BallPerimeter_d=BallPerimeter_d)-BearingMR84_OD/2-ServoArm_Len;
 	IntCouplerLen=UsesBigServo? IntegratedCouplerLenXtra+24:IntegratedCouplerLenXtra+13;
 	
 	module ServoPosition(SecondServo=false){
@@ -872,10 +962,11 @@ module STB_BallRetainerTop(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID
 		if (BallPerimeter_d<=PML54Body_OD){
 			translate([-10,4,Servo_Z]) rotate([180,0,-90])  children();
 		}else{
-		Servo_a=360/nLockBalls-STB_CalcChord_a(Dia=Servo_r*2, Dist=BearingMR84_OD/2+5);
-		
-		rotate([0,0,Servo_a+SecondServo_a])
-		translate([0,Servo_r,Servo_Z]) rotate([0,0,-135]) rotate([180,0,0]) children();
+			Servo_a=360/nLockBalls-STB_CalcChord_a(Dia=Servo_r*2, Dist=BearingMR84_OD/2+5);
+			//echo(Servo_r=Servo_r);
+		    //echo(nLockBalls=nLockBalls);
+			rotate([0,0,Servo_a+SecondServo_a])
+				translate([0,Servo_r,Servo_Z]) rotate([0,0,-135]) rotate([180,0,0]) children();
 		}
 		//#translate([-10,4,4]) cylinder(d=10, h=3);
 	} // ServoPosition
@@ -925,7 +1016,7 @@ module STB_BallRetainerTop(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID
 			
 			if (HasIntegratedCouplerTube){
 				translate([0,0,Engagement_Len/2-2]) 
-					Tube(OD=Body_ID-IDXtra*2, ID=Body_ID-6, Len=IntCouplerLen+15, myfn=$preview? 90:360);
+					Tube(OD=Body_ID, ID=Body_ID-6, Len=IntCouplerLen+15, myfn=$preview? 90:360);
 				translate([0,0,Engagement_Len/2]) 
 					Tube(OD=BallPerimeter_d, ID=Body_ID-4.4, Len=IntCouplerLen, myfn=$preview? 90:360);
 				}
@@ -952,20 +1043,20 @@ module STB_BallRetainerTop(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID
 		
 		// Balls go here
 		for (j=[0:nLockBalls-1]) rotate([0,0,360/nLockBalls*j]) hull(){
-			translate([0,BallPerimeter_d/2-LockBall_d/2,0]) sphere(d=LockBall_d+IDXtra*3);
-			translate([0,Body_OD/2-LockBall_d/2-1,0]) sphere(d=LockBall_d+IDXtra*3);
-			translate([0,BallPerimeter_d/2-LockBall_d/2,0.3]) sphere(d=LockBall_d+IDXtra*3);
-			translate([0,Body_OD/2-LockBall_d/2-1,0.3]) sphere(d=LockBall_d+IDXtra*3);
+			translate([0,BallPerimeter_d/2-STB_LockBall_d(BallPerimeter_d=BallPerimeter_d)/2,0]) sphere(d=STB_LockBall_d(BallPerimeter_d=BallPerimeter_d)+IDXtra*3);
+			translate([0,Body_OD/2-STB_LockBall_d(BallPerimeter_d=BallPerimeter_d)/2-1,0]) sphere(d=STB_LockBall_d(BallPerimeter_d=BallPerimeter_d)+IDXtra*3);
+			translate([0,BallPerimeter_d/2-STB_LockBall_d(BallPerimeter_d=BallPerimeter_d)/2,0.3]) sphere(d=STB_LockBall_d(BallPerimeter_d=BallPerimeter_d)+IDXtra*3);
+			translate([0,Body_OD/2-STB_LockBall_d(BallPerimeter_d=BallPerimeter_d)/2-1,0.3]) sphere(d=STB_LockBall_d(BallPerimeter_d=BallPerimeter_d)+IDXtra*3);
 		}
 		
 		// Bolt holes
-		translate([0,0,Top_H]) STB_BR_BoltPattern(Body_OD=Body_OD, nLockBalls=nLockBalls) 
+		translate([0,0,Top_H]) STB_BR_BoltPattern(BallPerimeter_d=BallPerimeter_d, Body_OD=Body_OD, nLockBalls=nLockBalls) 
 			Bolt4HeadHole(depth=8, lHead=20);
 		
 		// Shock Cord
 		translate([0,0,-Overlap]) hull() 
 			STB_ShockCordHolePattern(BallPerimeter_d=BallPerimeter_d, Body_OD=Body_OD)
-				cylinder(d=3, h=Top_H+Overlap*2);
+				cylinder(d=STB_SCord_T(BallPerimeter_d), h=Top_H+Overlap*2);
 			
 		// Arming slot
 		//translate([Body_OD/2-12, 0, LockDiskHole_H/2-Overlap]) 
@@ -1013,11 +1104,11 @@ module STB_BallRetainerTop(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID
 	difference(){
 		hull() 
 			STB_ShockCordHolePattern(BallPerimeter_d=BallPerimeter_d, Body_OD=Body_OD) 
-				cylinder(d=5.4, h=Top_H);
+				cylinder(d=STB_SCord_T(BallPerimeter_d)+2.4, h=Top_H);
 		
 		translate([0,0,-Overlap]) hull() 
 			STB_ShockCordHolePattern(BallPerimeter_d=BallPerimeter_d, Body_OD=Body_OD) 
-				cylinder(d=3, h=Top_H+Overlap*2);
+				cylinder(d=STB_SCord_T(BallPerimeter_d), h=Top_H+Overlap*2);
 	} // difference
 
 } // STB_BallRetainerTop
@@ -1025,6 +1116,14 @@ module STB_BallRetainerTop(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID
 // STB_BallRetainerTop();
 //STB_LockDisk(BallPerimeter_d=PML54Body_ID, nLockBalls=3);
 
+/*
+STB_BallRetainerTop(BallPerimeter_d=67.2, Body_OD=65, nLockBalls=3, HasIntegratedCouplerTube=true, IntegratedCouplerLenXtra=-10, Body_ID=65, HasSecondServo=false, UsesBigServo=false, Engagement_Len=20);
+//rotate([0,0,STB_Unlocked_a(BallPerimeter_d=67.2)])
+{
+STB_LockDisk(BallPerimeter_d=67.2, nLockBalls=3);
+STB_ShowLockBearings(BallPerimeter_d=67.2, nLockBalls=3);
+}
+/**/
 /*
 STB_BallRetainerTop(BallPerimeter_d=PML75Body_OD, Body_OD=PML75Body_ID, nLockBalls=5, HasIntegratedCouplerTube=true, Body_ID=PML75Body_ID);
 
@@ -1053,7 +1152,7 @@ module STB_ManualDisArmingHole(BallPerimeter_d=BT54Body_ID, nLockBalls=nLockBall
 } // STB_ManualDisArmingHole
 
 // STB_ManualDisArmingHole();	
-	
+		
 module STB_BallRetainerBottom(BallPerimeter_d=BT54Body_ID, Body_OD=PML54Coupler_ID, nLockBalls=nLockBalls, HasSpringGroove=true, Engagement_Len=20){
 
 	Plate_T=Engagement_Len/2-LockDiskHole_H+4;
@@ -1064,6 +1163,7 @@ module STB_BallRetainerBottom(BallPerimeter_d=BT54Body_ID, Body_OD=PML54Coupler_
 	
 	echo(Bottom_H=Bottom_H);
 	
+	
 		
 	difference(){
 		translate([0,0,-Bottom_H]) 
@@ -1073,17 +1173,17 @@ module STB_BallRetainerBottom(BallPerimeter_d=BT54Body_ID, Body_OD=PML54Coupler_
 		
 		// Balls go here
 		for (j=[0:nLockBalls-1]) rotate([0,0,360/nLockBalls*j]) hull(){
-			translate([0,BallPerimeter_d/2-LockBall_d/2,0]) sphere(d=LockBall_d+IDXtra*3);
-			translate([0,Body_OD/2-LockBall_d/2-1,0]) sphere(d=LockBall_d+IDXtra*3);
+			translate([0,BallPerimeter_d/2-STB_LockBall_d(BallPerimeter_d=BallPerimeter_d)/2,0]) sphere(d=STB_LockBall_d(BallPerimeter_d=BallPerimeter_d)+IDXtra*3);
+			translate([0,Body_OD/2-STB_LockBall_d(BallPerimeter_d=BallPerimeter_d)/2-1,0]) sphere(d=STB_LockBall_d(BallPerimeter_d=BallPerimeter_d)+IDXtra*3);
 		}
 		
 		// Bolt holes
-		STB_BR_BoltPattern(Body_OD=Body_OD, nLockBalls=nLockBalls) Bolt4Hole();
+		STB_BR_BoltPattern(BallPerimeter_d=BallPerimeter_d, Body_OD=Body_OD, nLockBalls=nLockBalls) Bolt4Hole();
 		
 		// Shock cord hole
 		translate([0,0,-Bottom_H-Overlap]) 
 			hull() STB_ShockCordHolePattern(BallPerimeter_d=BallPerimeter_d, Body_OD=Body_OD) 
-				cylinder(d=3, h=Bottom_H+Overlap*2);
+				cylinder(d=STB_SCord_T(BallPerimeter_d), h=Bottom_H+Overlap*2);
 			
 		// Lock Disk goes here
 		cylinder(d=LockDisk_d+1, h=LockDiskHole_H, center=true);
@@ -1113,10 +1213,10 @@ module STB_BallRetainerBottom(BallPerimeter_d=BT54Body_ID, Body_OD=PML54Coupler_
 	difference(){
 		translate([0,0,-Bottom_H+SpringGroove_H]) 
 			hull() STB_ShockCordHolePattern(BallPerimeter_d=BallPerimeter_d, Body_OD=Body_OD) 
-				cylinder(d=5.4, h=Bottom_H-SpringGroove_H);
+				cylinder(d=STB_SCord_T(BallPerimeter_d)+2.4, h=Bottom_H-SpringGroove_H);
 		translate([0,0,-Bottom_H-Overlap]) 
 			hull() STB_ShockCordHolePattern(BallPerimeter_d=BallPerimeter_d, Body_OD=Body_OD) 
-				cylinder(d=3, h=Bottom_H+Overlap*2);
+				cylinder(d=STB_SCord_T(BallPerimeter_d), h=Bottom_H+Overlap*2);
 	} // difference
 	
 	// Magnetic latch
@@ -1136,19 +1236,29 @@ module STB_BallRetainerBottom(BallPerimeter_d=BT54Body_ID, Body_OD=PML54Coupler_
 } // STB_BallRetainerBottom
 
 /*
-STB_BallRetainerBottom(BallPerimeter_d=BT54Body_ID, Body_OD=PML54Coupler_ID, nLockBalls=nLockBalls, HasSpringGroove=true);
+STB_BallRetainerBottom(BallPerimeter_d=BT54Body_ID, Body_OD=PML54Coupler_ID, nLockBalls=nLockBalls, HasSpringGroove=true, Engagement_Len=20);
 rotate([0,0,STB_Unlocked_a(BallPerimeter_d=PML54Body_ID)])
 {
 STB_LockDisk(BallPerimeter_d=PML54Body_ID, nLockBalls=3);
 STB_ShowLockBearings(BallPerimeter_d=PML54Body_ID, nLockBalls=nLockBalls);}
 /**/
 /*
-STB_BallRetainerBottom(BallPerimeter_d=PML75Body_OD, Body_OD=PML75Body_ID, nLockBalls=5, HasSpringGroove=false);
+STB_BallRetainerBottom(BallPerimeter_d=PML75Body_OD, Body_OD=PML75Body_ID, nLockBalls=5, HasSpringGroove=false, Engagement_Len=20);
 
 //rotate([0,0,STB_Unlocked_a(BallPerimeter_d=PML75Body_OD)])
 {
 STB_LockDisk(BallPerimeter_d=PML75Body_OD, nLockBalls=5);
 STB_ShowLockBearings(BallPerimeter_d=PML75Body_OD, nLockBalls=5);
+}
+/**/
+
+/*
+STB_BallRetainerBottom(BallPerimeter_d=BT137BallPerimeter_d, Body_OD=BT137Body_ID, nLockBalls=7, HasSpringGroove=false, Engagement_Len=25);
+
+//rotate([0,0,STB_Unlocked_a(BallPerimeter_d=BT137BallPerimeter_d)])
+{
+STB_LockDisk(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=7);
+STB_ShowLockBearings(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=7);
 }
 /**/
 

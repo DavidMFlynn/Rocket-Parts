@@ -101,7 +101,29 @@ FairingConeOGive(Fairing_OD=Body_OD,
 					Cut_Z=190, LowerPortion=true);
 /**/
 // rotate([0,180,0]) NoseLockRing(Fairing_OD=Body_OD, Fairing_ID =Fairing_ID); // Brim+Support
+//translate([0,0,88]) rotate([180,0,0]) STB_SpringPlate(OD=128, nSprings=3, nRopeHoles=6);
+//STB_SpringPlate(OD=Body_ID, nSprings=3, nRopeHoles=6);
 //
+// *** Nosecone for ball lock unit ***
+// BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD, L=350, Base_L=25, Tip_R=12, Wall_T=3, Cut_Z=180, LowerPortion=false);
+// BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD, L=350, Base_L=25, Tip_R=12, Wall_T=3, Cut_Z=180, LowerPortion=true);
+//
+// -------------------------
+// *** Ball Lock Unit ***
+//
+// STB_LockDisk(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls);
+// rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=BT137BallPerimeter_d, Body_OD=Body_ID, nLockBalls=nBT137Balls, IntegratedCouplerLenXtra=-19, HasIntegratedCouplerTube=true, Body_ID=Body_ID, HasSecondServo=true, UsesBigServo=true, Engagement_Len=25);
+// STB_BallRetainerBottom(BallPerimeter_d=BT137BallPerimeter_d, Body_OD=Body_ID, nLockBalls=nBT137Balls, HasSpringGroove=false, Engagement_Len=25);
+// rotate([180,0,0]) STB_TubeEnd(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=25);
+//
+// STB_SpringEnd(Tube_ID=Coupler_OD, CouplerTube_ID=Coupler_ID, SleeveLen=0, nSprings=3, nRopeHoles=6);
+// STB_SpringMiddle(Tube_ID=BT54Coupler_OD);
+// translate([0,0,19]) rotate([180,0,0]) 
+// STB_SpringPlate(OD=Coupler_OD, nSprings=3, nRopeHoles=6);
+//
+// ---------------------------
+
+
 /*
 // Stubby nosecone
 FairingConeOGive(Fairing_OD=BT137Body_OD,
@@ -291,6 +313,7 @@ F54_FairingHalf(IsLeftHalf=false,
 // ***********************************
 include<TubesLib.scad>
 use<RailGuide.scad>
+use<NoseCone.scad>
 use<Fairing54.scad>
 use<FinCan.scad>
 use<Stager2Lib.scad>
@@ -298,11 +321,10 @@ use<AltBay.scad>
 use<CablePuller.scad>
 use<BatteryHolderLib.scad>
 use<SpringThing2.scad>
+use<SpringThingBooster.scad>
 use<RacewayLib.scad>
 
 //also included
- //include<NoseCone.scad>
- //include<ChargeHolder.scad>
  //include<CablePuller.scad>
  //include<FairingJointLib.scad>
  
@@ -338,6 +360,7 @@ Booster_Fin_Chamfer_L=42;
 
 Body_OD=BT137Body_OD;
 Body_ID=BT137Body_ID;
+Coupler_OD=BT137Coupler_OD;
 Coupler_ID=BT137Coupler_ID;
 MtrTube_OD=BT54Body_OD;
 MtrTube_ID=BT54Body_ID;
@@ -350,6 +373,9 @@ DualDepTube_OD=BT75Body_OD;
 DualDepTube_ID=BT75Body_ID;
 DualDepCouplerTube_OD=BT75Coupler_OD;
 DualDepCouplerTube_ID=BT75Coupler_ID;
+
+BT137BallPerimeter_d=Body_OD+1;
+nBT137Balls=7;
 
 EBay_Len=166;
 TailCone_Len=60;

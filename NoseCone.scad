@@ -225,10 +225,10 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3, Cut
 		if ($preview==true) translate([0,-100,-1]) cube([100,100,L+2]);
 			
 		if (Cut_Z!=0 && LowerPortion==false)
-			translate([0,0, -Overlap]) cylinder(d=OD+1, h=Cut_Z+Overlap);
+			translate([0,0, -Overlap]) cylinder(d=OD+1, h=Cut_Z+Overlap, $fn=90);
 		
 		if (Cut_Z!=0 && LowerPortion)
-			translate([0,0,Cut_Z]) cylinder(d=OD+1, h=L-Cut_Z+Overlap);
+			translate([0,0,Cut_Z]) cylinder(d=OD+1, h=Base_L+L-Cut_Z+Overlap);
 		
 	} // difference
 	

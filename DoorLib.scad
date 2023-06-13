@@ -67,11 +67,13 @@ module DoorHole(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD){
 	DX=Door_X+1;
 	DR=4+0.5; // Door corner Radius
 	
+	D_Edge_a=(Door_X<Tube_OD)? DoorEdge_a(Door_X=Door_X, Tube_OD=Tube_OD):90;
+	
 	difference(){
 		hull(){
-			rotate([0,0,DoorEdge_a(Door_X=Door_X, Tube_OD=Tube_OD)]) translate([0,-Tube_OD/2,0])
+			rotate([0,0,D_Edge_a]) translate([0,-Tube_OD/2,0])
 				rotate([90,0,0]) translate([-Door_X/2+DR,0,-10]) RoundRect(X=DX-DR*2, Y=DY, Z=20, R=DR);
-			rotate([0,0,-DoorEdge_a(Door_X=Door_X, Tube_OD=Tube_OD)]) translate([0,-Tube_OD/2,0])
+			rotate([0,0,-D_Edge_a]) translate([0,-Tube_OD/2,0])
 				rotate([90,0,0]) translate([Door_X/2-DR,0,-10]) RoundRect(X=DX-DR*2, Y=DY, Z=20, R=DR);
 			translate([0,-Tube_OD/2,0])
 				rotate([90,0,0]) translate([0,0,-10]) RoundRect(X=DX-DR*2, Y=DY, Z=20, R=DR);
@@ -93,7 +95,8 @@ module DoorHole(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD){
 
 } // DoorHole
 
-// DoorHole();
+// DoorHole(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD);
+//DoorHole(Door_X=67, Door_Y=111.5, Door_t=1, Tube_OD=64.8);
 
 module DoorFrameHole(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD){
 	DoorHole(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t+1, Tube_OD=Tube_OD);
