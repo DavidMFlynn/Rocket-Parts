@@ -10,6 +10,20 @@
 //
 //  Parts to add to Loc Graduator Kit
 //
+// Hardware:
+// #8-32 x 3/4" Button Head Cap Screw (2 Req.) Rail Buttons
+// #4-40 x 1/4" Button Head Cap Screw (4 Req.) Altimeter
+// #4-40 x 1/2" Socket Head Cap Screw (3 Req.) STB
+// 4mm x 16mm under size Dowel (3 Req.)
+// 4mm x 10mm under size Dowel (3 Req.)
+// MR84-2RS Bearings (5 Req.)
+// MG90S Servo
+// #2-56 x 1/4" Socket Head Cap Screw (2 Req.) Servo
+// Rocket Servo PCB (https://github.com/DavidMFlynn/Rocket-Servo)
+// Mission Control V3 Altimeter
+// C&K Rotary Switch
+// 36" Parachute
+//
 //  ***** History *****
 // 
 // 0.9.1  6/12/2023  Done for now. Rocket is together ready for paint.
