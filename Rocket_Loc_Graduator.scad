@@ -43,6 +43,9 @@
 // rotate([180,0,0]) STB_TubeEnd(BallPerimeter_d=Body_OD, nLockBalls=3, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=20);
 // STB_SpringEnd(Tube_ID=Body_ID, CouplerTube_ID=Coupler_ID, SleeveLen=30, nRopeHoles=0); // Print 2
 //
+// Tube(OD=Body_ID, ID=Body_ID-2.4, Len=40, myfn=$preview? 36:360); // Oops Fix:Spacer
+//	
+//
 //  *** Tools ***
 // EBayDrillingJig();
 //
@@ -70,6 +73,101 @@ nFins=3;
 EBay_Len=105.6;
 Alt_DoorXtra_X=2;
 Alt_DoorXtra_Y=2;
+
+Bolt4Inset=4;
+PetalWidth=Coupler_OD/5;
+
+module Petal(Len=75){
+	Width=PetalWidth;
+	Thickness=3;
+	Spring_d=5/16*25.4;
+	
+	difference(){
+			intersection(){
+				cylinder(d=Coupler_OD, h=Len);
+				translate([-Width/2,Coupler_OD/2-Thickness,0]) cube([Width, Coupler_OD, Len]);
+			} // intersection
+		
+		translate([0,Coupler_OD/2,Bolt4Inset]) rotate([-90,0,0]) Bolt4ButtonHeadHole();
+		translate([0,Coupler_OD/2,Bolt4Inset*3]) rotate([-90,0,0]) Bolt4ButtonHeadHole();
+	} // difference
+} // Petal
+
+//rotate([90,0,0]) 
+//Petal();
+
+module PetalSpringHolder(Len=75){
+	Width=11;
+	Thickness=3;
+	Spring_d=5/16*25.4;
+	
+	difference(){
+		hull(){
+			
+			translate([0,Coupler_OD/2-Thickness-Width/2,0]) cylinder(d=Width, h=10);
+			translate([-Width/2,Coupler_OD/2-Thickness-1,0]) cube([Width,1,1]);
+			
+			translate([0,Coupler_OD/2-Thickness,Bolt4Inset*3]) rotate([90,0,0]) cylinder(d=Width,h=3);
+		} // union
+		
+		translate([0,Coupler_OD/2-Thickness-Width/2,-Overlap]) cylinder(d=Spring_d+IDXtra, h=8);
+		
+		translate([0,Coupler_OD/2,Bolt4Inset]) rotate([-90,0,0]) Bolt4Hole();
+		translate([0,Coupler_OD/2,Bolt4Inset*3]) rotate([-90,0,0]) Bolt4Hole();
+	} // difference
+} // PetalSpringHolder
+
+//PetalSpringHolder();
+
+module PetalHub(){
+	Width=PetalWidth+1;
+	nPetals=3;
+	Spring_d=5/16*25.4;
+	Shelf_Z=16;
+	
+	difference(){
+		STB_SpringEnd(Tube_ID=Coupler_OD, CouplerTube_ID=Coupler_ID, SleeveLen=16, nRopeHoles=0);
+		
+		// Petal ledge and Spring slot
+		for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]){
+			translate([-Width/2,5,Shelf_Z]) cube([Width,Coupler_OD/2,20]);
+			//#translate([0,Coupler_OD/2-15,12-10+Spring_d/2]) 
+			//	rotate([-90,0,0]) cylinder(d=Spring_d, h=11);
+			hull(){
+				translate([0,Coupler_OD/2-15,Shelf_Z-10+Spring_d/2]) 
+					rotate([-90,0,0]) cylinder(d=Spring_d+1, h=20);
+				translate([0,Coupler_OD/2-15,Shelf_Z+Spring_d/2]) 
+					rotate([-90,0,0]) cylinder(d=Spring_d+1, h=20);
+			} // hull
+		}
+		
+		// Limit ropes
+		for (j=[0:2]) rotate([0,0,360/nPetals*(j+0.5)]) 
+			translate([0,Coupler_OD/2-5,-Overlap]) cylinder(d=4, h=20);
+	} // difference
+	
+	// Spring holders
+	for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]) difference(){
+		hull(){
+			translate([0,Coupler_OD/2-12,Shelf_Z-10+Spring_d/2]) 
+				rotate([90,0,0]) cylinder(d=Spring_d+3, h=11);
+			translate([-(Spring_d+5)/2,Coupler_OD/2-12-11,Shelf_Z-12]) 
+				cube([Spring_d+5,11,1]);
+		}
+			
+		translate([0,Coupler_OD/2-12+Overlap,Shelf_Z-10+Spring_d/2]) 
+			rotate([90,0,0]) cylinder(d=Spring_d, h=8);
+	}
+	
+	translate([0,0,3])
+	difference(){
+		cylinder(d=50, h=2.6);
+		translate([0,0,-Overlap]) cylinder(d=19.0, h=4);
+	} // difference
+	
+} // PetalHub
+
+// PetalHub();
 
 module UpperRailBtnMount(){
 	Len=15;
