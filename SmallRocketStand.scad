@@ -54,6 +54,8 @@ module ShowRocketStand(){
 	translate([0,0,LegRoot_h+Base_t*2-4]) rotate([0,180,0]) RocketStandBase();
 	for (j=[0:nLegs-1]) rotate([0,0,360/nLegs*j]) translate([-Leg_W/2,Base_d/2,-LegLen-1])
 		rotate([0,0,90]) rotate([90,0,0]) RocketStandLeg();
+		
+	color("Silver") cylinder(d=12, h=165);
 } // ShowRocketStand
 
 //ShowRocketStand();
