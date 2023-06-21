@@ -980,7 +980,6 @@ module BoosterUpperFinCan(){
 
 //translate([0,0,R9852Booster_Fin_Root_L+75.2]) BoosterUpperFinCan();
 
-
 module Rocket9852BoosterFin(){
 	TrapFin2(Post_h=R9852Booster_Fin_Post_h, Root_L=R9852Booster_Fin_Root_L, Tip_L=R9852Booster_Fin_Tip_L, 
 			Root_W=R9852Booster_Fin_Root_W, Tip_W=R9852Booster_Fin_Tip_W, 

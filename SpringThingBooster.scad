@@ -1015,8 +1015,8 @@ module STB_BallRetainerTop(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID
 			} // difference
 			
 			if (HasIntegratedCouplerTube){
-				translate([0,0,Engagement_Len/2-2]) 
-					Tube(OD=Body_ID, ID=Body_ID-6, Len=IntCouplerLen+15, myfn=$preview? 90:360);
+				translate([0,0,Engagement_Len/2]) 
+					Tube(OD=Body_ID, ID=Body_ID-6, Len=IntCouplerLen+13, myfn=$preview? 90:360);
 				translate([0,0,Engagement_Len/2]) 
 					Tube(OD=BallPerimeter_d, ID=Body_ID-4.4, Len=IntCouplerLen, myfn=$preview? 90:360);
 				}

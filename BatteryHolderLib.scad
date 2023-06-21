@@ -43,7 +43,7 @@ echo("BatteryHolderLib 1.2.0");
 //	BattDoorHole(Tube_OD=PML98Body_OD, HasSwitch=false);
 //  Batt_DoorBoltPattern(Tube_OD=PML98Body_OD, HasSwitch=false);
 //  Batt_BayFrameHole(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, HasSwitch=false);
-//  Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, Door_X=Batt_Door_X,  HasSwitch=false, ShowDoor=false);
+//  Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X,  HasSwitch=false, ShowDoor=false);
 //
 //  SingleBatteryHolder(Tube_ID=PML75Body_ID);
 //  DoubleBatteryHolder(Tube_ID=PML75Body_ID);
@@ -64,7 +64,7 @@ $fn=$preview? 24:90;
 
 Bolt4Inset=4;
 Batt_Door_Y=74;
-Batt_Door_X=27+Bolt4Inset*4+10;
+Batt_Door_X=27+Bolt4Inset*4+10; //53
 Batt_DoorThickness=3.7;
 
 // CK Rotary Switch
@@ -105,8 +105,7 @@ module Batt_BayFrameHole(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, Door_Y=Batt_D
 //Batt_BayFrameHole();
 //Batt_BayFrameHole(Tube_OD=PML54Body_OD, Door_X=43, HasSwitch=true);
 
-module Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, 
-						Door_X=Batt_Door_X, HasSwitch=false, ShowDoor=false){
+module Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, HasSwitch=false, ShowDoor=false){
 						
 	Door_Y=HasSwitch? Batt_Door_Y+CK_RotSw_d:Batt_Door_Y;
 	Door_t=Batt_DoorThickness;
@@ -118,9 +117,12 @@ module Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID,
 		
 } // Batt_BayDoorFrame
 
+//Batt_BayDoorFrame(Tube_OD=LOC65Body_OD, HasSwitch=false, ShowDoor=false);
+//DoorFrame(Door_X=53, Door_Y=87.5, Door_t=3, Tube_OD=LOC65Body_OD, HasSixBolts=false);
+
 //Batt_BayDoorFrame(ShowDoor=true);
-//Batt_BayDoorFrame(Tube_OD=PML75Body_OD, Tube_ID=PML75Body_ID, Door_X=Batt_Door_X, HasSwitch=true, ShowDoor=false);
-//Batt_BayDoorFrame(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Door_X=Batt_Door_X-10, HasSwitch=true, ShowDoor=false);
+//Batt_BayDoorFrame(Tube_OD=PML75Body_OD, Door_X=Batt_Door_X, HasSwitch=true, ShowDoor=false);
+//Batt_BayDoorFrame(Tube_OD=PML54Body_OD, Door_X=Batt_Door_X-10, HasSwitch=true, ShowDoor=false);
 //rotate([90,0,0]) Batt_Door54(Tube_OD=PML54Body_OD, HasSwitch=true);
 
 module Batt_Door(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, InnerTube_OD=PML38Body_OD, HasSwitch=false){

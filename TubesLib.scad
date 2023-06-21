@@ -3,7 +3,7 @@
 // Filename: TubesLib.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.10  2/23/2023
+// Revision: 0.9.11  6/16/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-function TubesLib_Rev()="TubesLib 0.9.10";
+function TubesLib_Rev()="TubesLib 0.9.11";
 echo(TubesLib_Rev());
+// 0.9.11  6/16/2023 Added PML29 and LOD65
 // 0.9.10  2/23/2023 Added MotorRetainer();
 // 0.9.9  1/18/2023  Added Offset to CenteringRing()
 // 0.9.8  12/29/2022 Added ShockCordMount()
@@ -121,6 +122,19 @@ PML38Body_ID=1.525*25.4;
 PML38Coupler_OD=(1.40+0.062*2)*25.4;
 PML38Coupler_ID=1.40*25.4;
 //echo(PML38Body_OD=PML38Body_OD);
+
+PML29Body_OD=32.3; // messured old tube
+PML29Body_ID=29.1;
+
+LOC65Body_OD=67.2;
+LOC65Body_ID=65;
+LOC65Coupler_OD=64.8;
+LOC65Coupler_ID=63.3;
+
+LOC29Body_OD=30.9;
+LOC29Body_ID=29;
+
+
 
 module MotorRetainer(Tube_OD=BT54Mtr_OD, Tube_ID=BT54Mtr_ID, Mtr_OD=54, MtrAC_OD=58){
 	OAH=33;

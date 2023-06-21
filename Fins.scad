@@ -271,6 +271,8 @@ module TrapFin2(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100,
 //TrapFin2(Post_h=14, Root_L=100, Tip_L=60, Root_W=20, Tip_W=8.0, Span=100, Chamfer_L=24, TipOffset=20, Bisect=false, Bisect_X=0, HasSpar=true, Spar_d=8.0, Spar_L=80);
 //TrapFin2(Post_h=10, Root_L=240, Tip_L=50, Root_W=12, Tip_W=7.0, Span=150, Chamfer_L=24, TipOffset=60);
 
+//TrapFin2(Post_h=10, Root_L=160, Tip_L=70, Root_W=6, Tip_W=3.0, Span=100, Chamfer_L=18, TipOffset=20, Bisect=false, Bisect_X=0, HasSpar=false, Spar_d=8, Spar_L=100);
+				
 // Too big to print in one piece
 module TooBigFin(KeepNegXHalf=false){
 	
