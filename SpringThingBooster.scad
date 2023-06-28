@@ -3,7 +3,7 @@
 // Filename: SpringThingBooster.scad
 // by David M. Flynn
 // Created: 2/26/2023
-// Revision: 1.2.8   6/11/23
+// Revision: 1.2.9   6/23/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -38,7 +38,8 @@
 //  Steel Dowel Pin 4mm (Undersized) x 16mm (3 Req.)
 //
 //  ***** History *****
-echo("SpringThingBooster Rev. 1.2.8");
+echo("SpringThingBooster Rev. 1.2.9");
+// 1.2.9   6/23/2023  Added CenterHole_d to STB_SpringEnd
 // 1.2.8   6/11/2023  Changed small servo arm length to 4mm.
 // 1.2.7   6/5/2023   Removed overrides.
 // 1.2.6   6/3/2023   Larger shock cord for 137 size.
@@ -69,6 +70,7 @@ echo("SpringThingBooster Rev. 1.2.8");
 // STB_SpringSeat(Body_OD=PML54Coupler_ID, Base_H=14);
 //
 // STB_SpringCupTOMT(Tube_ID=PML75Body_ID); // Top Of Motor Tube Spring Holder
+// STB_SpringEnd(Tube_ID=PML75Body_ID, CouplerTube_ID=BT75Coupler_ID, SleeveLen=0, nSprings=1, nRopeHoles=8, CenterHole_d=ST_DSpring_ID);
 //
 // ---------------------------
 //  *** 75mm Lock version ***
@@ -362,7 +364,7 @@ module STB_SpringPlate(OD=128, nSprings=1, nRopeHoles=8){
 
 //STB_SpringPlate(OD=128, nSprings=3, nRopeHoles=6);
 
-module STB_SpringEnd(Tube_ID=PML75Body_ID, CouplerTube_ID=BT75Coupler_ID, SleeveLen=0, nSprings=1, nRopeHoles=8){
+module STB_SpringEnd(Tube_ID=PML75Body_ID, CouplerTube_ID=BT75Coupler_ID, SleeveLen=0, nSprings=1, nRopeHoles=8, CenterHole_d=ST_DSpring_ID){
 
 	Slider_h=16;
 	
@@ -373,14 +375,15 @@ module STB_SpringEnd(Tube_ID=PML75Body_ID, CouplerTube_ID=BT75Coupler_ID, Sleeve
 		cylinder(d=Tube_ID-IDXtra*2, h=Slider_h);
 		
 		// Slider tube glues here
-		translate([0,0,5]) Tube(OD=Tube_ID, ID=CouplerTube_ID-IDXtra, Len=20, myfn=$preview? 36:360);
+		if (SleeveLen==0)
+			translate([0,0,5]) Tube(OD=Tube_ID, ID=CouplerTube_ID-IDXtra, Len=20, myfn=$preview? 36:360);
 		
 		// Tube face
 		translate([0,0,6]) cylinder(d1=ST_DSpring_ID, d2=Tube_ID-4.4+Overlap, h=10+Overlap);
 		
 		// Spring holes
 		for (j=[0:nSprings-1]) rotate([0,0,360/nSprings*j]) translate([0,Spring_Y,0]){
-			translate([0,0,-Overlap]) cylinder(d=ST_DSpring_ID, h=Slider_h+Overlap*2);
+			translate([0,0,-Overlap]) cylinder(d=CenterHole_d, h=Slider_h+Overlap*2);
 			translate([0,0,-Overlap]) cylinder(d=ST_DSpring_OD, h=3);
 			}
 		
@@ -395,6 +398,8 @@ module STB_SpringEnd(Tube_ID=PML75Body_ID, CouplerTube_ID=BT75Coupler_ID, Sleeve
 } // STB_SpringEnd
 
 // STB_SpringEnd(Tube_ID=PML98Body_ID, CouplerTube_ID=BT98Coupler_ID, SleeveLen=0);
+
+//STB_SpringEnd(Tube_ID=LOC65Body_ID, CouplerTube_ID=LOC65Coupler_ID, SleeveLen=30, nSprings=1, nRopeHoles=0, CenterHole_d=10);
 
 //STB_SpringEnd(Tube_ID=BT137Coupler_OD, CouplerTube_ID=BT137Coupler_ID, SleeveLen=0, nSprings=3, nRopeHoles=6);
 

@@ -158,7 +158,8 @@ F54_FairingHalf(IsLeftHalf=false,
 // ***********************************
 //  ***** for Viewing *****
 //
-// ShowUpperBays();
+// 
+ShowUpperBays();
 //
 // ***********************************
 use<Fairing54.scad>
@@ -366,9 +367,9 @@ module R98_Electronics_Bay2(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID,
 	
 	// Battery and Switch door2
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a+180]) 
-		Batt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, HasSwitch=false, ShowDoor=ShowDoors);
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=false, ShowDoor=ShowDoors);
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a+180]) 
-		Batt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, HasSwitch=true, ShowDoor=ShowDoors);
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=true, ShowDoor=ShowDoors);
 	
 } // R98_Electronics_Bay2
 
@@ -508,15 +509,13 @@ module DrogueMechBay(){
 	
 	// Battery and Switch door2
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
-		Batt_BayDoorFrame(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, HasSwitch=true, ShowDoor=false);
+		Batt_BayDoorFrame(Tube_OD=R98_Body_OD, HasSwitch=true, ShowDoor=false);
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
-		Batt_BayDoorFrame(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, HasSwitch=true, ShowDoor=false);
+		Batt_BayDoorFrame(Tube_OD=R98_Body_OD, HasSwitch=true, ShowDoor=false);
 	
 } // DrogueMechBay
 
 //DrogueMechBay();
-
-
 
 
 module DrogueSep(){

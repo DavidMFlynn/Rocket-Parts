@@ -3,15 +3,17 @@
 // Filename: Rocket98.scad
 // by David M. Flynn
 // Created: 10/4/2022 
-// Revision: 1.1.1  5/7/2023
+// Revision: 1.2.0  6/23/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 //
 //  Rocket with 98mm Body and 54mm motor. 
 //  A.K.A. The Red One
+//  This file includes a collection of electronics bays
 //
 //  ***** History *****
+// 1.2.0  6/23/2023  Added R98_Electronics_Bay5()
 // 1.1.1  5/7/2023   Updated.
 // 1.1.0  4/27/2023  Added Ball Lock for dual deploy option.
 // 1.0.2  12/15/2022 Updated electronics bay
@@ -95,8 +97,7 @@ F54_FairingHalf(IsLeftHalf=false,
 // ***********************************
 //  ***** for Viewing *****
 //
-// 
-ShowRocket98();
+// ShowRocket98();
 //
 // ***********************************
 include<TubesLib.scad>
@@ -207,6 +208,9 @@ module ShowRocket98(){
 
 module R98_Electronics_Bay3(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, 
 					Fairing_ID=Fairing_ID, InnerTube_OD=BT38Body_OD){
+					
+	// *** 2 Altimeters, 2 Battery Doors w/ Switches, Centering Rings Top and Bottom ***
+	
 	Len=150;
 	Altimeter_Z=75;
 	BattSwDoor_Z=70;
@@ -302,6 +306,9 @@ module R98_Electronics_Bay4(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID,
 					
 	// Make Rainbow One dual deploy
 	
+	// *** Altimeter, Cable Puller, 2 Battery Doors w/ Switches, Centering Rings Top and Bottom ***
+	
+	
 	Len=165;
 	Altimeter_Z=78;
 	CablePuller_Z=Len/2;
@@ -382,6 +389,10 @@ module R98_Electronics_Bay4(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID,
 
 module R98_Electronics_Bay2(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, 
 					Fairing_ID=Fairing_ID, InnerTube_OD=BT38Body_OD){
+					
+	// *** Altimeter, Cable Puller, 2 Battery Doors 1 w/ Switch, Centering Rings Top and Bottom ***
+	// *** Integrated Fairing Locking Ring ***
+	
 	Len=EBay_Len;
 	CablePuller_Z=81;
 	BattSwDoor_Z=70;
@@ -430,14 +441,88 @@ module R98_Electronics_Bay2(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID,
 	
 	// Battery and Switch door2
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
-		Batt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, HasSwitch=false, ShowDoor=false);
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=false, ShowDoor=false);
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
-		Batt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, HasSwitch=true, ShowDoor=false);
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=true, ShowDoor=false);
 	
 } // R98_Electronics_Bay2
 
 //translate([0,0,162]) R98_Electronics_Bay2();
 
+
+module R98_Electronics_Bay5(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, 
+					Fairing_ID=Fairing_ID, InnerTube_OD=BT38Body_OD){
+					
+	// *** Altimeter, Battery Door w/o Switch, 2 Battery Doors w/ Switches, Centering Rings Top and Bottom ***
+	// *** For Dual Deployment w/ 2 Ball Lock Units ***
+	
+	Len=150;
+	Altimeter_Z=75;
+	BattSwDoor_Z=70;
+	TopSkirt_Len=15;
+	BottomSkirt_Len=15;
+	Alt1_a=0;
+	//Alt2_a=180;
+	Batt3_a=90; // Altimeter Battery
+	Batt1_a=180; // Rocket Servo 1 Battery & Switch
+	Batt2_a=270; // Rocket Servo 2 Battery & Switch
+	
+	nCRHoles=4;
+	
+	/*
+	// The Fairing clamps onto this. 
+	translate([0,0,Len]) FairingBaseLockRing(Tube_OD=Tube_OD, Tube_ID=Tube_ID, Fairing_ID=Fairing_ID, Interface=Overlap, BlendToTube=true);
+	/**/
+	
+	difference(){
+		union(){
+			Tube(OD=Tube_OD, ID=Tube_ID, Len=Len, myfn=$preview? 36:360);
+			
+			translate([0,0,BottomSkirt_Len]) rotate([0,0,45])
+				CenteringRing(OD=Tube_OD-1, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=nCRHoles);
+			translate([0,0,Len-5-TopSkirt_Len]) rotate([0,0,45])
+				CenteringRing(OD=Tube_OD-1, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=nCRHoles);
+	} // union
+		
+		// Altimeter 1
+		translate([0,0,Altimeter_Z]) rotate([0,0,Alt1_a]) 
+			Alt_BayFrameHole(Tube_OD=Tube_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
+			
+		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt3_a]) 
+			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=false);
+			
+		// Altimeter 2
+		//translate([0,0,Altimeter_Z]) rotate([0,0,Alt2_a]) 
+		//	Alt_BayFrameHole(Tube_OD=Tube_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
+		
+		// Battery and Switch door holes
+		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
+			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
+		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
+			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
+		
+	} // difference
+	
+	// Altimeter 1
+	translate([0,0,Altimeter_Z]) rotate([0,0,Alt1_a])
+		Alt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=false);
+	
+	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt3_a]) 
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=false, ShowDoor=false);
+		
+	// Altimeter 2
+	//translate([0,0,Altimeter_Z]) rotate([0,0,Alt2_a])
+	//	Alt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=false);
+	
+	// Battery and Switch door2
+	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=true, ShowDoor=false);
+	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=true, ShowDoor=false);
+	
+} // R98_Electronics_Bay5
+
+//R98_Electronics_Bay5();
 
 module UpperFinCan(){
 	// Upper Half of Fin Can

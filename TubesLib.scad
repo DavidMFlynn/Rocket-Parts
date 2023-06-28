@@ -167,6 +167,14 @@ module CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0, Of
 	} // difference
 } // CenteringRing
 
+/*
+// Split ring for repairs
+difference(){
+	CenteringRing(OD=PML98Coupler_ID, ID=PML54Body_OD+IDXtra*2, nHoles=10, Thickness=3);
+	
+	translate([-0.5,-PML98Body_OD/2,-Overlap]) cube([PML98Body_OD,PML98Body_OD,6]);
+} // difference
+/**/
 //CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5);
 //CenteringRing(OD=BT54Body_ID, ID=BT38Coupler_OD+IDXtra*2, Thickness=5, nHoles=0);
 //CenteringRing(OD=PML98Coupler_ID, ID=PML54Body_OD+IDXtra*2, Thickness=5, nHoles=5);
