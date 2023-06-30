@@ -3,7 +3,7 @@
 // Filename: SmallRocketStand.scad
 // by David M. Flynn
 // Created: 6/15/2023 
-// Revision: 1.0.0  6/15/2023
+// Revision: 1.0.1  6/29/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -16,6 +16,7 @@
 //
 //  ***** History *****
 // 
+// 1.0.1  6/29/2023  38mm bushing
 // 1.0.0  6/15/2023  First code.
 //
 // ***********************************
@@ -23,13 +24,13 @@
 //
 // RocketStandLeg(); // print 3
 // RocketStandBase(); // print 2
-// RocketStand29mmBushing(); // print 2 to 4 as needed
+// RocketStandBushing(OD=28.5); // print 2 to 4 as needed
+// RocketStandBushing(OD=37); // for 38mm motor tube
 //
 // ***********************************
 //  ***** for Viewing *****
 //
-// 
-ShowRocketStand();
+// ShowRocketStand();
 //
 // ***********************************
 
@@ -60,9 +61,9 @@ module ShowRocketStand(){
 
 //ShowRocketStand();
 
-module RocketStand29mmBushing(){
+module RocketStandBushing(OD=28.5){
 	ID=12.7;
-	OD=28.5;
+	
 	Wall_t=1.2;
 	Trim=7;
 	Stretch=4;
@@ -100,9 +101,9 @@ module RocketStand29mmBushing(){
 		translate([0,0,-OD/2-Stretch/2-1]) cylinder(d=OD+1, h=Trim+1);
 		translate([0,0,-OD/2-Stretch/2+Trim-Overlap]) cylinder(d=ID, h=OD+Stretch-Trim*2+Overlap*2);
 	} // difference
-} // RocketStand29mmBushing
+} // RocketStandBushing
 
-//RocketStand29mmBushing();
+//RocketStandBushing(OD=37);
 
 module RocketStandBase(){
 	
