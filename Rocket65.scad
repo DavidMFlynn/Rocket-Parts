@@ -3,7 +3,7 @@
 // Filename: Rocket65.scad
 // by David M. Flynn
 // Created: 6/16/2023 
-// Revision: 1.0.5  6/29/2023 
+// Revision: 1.0.6  6/30/2023 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -29,8 +29,10 @@
 // 29mm or 38mm Motor Tube
 // 2.65" x 15" LOC Body Tube
 // 1/4" Rail Button (2 req)
+// CS4323 Spring
 //
 //  ***** History *****
+// 1.0.6  6/30/2023  Fixed motor tube hole diameter
 // 1.0.5  6/29/2023  Round shock cord in SpringEndTop(), added mount for petals to BallRetainerBottom
 // 1.0.4  6/27/2023  Added hardware list and SpringSpacer()
 // 1.0.3  6/22/2023  Adjusted size of ebay parts. Fixed batt door now has switch.
@@ -57,6 +59,11 @@
 // rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=Body_OD, Body_OD=Body_ID, nLockBalls=3, HasIntegratedCouplerTube=true, Body_ID=Body_ID-IDXtra, HasSecondServo=false, UsesBigServo=false);
 // R65_BallRetainerBottom();
 // rotate([180,0,0]) STB_TubeEnd(BallPerimeter_d=Body_OD, nLockBalls=3, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=20);
+//
+// *** optional petal deployer ***
+// PetalHub();
+// rotate([-90,0,0]) PetalSpringHolder();
+// rotate([180,0,0]) Petals(Len=110, nPetals=3);
 //
 // SpringEndTop(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=3);
 // SpringEndBottom(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=3);
@@ -123,6 +130,7 @@ MotorTube_ID=PML29Body_ID;
 MotorTube_OD=BT38Body_OD;
 MotorTube_ID=BT38Body_ID;
 /**/
+MotorTubeHole_d=MotorTube_OD+IDXtra*3;
 
 EBay_Len=152;
 
@@ -187,6 +195,42 @@ module R65_BallRetainerBottom(){
 } // R65_BallRetainerBottom
 
 // translate([0,0,-8]) rotate([180,0,0]) R65_BallRetainerBottom();
+
+
+module Petals(Len=25, nPetals=3){
+	Bolt1_Z=11.75;
+	Thickness=3;
+	BaseOffset=11.2;
+	
+	difference(){
+		union(){
+			translate([0,0,BaseOffset]) Tube(OD=Coupler_OD-IDXtra*2, ID=Coupler_OD-3.6, Len=Len, myfn=$preview? 90:360);
+			
+			for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]) difference(){
+				intersection(){
+					cylinder(d=Coupler_OD-IDXtra*2, h=16+BaseOffset, $fn=$preview? 90:360);
+						
+					translate([-PetalWidth/2,Coupler_OD/2-Thickness,0]) 
+						cube([PetalWidth, Coupler_OD, 16+BaseOffset]);
+				} // intersection
+				translate([0,0,16+BaseOffset-3])
+					cylinder(d1=Coupler_OD-Thickness*2, d2=Coupler_OD-3.6+Overlap, h=3+Overlap, $fn=$preview? 90:360);
+			}
+		} // union
+		
+		// Bolt Holes
+		for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]){
+			translate([0,Coupler_OD/2,Bolt1_Z]) rotate([-90,0,0]) Bolt4ButtonHeadHole();
+			translate([0,Coupler_OD/2,Bolt1_Z+Bolt4Inset*2]) rotate([-90,0,0]) Bolt4ButtonHeadHole();
+			}
+		
+		// Cut here
+		for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*(j+0.5)])
+			translate([0,Coupler_OD/2,Len/2+BaseOffset]) cube([2,2,Len+Overlap*2], center=true);
+	} // difference
+} // Petals
+
+//rotate([180,0,0]) Petals(Len=110, nPetals=3);
 
 module PetalSpringHolder(Len=75){
 	Width=11;
@@ -283,7 +327,7 @@ module PetalHub(){
 		}
 				
 		// Shock cord hole
-		translate([0,0,-Overlap]) rotate([0,0,33]) hull(){
+		translate([0,0,-Overlap]) rotate([0,0,-60+33]) hull(){
 			translate([0,-Coupler_OD/2+6,0]) cylinder(d=3, h=15);
 			translate([0,-Coupler_OD/2+16.5,0]) cylinder(d=3, h=15);
 		}
@@ -293,7 +337,8 @@ module PetalHub(){
 	
 } // PetalHub
 
-// PetalHub();
+// rotate([0,0,60]) PetalHub();
+
 
 module ShockCordPlate(){
 	Plate_t=4;
@@ -468,7 +513,6 @@ module SpringEndBottom(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=3){
 
 module UpperRailBtnMount(){
 	Len=15;
-	MtrTubeTrue_ID=MotorTube_OD+IDXtra*3;
 	
 	difference(){
 		cylinder(d=Body_ID, h=Len);
@@ -480,7 +524,7 @@ module UpperRailBtnMount(){
 		}
 		
 		// Motor tube
-		translate([0,0,-Overlap]) cylinder(d=MtrTubeTrue_ID, h=Len+Overlap*2);
+		translate([0,0,-Overlap]) cylinder(d=MotorTubeHole_d, h=Len+Overlap*2);
 		
 		// Rail button bolt hole
 		translate([0,-Body_OD/2,Len/2]) rotate([90,0,0]) Bolt8Hole();
@@ -490,7 +534,7 @@ module UpperRailBtnMount(){
 	} // difference
 
 	difference(){
-		rotate([0,0,90/5]) CenteringRing(OD=Body_ID, ID=MtrTubeTrue_ID, Thickness=3, nHoles=5, Offset=0);
+		rotate([0,0,90/5]) CenteringRing(OD=Body_ID, ID=MotorTubeHole_d, Thickness=3, nHoles=5, Offset=0);
 		
 		// Shock cord
 		translate([0,MotorTube_OD/2+5,-1]) rotate([20,0,0]) cylinder(d=5, h=Len+5);
@@ -507,7 +551,7 @@ module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 	difference(){
 		union(){
 			Tube(OD=Body_OD, ID=Body_OD-Wall_t*2, Len=Can_Len, myfn=$preview? 36:360);
-			Tube(OD=MotorTube_OD+IDXtra*3+Wall_t*2, ID=MotorTube_OD+IDXtra*3, Len=Can_Len, myfn=$preview? 36:360);
+			Tube(OD=MotorTubeHole_d+Wall_t*2, ID=MotorTubeHole_d, Len=Can_Len, myfn=$preview? 36:360);
 			
 			// integrated coupler
 			translate([0,0,Can_Len-Overlap])
@@ -518,7 +562,7 @@ module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 				
 			translate([0,0,Can_Len/2-3])
 				rotate([0,0,180/nFins])
-					CenteringRing(OD=Body_OD-1, ID=MotorTube_OD+IDXtra*2, Thickness=6, nHoles=nFins, Offset=0);
+					CenteringRing(OD=Body_OD-1, ID=MotorTubeHole_d, Thickness=6, nHoles=nFins, Offset=0);
 			
 			// Fin Boxes
 			difference(){
@@ -530,7 +574,7 @@ module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 					translate([0,0,-Overlap*2]) cylinder(d=Body_OD-1, h=Can_Len+Overlap*4);
 				} // difference
 				
-				translate([0,0,-Overlap]) cylinder(d=MotorTube_OD+IDXtra*3, h=Can_Len+Overlap*2);
+				translate([0,0,-Overlap]) cylinder(d=MotorTubeHole_d, h=Can_Len+Overlap*2);
 			} // difference
 			
 			TailCone();
@@ -582,7 +626,7 @@ module TailCone(Threaded=true){
 	difference(){
 		union(){
 			hull(){
-				translate([0,0,-Cone_Len]) cylinder(d=MotorTube_OD+2.4+IDXtra*2, h=2, $fn=$preview? 90:360);
+				translate([0,0,-Cone_Len]) cylinder(d=MotorTubeHole_d+2.4, h=2, $fn=$preview? 90:360);
 				
 				difference(){
 					rotate_extrude($fn=$preview? 90:360) translate([Body_OD/2-8,0,0]) circle(d=16);
@@ -602,7 +646,7 @@ module TailCone(Threaded=true){
 		
 		// Motor tube
 		translate([0,0,-Cone_Len-Overlap]) 
-			cylinder(d=MotorTube_OD+IDXtra*3, h=Cone_Len+FinInset_Len+FinAlignment_Len+Overlap*2);
+			cylinder(d=MotorTubeHole_d, h=Cone_Len+FinInset_Len+FinAlignment_Len+Overlap*2);
 	
 		// Rail button bolt hole
 		translate([-Body_OD/2,0,10]) rotate([0,-90,0]) Bolt8Hole();
@@ -617,7 +661,7 @@ module TailCone(Threaded=true){
 			
 		// Motor tube
 		translate([0,0,-Cone_Len-Overlap]) 
-			cylinder(d=MotorTube_OD+IDXtra*2, h=Cone_Len+FinInset_Len+FinAlignment_Len+Overlap*2);
+			cylinder(d=MotorTubeHole_d, h=Cone_Len+FinInset_Len+FinAlignment_Len+Overlap*2);
 	}
 } // TailCone
 
