@@ -10,28 +10,44 @@
 //
 //  Rocket with 65mm Body and 29mm or 38mm motor. 
 //  "Little Orange One"
+//  "Mr. Green"
+//  "Miss Scarlett"
+//  "Prof. Plumb"
+//  "Ghost"
 //  Single deploy:
 //   Mission Control V3 / RocketServo
 //
+//  ***** Parts *****
+//
+// LOC 2.65" Body Tube by 15 inches
+// Blue Tube 1.5" Body Tube by 12 inches
+// 36" Parachute
+// 1/8" Paracord (3 feet)
+// 1/2" Braided Nylon Shock Cord (20 feet)
+//
 //  ***** Hardware *****
+//
 // #6-32 x 3/4" Button Head Cap Screw (2 req) Rail Buttons
 // #4-40 x 1/2" Socket Head Cap Screw (3 req) Ball Lock
 // #4-40 x 3/8" Button Head Cap Screw (6 req) Doors
+// #4-40 x 3/8" Socket Head Cap Screw (3 req) PetalHub
 // #4-40 x 1/4" Button Head Cap Screw (4 req) Altimeter
-// MR84-2RS Bearing (5 req)
-// 3/8" Delrin Ball (3 req)
-// 4mm Dia. x 10mm Undersize Steel Dowel (3 req)
-// 4mm Dia. x 16mm Undersize Steel Dowel (3 req)
-// MG90S Micro Servo
-// C&K Rotary Switch
+// MR84-2RS Bearing (5 req) Ball Lock
+// 3/8" Delrin Ball (3 req) Ball Lock
+// 4mm Dia. x 10mm Undersize Steel Dowel (3 req) Ball Lock
+// 4mm Dia. x 16mm Undersize Steel Dowel (3 req) Ball Lock
+// 3/16" Dia x 1/8" Disc Magnet N42 (2 req) Ball Lock
+// MG90S Micro Servo (1 req) Ball Lock
+// C&K Rotary Switch (1 req) Battery Door
 // Mission Control V3 Altimeter PCBA
 // Rocket Servo PCBA
-// 29mm or 38mm Motor Tube
-// 2.65" x 15" LOC Body Tube
 // 1/4" Rail Button (2 req)
 // CS4323 Spring
+// 5/64" Dia. x 1/2" Roll Pin (6 req) PetalHub
+// 5/16" Dia x 1-1/4" Spring (3 req) PetalHub
 //
 //  ***** History *****
+//
 // 1.0.6  6/30/2023  Fixed motor tube hole diameter
 // 1.0.5  6/29/2023  Round shock cord in SpringEndTop(), added mount for petals to BallRetainerBottom
 // 1.0.4  6/27/2023  Added hardware list and SpringSpacer()
@@ -44,23 +60,27 @@
 //  ***** for STL output *****
 //
 // *** Nosecode ***
+//
 // BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=NC_Len, Base_L=13, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
 //
 // ShockCordPlate();
 //
 // *** Electronics Bay ***
+//
 // Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID);
 // rotate([-90,0,0]) AltDoor54(Tube_OD=Body_OD, IsLoProfile=false, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowAlt=true);
 // 
 // rotate([-90,0,0]) Batt_Door(Tube_OD=Body_OD, InnerTube_OD=0, HasSwitch=true);
 //
 // *** Ball Lock ***
+//
 // STB_LockDisk(BallPerimeter_d=Body_OD, nLockBalls=3);
 // rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=Body_OD, Body_OD=Body_ID, nLockBalls=3, HasIntegratedCouplerTube=true, Body_ID=Body_ID-IDXtra, HasSecondServo=false, UsesBigServo=false);
 // R65_BallRetainerBottom();
 // rotate([180,0,0]) STB_TubeEnd(BallPerimeter_d=Body_OD, nLockBalls=3, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=20);
 //
 // *** optional petal deployer ***
+//
 // PetalHub();
 // rotate([-90,0,0]) PetalSpringHolder();
 // rotate([180,0,0]) Petals(Len=110, nPetals=3);
@@ -72,10 +92,13 @@
 // UpperRailBtnMount();
 //
 // *** Fin Can ***
+//
 // FinCan(LowerHalfOnly=false, UpperHalfOnly=true);
 // RocketFin();
 // rotate([180,0,0]) FinCan(LowerHalfOnly=true, UpperHalfOnly=false);
 // MotorRetainer();
+//
+// RailButton(); // (4 req) print many
 //
 // ***********************************
 //  ***** Routines *****
@@ -92,14 +115,11 @@ use<RailGuide.scad>
 use<Fins.scad>
 use<NoseCone.scad>
 use<AltBay.scad>
-use<CablePuller.scad>
 use<BatteryHolderLib.scad>
 use<SpringThingBooster.scad>
 use<ThreadLib.scad>
 
 //also included
- //include<FairingJointLib.scad>
- //include<BearingLib.scad>
  //include<CommonStuffSAEmm.scad>
 
 Overlap=0.05;
@@ -295,7 +315,7 @@ module PetalHub(){
 		} // union
 		
 		// Bolt to BallRetainerBottom
-		for (j=[0:2]) rotate([0,0,120*(j+0.5)]) translate([0,Body_OD/2-5,4]) Bolt4HeadHole(lHead=20);
+		for (j=[0:2]) rotate([0,0,120*(j+0.5)]) translate([0,Body_OD/2-5,5]) Bolt4HeadHole(lHead=20);
 		
 		// Petal ledge and Spring slot
 		for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]){
