@@ -76,10 +76,10 @@ F54_FairingHalf(IsLeftHalf=false,
 //
 // -------------------------------------------------------------------------------------------
 //  *** Optional: Ball Lock for base of electronics bay to make this a dual deploy rocket ***
-// STB_LockDisk(BallPerimeter_d=R98_Body_OD, nLockBalls=6);
-// rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=R98_Body_OD, Body_OD=R98_Body_ID, nLockBalls=6, HasIntegratedCouplerTube=true, Body_ID=R98_Body_ID, HasSecondServo=true, UsesBigServo=true);
-// STB_BallRetainerBottom(BallPerimeter_d=R98_Body_OD, Body_OD=R98_Body_ID, nLockBalls=6, HasSpringGroove=false);
-// rotate([180,0,0]) TubeEnd(BallPerimeter_d=R98_Body_OD, nLockBalls=6, Body_OD=R98_Body_OD, Body_ID=R98_Body_ID, Skirt_Len=20);
+// STB_LockDisk(BallPerimeter_d=R98_Body_OD, nLockBalls=nLockBalls);
+// rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=R98_Body_OD, Body_OD=R98_Body_ID, nLockBalls=nLockBalls, HasIntegratedCouplerTube=true, Body_ID=R98_Body_ID, HasSecondServo=true, UsesBigServo=true);
+// STB_BallRetainerBottom(BallPerimeter_d=R98_Body_OD, Body_OD=R98_Body_ID, nLockBalls=nLockBalls, HasSpringGroove=false);
+// rotate([180,0,0]) TubeEnd(BallPerimeter_d=R98_Body_OD, nLockBalls=nLockBalls, Body_OD=R98_Body_OD, Body_ID=R98_Body_ID, Skirt_Len=20);
 // STB_SpringEnd(Tube_ID=R98_Body_ID, CouplerTube_ID=BT98Coupler_ID);
 //
 //
@@ -161,6 +161,10 @@ BodyTubeLen=36*25.4;
 
 Alt_DoorXtra_X=2;
 Alt_DoorXtra_Y=2;
+
+Bolt4Inset=4;
+PetalWidth=R98_Coupler_OD/5;
+nLockBalls=6;
 
 
 module ShowRocket98(){
@@ -523,6 +527,165 @@ module R98_Electronics_Bay5(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID,
 } // R98_Electronics_Bay5
 
 //R98_Electronics_Bay5();
+
+
+module Petals(Len=25, nPetals=nLockBalls){
+	Bolt1_Z=11.75;
+	Thickness=3;
+	BaseOffset=11.2;
+	
+	difference(){
+		union(){
+			translate([0,0,BaseOffset]) Tube(OD=R98_Coupler_OD-IDXtra*2, ID=R98_Coupler_OD-3.6, Len=Len, myfn=$preview? 90:360);
+			
+			for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]) difference(){
+				intersection(){
+					cylinder(d=R98_Coupler_OD-IDXtra*2, h=16+BaseOffset, $fn=$preview? 90:360);
+						
+					translate([-PetalWidth/2,R98_Coupler_OD/2-Thickness,0]) 
+						cube([PetalWidth, R98_Coupler_OD, 16+BaseOffset]);
+				} // intersection
+				translate([0,0,16+BaseOffset-3])
+					cylinder(d1=R98_Coupler_OD-Thickness*2, d2=R98_Coupler_OD-3.6+Overlap, h=3+Overlap, $fn=$preview? 90:360);
+			}
+		} // union
+		
+		// Bolt Holes
+		for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]){
+			translate([0,R98_Coupler_OD/2,Bolt1_Z]) rotate([-90,0,0]) Bolt4ButtonHeadHole();
+			translate([0,R98_Coupler_OD/2,Bolt1_Z+Bolt4Inset*2]) rotate([-90,0,0]) Bolt4ButtonHeadHole();
+			}
+		
+		// Cut here
+		for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*(j+0.5)])
+			translate([0,R98_Coupler_OD/2,Len/2+BaseOffset]) cube([2,2,Len+Overlap*2], center=true);
+	} // difference
+} // Petals
+
+//rotate([180,0,0]) Petals(Len=110, nPetals=nLockBalls);
+
+module PetalSpringHolder(Len=75){
+	Width=11;
+	Thickness=3;
+	Spring_d=5/16*25.4;
+	Axle_d=1.75+IDXtra*2;
+	AxleBoss_d=Axle_d+2.4;
+	
+	difference(){
+		union(){
+			translate([0,0,8]) hull(){
+				translate([0,R98_Coupler_OD/2-Thickness-Width/2,0]) cylinder(d=Width, h=10);
+				translate([-Width/2,R98_Coupler_OD/2-Thickness-1,0]) cube([Width,1,1]);
+			
+				translate([0,R98_Coupler_OD/2-Thickness,Bolt4Inset*3]) rotate([90,0,0]) cylinder(d=Width,h=3);
+			} // hull
+			
+			translate([0,R98_Coupler_OD/2-Thickness-AxleBoss_d/2,0]) hull(){
+				rotate([0,90,0]) cylinder(d=AxleBoss_d, h=PetalWidth, center=true);
+				translate([0,0,8]) rotate([0,90,0]) cylinder(d=AxleBoss_d, h=Width, center=true);
+			} // hull
+		} // union
+		
+		translate([0,R98_Coupler_OD/2-Thickness-AxleBoss_d/2,0])
+			rotate([0,90,0]) cylinder(d=Axle_d, h=PetalWidth+Overlap*2, center=true);
+			
+		translate([0,R98_Coupler_OD/2-Thickness-Width/2,-AxleBoss_d/2-Overlap]) cylinder(d=Spring_d+IDXtra, h=16+AxleBoss_d/2);
+		
+		translate([0,R98_Coupler_OD/2,12]) rotate([-90,0,0]) Bolt4Hole(depth=6);
+		translate([0,R98_Coupler_OD/2,12+Bolt4Inset*2]) rotate([-90,0,0]) Bolt4Hole(depth=9.5);
+	} // difference
+} // PetalSpringHolder
+
+//rotate([-90,0,0]) PetalSpringHolder();
+
+module PetalHub(){
+
+	Width=PetalWidth+1;
+	Thickness=3;
+	nPetals=nLockBalls;
+	Spring_d=5/16*25.4;
+	Shelf_Z=16;
+	SpringEnd_Y=R98_Coupler_OD/2-16;
+	Axle_d=1.75+IDXtra*2;
+	AxleBoss_d=Axle_d+2.4;
+	
+	difference(){
+		union(){
+			STB_SpringEnd(Tube_ID=R98_Coupler_OD, CouplerTube_ID=R98_Coupler_OD-3.6, SleeveLen=16, nRopeHoles=0);
+			
+			// Close bottom
+			//translate([0,0,3]) 
+			//cylinder(d=R98_Coupler_OD-1, h=6);
+			
+			// Spring holders
+			for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]) 
+				hull(){
+					translate([0,SpringEnd_Y,Shelf_Z-10+Spring_d/2]) 
+						rotate([90,0,0]) cylinder(d=Spring_d+3, h=11);
+					translate([-(Spring_d+5)/2,SpringEnd_Y-11,Shelf_Z-12]) 
+						cube([Spring_d+5,11,1]);
+				} // hull
+		} // union
+		
+		// Bolt to BallRetainerBottom
+		for (j=[0:nLockBalls-1]) rotate([0,0,360/nLockBalls*(j+0.6)]) translate([0,R98_Body_OD/2-5,5]) Bolt4HeadHole(lHead=20);
+		
+		// Petal ledge and Spring slot
+		for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]){
+			translate([-Width/2,5,Shelf_Z]) cube([Width,R98_Coupler_OD/2,20]);
+			
+			// Axle 
+			translate([0,R98_Coupler_OD/2-Thickness-AxleBoss_d/2-0.5,7]){
+			
+				rotate([0,90,0]) cylinder(d=Axle_d, h=R98_Coupler_OD, center=true);
+				hull(){
+					rotate([0,90,0]) cylinder(d=AxleBoss_d+6, h=Width, center=true);
+					translate([0,10,0]) rotate([0,90,0]) cylinder(d=AxleBoss_d+8, h=Width, center=true);
+					translate([0,0,10]) rotate([0,90,0]) cylinder(d=AxleBoss_d+6, h=Width, center=true);
+					}}
+				
+			// Spring clearance
+			hull(){
+				translate([0,R98_Coupler_OD/2-16,Shelf_Z-10+Spring_d/2]) 
+					rotate([-90,0,0]) cylinder(d=Spring_d+1, h=20);
+				translate([0,R98_Coupler_OD/2-16,Shelf_Z+Spring_d/2]) 
+					rotate([-90,0,0]) cylinder(d=Spring_d+1, h=20);
+			} // hull
+		}
+		
+		// Spring holders
+		for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]) {
+			translate([0,SpringEnd_Y+Overlap,Shelf_Z-10+Spring_d/2]) 
+				rotate([90,0,0]) cylinder(d=Spring_d, h=8);
+		}
+				
+		// Shock cord hole
+		translate([0,0,-Overlap]) rotate([0,0,29]) hull(){
+			translate([0,-R98_Coupler_OD/2+6,0]) cylinder(d=3.5, h=20);
+			translate([0,-R98_Coupler_OD/2+18,0]) cylinder(d=3.5, h=15);
+		}
+		
+		
+	} // difference
+	
+} // PetalHub
+
+// rotate([0,0,-12]) PetalHub();
+
+
+module R98_BallRetainerBottom(){
+	// Has bolt holes for PetalHub
+	nLockBalls=6;
+	
+	difference(){
+		STB_BallRetainerBottom(BallPerimeter_d=R98_Body_OD, Body_OD=R98_Body_ID,
+					nLockBalls=nLockBalls, HasSpringGroove=false);
+		
+		for (j=[0:nLockBalls-1]) rotate([0,0,360/nLockBalls*(j+0.6)]) translate([0,R98_Body_OD/2-5,0]) Bolt4Hole();
+	} // difference
+} // R98_BallRetainerBottom
+
+// translate([0,0,-8]) rotate([180,0,0]) R98_BallRetainerBottom();
 
 module UpperFinCan(){
 	// Upper Half of Fin Can

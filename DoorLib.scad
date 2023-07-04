@@ -3,7 +3,7 @@
 // Filename: DoorLib.scad
 // by David M. Flynn
 // Created: 4/29/2023 
-// Revision: 1.0.1  6/21/2023
+// Revision: 1.0.2  7/4/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-echo("DoorLib 1.0.1");
+echo("DoorLib 1.0.2");
 //
+// 1.0.2  7/4/2023    Made door sill smaller 1.5mm vs 2mm
 // 1.0.1  6/21/2023   Changed door frame.
 // 1.0.0  5/7/2023    Tested doors made with this library.
 // 0.9.1  4/29/2023   Bolt holes are optional.
@@ -147,6 +148,7 @@ module DoorFrame(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBol
 	DR=4+2;
 	BoltBoss_t=2.2;
 	Sill_t=1.5;
+	Sill_w=1.5;
 	
 	module Flanges(){
 		rotate([0,0,DoorBolt_a(Door_X=Door_X, Tube_OD=Tube_OD)]) translate([0,-Tube_OD/2,0]) { 
@@ -215,7 +217,7 @@ module DoorFrame(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBol
 		DoorHole(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t, Tube_OD=Tube_OD);
 		
 		// Sill
-		DoorHole(Door_X=Door_X-4, Door_Y=Door_Y-4, Door_t=Door_t+3, Tube_OD=Tube_OD);
+		DoorHole(Door_X=Door_X-Sill_w*2, Door_Y=Door_Y-Sill_w*2, Door_t=Door_t+3, Tube_OD=Tube_OD);
 	} // difference
 	
 	// Bolt flanges
@@ -250,7 +252,8 @@ module DoorFrame(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBol
 } // DoorFrame
 
 //DoorFrame();
-//DoorFrame(Door_X=53, Door_Y=74, Door_t=3, Tube_OD=LOC65Body_OD, HasSixBolts=false);
+//
+DoorFrame(Door_X=53, Door_Y=74, Door_t=3, Tube_OD=LOC65Body_OD, HasSixBolts=false);
 
 /*
 difference(){

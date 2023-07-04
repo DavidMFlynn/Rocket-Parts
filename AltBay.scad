@@ -201,7 +201,10 @@ module Alt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, DoorXtra_X=0
 			} // hull
 		} // intersection
 		
+		// Trim Bolt Brackets
 		rotate([90,0,0]) RoundRect(X=16, Y=Alt_Y, Z=Tube_OD/2, R=1);
+		
+		// Alt Door
 		AltDoorHole54(Tube_OD=Tube_OD, DoorXtra_X=DoorXtra_X, DoorXtra_Y=DoorXtra_Y);
 		
 		// door mounting bolts
@@ -450,8 +453,7 @@ module AltPCB(){
 	} // difference
 } // AltPCB
 	
-//
-AltPCB();
+//AltPCB();
 
 module TubeSocket(L=10, Wall_T=1.2, HasBoltGuide=false){
 	

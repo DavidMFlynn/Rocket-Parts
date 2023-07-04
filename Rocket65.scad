@@ -32,12 +32,13 @@
 // #4-40 x 3/8" Button Head Cap Screw (6 req) Doors
 // #4-40 x 3/8" Socket Head Cap Screw (3 req) PetalHub
 // #4-40 x 1/4" Button Head Cap Screw (4 req) Altimeter
+// #2-56 x 1/4" Socket Head Cap Screw (2 req) Servo
 // MR84-2RS Bearing (5 req) Ball Lock
 // 3/8" Delrin Ball (3 req) Ball Lock
 // 4mm Dia. x 10mm Undersize Steel Dowel (3 req) Ball Lock
 // 4mm Dia. x 16mm Undersize Steel Dowel (3 req) Ball Lock
 // 3/16" Dia x 1/8" Disc Magnet N42 (2 req) Ball Lock
-// MG90S Micro Servo (1 req) Ball Lock
+// SG90 or MG90S Micro Servo (1 req) Ball Lock
 // C&K Rotary Switch (1 req) Battery Door
 // Mission Control V3 Altimeter PCBA
 // Rocket Servo PCBA
@@ -280,7 +281,7 @@ module PetalSpringHolder(Len=75){
 		translate([0,Coupler_OD/2-Thickness-Width/2,-AxleBoss_d/2-Overlap]) cylinder(d=Spring_d+IDXtra, h=16+AxleBoss_d/2);
 		
 		translate([0,Coupler_OD/2,12]) rotate([-90,0,0]) Bolt4Hole(depth=6);
-		translate([0,Coupler_OD/2,12+Bolt4Inset*2]) rotate([-90,0,0]) Bolt4Hole(depth=6);
+		translate([0,Coupler_OD/2,12+Bolt4Inset*2]) rotate([-90,0,0]) Bolt4Hole(depth=9.5);
 	} // difference
 } // PetalSpringHolder
 
