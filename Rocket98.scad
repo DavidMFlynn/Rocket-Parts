@@ -627,6 +627,9 @@ module PetalHub(){
 				} // hull
 		} // union
 		
+		// Center hole
+		translate([0,0,-Overlap]) cylinder(d=44.5, h=20);
+		
 		// Bolt to BallRetainerBottom
 		for (j=[0:nLockBalls-1]) rotate([0,0,360/nLockBalls*(j+0.6)]) translate([0,R98_Body_OD/2-5,5]) Bolt4HeadHole(lHead=20);
 		
