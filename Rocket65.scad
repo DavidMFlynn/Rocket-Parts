@@ -3,7 +3,7 @@
 // Filename: Rocket65.scad
 // by David M. Flynn
 // Created: 6/16/2023 
-// Revision: 1.0.7  7/10/2023 
+// Revision: 1.0.8  7/21/2023 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -19,7 +19,7 @@
 //
 //  ***** Parts *****
 //
-// LOC 2.65" Body Tube by 15 inches
+// LOC 2.65" Body Tube by 18 inches
 // Blue Tube 1.5" Body Tube by 12 inches
 // 36" Parachute
 // 1/8" Paracord (3 feet)
@@ -44,11 +44,11 @@
 // Rocket Servo PCBA
 // 1/4" Rail Button (2 req)
 // CS4323 Spring
-// 5/64" Dia. x 1/2" Roll Pin (6 req) PetalHub
 // 5/16" Dia x 1-1/4" Spring (3 req) PetalHub
 //
 //  ***** History *****
 //
+// 1.0.8  7/21/2023  Updated PetalHub()
 // 1.0.7  7/10/2023  Set aft closure to 10mm for 29mm, working on a more robust petal.
 // 1.0.6  6/30/2023  Fixed motor tube hole diameter
 // 1.0.5  6/29/2023  Round shock cord in SpringEndTop(), added mount for petals to BallRetainerBottom
@@ -162,7 +162,7 @@ NC_Base=5;
 NC_Lock_H=5;
 NC_Wall_t=1.8;
 
-BodyTubeLen=24*25.4;
+BodyTubeLen=18*25.4;
 
 Alt_DoorXtra_X=2;
 Alt_DoorXtra_Y=2;
@@ -332,7 +332,7 @@ module PetalSpringHolder(Len=75){
 //rotate([-90,0,0]) PetalSpringHolder();
 
 
-module PetalHub2(){
+module PetalHub(){
 	Width=PetalWidth+1;
 	Thickness=3;
 	nPetals=3;
@@ -371,15 +371,17 @@ module PetalHub2(){
 			// Axle 
 			translate([0,Coupler_OD/2-Thickness-AxleBoss_d/2-0.5,7]){
 			
+				// Petal pivot socket
 				hull(){
 					rotate([0,90,0]) cylinder(d=Axle_d, h=Axle_L, center=true);
-					translate([0,0,20])
+					translate([0,-6,5])
 						rotate([0,90,0]) cylinder(d=Axle_d, h=Axle_L, center=true);
 				} // hull
 				
+				// Petal clearance
 				hull(){
-					rotate([0,90,0]) cylinder(d=AxleBoss_d+4, h=Width, center=true);
-					translate([0,10,0]) rotate([0,90,0]) cylinder(d=AxleBoss_d+6, h=Width, center=true);
+					rotate([0,90,0]) cylinder(d=AxleBoss_d+5, h=Width, center=true);
+					translate([0,10,0]) rotate([0,90,0]) cylinder(d=AxleBoss_d+5, h=Width, center=true);
 					translate([0,0,10]) rotate([0,90,0]) cylinder(d=AxleBoss_d+4, h=Width, center=true);
 					}}
 				
@@ -401,81 +403,8 @@ module PetalHub2(){
 				
 		// Shock cord hole
 		translate([0,0,-Overlap]) rotate([0,0,-60+33]) hull(){
-			translate([0,-Coupler_OD/2+6,0]) cylinder(d=3, h=15);
-			translate([0,-Coupler_OD/2+16.5,0]) cylinder(d=3, h=15);
-		}
-		
-		
-	} // difference
-	
-} // PetalHub2
-
-//PetalHub2();
-
-module PetalHub(){
-	Width=PetalWidth+1;
-	Thickness=3;
-	nPetals=3;
-	Spring_d=5/16*25.4;
-	Shelf_Z=16;
-	SpringEnd_Y=Coupler_OD/2-16;
-	Axle_d=1.75+IDXtra*2;
-	AxleBoss_d=Axle_d+2.4;
-	
-	difference(){
-		union(){
-			STB_SpringEnd(Tube_ID=Coupler_OD, CouplerTube_ID=Coupler_OD-3.6, SleeveLen=16, nRopeHoles=0);
-			
-			// Close bottom
-			//translate([0,0,3]) 
-			cylinder(d=Coupler_OD-1, h=6);
-			
-			// Spring holders
-			for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]) 
-				hull(){
-					translate([0,SpringEnd_Y,Shelf_Z-10+Spring_d/2]) 
-						rotate([90,0,0]) cylinder(d=Spring_d+3, h=11);
-					translate([-(Spring_d+5)/2,SpringEnd_Y-11,Shelf_Z-12]) 
-						cube([Spring_d+5,11,1]);
-				} // hull
-		} // union
-		
-		// Bolt to BallRetainerBottom
-		for (j=[0:2]) rotate([0,0,120*(j+0.5)]) translate([0,Body_OD/2-5,5]) Bolt4HeadHole(lHead=20);
-		
-		// Petal ledge and Spring slot
-		for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]){
-			translate([-Width/2,5,Shelf_Z]) cube([Width,Coupler_OD/2,20]);
-			
-			// Axle 
-			translate([0,Coupler_OD/2-Thickness-AxleBoss_d/2-0.5,7]){
-			
-				rotate([0,90,0]) cylinder(d=Axle_d, h=Coupler_OD, center=true);
-				hull(){
-					rotate([0,90,0]) cylinder(d=AxleBoss_d+6, h=Width, center=true);
-					translate([0,10,0]) rotate([0,90,0]) cylinder(d=AxleBoss_d+8, h=Width, center=true);
-					translate([0,0,10]) rotate([0,90,0]) cylinder(d=AxleBoss_d+6, h=Width, center=true);
-					}}
-				
-			// Spring clearance
-			hull(){
-				translate([0,Coupler_OD/2-16,Shelf_Z-10+Spring_d/2]) 
-					rotate([-90,0,0]) cylinder(d=Spring_d+1, h=20);
-				translate([0,Coupler_OD/2-16,Shelf_Z+Spring_d/2]) 
-					rotate([-90,0,0]) cylinder(d=Spring_d+1, h=20);
-			} // hull
-		}
-		
-		// Spring holders
-		for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]) {
-			translate([0,SpringEnd_Y+Overlap,Shelf_Z-10+Spring_d/2]) 
-				rotate([90,0,0]) cylinder(d=Spring_d, h=8);
-		}
-				
-		// Shock cord hole
-		translate([0,0,-Overlap]) rotate([0,0,-60+33]) hull(){
-			translate([0,-Coupler_OD/2+6,0]) cylinder(d=3, h=15);
-			translate([0,-Coupler_OD/2+16.5,0]) cylinder(d=3, h=15);
+			translate([0,-Coupler_OD/2+6,0]) cylinder(d=4, h=15);
+			translate([0,-Coupler_OD/2+16.5,0]) cylinder(d=4, h=15);
 		}
 		
 		
@@ -483,7 +412,7 @@ module PetalHub(){
 	
 } // PetalHub
 
-// rotate([0,0,60]) PetalHub();
+//PetalHub();
 
 
 module ShockCordPlate(){

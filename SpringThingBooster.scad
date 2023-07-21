@@ -680,15 +680,17 @@ module STB_TubeEnd(BallPerimeter_d=PML75Body_OD, nLockBalls=nLockBalls,
 		//Ball Grooves
 		Steps=90/nLockBalls;
 		DispPerStep=1.5/Steps;
-		Offset=-1;
+		Offset=-1.0; // Move groove down (tighter)
+		Slot_Width=STB_LockBall_d(BallPerimeter_d=BallPerimeter_d)*0.86; //changed 7/18/2023 was 1.0, 0.707 min
+		
 		for (j=[0:nLockBalls-1]) for (k=[0:Steps])
 			hull(){
 				rotate([0,0,360/nLockBalls*j+k]) 
 					translate([0,BallPerimeter_d/2+1,-DispPerStep*k+Offset])
-						rotate([90,0,0]) cylinder(d=STB_LockBall_d(BallPerimeter_d=BallPerimeter_d), h=5);
+						rotate([90,0,0]) cylinder(d=Slot_Width, h=5);
 				rotate([0,0,360/nLockBalls*j+k+1]) 
 					translate([0,BallPerimeter_d/2+1,-DispPerStep*(k+1)+Offset])
-						rotate([90,0,0]) cylinder(d=STB_LockBall_d(BallPerimeter_d=BallPerimeter_d), h=5);
+						rotate([90,0,0]) cylinder(d=Slot_Width, h=5);
 			} // hull
 			
 		STB_ManualDisArmingHole(BallPerimeter_d=BallPerimeter_d, nLockBalls=nLockBalls);
