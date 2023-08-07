@@ -254,7 +254,7 @@ module Petals(Len=25, nPetals=3){
 
 //rotate([180,0,0]) Petals(Len=110, nPetals=3);
 
-module PetalSpringHolder2(Len=75){
+module PetalSpringHolder(Len=75){
 	Width=11;
 	Thickness=3;
 	Spring_d=5/16*25.4;
@@ -291,46 +291,10 @@ module PetalSpringHolder2(Len=75){
 		translate([0,Coupler_OD/2,12]) rotate([-90,0,0]) Bolt4Hole(depth=6);
 		translate([0,Coupler_OD/2,12+Bolt4Inset*2]) rotate([-90,0,0]) Bolt4Hole(depth=9.5);
 	} // difference
-} // PetalSpringHolder2
-
-//translate([0,-1,7]) PetalSpringHolder2();
-//rotate([-90,0,0]) PetalSpringHolder2();
-
-module PetalSpringHolder(Len=75){
-	Width=11;
-	Thickness=3;
-	Spring_d=5/16*25.4;
-	Axle_d=1.75+IDXtra*2;
-	AxleBoss_d=Axle_d+2.4;
-	
-	difference(){
-		union(){
-			translate([0,0,8]) hull(){
-				translate([0,Coupler_OD/2-Thickness-Width/2,0]) cylinder(d=Width, h=10);
-				translate([-Width/2,Coupler_OD/2-Thickness-1,0]) cube([Width,1,1]);
-			
-				translate([0,Coupler_OD/2-Thickness,Bolt4Inset*3]) rotate([90,0,0]) cylinder(d=Width,h=3);
-			} // hull
-			
-			translate([0,Coupler_OD/2-Thickness-AxleBoss_d/2,0]) hull(){
-				rotate([0,90,0]) cylinder(d=AxleBoss_d, h=PetalWidth, center=true);
-				translate([0,0,8]) rotate([0,90,0]) cylinder(d=AxleBoss_d, h=Width, center=true);
-			} // hull
-		} // union
-		
-		// axle
-		translate([0,Coupler_OD/2-Thickness-AxleBoss_d/2,0])
-			rotate([0,90,0]) cylinder(d=Axle_d, h=PetalWidth+Overlap*2, center=true);
-			
-		translate([0,Coupler_OD/2-Thickness-Width/2,-AxleBoss_d/2-Overlap]) cylinder(d=Spring_d+IDXtra, h=16+AxleBoss_d/2);
-		
-		translate([0,Coupler_OD/2,12]) rotate([-90,0,0]) Bolt4Hole(depth=6);
-		translate([0,Coupler_OD/2,12+Bolt4Inset*2]) rotate([-90,0,0]) Bolt4Hole(depth=9.5);
-	} // difference
 } // PetalSpringHolder
 
+//translate([0,-1,7]) PetalSpringHolder();
 //rotate([-90,0,0]) PetalSpringHolder();
-
 
 module PetalHub(){
 	Width=PetalWidth+1;

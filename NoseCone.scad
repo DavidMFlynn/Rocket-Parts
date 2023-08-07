@@ -28,7 +28,7 @@ echo("NoseCone 0.9.7");
 // BluntConeNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=180, Base_L=21, Tip_R=15, Wall_T=3);
 // OgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=170, Base_L=21, Wall_T=3);
 //
-// BluntOgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=280, Base_L=5, Tip_R=5, Wall_T=3, Cut_Z=130, LowerPortion=false);
+// BluntOgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=280, Base_L=5, Tip_R=5, Wall_T=3, Cut_Z=130, Transition_OD=PML98Body_OD, LowerPortion=false);
 // 
 // Splice_BONC(OD=58, H=10, L=160, Base_L=5, Tip_R=5, Wall_T=2.2, Cut_Z=80);  // fix a failed print
 // Bulkplate_BONC(OD=58, T=10, L=160, Base_L=5, Tip_R=5, Wall_T=2.2, Cut_Z=80);
@@ -199,7 +199,7 @@ module BluntOgiveShape(L=150, D=50, Base_L=10, Tip_R=5){
 //rotate_extrude() 
 //offset(-3) BluntOgiveShape(L=190, D=137, Base_L=5, Tip_R=15);
 
-module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3, Cut_Z=0, LowerPortion=false){
+module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3, Cut_Z=0, Transition_OD=58, LowerPortion=false){
 	R=OD/2;
 	p=(R*R+L*L)/(2*R);
 	X0 = L-sqrt((p-Tip_R)*(p-Tip_R)-(p-R)*(p-R));
@@ -242,7 +242,7 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3, Cut
 					
 				// connect outer shell to gluing flange	
 				intersection(){
-					translate([0,0,Cut_Z-7]) cylinder(d=OD, h=7, $fn=$preview? 90:360);
+					translate([0,0,Cut_Z-7]) cylinder(d=OD, h=12, $fn=$preview? 90:360);
 					rotate_extrude($fn=$preview? 90:360) 
 						offset(-1) BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
 				}
@@ -256,7 +256,8 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3, Cut
 			translate([0,0,Cut_Z-6]) cylinder(d=OD/2, h=12);
 			
 			// this needs fixed, should be calculated, 
-			Transition_OD=OD*0.7-Wall_T*2+16; // works for 102mm OD x 350mm L Cut @180mm
+			//Transition_OD=OD*0.7-Wall_T*2+16; // works for 102mm OD x 350mm L Cut @180mm
+			//Transition_OD=OD*((Cut_Z-Base_L)/(L-Base_L));
 			translate([0,0,Cut_Z-7]) 
 				cylinder(d1=Transition_OD, d2=Transition_OD-12, h=8, $fn=$preview? 90:360);
 			
@@ -267,6 +268,8 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3, Cut
 		} // difference
 	
 } // BluntOgiveNoseCone
+
+//BluntOgiveNoseCone(ID=BT75Coupler_OD, OD=BT75Body_OD, L=220, Base_L=13, Tip_R=6, Wall_T=1.8, Cut_Z=120, Transition_OD=BT75Body_OD-17, LowerPortion=true);
 
 //BluntOgiveNoseCone(ID=BT54Coupler_OD, OD=BT54Body_OD, L=190, 	Base_L=20, Tip_R=10, Wall_T=2.2, Cut_Z=0, LowerPortion=false);
 /*
