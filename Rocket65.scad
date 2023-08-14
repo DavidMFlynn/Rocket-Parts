@@ -3,7 +3,7 @@
 // Filename: Rocket65.scad
 // by David M. Flynn
 // Created: 6/16/2023 
-// Revision: 1.0.8  7/21/2023 
+// Revision: 1.0.9  8/8/2023 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -48,6 +48,7 @@
 //
 //  ***** History *****
 //
+// 1.0.9  8/8/2023   Improved fin can
 // 1.0.8  7/21/2023  Updated PetalHub()
 // 1.0.7  7/10/2023  Set aft closure to 10mm for 29mm, working on a more robust petal.
 // 1.0.6  6/30/2023  Fixed motor tube hole diameter
@@ -595,9 +596,15 @@ module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 			// integrated coupler
 			translate([0,0,Can_Len-Overlap])
 				Tube(OD=Body_ID-IDXtra, ID=Body_ID-4, Len=10, myfn=$preview? 36:360);
+			difference(){
+				translate([0,0,Can_Len-5])
+					Tube(OD=Body_OD-1, ID=Body_ID-4, Len=5, myfn=$preview? 36:360);
+				translate([0,0,Can_Len-5-Overlap]) cylinder(d1=Body_OD-Wall_t*2, d2=Body_ID-5, h=5);
+			} // difference
 			
-			translate([0,0,Can_Len-3])
-				CenteringRing(OD=Body_OD-1, ID=Body_ID-10, Thickness=3, nHoles=0, Offset=0);
+			// upper centering ring
+			//translate([0,0,Can_Len-3])
+			//	CenteringRing(OD=Body_OD-1, ID=Body_ID-10, Thickness=3, nHoles=0, Offset=0);
 				
 			translate([0,0,Can_Len/2-3])
 				rotate([0,0,180/nFins])
@@ -616,7 +623,7 @@ module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 				translate([0,0,-Overlap]) cylinder(d=MotorTubeHole_d, h=Can_Len+Overlap*2);
 			} // difference
 			
-			TailCone();
+			TailCone(Threaded=true, Cone_Len=35, Interface_OD=Body_OD-1);
 		} // union
 	
 		translate([0,0,Fin_Root_L/2+FinInset_Len])
@@ -629,6 +636,8 @@ module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 		if (LowerHalfOnly) translate([0,0,Can_Len/2]) cylinder(d=Body_OD+1, h=Can_Len/2+50);
 		if (UpperHalfOnly) translate([0,0,Can_Len/2]) 
 			rotate([180,0,0]) cylinder(d=Body_OD+1, h=Can_Len/2+50);
+			
+		if ($preview) cube([50,50,300]);
 	} // difference
 } // FinCan
 
@@ -654,7 +663,7 @@ module RocketFin(){
 
 //RocketFin();
 
-module TailCone(Threaded=true, Cone_Len=35){
+module TailCone(Threaded=true, Cone_Len=35, Interface_OD=Body_ID){
 	FinInset_Len=5;
 	FinAlignment_Len=10;
 	AftClosure_h=10;
@@ -673,7 +682,7 @@ module TailCone(Threaded=true, Cone_Len=35){
 			} // hull
 			
 			translate([0,0,-Overlap]) 
-				cylinder(d=Body_ID, h=FinInset_Len+FinAlignment_Len+Overlap, $fn=$preview? 90:360);
+				cylinder(d=Interface_OD, h=FinInset_Len+FinAlignment_Len+Overlap, $fn=$preview? 90:360);
 		} // union
 		
 		// Fin slots

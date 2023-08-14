@@ -237,7 +237,7 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3, Cut
 			union(){
 				// gluing flange
 				rotate_extrude($fn=$preview? 90:360) 
-					offset(-Wall_T-IDXtra/2) // did IDXtra*2, too much
+					offset(-Wall_T-IDXtra) // did IDXtra*2, too much, IDXtra/2=too big
 						BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
 					
 				// connect outer shell to gluing flange	

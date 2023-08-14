@@ -680,7 +680,7 @@ module STB_TubeEnd(BallPerimeter_d=PML75Body_OD, nLockBalls=nLockBalls,
 		//Ball Grooves
 		Steps=90/nLockBalls;
 		DispPerStep=1.5/Steps;
-		Offset=-1.0; // Move groove down (tighter)
+		Offset=-0.5; // -1.0 was too tight on 3", Move groove down (tighter)
 		Slot_Width=STB_LockBall_d(BallPerimeter_d=BallPerimeter_d)*0.86; //changed 7/18/2023 was 1.0, 0.707 min
 		
 		for (j=[0:nLockBalls-1]) for (k=[0:Steps])
