@@ -379,8 +379,35 @@ module PetalHub(){
 
 //PetalHub();
 
+module EggFinderBracket(){
+	Battery_X=14;
+	NC_Base_L=13;
+	Plate_t=4;
+	
+	translate([Battery_X,0,NC_Base_L+1]) rotate([0,0,90]) SingleBatteryPocket(ShowBattery=false);
+	difference(){
+		translate([0,0,NC_Base_L]) ShockCordPlate(Offset_X=-5);
+		translate([Battery_X,0,NC_Base_L-Overlap]) cylinder(d=12.0, h=Plate_t+1);
+	} // difference
+	
+	translate([-18,0,NC_Base_L+Plate_t-1]) rotate([0,6,0]) 
+		difference(){
+			translate([0,-6,0]) cube([Plate_t,12,82]);
+			translate([0,0,3.5]) rotate([0,-90,0]) Bolt4Hole();
+			translate([0,0,3.5+75]) rotate([0,-90,0]) Bolt4Hole();
+		} // difference
+	
+	difference(){
+		Splice_BONC(OD=Body_OD, H=30, L=NC_Len, Base_L=NC_Base_L, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=30);
+		
+		translate([-18,0,NC_Base_L+Plate_t-1]) rotate([0,6,0]) translate([0,0,3.5]) 
+			rotate([0,-90,0]) translate([0,0,1]) cylinder(d=8, h=20);
+	} // difference
+} // EggFinderBracket
 
-module ShockCordPlate(){
+EggFinderBracket();
+
+module ShockCordPlate(Offset_X=0){
 	Plate_t=4;
 	
 	module SCH(){
@@ -393,9 +420,11 @@ module ShockCordPlate(){
 	difference(){
 		cylinder(d1=Body_OD-NC_Wall_t*2-IDXtra*2, d2=Body_OD-NC_Wall_t*2-IDXtra*4, h=Plate_t);
 		
-		SCH();
-		translate([0,10,0]) SCH();
-		translate([0,-10,0]) SCH();
+		translate([Offset_X,0,0]){
+			SCH();
+			translate([0,10,0]) SCH();
+			translate([0,-10,0]) SCH();
+		}
 	} // difference
 } // ShockCordPlate
 

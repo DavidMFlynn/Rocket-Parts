@@ -3,7 +3,7 @@
 // Filename: Rocket9852.scad
 // by David M. Flynn
 // Created: 5/13/2023 
-// Revision: 0.9.13  5/31/2023
+// Revision: 0.9.14  8/26/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -50,6 +50,7 @@
 // Booster Lower Fin Can
 //
 //  ***** History *****
+// 0.9.14  8/26/2023  Added 2mm to alt door X, Added big spring ends
 // 0.9.13  5/31/2023  Added shock cord mount to Booster_Stager_CableRedirect().
 // 0.9.12  5/28/2023  New dual deploy using 2 ball locks.
 // 0.9.11  5/27/2023  Converted to Blue Tube
@@ -284,7 +285,7 @@ NC_Base=5;
 NC_Wall_t=2.2;
 NC_Lock_H=5;
 
-Alt_DoorXtra_X=2;
+Alt_DoorXtra_X=4; // 8/26/2023
 Alt_DoorXtra_Y=2;
 	
 
@@ -455,6 +456,8 @@ module ShowRocket9852(){
 //ShowRocket9852();
 
 module DDNoseconeBase(){
+	// Connects: Nosecone, Shock cord, Spring and Body tube.
+	
 	AlTube_OD=12.7;
 	
 	Len=30;
@@ -488,6 +491,7 @@ module DDNoseconeBase(){
 //rotate([180,0,0]) DDNoseconeBase();
 
 module TubeHold(){
+	// Mounts an aluminum tube to the end of the electrinics bay
 		Tube_OD=12.7;
 		
 		MountingPost_d=14.5;
@@ -519,6 +523,7 @@ module TubeHold(){
 module R98_Electronics_Bay4(Tube_OD=R9852_Body_OD, Tube_ID=R9852_Body_ID, InnerTube_OD=BT38Body_OD){
 					
 	// Dual Deploy Upper Electronics Bay
+	// Plain ends, cable puller, altimeter, 2x battery switch doors and centering rings
 	
 	Len=165;
 	Altimeter_Z=78;
@@ -581,9 +586,9 @@ module R98_Electronics_Bay4(Tube_OD=R9852_Body_OD, Tube_ID=R9852_Body_ID, InnerT
 	
 	// Battery and Switch door2
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
-		Batt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, HasSwitch=true, ShowDoor=false);
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=true, ShowDoor=false);
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
-		Batt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, HasSwitch=true, ShowDoor=false);
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=true, ShowDoor=false);
 	
 } // R98_Electronics_Bay4
 
@@ -596,6 +601,7 @@ module R98_Electronics_Bay5(Tube_OD=R9852_Body_OD, Tube_ID=R9852_Body_ID, InnerT
 					
 	// Alt: Dual Deploy Upper Electronics Bay
 	// Uses 2 ball lock units
+	// Plain ends, altimeter, Battery door, 2x battery switch doors and centering rings
 	
 	Len=153;
 	Altimeter_Z=Len/2;
@@ -669,11 +675,11 @@ module R98_Electronics_Bay5(Tube_OD=R9852_Body_OD, Tube_ID=R9852_Body_ID, InnerT
 	
 	// Battery and Switch door2
 	translate([0,0,BattDoor_Z]) rotate([0,0,Batt1_a]) 
-		Batt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, HasSwitch=false, ShowDoor=false);
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=false, ShowDoor=false);
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
-		Batt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, HasSwitch=true, ShowDoor=false);
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=true, ShowDoor=false);
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt3_a]) 
-		Batt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, HasSwitch=true, ShowDoor=false);
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=true, ShowDoor=false);
 	
 } // R98_Electronics_Bay5
 
@@ -700,6 +706,46 @@ module PhantomSustainer(){
 } // PhantomSustainer
 
 //rotate([180,0,0]) PhantomSustainer();
+
+BigSpring_OD=59;
+BigSpring_ID=53;
+
+module BigSpringTop(Tube_ID=R9852_Body_ID){
+	Len=75;
+	Wall_t=1.8;
+	Hole_d=5;
+	nHoles=6;
+
+	Tube(OD=Tube_ID-1, ID=Tube_ID-1-Wall_t*2, Len=Len, myfn=$preview? 36:360);
+	
+	difference(){
+		BigSpringBase(Base_OD=Tube_ID-1);
+		
+		for (j=[0:nHoles-1]) rotate([0,0,360/nHoles*j])
+			translate([0,Tube_ID/2-Wall_t-Hole_d,-Overlap]) cylinder(d=Hole_d, h=30);
+	} // difference
+} // BigSpringTop
+
+// BigSpringTop();
+
+module BigSpringBase(Base_OD=R9852_Body_ID-9){
+	// Sits on top of Lower_Electronics_Bay()
+	// should be integrated into Lower_Electronics_Bay()
+	
+	Len=13;
+	
+	difference(){
+		cylinder(d=Base_OD, h=Len);
+		
+		translate([0,0,-Overlap]) cylinder(d=BigSpring_ID, h=Len+Overlap*2);
+		translate([0,0,4]) cylinder(d=BigSpring_OD, h=Len);
+		translate([0,0,7]) cylinder(d=BigSpring_OD+1, h=Len);
+		
+		
+	} // difference
+} // BigSpringBase
+
+// translate([0,0,142]) BigSpringBase();
 
 module Lower_Electronics_Bay(Tube_OD=R9852_Body_OD, Tube_ID=R9852_Body_ID, InnerTube_OD=BT54Body_OD){
 	
@@ -760,7 +806,7 @@ module Lower_Electronics_Bay(Tube_OD=R9852_Body_OD, Tube_ID=R9852_Body_ID, Inner
 		
 	// Battery and Switch door2
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
-		Batt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, HasSwitch=false, ShowDoor=false);
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=false, ShowDoor=false);
 	
 } // Lower_Electronics_Bay
 

@@ -3,7 +3,7 @@
 // Filename: SmallRocketStand.scad
 // by David M. Flynn
 // Created: 6/15/2023 
-// Revision: 1.0.1  6/29/2023
+// Revision: 1.1  8/27/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -15,12 +15,15 @@
 // 1/2" Aluminum Tubing x 10 to 12 inches
 //
 //  ***** History *****
-// 
+// 1.1    8/27/2023  Copied SpoolBushing() to here.
 // 1.0.1  6/29/2023  38mm bushing
 // 1.0.0  6/15/2023  First code.
 //
 // ***********************************
 //  ***** for STL output *****
+//
+// SpoolBushing(H=75, Pipe_OD=Pipe15_OD); // Adaptor to use 1-1/2" PVC pipe and a 2.5kg spool as a stand.
+// SpoolBushing(H=45, Pipe_OD=Pipe10_OD); // Adaptor to use 1" PVC pipe and a 2.5kg spool as a stand.
 //
 // RocketStandLeg(); // print 3
 // RocketStandBase(); // print 2
@@ -60,6 +63,29 @@ module ShowRocketStand(){
 } // ShowRocketStand
 
 //ShowRocketStand();
+
+Pipe15_OD=48.3;
+Pipe10_OD=33.3;
+
+module SpoolBushing(H=75, Pipe_OD=Pipe15_OD){
+	// Adaptor to use 1-1/2" PVC pipe and a 2.5kg spool as a stand.
+	Spool_ID=52.8;
+	Spool_OD=58;
+
+	difference(){
+		union(){
+			cylinder(d=Spool_OD, h=3);
+			cylinder(d1=Spool_ID, d2=Spool_ID-0.5, h=H+3);
+		} // union
+
+		translate([0,0,-Overlap]) cylinder(d=Pipe_OD+IDXtra*3, h=H+Overlap*2);
+		translate([0,0,H]) cylinder(d1=Pipe_OD+IDXtra*2, d2=Pipe_OD-2, h=3+Overlap);
+	} // difference
+
+} // SpoolBushing
+
+// SpoolBushing(H=75, Pipe_OD=Pipe15_OD);
+// SpoolBushing(H=45, Pipe_OD=Pipe10_OD);
 
 module RocketStandBushing(OD=28.5){
 	ID=12.7;
