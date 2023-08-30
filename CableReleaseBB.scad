@@ -93,15 +93,16 @@ Magnet_d=3/16*25.4;
 Magnet_t=1/8*25.4;
 
 module ShowCableReleaseBB(){
+	//color("LightBlue") 
 	LockRing();
 	LockingPin();
-	TopRetainer();
-	translate([0,0,-19.5]) MagnetBracket();
-	translate([0,0,-19.5]) TriggerPost();
+	color("Green") TopRetainer();
+	translate([0,0,-19.5]) color("Gray") MagnetBracket();
+	translate([0,0,-19.5]) color("Gray") TriggerPost();
 	
 	difference(){
 		union(){
-			translate([0,0,-19-0.2]) OuterBearingRetainer();
+			translate([0,0,-19-0.2]) color("Tan") OuterBearingRetainer();
 			translate([0,0,-20.0-0.2]) InnerBearingRetainer();
 		} // union
 		
