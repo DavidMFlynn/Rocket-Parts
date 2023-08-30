@@ -3,7 +3,7 @@
 // Filename: CableReleaseBB.scad
 // by David M. Flynn
 // Created: 8/27/2022 
-// Revision: 0.9.1  8/28/2023
+// Revision: 1.0.0  8/29/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -26,6 +26,7 @@
 //
 //  ***** History *****
 //
+// 1.0.0  8/29/2023   It works!
 // 0.9.1  8/28/2023   First working version.
 // 0.9.0  8/27/2023   First code. Clean start.
 //
