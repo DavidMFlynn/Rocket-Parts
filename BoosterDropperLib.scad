@@ -3,7 +3,7 @@
 // Filename: BoosterDropperLib.scad
 // by David M. Flynn
 // Created: 9/2/2022 
-// Revision: 0.9.6  9/26/2022
+// Revision: 0.9.7  9/14/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -13,7 +13,8 @@
 //
 //  ***** History *****
 //
-echo("BoosterDropperLib 0.9.6");
+echo("BoosterDropperLib 0.9.7");
+// 0.9.7  9/14/2023 Added function BD_ThrustRing_h()
 // 0.9.6  9/26/2022 Modified for HS5645MG servo
 // 0.9.5  9/25/2022 Added ServoGear. 
 // 0.9.4  9/9/2022  Modified for 6805 ball bearing.
@@ -77,6 +78,8 @@ BB6805_2RS_ID=25;
 BB6805_2RS_OD=37;
 BB6805_2RS_H=7;
 
+function BD_ThrustRing_h(Btn_d=BoosterButtonMinor_d)=Btn_d+6;
+
 module LighteningHole(H=10, W=8, L=50){
 	R=1;
 	hull(){
@@ -90,7 +93,7 @@ module LighteningHole(H=10, W=8, L=50){
 //LighteningHole();
 
 module BoosterThrustRing(MtrTube_OD=PML38Body_OD, BodyTube_OD=PML54Body_OD){
-	OAL=BoosterButtonMinor_d+6;
+	OAL=BD_ThrustRing_h();
 	//echo(MtrTube_OD=MtrTube_OD);
 	
 	difference(){
@@ -113,7 +116,8 @@ module BoosterThrustRing(MtrTube_OD=PML38Body_OD, BodyTube_OD=PML54Body_OD){
 	} // difference
 } // BoosterThrustRing
 
-//translate([0,BoosterButtonMinor_d/2,PML54Body_OD/2+BoosterButtonOA_h+Overlap]) rotate([90,0,0]) BoosterThrustRing();
+//translate([0,BoosterButtonMinor_d/2,PML54Body_OD/2+BoosterButtonOA_h+Overlap]) rotate([90,0,0]) 
+BoosterThrustRing();
 
 module BoosterButton(XtraLen=0){
 	difference(){
