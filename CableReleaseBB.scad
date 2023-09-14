@@ -3,7 +3,7 @@
 // Filename: CableReleaseBB.scad
 // by David M. Flynn
 // Created: 8/27/2022 
-// Revision: 1.0.0  8/29/2023
+// Revision: 1.0.1  9/12/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -26,6 +26,7 @@
 //
 //  ***** History *****
 //
+// 1.0.1  9/12/2023   Added LockPin_Len parameter to LockingPin
 // 1.0.0  8/29/2023   It works!
 // 0.9.1  8/28/2023   First working version.
 // 0.9.0  8/27/2023   First code. Clean start.
@@ -33,9 +34,9 @@
 // ***********************************
 //  ***** for STL output *****
 //
-// LockingPin();
+// LockingPin(LockPin_Len=LockPin_Len);
 // rotate([180,0,0]) LockRing();
-// rotate([180,0,0]) TopRetainer(OD_Xtra=0);
+// rotate([180,0,0]) TopRetainer(LockRing_d=LockRing_d);
 // OuterBearingRetainer();
 // rotate([180,0,0]) InnerBearingRetainer();
 // rotate([180,0,0]) MagnetBracket();
@@ -44,7 +45,7 @@
 // ***********************************
 //  ***** Routines *****
 //
-// MountingBoltPattern(nTopBolts=nBalls, OD_Xtra=0) Bolt4Hole();
+// MountingBoltPattern(nTopBolts=nBalls, LockRing_d=LockRing_d) Bolt4Hole();
 //
 // ***********************************
 //  ***** for Viewing *****
@@ -134,7 +135,7 @@ module ShowBearings(){
 
 //ShowBearings();
 
-module LockingPin(){
+module LockingPin(LockPin_Len=LockPin_Len){
 	difference(){
 		translate([0,0,-Ball_d]) cylinder(d=LockPin_d, h=LockPin_Len);
 		
@@ -148,7 +149,7 @@ module LockingPin(){
 		ShowBalls(BallCircle_d=BallCircle_d, nBalls=nBalls);
 } // LockingPin
 
-//LockingPin();
+// LockingPin();
 
 module LockRing(){
 	
@@ -293,16 +294,16 @@ module TriggerPost(){
 //translate([0,0,-19.5]) TriggerPost();
 
 Lock_a=24;
-TopBoltCircle_d=LockRing_d-Bolt4Inset*2;
+function TopBoltCircle_d(LockRing_d=LockRing_d)=LockRing_d-Bolt4Inset*2;
 
-module MountingBoltPattern(nTopBolts=nBalls, OD_Xtra=0){
+module MountingBoltPattern(nTopBolts=nBalls, LockRing_d=LockRing_d){
 	for (j=[0:nTopBolts-1]) rotate([0,0,360/nTopBolts*(j+0.5)+Lock_a/2])
-			translate([0,TopBoltCircle_d/2+OD_Xtra/2,0]) children();
+			translate([0,TopBoltCircle_d(LockRing_d)/2,0]) children();
 } // MountingBoltPattern
 
 // MountingBoltPattern(nTopBolts=nBalls) Bolt4Hole();
 
-module TopRetainer(OD_Xtra=0){
+module TopRetainer(LockRing_d=LockRing_d){
 	Bearing_Z=Bearing6805_H+3+Ball_d/2;
 	TopRetainer_Len=28.5;
 	
@@ -314,14 +315,14 @@ module TopRetainer(OD_Xtra=0){
 			translate([0,0,-Bearing_Z+Bearing6805_H]) 
 				cylinder(d=BallCircle_d+Ball_d, h=TopRetainer_Len-Bearing6805_H);
 			
-			translate([0,0,-Bearing_Z+LockRing_h+0.5]) cylinder(d=LockRing_d+OD_Xtra, h=6);
+			translate([0,0,-Bearing_Z+LockRing_h+0.5]) cylinder(d=LockRing_d, h=6);
 		} // union
 		
 		translate([0,0,-Bearing_Z+5.5]) cylinder(d=LockPin_d+IDXtra*3, h=TopRetainer_Len+Overlap*2);
 		
 		// Top Bolt holes
 		translate([0,0,-Bearing_Z+TopRetainer_Len]) 
-			MountingBoltPattern(nTopBolts=nBalls, OD_Xtra=OD_Xtra) Bolt4Hole();
+			MountingBoltPattern(nTopBolts=nBalls, LockRing_d=LockRing_d) Bolt4Hole();
 		
 		// Bottom Bolt holes
 		for (j=[0:nBottomBolts-1]) rotate([0,0,360/nBottomBolts*j])
@@ -353,7 +354,7 @@ module TopRetainer(OD_Xtra=0){
 	
 } // TopRetainer
 
-// TopRetainer(OD_Xtra=10);
+// TopRetainer();
 // LockingPin();
 
 module InnerBearingRetainer(){

@@ -662,9 +662,9 @@ module R137_Electronics_Bay(){
 
 	// Battery and Switch door2
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,180+Batt1_a])
-		Batt_BayDoorFrame(Tube_OD=Body_OD, Tube_ID=Body_ID, HasSwitch=false, ShowDoor=false);
+		Batt_BayDoorFrame(Tube_OD=Body_OD, HasSwitch=false, ShowDoor=false);
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,180+Batt2_a])
-		Batt_BayDoorFrame(Tube_OD=Body_OD, Tube_ID=Body_ID, HasSwitch=true, ShowDoor=false);
+		Batt_BayDoorFrame(Tube_OD=Body_OD, HasSwitch=true, ShowDoor=false);
 
 } // R137_Electronics_Bay
 
@@ -929,12 +929,21 @@ module Booster_Electronics_Bay(ShowDoors=false){
 	Batt2_a=300; // Cable puller battery and switch
 	Batt3_a=240;
 
+	
+	translate([0,0,-12]) Tube(OD=Body_ID-IDXtra*2, ID=Body_ID-IDXtra*2-4.4, Len=12, myfn=$preview? 36:360);
+	
+	difference(){
+		cylinder(d=Body_ID+1, h=5);
+		
+		translate([0,0,-Overlap]) cylinder(d1=Body_ID-IDXtra*2-4.4, d2=Body_ID+1, h=5+Overlap*2);
+	} // difference
+	
 	difference(){
 		union(){
 			Tube(OD=Body_OD, ID=Body_ID, Len=Len, myfn=$preview? 36:360);
 
-			translate([0,0,BottomSkirt_Len])
-				CenteringRing(OD=Body_OD-1, ID=BoosterMtrTube_OD+IDXtra*2, Thickness=5, nHoles=4);
+			//translate([0,0,BottomSkirt_Len])
+				//CenteringRing(OD=Body_OD-1, ID=BoosterMtrTube_OD+IDXtra*2, Thickness=5, nHoles=4);
 
 			translate([0,0,Len-5-TopSkirt_Len])
 				CenteringRing(OD=Body_OD-1, ID=BoosterMtrTube_OD+IDXtra*2, Thickness=5, nHoles=4);
@@ -974,11 +983,11 @@ module Booster_Electronics_Bay(ShowDoors=false){
 
 	// Battery and Switch door2
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a])
-		Batt_BayDoorFrame(Tube_OD=Body_OD, Tube_ID=Body_ID, HasSwitch=false, ShowDoor=ShowDoors);
+		Batt_BayDoorFrame(Tube_OD=Body_OD, HasSwitch=false, ShowDoor=ShowDoors);
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a])
-		Batt_BayDoorFrame(Tube_OD=Body_OD, Tube_ID=Body_ID, HasSwitch=true, ShowDoor=ShowDoors);
+		Batt_BayDoorFrame(Tube_OD=Body_OD, HasSwitch=true, ShowDoor=ShowDoors);
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt3_a])
-		Batt_BayDoorFrame(Tube_OD=Body_OD, Tube_ID=Body_ID, HasSwitch=true, ShowDoor=ShowDoors);
+		Batt_BayDoorFrame(Tube_OD=Body_OD, HasSwitch=true, ShowDoor=ShowDoors);
 
 } // Booster_Electronics_Bay
 
@@ -986,6 +995,7 @@ module Booster_Electronics_Bay(ShowDoors=false){
 
 
 FinRootSocket_W=6; // added to Root_w
+ClusterMotorLen=350;
 
 module BoosterUpperFinCan(){
 	// Upper Half of Fin Can
@@ -996,7 +1006,7 @@ module BoosterUpperFinCan(){
 	module ClusterMotorShroud(Len=CanLen+10){
 		difference(){
 			cylinder(d=BoosterClusterMtrTube_OD+12, h=Len);
-			translate([0,0,-Overlap]) cylinder(d=BoosterClusterMtrTube_OD+IDXtra*2, h=Len+Overlap*2);
+			translate([0,0,-Overlap]) cylinder(d=BoosterClusterMtrTube_OD+IDXtra*3, h=Len+Overlap*2);
 		} // difference
 
 	} // ClusterMotorShroud
@@ -1007,18 +1017,35 @@ module BoosterUpperFinCan(){
 				rotate([0,-Cant_a,0]) translate([0,0,CanLen-5]) children();
 	} // ClusterMotorPositions
 
+	module CR_Holes(){
+		translate([0,0,-Overlap]) for (j=[0:2]) {
+					rotate([0,0,360/3*(j+0.5)+20])
+						translate([0,Body_ID/2-10,0]) cylinder(d=10, h=5+Overlap*2);
+					rotate([0,0,360/3*(j+0.5)-20])
+						translate([0,Body_ID/2-10,0]) cylinder(d=10, h=5+Overlap*2);
+					}
+	} // CR_Holes
+	
 	difference(){
 		union(){
-			rotate([0,0,-90+180/nFins])
+			// Lower centering ring
+			rotate([0,0,-90+180/nFins]) difference(){
 				ClusterRing(OD=Body_ID+1, Thickness=5,
 					CenterMotor_OD=BoosterMtrTube_OD+IDXtra*2, ClusterMotor_OD=BoosterClusterMtrTube_OD+IDXtra*2,
 					nClusterMotors=nFins,
 					Gap=Motor_Gap, Cant_a=Cant_a, Cant_Z=CanLen);
+				
+				CR_Holes();
+			}
+			
+			// Upper centering ring
+			translate([0,0,Booster_Fin_Root_L/2+5]) rotate([0,0,-90+180/nFins]) difference(){
+				CenteringRing(OD=Body_ID+1, ID=BoosterMtrTube_OD+IDXtra*2, Thickness=5, nHoles=0);
+				
+				CR_Holes();
+			}
 
-			translate([0,0,Booster_Fin_Root_L/2+5]) rotate([0,0,180/nFins])
-				CenteringRing(OD=Body_ID+1, ID=BoosterMtrTube_OD+IDXtra*2, Thickness=5, nHoles=3);
-
-
+			// Body tube
 			Tube(OD=Body_OD, ID=Body_ID, Len=CanLen, myfn=$preview? 90:360);
 
 			// Cluster shrouds
@@ -1032,29 +1059,37 @@ module BoosterUpperFinCan(){
 			} // difference
 
 			// Fin socket structure
-			intersection(){
-				cylinder(d=Body_ID+1, h=CanLen);
+			difference(){
+				intersection(){
+					cylinder(d=Body_ID+1, h=CanLen);
 
-				for (j=[0:nFins]) hull(){
-					cylinder(d=Booster_Fin_Root_W+FinRootSocket_W, h=Booster_Fin_Root_L/2+10);
-
-					rotate([0,0,360/nFins*j]) translate([Body_OD/2,0,0])
+					for (j=[0:nFins]) hull(){
 						cylinder(d=Booster_Fin_Root_W+FinRootSocket_W, h=Booster_Fin_Root_L/2+10);
-				} // hull
-			} // intersection
+
+						rotate([0,0,360/nFins*j]) translate([Body_OD/2,0,0])
+							cylinder(d=Booster_Fin_Root_W+FinRootSocket_W, h=Booster_Fin_Root_L/2+10);
+					} // hull
+				} // intersection
+				for (j=[0:nFins]) rotate([0,0,360/nFins*j])
+						translate([Body_OD/2-Booster_Fin_Post_h-3.2-20,0,Booster_Fin_Root_L/4]) 
+							cube([40,Booster_Fin_Root_W,Booster_Fin_Root_L/2+10], center=true);
+			} // difference
+			
 		} // union
 
 		// Center motor tube
 		translate([0,0,-Overlap]) cylinder(d=BoosterMtrTube_OD+IDXtra*3, h=CanLen+Overlap*2);
 
-		// Cluster motor tubes
+		// Cluster motor tubes, only cuts thru the body tube
 		ClusterMotorPositions()
-			 cylinder(d=BoosterClusterMtrTube_OD+IDXtra*3, h=CanLen*2+10-60);
+			 cylinder(d=BoosterClusterMtrTube_OD+IDXtra*3, h=CanLen+10);
 
 		// Fin slots
 		TrapFin2Slots(Tube_OD=Body_OD, nFins=nFins,
 			Post_h=Booster_Fin_Post_h, Root_L=Booster_Fin_Root_L,
 			Root_W=Booster_Fin_Root_W, Chamfer_L=Booster_Fin_Chamfer_L);
+			
+		if ($preview) rotate([0,0,60]) translate([0,0,-1]) cube([100,100,300]);
 	} // difference
 
 } // BoosterUpperFinCan
@@ -1082,7 +1117,7 @@ module Rocket_BoosterFin(){
 /**/
 
 module BoosterLowerFinCan(Doubles=false){
-	// Upper Half of Fin Can
+	// Lower Half of Fin Can
 
 	RailGuide_Z=80;
 	CanLen=BoosterFinCanLength;
@@ -1125,26 +1160,44 @@ module BoosterLowerFinCan(Doubles=false){
 		}
 	} // ClusterMotorPositions
 
+	module CR_Holes(){
+		translate([0,0,-Overlap]) for (j=[0:2]) {
+					rotate([0,0,360/3*(j+0.5)+20])
+						translate([0,Body_ID/2-10,0]) cylinder(d=10, h=5+Overlap*2);
+					rotate([0,0,360/3*(j+0.5)-20])
+						translate([0,Body_ID/2-10,0]) cylinder(d=10, h=5+Overlap*2);
+					}
+	} // CR_Holes
 
 	difference(){
 		union(){
-			translate([0,0,TailCone_Len]) rotate([0,0,-90+180/nFins])
+			// Lower centering ring
+			translate([0,0,TailCone_Len]) rotate([0,0,-90+180/nFins]) difference(){
 				ClusterRing(OD=Body_ID+1, Thickness=5,
 					CenterMotor_OD=BoosterMtrTube_OD+IDXtra*2,
 					ClusterMotor_OD=BoosterClusterMtrTube_OD+IDXtra*2,
 					nClusterMotors=nFins,
 					Gap=Motor_Gap, Cant_a=Cant_a, Cant_Z=TailCone_Len);
+					
+				CR_Holes();
+			}
 
-			translate([0,0,CanLen-5]) rotate([0,0,-90+180/nFins])
+			// Upper centering ring
+			translate([0,0,CanLen-5]) rotate([0,0,-90+180/nFins]) difference(){
 				ClusterRing(OD=Body_ID+1, Thickness=5,
 					CenterMotor_OD=BoosterMtrTube_OD+IDXtra*2,
 					ClusterMotor_OD=BoosterClusterMtrTube_OD+IDXtra*2,
 					nClusterMotors=nFins,
 					Gap=Motor_Gap, Cant_a=Cant_a, Cant_Z=CanLen-5);
+				
+				CR_Holes();
+			}
 
+			// Body Tube
 			translate([0,0,TailCone_Len])
 				Tube(OD=Body_OD, ID=Body_ID, Len=CanLen-TailCone_Len, myfn=$preview? 90:360);
 
+			//Cluster Tubes
 			difference(){
 				ClusterMotorPositions(Doubles=Doubles) ClusterMotorShroud();
 
@@ -1153,25 +1206,39 @@ module BoosterLowerFinCan(Doubles=false){
 			} // difference
 
 			// Fin Holders
+			difference(){
+				intersection(){
+					cylinder(d=Body_ID+1, h=CanLen);
 
-			intersection(){
-				cylinder(d=Body_ID+1, h=CanLen);
-
-				for (j=[0:nFins]) hull() translate([0,0,CanLen-Booster_Fin_Root_L/2-10]) {
-					cylinder(d=Booster_Fin_Root_W+FinRootSocket_W, h=Booster_Fin_Root_L/2+10);
-
-					rotate([0,0,360/nFins*j]) translate([Body_OD/2,0,0])
+					for (j=[0:nFins]) hull() translate([0,0,CanLen-Booster_Fin_Root_L/2-10]) {
 						cylinder(d=Booster_Fin_Root_W+FinRootSocket_W, h=Booster_Fin_Root_L/2+10);
-				} // hull
-			} // intersection
 
+						rotate([0,0,360/nFins*j]) translate([Body_OD/2,0,0])
+							cylinder(d=Booster_Fin_Root_W+FinRootSocket_W, h=Booster_Fin_Root_L/2+10);
+					} // hull
+				} // intersection
+				
+				for (j=[0:nFins]) rotate([0,0,360/nFins*j])
+					translate([Body_OD/2-Booster_Fin_Post_h-3.2-20,0,CanLen-Booster_Fin_Root_L/4-5]) 
+						cube([40,Booster_Fin_Root_W,Booster_Fin_Root_L/2+10], center=true);
+			} // difference
+
+			//*
 			// Tailcone
-			hull(){
-				cylinder(d=MtrRetainer_OD+4.4, h=Overlap, $fn=$preview? 90:360);
+			cylinder(d=MtrRetainer_OD+4.4, h=TailCone_Len, $fn=$preview? 90:360);
+			difference(){
+				hull(){
+					cylinder(d=MtrRetainer_OD+4.4, h=Overlap, $fn=$preview? 90:360);
 
-				translate([0,0,TailCone_Len]) rotate_extrude($fn=$preview? 90:360)
-					translate([Body_OD/2-7.5,0,0]) circle(d=15);
-			} // hull
+					translate([0,0,TailCone_Len]) rotate_extrude($fn=$preview? 90:360)
+						translate([Body_OD/2-7.5,0,0]) circle(d=15);
+				} // hull
+				
+				translate([0,0,5]) cylinder(d1=MtrRetainer_OD, d2=Body_OD-4.4, h=TailCone_Len);
+				translate([0,0,5+TailCone_Len-Overlap]) 
+					cylinder(d=Body_OD-4.4, h=10);
+			} // difference
+			/**/
 		} // union
 
 		// Center Motor Retainer
@@ -1198,6 +1265,7 @@ module BoosterLowerFinCan(Doubles=false){
 			RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
 
 
+		if ($preview) cube([100,100,300]);
 	} // difference
 
 
@@ -1219,7 +1287,7 @@ module BoosterLowerFinCan(Doubles=false){
 	}
 } // BoosterUpperFinCan
 
-//BoosterLowerFinCan();
+//BoosterLowerFinCan(Doubles=false);
 
 module SplitInThirds(Third=1){
 	translate([0,0,BoosterFinCanLength]) BoosterUpperFinCan();

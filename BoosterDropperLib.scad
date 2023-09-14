@@ -25,7 +25,7 @@ echo("BoosterDropperLib 0.9.6");
 // ***********************************
 //  ***** for STL output *****
 //
-// BoosterThrustRing(); // Print 2 per booster
+// BoosterThrustRing(MtrTube_OD=PML38Body_OD, BodyTube_OD=PML54Body_OD); // Print 2 per booster
 // BoosterButton(XtraLen=0.3); // Print 2 per booster
 // BB_ThrustPoint(); // Print 1 per booster, incorperate into lower fin can
 // BB_LockingThrustPoint(); // Print 1 per booster, incorperate into rocket body

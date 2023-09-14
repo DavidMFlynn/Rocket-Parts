@@ -3,7 +3,7 @@
 // Filename: TubesLib.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.11  6/16/2023
+// Revision: 0.9.12  9/13/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -14,6 +14,7 @@
 //
 function TubesLib_Rev()="TubesLib 0.9.11";
 echo(TubesLib_Rev());
+// 0.9.12  9/13/2023 Changed BT75Coupler, smaller, to measured values.
 // 0.9.11  6/16/2023 Added PML29 and LOD65
 // 0.9.10  2/23/2023 Added MotorRetainer();
 // 0.9.9  1/18/2023  Added Offset to CenteringRing()
@@ -101,10 +102,11 @@ BT98Body_ID=98.9;
 BT98Coupler_OD=98.6;
 BT98Coupler_ID=95.7;
 
-BT75Body_ID=3.000*25.4;
+BT75Body_ID=3.000*25.4; // 76.2
 BT75Body_OD=BT75Body_ID+0.062*2*25.4;
-BT75Coupler_ID=2.880*25.4;
-BT75Coupler_OD=BT75Coupler_ID+0.062*2*25.4;
+BT75Coupler_OD=75.7; // Measured
+BT75Coupler_ID=BT75Coupler_OD-1.40*2; // Measured wall
+//echo(BT75Coupler_OD=BT75Coupler_OD);
 
 BT54Mtr_OD=57.20;
 BT54Mtr_ID=54.40;
