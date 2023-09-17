@@ -72,15 +72,22 @@ module DoorHole(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD){
 	D_Edge_a=(Door_X<Tube_OD)? DoorEdge_a(Door_X=Door_X, Tube_OD=Tube_OD):90;
 	
 	difference(){
-		hull(){
-			rotate([0,0,D_Edge_a]) translate([0,-Tube_OD/2,0])
-				rotate([90,0,0]) translate([-Door_X/2+DR,0,-10]) RoundRect(X=DX-DR*2, Y=DY, Z=20, R=DR);
-			rotate([0,0,-D_Edge_a]) translate([0,-Tube_OD/2,0])
-				rotate([90,0,0]) translate([Door_X/2-DR,0,-10]) RoundRect(X=DX-DR*2, Y=DY, Z=20, R=DR);
-			translate([0,-Tube_OD/2,0])
-				rotate([90,0,0]) translate([0,0,-10]) RoundRect(X=DX-DR*2, Y=DY, Z=20, R=DR);
+		union(){
+		
+			hull(){
+				rotate([0,0,D_Edge_a]) translate([0,-Tube_OD/2,0])
+					rotate([90,0,0]) translate([-Door_X/2+DR,0,-10]) RoundRect(X=DX-DR*2, Y=DY, Z=20, R=DR);
+				rotate([0,0,-D_Edge_a]) translate([0,-Tube_OD/2,0])
+					rotate([90,0,0]) translate([Door_X/2-DR,0,-10]) RoundRect(X=DX-DR*2, Y=DY, Z=20, R=DR);
+				translate([0,-Tube_OD/2,0])
+					rotate([90,0,0]) translate([0,0,-10]) RoundRect(X=DX-DR*2, Y=DY, Z=20, R=DR);
+				
+			} // hull
 			
-		} // hull
+			if (Door_t>10)
+			translate([0,-Tube_OD/2,0])
+					rotate([-90,0,0]) translate([0,0,-10]) RoundRect(X=DX, Y=DY, Z=Door_t, R=DR);
+		} // union
 		
 		// Inside
 		translate([0,0,-DY/2-Overlap]) 
@@ -97,7 +104,7 @@ module DoorHole(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD){
 
 } // DoorHole
 
-// DoorHole(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD);
+// DoorHole(Door_X=30, Door_Y=50, Door_t=30, Tube_OD=PML98Body_OD);
 //DoorHole(Door_X=67, Door_Y=111.5, Door_t=1, Tube_OD=64.8);
 
 module DoorFrameHole(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD){
@@ -252,8 +259,7 @@ module DoorFrame(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBol
 } // DoorFrame
 
 //DoorFrame();
-//
-DoorFrame(Door_X=53, Door_Y=74, Door_t=3, Tube_OD=LOC65Body_OD, HasSixBolts=false);
+//DoorFrame(Door_X=53, Door_Y=74, Door_t=3, Tube_OD=LOC65Body_OD, HasSixBolts=false);
 
 /*
 difference(){

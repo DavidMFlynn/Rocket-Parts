@@ -3,7 +3,7 @@
 // Filename: BoosterDropperLib.scad
 // by David M. Flynn
 // Created: 9/2/2022 
-// Revision: 0.9.7  9/14/2023
+// Revision: 0.9.8  9/15/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -13,7 +13,8 @@
 //
 //  ***** History *****
 //
-echo("BoosterDropperLib 0.9.7");
+echo("BoosterDropperLib 0.9.8");
+// 0.9.8  9/15/2023 Added 1/4-20 threads to BoosterButton for extra strength
 // 0.9.7  9/14/2023 Added function BD_ThrustRing_h()
 // 0.9.6  9/26/2022 Modified for HS5645MG servo
 // 0.9.5  9/25/2022 Added ServoGear. 
@@ -28,24 +29,25 @@ echo("BoosterDropperLib 0.9.7");
 //
 // BoosterThrustRing(MtrTube_OD=PML38Body_OD, BodyTube_OD=PML54Body_OD); // Print 2 per booster
 // BoosterButton(XtraLen=0.3); // Print 2 per booster
-// BB_ThrustPoint(); // Print 1 per booster, incorperate into lower fin can
-// BB_LockingThrustPoint(); // Print 1 per booster, incorperate into rocket body
+// BB_ThrustPoint(BodyTube_OD=PML98Body_OD, BoosterBody_OD=PML54Body_OD); // Print 1 per booster, incorperate into lower fin can
+// BB_LockingThrustPoint(BodyTube_OD=PML98Body_OD); // Print 1 per booster, incorperate into rocket body
 // BB_Lock(); // Print 1 per booster
 // BB_BearingStop(); // Only used with ball bearing
-// rotate([180,0,0]) BB_LockShaft(Len=50, nTeeth=24);
+// rotate([180,0,0]) BB_LockShaft(Len=50, nTeeth=24, Gear_z=14);
 // rotate([180,0,0]) ServoGear(nTeeth=24);
 //
 // ***********************************
 //  ***** Routines *****
 //
 // LighteningHole(H=10, W=8, L=50);
-// BB_ThrustPoint_Hole(BodyTube_OD=PML98Body_OD);
+// BB_ThrustPoint_Hole(Swell=-Overlap);
 // BB_LTP_Hole(BodyTube_OD=PML98Body_OD);
 // BB_Gear();
 // BB_LockStop(Len=50, Extra_H=2);
 //
 // ***********************************
 
+use<ThreadLib.scad>
 include<involute_gears.scad>
 include<TubesLib.scad>
 include<BearingLib.scad>
@@ -63,6 +65,8 @@ BoosterButtonPost_h=5;
 BoosterButtonMajor_h=5;
 BoosterButtonTrans_h=(BoosterButtonMajor_d-BoosterButtonMinor_d)/3;
 BoosterButtonOA_h=BoosterButtonMajor_h+BoosterButtonPost_h+BoosterButtonTrans_h;
+
+function BoosterButtonOAH()=BoosterButtonOA_h;
 
 BB_Lock_Preload=-0.25; // -0.2 was still slightly too tight
 BB_Lock_Ball_d=6; // use airsoft pellets
@@ -116,10 +120,25 @@ module BoosterThrustRing(MtrTube_OD=PML38Body_OD, BodyTube_OD=PML54Body_OD){
 	} // difference
 } // BoosterThrustRing
 
-//translate([0,BoosterButtonMinor_d/2,PML54Body_OD/2+BoosterButtonOA_h+Overlap]) rotate([90,0,0]) 
-BoosterThrustRing();
+//translate([0,BoosterButtonMinor_d/2,PML54Body_OD/2+BoosterButtonOA_h+Overlap]) rotate([90,0,0]) BoosterThrustRing();
 
 module BoosterButton(XtraLen=0){
+	
+	module Bolt250FlatHeadHole(depth=12,lAccess=12){
+		// custom version
+		if ($preview){
+			translate([0,0,-depth])
+				cylinder(r=Bolt250_Clear_r+ID_Xtra, h=depth+Overlap, $fn=24);
+		}else{
+			translate([0,0,-depth])
+				ExternalThread(Pitch=25.4/20, Dia_Nominal=6.35+IDXtra*2, Length=depth+Overlap*2, 
+								Step_a=2, TrimEnd=true, TrimRoot=true);
+		}
+		translate([0,0,-Bolt250_FlatHd_h])
+			cylinder(d1=Bolt250_Clear_r+ID_Xtra, d2=Bolt250_FlatHd_d+ID_Xtra, h=Bolt250_FlatHd_h, $fn=24);
+		translate([0,0,-Overlap]) cylinder(d=Bolt250_FlatHd_d+ID_Xtra, h=lAccess, $fn=24);
+	} // Bolt250FlatHeadHole
+	
 	difference(){
 		union(){
 			cylinder(d=BoosterButtonMajor_d, h=BoosterButtonMajor_h);
@@ -129,10 +148,11 @@ module BoosterButton(XtraLen=0){
 		} // union
 		
 		translate([0,0,1.5]) rotate([180,0,0]) Bolt250FlatHeadHole(depth=BoosterButtonOA_h+Overlap, lAccess=12);
+		
 	} // difference
 } // BoosterButton
 
-//BoosterButton(XtraLen=0.3); // XtraLen=0.3 works well
+// BoosterButton(XtraLen=0.3); // XtraLen=0.3 works well
 
 module BB_ThrustPoint_Hole(Swell=-Overlap){
 	Block_w=BoosterButtonMajor_d+BB_Lock_Wall_t*2+Swell*2;
@@ -238,7 +258,7 @@ module BB_LTP_BoltPattern(){
 	translate([-9,49,6]) children();
 } // BB_LTP_BoltPattern
 
-module BB_LockingThrustPoint(){
+module BB_LockingThrustPoint(BodyTube_OD=PML98Body_OD){
 	
 	Race_OD=BB_Lock_BallCircle_d+BB_Lock_Ball_d+Bolt4Inset*4;
 	
@@ -293,10 +313,10 @@ module BB_LockingThrustPoint(){
 		}
 		
 		// conform to tube OD
-		translate([0,-30,-PML98Body_OD/2+BoosterButtonOA_h]) rotate([-90,0,0])
+		translate([0,-30,-BodyTube_OD/2+BoosterButtonOA_h]) rotate([-90,0,0])
 		difference(){
-			cylinder(d=PML98Body_OD+15,h=100);
-			translate([0,0,-Overlap]) cylinder(d=PML98Body_OD,h=100+Overlap*2, $fn=$preview? 90:360);
+			cylinder(d=BodyTube_OD+15,h=100);
+			translate([0,0,-Overlap]) cylinder(d=BodyTube_OD,h=100+Overlap*2, $fn=$preview? 90:360);
 		} // difference
 		
 		// Bolt holes
@@ -347,7 +367,7 @@ module BB_LockingThrustPoint(){
 	
 } // BB_LockingThrustPoint
 
-//BB_LockingThrustPoint();
+//BB_LockingThrustPoint(BodyTube_OD=137);
 
 module BB_Gear(nTeeth=24){
 	Pitch=300;
@@ -423,7 +443,7 @@ module ServoGear(nTeeth=24){
 
 //ServoGear();
 
-module BB_LockShaft(Len=50, nTeeth=24){
+module BB_LockShaft(Len=50, nTeeth=24, Gear_z=14){
 	nBolts=3;
 	Race_ID=BB_Lock_BallCircle_d-BB_Lock_Ball_d-Bolt4Inset*4;
 	End_h=8;
@@ -431,7 +451,7 @@ module BB_LockShaft(Len=50, nTeeth=24){
 	
 	Stop_Len=18;
 	StopBlock_a=22.5;
-	Gear_z=14;
+	
 	
 	difference(){
 		union(){

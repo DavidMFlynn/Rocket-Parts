@@ -3,7 +3,7 @@
 // Filename: BatteryHolderLib.scad
 // by David M. Flynn
 // Created: 9/30/2022 
-// Revision: 1.2.0  4/29/2023
+// Revision: 1.2.1  9/16/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-echo("BatteryHolderLib 1.2.0");
+echo("BatteryHolderLib 1.2.1");
 //
+// 1.2.1  9/16/2023   Added DeepHole_t to Batt_BayFrameHole()
 // 1.2.0  4/29/2023   Now using DoorLib.scad.
 // 1.1.0  1/2/2023    Added Batt_Door6xAAA()
 // 1.0.2  12/11/2022  Added LED hole. Thinned door by 0.7mm w/o changing frame or hole. 
@@ -42,7 +43,7 @@ echo("BatteryHolderLib 1.2.0");
 //
 //	BattDoorHole(Tube_OD=PML98Body_OD, HasSwitch=false);
 //  Batt_DoorBoltPattern(Tube_OD=PML98Body_OD, HasSwitch=false);
-//  Batt_BayFrameHole(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, HasSwitch=false);
+//  Batt_BayFrameHole(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, HasSwitch=false, DeepHole_t=0);
 //  Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X,  HasSwitch=false, ShowDoor=false);
 //
 //  SingleBatteryHolder(Tube_ID=PML75Body_ID);
@@ -94,11 +95,14 @@ module Batt_DoorBoltPattern(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, HasSwitch=
 
 //rotate([90,0,0]) Batt_DoorBoltPattern(Tube_OD=PML98Body_OD) Bolt4Hole();
 
-module Batt_BayFrameHole(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, Door_Y=Batt_Door_Y, HasSwitch=false){
+module Batt_BayFrameHole(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, Door_Y=Batt_Door_Y, HasSwitch=false, DeepHole_t=0){
 	Door_Y=HasSwitch? Door_Y+CK_RotSw_d:Door_Y;
 	Door_t=Batt_DoorThickness;
 	
 	DoorFrameHole(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t, Tube_OD=Tube_OD);
+	
+	if (DeepHole_t>0)
+	DoorFrameHole(Door_X=Door_X-6, Door_Y=Door_Y-10, Door_t=DeepHole_t, Tube_OD=Tube_OD);
 	
 } // Batt_BayFrameHole
 

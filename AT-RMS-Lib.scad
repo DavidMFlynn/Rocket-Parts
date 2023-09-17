@@ -18,6 +18,8 @@
 // ***********************************
 //  ***** Routines *****
 //
+function ATRMS_54_Aft_d()=kATRMS_Aft54_d;
+//
 // Eye_Bolt1();
 //
 // ATRMS_ForClosure54(Extended=false); // Standard plugged threaded forward closure
@@ -54,7 +56,7 @@ kATRMS_54_1280_Case_h=296;
 kATRMS_54_1706_Case_h=380.5;
 kATRMS_54_2560_Case_h=549;
 
-kATRMS_Aft54_d=57.2;
+kATRMS_Aft54_d=57.6;
 kATRMS_Aft54_h=10;
 
 kATRMS_For54_d1=54;
