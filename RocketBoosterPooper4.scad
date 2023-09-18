@@ -3,7 +3,7 @@
 // Filename: RocketBoosterPooper4.scad
 // by David M. Flynn
 // Created: 9/15/2023 
-// Revision: 0.9.0  9/15/2023
+// Revision: 0.9.1  9/17/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,12 +12,17 @@
 //  Rocket with 2 strap-on boosters. 
 //  Boosters have 54mm motors w/ 75mm body
 //  Sustainer has 54mm motor w/ 137mm body
-//   380mm BoosterButton spacing
+//   550mm BoosterButton spacing
+//
+//  Motor Tube Length 642mm
+//  Body Tube Length 130.8mm
 //
 //  Boosters are in R75StrapOn.scad
+//  See Rocket13732 for forward section
 //
 //  ***** History *****
 //
+// 0.9.1  9/17/2023 Ready for first printing
 // 0.9.0  9/15/2023 First code
 //
 // ***********************************
@@ -30,12 +35,16 @@
 // Drogue_Cup();
 //
 // ForwardBoosterLock();
-// BB_LockingThrustPoint(BodyTube_OD=Body_OD); // Print 1 per booster
+// BB_LockingThrustPoint(BodyTube_OD=Body_OD, BoosterBody_OD=BoosterBody_OD); // Print 1 per booster
 // BB_Lock(); // Print 1 per booster
 // BB_BearingStop(); // Only used with ball bearing
 // rotate([180,0,0]) BB_LockShaft(Len=LockShaftLen, nTeeth=nServoGearTeeth, Gear_z=28);
 // rotate([180,0,0]) ServoGear(nTeeth=nServoGearTeeth);
 // rotate([180,0,0]) ServoMount();
+//
+// rotate([-90,0,0]) AltDoor54(Tube_OD=Body_OD, IsLoProfile=false, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowAlt=true);
+// 
+// rotate([-90,0,0]) Batt_Door(Tube_OD=Body_OD, InnerTube_OD=0, HasSwitch=true);
 //
 // Rocket_Fin();
 //
@@ -54,7 +63,8 @@
 // ***********************************
 //  ***** for Viewing *****
 //
-// ShowRocket();
+// ShowRocket(ShowInternals=true);
+// ShowRocket(ShowInternals=false);
 //
 // ***********************************
 
@@ -85,6 +95,7 @@ Body_OD=BT137Body_OD;
 Body_ID=BT137Body_ID;
 Coupler_OD=BT137Coupler_OD;
 Coupler_ID=BT137Coupler_ID;
+BoosterBody_OD=BT75Body_OD;
 
 // *** 54mm Motor Tube ***
 MotorTube_OD=BT54Body_OD;
@@ -125,6 +136,9 @@ Nut_Len=Retainer_h+AftClosure_h+10;
 BoosterDropperCL=550;
 //BoosterDropperCL=480; // for 54/852 case
 
+MotorTubeLen=BoosterDropperCL+92;
+echo(MotorTubeLen=MotorTubeLen);
+
 nBoosters=2;
 BoosterButton1_z=52.8; // align to bottom of centering ring
 RailGuide_Z=35;
@@ -136,7 +150,11 @@ Alt_DoorXtra_Y=4;
 
 Bolt4Inset=4;
 
-module ShowRocket(){
+BodyTubeLen=BoosterDropperCL+BoosterButton1_z-FinCanLen-152;
+echo(BodyTubeLen=BodyTubeLen);
+
+module ShowRocket(ShowInternals=false){
+	MotorTube_Z=-TailConeLen+12;
 	FwdLock_Z=BoosterDropperCL+BoosterButton1_z;
 	DrogueCup_Z=FwdLock_Z+55.2;
 	NC_Z=FwdLock_Z+600;
@@ -150,6 +168,9 @@ module ShowRocket(){
 	translate([0,0,DrogueCup_Z]) rotate([0,0,-180/nFins]) Drogue_Cup();
 	translate([0,0,FwdLock_Z]) rotate([0,0,-180/nFins]) ForwardBoosterLock();
 	
+	if (ShowInternals==false) translate([0,0,FinCanLen+0.1]) 
+		color("LightBlue") Tube(OD=Body_OD, ID=Body_ID, Len=BodyTubeLen-0.2, 90);
+		
 	FinCan();
 	
 	//*
@@ -166,11 +187,14 @@ module ShowRocket(){
 				rotate([0,90,0]) color("Yellow") Rocket_Fin();
 	/**/
 	
-	//*
-	translate([0,0,-TailConeLen+12]) 
+	if (ShowInternals) translate([0,0,MotorTube_Z]) 
+		color("LightBlue") Tube(OD=MotorTube_OD, ID=MotorTube_ID, Len=MotorTubeLen, 90);
+	/*
+	if (ShowInternals) translate([0,0,MotorTube_Z]) 
 		ATRMS_54_2560_Motor(Extended=true, HasEyeBolt=true); // K270W
 		//ATRMS_54_1706_Motor(Extended=true, HasEyeBolt=true); // K185W
 	/**/	
+	
 	translate([0,0,-0.2]) color("Tan") MotorRetainer(ExtraLen=0);
 	
 } // ShowRocket
@@ -252,10 +276,7 @@ module ForwardBoosterLock(ShowDoors=false){
 		rotate([-90,0,0]) cylinder(d=33, h=Body_OD, center=true);
 	} // BD_Holes
 	
-	
 	rotate([-90,0,0]) rotate([0,0,90]) BB_LockStop(Len=LockShaftLen, Extra_H=4);
-	
-	
 	
 	//*
 	// Rail guide and centering rings
@@ -348,6 +369,11 @@ module ForwardBoosterLock(ShowDoors=false){
 		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
 			Batt_BayFrameHole(Tube_OD=Body_OD, HasSwitch=true, DeepHole_t=42);
 		
+		//Motor Tube
+		translate([0,0,UpperCR_Z-1]){
+			cylinder(d=MotorTubeHole_d, h=6);
+			translate([0,0,6-Overlap]) cylinder(d1=MotorTubeHole_d, d2=MotorTubeHole_d-10, h=5);
+			}
 	} // difference
 	/**/
 	

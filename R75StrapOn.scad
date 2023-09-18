@@ -16,7 +16,8 @@
 //
 //  ***** Parts *****
 //
-// Blue Tube 1.5" Body Tube by 12 inches
+// Blue Tube 2.1" Body Tube: 454mm (Motor Tube)
+// Blue Tube 3.0" Body Tube: 190mm (Upper Body), 404mm (Lower Body)
 // 36" Parachute
 // 1/8" Paracord (3 feet)
 // 1/2" Braided Nylon Shock Cord (20 feet)

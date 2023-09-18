@@ -30,7 +30,7 @@ echo("BoosterDropperLib 0.9.8");
 // BoosterThrustRing(MtrTube_OD=PML38Body_OD, BodyTube_OD=PML54Body_OD); // Print 2 per booster
 // BoosterButton(XtraLen=0.3); // Print 2 per booster
 // BB_ThrustPoint(BodyTube_OD=PML98Body_OD, BoosterBody_OD=PML54Body_OD); // Print 1 per booster, incorperate into lower fin can
-// BB_LockingThrustPoint(BodyTube_OD=PML98Body_OD); // Print 1 per booster, incorperate into rocket body
+// BB_LockingThrustPoint(BodyTube_OD=PML98Body_OD, BoosterBody_OD=PML54Body_OD); // Print 1 per booster, incorperate into rocket body
 // BB_Lock(); // Print 1 per booster
 // BB_BearingStop(); // Only used with ball bearing
 // rotate([180,0,0]) BB_LockShaft(Len=50, nTeeth=24, Gear_z=14);
@@ -258,7 +258,7 @@ module BB_LTP_BoltPattern(){
 	translate([-9,49,6]) children();
 } // BB_LTP_BoltPattern
 
-module BB_LockingThrustPoint(BodyTube_OD=PML98Body_OD){
+module BB_LockingThrustPoint(BodyTube_OD=PML98Body_OD, BoosterBody_OD=PML54Body_OD){
 	
 	Race_OD=BB_Lock_BallCircle_d+BB_Lock_Ball_d+Bolt4Inset*4;
 	
@@ -348,7 +348,7 @@ module BB_LockingThrustPoint(BodyTube_OD=PML98Body_OD){
 	
 	
 	difference(){
-		BB_ThrustPoint();
+		BB_ThrustPoint(BodyTube_OD=BodyTube_OD, BoosterBody_OD=BoosterBody_OD);
 		
 		// Bolt holes
 		TheBolts();
@@ -367,7 +367,7 @@ module BB_LockingThrustPoint(BodyTube_OD=PML98Body_OD){
 	
 } // BB_LockingThrustPoint
 
-//BB_LockingThrustPoint(BodyTube_OD=137);
+//BB_LockingThrustPoint(BodyTube_OD=137, BoosterBody_OD=78);
 
 module BB_Gear(nTeeth=24){
 	Pitch=300;
