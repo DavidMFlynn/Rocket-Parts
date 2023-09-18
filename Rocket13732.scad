@@ -555,6 +555,7 @@ module ShowMidSection(){
 	Fairing_Z=EBay_Z+EBay_Len;
 	Nose_Z=Fairing_Z+Fairing_Len+2;
 	
+	/*
 	translate([0,0,Nose_Z]) FairingConeOGive(Fairing_OD=Body_OD,
 					FairingWall_T=FairingWall_T,
 					NC_Base=NC_Base,
@@ -562,7 +563,17 @@ module ShowMidSection(){
 					NC_Wall_t=NC_Wall_t,
 					NC_Tip_r=NC_Tip_r,
 					Cut_Z=0, LowerPortion=true);
-	
+	/**/
+	// Stubby nosecone
+	translate([0,0,Nose_Z]) 
+	FairingConeOGive(Fairing_OD=BT137Body_OD,
+					FairingWall_T=2.2,
+					NC_Base=5,
+					NC_Len=205,
+					NC_Wall_t=7,
+					NC_Tip_r=20,
+					Cut_Z=0, LowerPortion=true);
+					
 	translate([0,0,Fairing_Z]) color("LightGreen")
 		F54_FairingHalf(IsLeftHalf=true,
 				Fairing_OD=Fairing_OD,

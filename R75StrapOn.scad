@@ -144,7 +144,7 @@ Nut_Len=Retainer_h+AftClosure_h+10;
 	
 BoosterDropperCL=550; // for 54/2560 case in sustainer
 //BoosterDropperCL=480; // for 54/852 case, minimum for sustainer
-
+//BoosterDropperCL=419.5; // minimum, no mid body tube and alignment pins
 
 UpperTubeLen=190;
 BodyTubeLen=BoosterDropperCL-EBay_Len; //-BD_ThrustRing_h();

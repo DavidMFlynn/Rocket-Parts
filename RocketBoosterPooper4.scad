@@ -83,6 +83,7 @@ use<CableReleaseBB.scad>
 use<ThreadLib.scad>
 use<R75StrapOn.scad>
 use<Stager2Lib.scad>
+use<Rocket13732.scad>
 
 //also included
  //include<CommonStuffSAEmm.scad>
@@ -134,7 +135,9 @@ Retainer_h=2;
 Nut_Len=Retainer_h+AftClosure_h+10;
 	
 BoosterDropperCL=550;
+//BoosterDropperCL=419.5; // minimum, no mid body tube and alignment pins
 //BoosterDropperCL=480; // for 54/852 case
+UseAlignmentPins=false;
 
 MotorTubeLen=BoosterDropperCL+92;
 echo(MotorTubeLen=MotorTubeLen);
@@ -153,6 +156,8 @@ Bolt4Inset=4;
 BodyTubeLen=BoosterDropperCL+BoosterButton1_z-FinCanLen-152;
 echo(BodyTubeLen=BodyTubeLen);
 
+G_a=90; // was 22.5; // Gear angle
+
 module ShowRocket(ShowInternals=false){
 	MotorTube_Z=-TailConeLen+12;
 	FwdLock_Z=BoosterDropperCL+BoosterButton1_z;
@@ -164,6 +169,8 @@ module ShowRocket(ShowInternals=false){
 	BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD, L=NC_Len, Base_L=NC_Base, 
 			Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
 	/**/
+	
+	//translate([0,0,-1360]) ShowMidSection();// from Rocket13732
 	
 	translate([0,0,DrogueCup_Z]) rotate([0,0,-180/nFins]) Drogue_Cup();
 	translate([0,0,FwdLock_Z]) rotate([0,0,-180/nFins]) ForwardBoosterLock();
@@ -200,8 +207,6 @@ module ShowRocket(ShowInternals=false){
 } // ShowRocket
 
 // ShowRocket();
-
-G_a=90; // was 22.5;
 
 module Drogue_Cup(){
 	WireHole_d=5.5;
@@ -243,6 +248,17 @@ module Drogue_Cup(){
 
 //Drogue_Cup();
 
+module AlignmentPins(){
+	nPins=6;
+	Pin_d=4;
+	PinLen=10;
+	
+	for (j=[0:nPins-1]) rotate([0,0,360/nPins*j+180/nPins]) translate([0,Body_ID/2-4,-Overlap])
+		cylinder(d=Pin_d, h=PinLen+Overlap*2);
+} // AlignmentPins
+
+//AlignmentPins();
+
 module ForwardBoosterLock(ShowDoors=false){
 	// Z=0, BoosterButton center line
 	// Includes altimeter and rocket servo
@@ -264,6 +280,8 @@ module ForwardBoosterLock(ShowDoors=false){
 	BattSwDoor_Z=-90;
 	Alt_a=65;
 	Batt1_a=115;
+	
+	
 	
 	ShowBody=true;
 	ShowRG=true;
@@ -301,8 +319,9 @@ module ForwardBoosterLock(ShowDoors=false){
 				
 			// Integrated lower coupler
 			LowerCT_Len=10;
-			translate([0,0,Bottom_Z-LowerCT_Len])
-				Tube(OD=Body_ID-IDXtra, ID=Body_ID-6, Len=LowerCT_Len+1, myfn=$preview? 36:360);
+			if (UseAlignmentPins==false)
+				translate([0,0,Bottom_Z-LowerCT_Len])
+					Tube(OD=Body_ID-IDXtra, ID=Body_ID-6, Len=LowerCT_Len+1, myfn=$preview? 36:360);
 				
 			
 			difference(){
@@ -348,6 +367,8 @@ module ForwardBoosterLock(ShowDoors=false){
 	
 		} // union
 		
+		if (UseAlignmentPins) translate([0,0,Bottom_Z]) AlignmentPins();
+			
 		nRivets=6;
 		Rivet_Z=Top_Z-10;
 		// Rivet holes
@@ -481,11 +502,12 @@ module Rocket_Fin(){
 
 module FinCan(HideTop=false, HideBottom=false){
 	
+	
 	difference(){
 		union(){
 			//Integrated coupler
 			CouplerLen=10;
-			translate([0,0,FinCanLen-Overlap])
+			if (UseAlignmentPins==false) translate([0,0,FinCanLen-Overlap])
 				Tube(OD=Body_ID, ID=Body_ID-6, Len=CouplerLen, myfn=$preview? 90:360);
 				
 			
@@ -528,6 +550,8 @@ module FinCan(HideTop=false, HideBottom=false){
 				} // hull
 			} // intersection
 		} // union
+		
+		if (UseAlignmentPins) translate([0,0,FinCanLen-5]) rotate([0,0,RailGuide_a+30]) AlignmentPins();
 		
 		// Rail guide bolts
 		rotate([0,0,RailGuide_a]) translate([0,RailGuide_H,RailGuide_Z])
