@@ -1,7 +1,7 @@
 // *************************************************
 // filename: CommondStuffSAEmm.scad
 //  by Dave Flynn 2015, GPL v2
-// Rev: 1.0.6 1/4/2023
+// Rev: 1.0.8 9/19/2023
 // Some hole sizes have not been tested.
 //
 // This file contains constants and some common routines
@@ -27,6 +27,8 @@
 // Bolt6Hole(depth=16);
 // Bolt6ClearHole(depth=12);
 // Bolt6RailNut();
+// Bolt6RailNutEnder(); // for Light extrussion used on Ender-5 Plus
+// Bolt6RailNutEnderX();// for X extrussion used on Ender-5 Plus
 //  #8-32
 // Bolt8ButtonHeadHole(depth=12,lHead=12);
 // Bolt8HeadHole(depth=12, lAccess=12);
@@ -58,7 +60,9 @@
 // *************************************************
 //  **** History *****
 //
-echo("CommonStuffSAEmm 1.0.6");
+echo("CommonStuffSAEmm 1.0.8");
+// 1.0.8 9/19/2023  Added Bolt6RailNutEnderX
+// 1.0.7 9/19/2023  Added Bolt6RailNutEnder
 // 1.0.6 1/4/2023	Added Bolt250NutHole
 // 1.0.5 10/16/2022 Fixed Bolt2Head_r for my Soc Hd Cap Screws
 // 1.0.4 9/1/2022   Added Bolt250FlatHeadHole
@@ -357,6 +361,73 @@ module Bolt6RailNut(){
 } // Bolt6RailNut
 
 // Bolt6RailNut();
+
+
+module Bolt6RailNutEnder(){
+	Rail_w1=12.5; // top of T section
+	Rail_w2=5; // base of T section
+	Rail_w3=6.2; // slot
+	Rail_h1=4.3;
+	Rail_h2=1.5;
+	Washer_OD=0; //10.4+ID_Xtra;
+	Washer_h=0;//1.2;
+	Nut_l=18;
+	Nut6_d=9.4;
+	Nut6_h=2.8;
+	
+	difference(){
+		union(){
+			translate([-Rail_w3/2,0,Rail_h1-Overlap]) cube([Rail_w3, Nut_l, Rail_h2]);
+			
+			hull(){
+				translate([-Rail_w1/2, 0, Rail_h1-1.2]) cube([Rail_w1, Nut_l, 1.2]);
+				translate([-Rail_w2/2, 0, 0]) cube([Rail_w2, Nut_l, 0.1]);
+			} // hull
+	} // union
+
+		//translate([0, Nut_l/2, Rail_h1-Washer_h]) 
+		//	cylinder(d=Washer_OD, h=Washer_h+Rail_h2+Overlap, $fn=36);
+		translate([0, Nut_l/2, Rail_h1-Washer_h]) Bolt6ClearHole();
+		translate([0, Nut_l/2, Rail_h1-Washer_h-Nut6_h+Overlap]) 
+			rotate([0, 0, 30]) cylinder(d=Nut6_d, h=Nut6_h+Rail_h2+Overlap, $fn=6);
+	} // diff
+} // Bolt6RailNutEnder
+
+// Bolt6RailNutEnder();
+
+
+
+module Bolt6RailNutEnderX(){
+	Rail_w1=11.2; // top of T section
+	Rail_w2=4.8; // base of T section
+	Rail_w3=5.7; // slot
+	Rail_h1=4.3;
+	Rail_h2=1.5;
+	Washer_OD=0; //10.4+ID_Xtra;
+	Washer_h=0;//1.2;
+	Nut_l=18;
+	Nut6_d=9.4;
+	Nut6_h=2.8;
+	$fn=36;
+	
+	difference(){
+		union(){
+			translate([0,0,Rail_h1-Overlap]) RoundRect(X=Rail_w3, Y=Nut_l, Z=Rail_h2, R=1);
+			
+			hull(){
+				translate([0, 0, Rail_h1-1.2]) RoundRect(X=Rail_w1, Y=Nut_l, Z=1.2, R=1);
+				RoundRect(X=Rail_w2, Y=Nut_l, Z=0.1, R=1);
+			} // hull
+	} // union
+
+		translate([0, 0, Rail_h1-Washer_h]) Bolt6ClearHole();
+		translate([0, 0, Rail_h1-Washer_h-Nut6_h+Overlap]) 
+			rotate([0, 0, 30]) cylinder(d=Nut6_d, h=Nut6_h+Rail_h2+Overlap, $fn=6);
+	} // diff
+} // Bolt6RailNutEnderX
+
+// Bolt6RailNutEnderX();
+
 
 // ***** #8-32 *****
 

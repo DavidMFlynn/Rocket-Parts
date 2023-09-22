@@ -248,8 +248,7 @@ module Drogue_Cup(){
 
 //Drogue_Cup();
 
-module AlignmentPins(){
-	nPins=6;
+module AlignmentPins(nPins=6){
 	Pin_d=4;
 	PinLen=10;
 	
@@ -551,7 +550,11 @@ module FinCan(HideTop=false, HideBottom=false){
 			} // intersection
 		} // union
 		
+		//Top alignment pins
 		if (UseAlignmentPins) translate([0,0,FinCanLen-5]) rotate([0,0,RailGuide_a+30]) AlignmentPins();
+		
+		// Middle alignment pins
+		translate([0,0,FinCanLen/2-5]) AlignmentPins(nPins=8);
 		
 		// Rail guide bolts
 		rotate([0,0,RailGuide_a]) translate([0,RailGuide_H,RailGuide_Z])

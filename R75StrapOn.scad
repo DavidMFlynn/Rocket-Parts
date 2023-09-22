@@ -92,8 +92,7 @@
 // ***********************************
 //  ***** for Viewing *****
 //
-// 
-ShowRocketStrapOn(ShowInternals=true);
+// ShowRocketStrapOn(ShowInternals=true);
 // ShowRocketStrapOn(ShowInternals=false);
 //
 // ***********************************
@@ -120,7 +119,7 @@ Body_OD=BT75Body_OD;
 Body_ID=BT75Body_ID;
 Coupler_OD=BT75Coupler_OD;
 Coupler_ID=BT75Coupler_ID;
-
+echo(Body_ID-IDXtra);
 // *** 54mm Motor Tube ***
 MotorTube_OD=BT54Body_OD;
 MotorTube_ID=BT54Body_ID;
