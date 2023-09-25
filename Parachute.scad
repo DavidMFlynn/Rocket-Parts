@@ -58,7 +58,7 @@ PrintingOffset_X=0;
 // Make 8 panels
 // This worked well made a nice 20 inch 8 panel parachute. (2.1 sqft)
 // 1.4oz Rip-Stop Nylon, 2mm Polypropylene rope (knit, cheep from Amazon)
-/*
+//*
 Pointyness=0.4; Panel_Y=2; SeamAllowance=7;
 nPanels=8;
 Arc_r=500; Apex_Y=310; Hole_X=30;  // 8 Panels 200mm x 310mm, 20"
@@ -73,7 +73,7 @@ Center_r=Apex_Y+45;
 // Make 10 Panels
 // 1.4oz Rip-Stop Nylon, 3mm Polypropylene rope (knit, cheep from Amazon)
 // 5.6 sqft
-//*
+/*
 Pointyness=0.4; Panel_Y=2; SeamAllowance=7;
 nPanels=10;
 Arc_r=630; Apex_Y=460; Hole_X=32; //10 Panels 255mm x 460mm, 32" Dia., 4" Center Hole
