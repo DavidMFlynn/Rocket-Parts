@@ -68,7 +68,8 @@
 // ***********************************
 //  ***** for Viewing *****
 //
-// ShowRocket(ShowInternals=true);
+// 
+ShowRocket(ShowInternals=true);
 // ShowRocket(ShowInternals=false);
 //
 // ***********************************
@@ -144,7 +145,7 @@ BoosterDropperCL=550;
 //BoosterDropperCL=480; // for 54/852 case
 UseAlignmentPins=false;
 
-MotorTubeLen=BoosterDropperCL+92;
+MotorTubeLen=BoosterDropperCL+92+10;
 echo(MotorTubeLen=MotorTubeLen);
 
 nBoosters=2;
@@ -188,22 +189,22 @@ module ShowRocket(ShowInternals=false){
 		
 	FinCan();
 	
-	//*
+	/*
 	for (j=[0:nBoosters-1])
 		rotate([0,0,360/nBoosters*j-180/nFins]) 
 			translate([0, Body_OD/2+BT75Body_OD/2+1, BoosterButton1_z-44.8]) 
 				rotate([0,0,-90]) ShowRocketStrapOn(ShowInternals=false);
 	/**/
 	
-	//*
+	/*
 	for (j=[0:nFins-1])
 		rotate([0,0,360/nFins*j]) 
 			translate([Body_OD/2-Fin_Post_h, 0, Fin_Root_L/2+FinInset]) 
 				rotate([0,90,0]) color("Yellow") Rocket_Fin();
 	/**/
 	
-	//if (ShowInternals) translate([0,0,MotorTube_Z]) 
-	//	color("LightBlue") Tube(OD=MotorTube_OD, ID=MotorTube_ID, Len=MotorTubeLen, 90);
+	if (ShowInternals) translate([0,0,MotorTube_Z]) 
+		color("LightBlue") Tube(OD=MotorTube_OD, ID=MotorTube_ID, Len=MotorTubeLen, 90);
 	/*
 	if (ShowInternals) translate([0,0,MotorTube_Z]) 
 		ATRMS_54_2560_Motor(Extended=true, HasEyeBolt=true); // K270W

@@ -3,7 +3,7 @@
 // Filename: R75StrapOn.scad
 // by David M. Flynn
 // Created: 9/11/2023 
-// Revision: 0.9.4  9/16/2023 
+// Revision: 0.9.5  9/25/2023 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -45,6 +45,7 @@
 //
 //  ***** History *****
 //
+// 0.9.5  9/25/2023  Fixed shock cord path
 // 0.9.4  9/16/2023  Ready to test print all
 // 0.9.2  9/15/2023  Embedded nuts, removed unused stuff
 // 0.9.1  9/14/2023  Reconfigured E-Bay
@@ -148,7 +149,7 @@ BoosterDropperCL=550; // for 54/2560 case in sustainer
 UpperTubeLen=190;
 BodyTubeLen=BoosterDropperCL-EBay_Len; //-BD_ThrustRing_h();
 //MotorTubeLen=BoosterDropperCL+BD_ThrustRing_h()+TailConeLen-Nut_Len+10+3; // to top of ebay
-MotorTubeLen=BoosterDropperCL-EBay_Len+BD_ThrustRing_h()+TailConeLen-Nut_Len+10+3; // to bottom of ebay
+MotorTubeLen=BoosterDropperCL+BD_ThrustRing_h()+TailConeLen-Nut_Len+10+3; // to bottom of ebay
 
 echo(UpperTubeLen=UpperTubeLen);
 echo(BodyTubeLen=BodyTubeLen);
@@ -205,7 +206,7 @@ module ShowRocketStrapOn(ShowInternals=true){
 	if (ShowInternals==false) translate([0,0,BodyTube_Z]) 
 		color("LightBlue") Tube(OD=Body_OD, ID=Body_ID, Len=BodyTubeLen, myfn=$preview? 90:360);
 	
-	/*
+	//*
 	// Motor tube
 	translate([0,0,MotorTube_Z]) 
 		color("LightBlue") 
@@ -527,17 +528,7 @@ module Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoors=false){
 	
 	// Lower centering ring
 	translate([0,0,-BottomSkirt_Len])
-	CenteringRing(OD=Coupler_OD-1, ID=MotorTubeHole_d, Thickness=BottomSkirt_Len+3, nHoles=0, Offset=0);
-	
-	translate([0,0,Len-BD_ThrustRing_h()]) {
-		BoosterMount();
-		//rotate([0,0,90]) BoosterThrustRing(MtrTube_OD=MotorTube_OD, BodyTube_OD=Tube_OD);
-		
-		translate([0,0,-10+Overlap]) difference(){
-			cylinder(d=Tube_OD-1, h=10);
-			translate([0,0,-Overlap]) cylinder(d1=Tube_ID, d2=MotorTubeHole_d, h=10+Overlap*2);
-		} // difference
-	}
+		CenteringRing(OD=Coupler_OD-1, ID=MotorTubeHole_d, Thickness=BottomSkirt_Len+3, nHoles=0, Offset=0);
 	
 	difference(){
 		union(){
@@ -557,10 +548,20 @@ module Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoors=false){
 				
 			translate([0,0,-BottomSkirt_Len])
 				Tube(OD=Tube_ID-IDXtra, ID=Coupler_OD-4.4, Len=BottomSkirt_Len+3, myfn=$preview? 90:360);
+				
+			translate([0,0,Len-BD_ThrustRing_h()]) {
+				BoosterMount();
+			//rotate([0,0,90]) BoosterThrustRing(MtrTube_OD=MotorTube_OD, BodyTube_OD=Tube_OD);
+		
+			translate([0,0,-10+Overlap]) difference(){
+				cylinder(d=Tube_OD-1, h=10);
+				translate([0,0,-Overlap]) cylinder(d1=Tube_ID, d2=MotorTubeHole_d, h=10+Overlap*2);
+		} // difference
+	}
 		} // union
 		
 		// Shock cord hole
-		rotate([0,0,Flange_a+10]) translate([0,Coupler_OD/2-7,Len+TopSkirt_Len-10]) SCH();
+		rotate([0,0,Flange_a+10]) translate([0,Coupler_OD/2-7,Len-30]) SCH();
 		
 		// Altimeter
 		translate([0,0,Altimeter_Z]) rotate([0,0,Alt_a]) 
