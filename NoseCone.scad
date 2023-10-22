@@ -3,7 +3,7 @@
 // Filename: NoseCone.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.8  10/21/2023
+// Revision: 0.9.9  10/22/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,7 +12,8 @@
 //
 //  ***** History *****
 //
-echo("NoseCone 0.9.8");
+echo("NoseCone 0.9.9");
+// 0.9.9  10/22/2023 fixed BluntOgiveNoseCone skirt
 // 0.9.8  10/21/2023 fixed BluntOgiveNoseCone thicness again
 // 0.9.7  2/23/2023  Added HasUBolt to NoseconeBase, fixed nosecode inside again.
 // 0.9.6  1/4/2023   Added Bulkplate_BONC, Splice_BONC
@@ -198,18 +199,18 @@ module BluntOgiveShape(L=150, D=50, Base_L=10, Tip_R=5, Thickness=0){
 		translate([-D, -Overlap, 0]) square([D, L+Overlap*2]);
 	} // difference
 	
-	square([R,Base_L+Overlap]);
+	if (Thickness==0)
+		square([R,Base_L+Overlap]);
 } // BluntOgiveShape
 
 //rotate_extrude() 
 //offset(-3) BluntOgiveShape(L=190, D=137, Base_L=1, Tip_R=15);
 
 module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3, Cut_Z=0, Transition_OD=58, LowerPortion=false){
+
 	R=OD/2;
 	p=(R*R+L*L)/(2*R);
 	X0 = L-sqrt((p-Tip_R)*(p-Tip_R)-(p-R)*(p-R));
-	
-	
 	
 	difference(){
 		rotate_extrude($fn=$preview? 90:720) difference(){
@@ -273,6 +274,8 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3, Cut
 		} // difference
 	
 } // BluntOgiveNoseCone
+
+//BluntOgiveNoseCone(ID=BT75Coupler_OD, OD=BT75Body_OD, L=220, Base_L=13, Tip_R=7, Wall_T=1.8, Cut_Z=0, LowerPortion=false);
 
 //BluntOgiveNoseCone(ID=BT75Coupler_OD, OD=BT75Body_OD, L=220, Base_L=13, Tip_R=6, Wall_T=1.8, Cut_Z=120, Transition_OD=BT75Body_OD-17, LowerPortion=true);
 
@@ -459,8 +462,7 @@ module FairingTest(){
 		
 } // FairingTest
 
-//
-FairingTest();
+//FairingTest();
 
 
 
