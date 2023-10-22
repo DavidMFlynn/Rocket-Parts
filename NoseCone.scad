@@ -3,7 +3,7 @@
 // Filename: NoseCone.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.7  2/23/2023
+// Revision: 0.9.8  10/21/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,7 +12,8 @@
 //
 //  ***** History *****
 //
-echo("NoseCone 0.9.7");
+echo("NoseCone 0.9.8");
+// 0.9.8  10/21/2023 fixed BluntOgiveNoseCone thicness again
 // 0.9.7  2/23/2023  Added HasUBolt to NoseconeBase, fixed nosecode inside again.
 // 0.9.6  1/4/2023   Added Bulkplate_BONC, Splice_BONC
 // 0.9.5  10/19/2022 edited Transition_OD
@@ -171,7 +172,7 @@ module BluntSecantOgiveShape(L=150, D=50, Base_L=10, Tip_R=5){
 
 BluntSecantOgiveShape(L=190, D=137, Base_L=5, Tip_R=15);
 /**/
-module BluntOgiveShape(L=150, D=50, Base_L=10, Tip_R=5){
+module BluntOgiveShape(L=150, D=50, Base_L=10, Tip_R=5, Thickness=0){
 	// Spherically blunted tangent ogive
 	R=D/2;
 	p=(R*R+L*L)/(2*R);
@@ -180,44 +181,48 @@ module BluntOgiveShape(L=150, D=50, Base_L=10, Tip_R=5){
 	translate([0,Base_L,0])
 	difference(){
 		hull(){
+			
 			difference(){
 				intersection(){
-					square([R,L]);
-					translate([-p+R,0]) circle(r=p, $fn=$preview? 180:720);
+					square([R,L]); // keep first quadrant only
+					translate([-p+R, 0, 0]) circle(r=p-Thickness, $fn=$preview? 180:720);
 				} // intersection
-				translate([0,L-X0]) square([50,50]);
+				
+				translate([0, L-X0, 0]) square([D, D]);
 			} // difference
-			translate([0,L-X0, 0]) circle(r=Tip_R, $fn=$preview? 180:720);
+			
+			// Tip
+			translate([0, L-X0, 0]) circle(r=Tip_R-Thickness, $fn=$preview? 180:720);
 		} // hull
 	
-		translate([-100,-Overlap,0]) square([100,L+Overlap*2]);
+		translate([-D, -Overlap, 0]) square([D, L+Overlap*2]);
 	} // difference
 	
 	square([R,Base_L+Overlap]);
 } // BluntOgiveShape
 
 //rotate_extrude() 
-//offset(-3) BluntOgiveShape(L=190, D=137, Base_L=5, Tip_R=15);
+//offset(-3) BluntOgiveShape(L=190, D=137, Base_L=1, Tip_R=15);
 
 module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3, Cut_Z=0, Transition_OD=58, LowerPortion=false){
 	R=OD/2;
 	p=(R*R+L*L)/(2*R);
 	X0 = L-sqrt((p-Tip_R)*(p-Tip_R)-(p-R)*(p-R));
 	
+	
+	
 	difference(){
-		rotate_extrude($fn=$preview? 90:720) 
+		rotate_extrude($fn=$preview? 90:720) difference(){
 			BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
+			
+			// Remove inside
+			BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R, Thickness=Wall_T);
+		} // difference
 		
 		// Make Skirt fit coupler tube
 		translate([0,0,-Overlap]) cylinder(d=ID, h=Base_L+Overlap*2, $fn=$preview? 90:720);
 		// Taper so no support is needed
 		translate([0,0,Base_L]) cylinder(d1=ID, d2=OD-Wall_T*2, h=Wall_T, $fn=$preview? 90:720);
-		
-		// Remove inside
-		rotate_extrude($fn=$preview? 90:720) 
-			offset(-Wall_T) BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
-		cylinder(d=Wall_T*2+Overlap, h=Base_L+L-X0+Tip_R-Wall_T*1.3);
-		//translate([0,0,Base_L+L-X0]) sphere(r=Tip_R-Wall_T,$fn=$preview? 36:360);
 		
 		if (Base_L>12) translate([0,0,Base_L/2])
 			RivetPattern(BT_Dia=OD, nRivets=3, Dia=5/32*25.4);
@@ -408,7 +413,54 @@ module NoseconeBase(OD=PML98Body_ID, L=60, NC_Base=21, HasUBolt=true){
 //NoseconeBase(OD=PML75Body_ID, L=60, NC_Base=21);
 
 
+module FairingTest(){
+	NC_OD=200;
+	NC_ID=NC_OD-28;
+	NC_Len=200;
+	NC_Tip_r=20;
+	NC_Wall_T=(NC_OD-NC_ID)/2;
 
+	R=NC_OD/2;
+	p=(R*R+NC_Len*NC_Len)/(2*R);
+	X0 = NC_Len-sqrt((p-NC_Tip_r)*(p-NC_Tip_r)-(p-R)*(p-R));
+	
+	//translate([0,0,1+NC_Len-X0]) sphere(r=NC_Tip_r);
+	
+	difference(){
+		BluntOgiveNoseCone(ID=NC_ID, OD=NC_OD, L=NC_Len, Base_L=1, 
+			Tip_R=NC_Tip_r, Wall_T=NC_Wall_T, Cut_Z=0, Transition_OD=58, LowerPortion=false);
+			
+		translate([0,-NC_OD/2-1,-Overlap]) cube([NC_OD/2+1,NC_OD+2,NC_Len]);
+		
+		
+		
+		// Slot
+		difference(){
+			union(){
+				difference(){
+					translate([0,-p+R,1]) rotate([0,90,0]) 
+						cylinder(r=p-NC_Wall_T/2+1, h=10, center=true, $fn=$preview? 90:360); 
+					
+					translate([0,-p+R,1]) rotate([0,90,0]) 
+						cylinder(r=p-NC_Wall_T/2-1, h=10+Overlap, center=true, $fn=$preview? 90:360); 
+				} // difference
+				
+				for (j=[0:90]) translate([-6,-p+R,1]) hull(){
+					rotate([j,0,0]) translate([0,p-NC_Wall_T/2,1]) sphere(d=8);
+					rotate([j+1,0,0]) translate([0,p-NC_Wall_T/2,1]) sphere(d=8);
+					}
+			} // union
+			
+			
+			translate([-25,5,0]) rotate([90,0,0]) cube([50,NC_Len,NC_Len]);
+		} // difference
+	} // difference
+		
+		
+} // FairingTest
+
+//
+FairingTest();
 
 
 

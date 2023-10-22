@@ -68,8 +68,7 @@
 // ***********************************
 //  ***** for Viewing *****
 //
-// 
-ShowRocket(ShowInternals=true);
+// ShowRocket(ShowInternals=true);
 // ShowRocket(ShowInternals=false);
 //
 // ***********************************
@@ -125,8 +124,9 @@ FinCanLen=Fin_Root_L+FinInset*2;
 TailConeLen=80;
 Tail_OD=MotorTube_OD+6;
 TC_Thread_d=MotorTube_OD+7;
-LockShaftLen=Body_OD-53.9;
-nServoGearTeeth=24;
+LockShaftLen=Body_OD-55.2;
+echo(LockShaftLen=LockShaftLen);
+nServoGearTeeth=28;
 
 EBay_Len=146; // extra short, was 152
 
@@ -225,13 +225,32 @@ module Drogue_Cup(){
 	nRivets=6;
 	nLocks=3;
 
+	module Rivets(){
+	// Rivet holes
+		for (j=[0:nRivets-1]) rotate([0,0,360/nRivets*j+180/nRivets]){
+			translate([0, Body_OD/2+1, Rivet_Z])
+				rotate([90,0,0]) cylinder(d=4, h=10);
+			translate([0, Body_ID/2-3, Rivet_Z])
+				rotate([90,0,0]) cylinder(d=7, h=5);
+		}}
+		
+	CR_Z=-5;
+	
 	difference(){
-		union(){
-			rotate([0,180,0]) 
-				Stager_Cup(Tube_OD=Body_OD, ID=Body_OD-28, nLocks=nLocks, 
+		translate([0,0,CR_Z]) CenteringRing(OD=Body_ID-IDXtra, ID=0, Thickness=5, nHoles=0);
+		
+		translate([0,0,2]) Stager_CupHoles(Tube_OD=Body_OD, ID=78, nLocks=nLocks, BoltsOn=true);
+		
+		//Rivets();
+		
+		// Shockcord
+		rotate([0,0,40]) translate([0,-Body_ID/2+30,CR_Z-Overlap]) cylinder(d=20, h=10);
+	} // difference
+	
+	difference(){
+		rotate([0,180,0]) 
+			Stager_Cup(Tube_OD=Body_OD, ID=Body_OD-28, nLocks=nLocks, 
 							BoltsOn=false, Collar_h=18, HasElectrical=false);
-			
-		} // union
 			
 		// Skirt
 		translate([0,0,-30]) Tube(OD=Body_OD+3, ID=Body_ID-IDXtra, Len=25, myfn=$preview? 36:360);
@@ -243,19 +262,13 @@ module Drogue_Cup(){
 				RoundRect(X=11,Y=6,Z=30,R=2);
 			}
 			
-		// Rivet holes
-		for (j=[0:nRivets-1]) rotate([0,0,360/nRivets*j+180/nRivets]){
-			translate([0, Body_OD/2+1, Rivet_Z])
-				rotate([90,0,0]) cylinder(d=4, h=25);
-			translate([0, Body_ID/2-3, Rivet_Z])
-				rotate([90,0,0]) cylinder(d=7, h=25);
-		}
+		Rivets();
 	} // difference
 
 	
 } // Drogue_Cup
 
-//Drogue_Cup();
+// Drogue_Cup();
 
 module AlignmentPins(nPins=6){
 	Pin_d=4;

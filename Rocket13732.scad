@@ -3,7 +3,7 @@
 // Filename: Rocket13732.scad
 // by David M. Flynn
 // Created: 10/20/2022
-// Revision: 0.9.1  1/1/2023
+// Revision: 0.9.2  10/19/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -85,6 +85,7 @@
 //
 //  ***** History *****
 //
+// 0.9.2  10/19/2023  Changed/updated Stager_CableRedirect
 // 0.9.1  1/1/2023    Fix booster e-bay, worked on sustainer
 // 0.9.0  11/20/2022  First code. Copied from Rocket9832
 //
@@ -166,19 +167,6 @@ LargeFairing(IsLeftHalf=false,
 //LargeBolt_On_PJ_Clip(Fairing_OD=BT137Body_OD, FairingWall_t=2.2);
 //LargeFairing_BoltOn_Tenon(Fairing_OD=BT137Body_OD, FairingWall_t=2.2);
 //
-/*
-// old style
-F54_FairingHalf(IsLeftHalf=true,
-				Fairing_OD=Fairing_OD,
-				Wall_T=FairingWall_T,
-				Len=Fairing_Len);
-/**/
-/*
-F54_FairingHalf(IsLeftHalf=false,
-				Fairing_OD=Fairing_OD,
-				Wall_T=FairingWall_T,
-				Len=Fairing_Len);
-/**/
 //
 // F54_SpringEndCap();
 //
@@ -229,8 +217,8 @@ F54_FairingHalf(IsLeftHalf=false,
 //  *** Stager parts for dual deploy ***
 //
 // Stager_CableRedirectTop(Tube_OD=Body_OD, Skirt_ID=Body_ID, InnerTube_OD=DualDepTube_OD, HasRaceway=true, Raceway_a=300);
-// Stager_CableRedirect(Tube_OD=Body_OD, Skirt_ID=Body_ID, Tube_ID=Body_ID, InnerTube_OD=DualDepTube_OD, HasRaceway=true, Raceway_a=300);
-
+// Stager_CableRedirect(Tube_OD=Body_OD, Skirt_ID=Body_ID, Tube_ID=Coupler_ID, InnerTube_OD=DualDepTube_OD, HasRaceway=true, Raceway_a=300);
+// Stager_CableBearing();
 // Stager_Detent(Tube_OD=Body_OD);
 // Stager_CableEndAndStop(Tube_OD=Body_OD);
 // rotate([0,180,0]) DrogueSep();

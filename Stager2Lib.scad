@@ -109,8 +109,8 @@ echo("StagerLib 1.0.1");
 // Stager_CableBearing();
 // Stager_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, Tube_ID=PML98Coupler_ID, InnerTube_OD=BT54Mtr_OD, HasRaceway=true, Raceway_a=270, Height=20);
 // Stager_CableRedirect(Tube_OD=BT137Body_OD, Skirt_ID=BT137Body_ID, Tube_ID=BT137Coupler_ID, InnerTube_OD=BT75Body_OD, HasRaceway=true, Raceway_a=300);
-// Stager_CableEndAndStop(Tube_OD=PML98Body_OD);
-// Stager_CableEndAndStop(Tube_OD=BT137Body_OD);
+// Stager_CableEndAndStop(Tube_OD=PML98Body_OD, Xtra3=false);
+// Stager_CableEndAndStop(Tube_OD=BT137Body_OD, Xtra3=false);
 // Stager_Detent(Tube_OD=PML98Body_OD);
 // Stager_Detent(Tube_OD=BT137Body_OD);
 //
@@ -694,7 +694,7 @@ module Stager_Detent(Tube_OD=PML98Body_OD){
 //rotate([0,180,120]) Stager_Detent(Tube_OD=PML150Body_OD);
 //Stager_Detent(Tube_OD=PML98Body_OD);
 
-module Stager_CableEndAndStop(Tube_OD=PML98Body_OD){
+module Stager_CableEndAndStop(Tube_OD=PML98Body_OD, Xtra3=false){
 	BC_r=BoltCircle_d(Tube_OD=Tube_OD)/2;
 	nBottomBolts=nInnerRaceBolts;
 	Plate_H=4;
@@ -733,18 +733,30 @@ module Stager_CableEndAndStop(Tube_OD=PML98Body_OD){
 		} // union
 		
 		// cable end retension
+		
 		rotate([0,0,-Stop_a]) translate([0,BC_r,0]) {
-			rotate([0,-90,0]) hull(){ 
-				cylinder(d=3.5, h=8); 
-				translate([3,0,0]) cylinder(d=3.5, h=8); 
-			} // hull
+		
+			
+			rotate([0,-90,0])
+			if (Xtra3){
+				translate([0,0,3]) rotate([10,0,0]) hull(){ 
+					cylinder(d=3.5, h=8); 
+					translate([3,0,0]) cylinder(d=3.5, h=8); 
+				} // hull
+			}else{
+				hull(){ 
+					cylinder(d=3.5, h=8); 
+					translate([3,0,0]) cylinder(d=3.5, h=8); 
+				} // hull
+			}
 			
 			// cable end insertion hole
 			translate([5.4,0,-Overlap]) cylinder(d=3.6, h=Plate_H+Overlap*2);
 			
+			
 			hull(){
-				translate([Overlap,0,-Overlap]) rotate([0,90,0]) cylinder(d=1.5, h=5);
-				translate([Overlap,0,4.5]) rotate([0,75,0]) cylinder(d=1.2, h=5);
+				translate([Overlap,0,-Overlap]) rotate([0,90,0]) cylinder(d=1.2, h=10, center=true);
+				translate([Overlap,0,4.5]) rotate([0,75,0]) cylinder(d=1.2, h=10, center=true);
 			} // hull
 		}
 		
@@ -753,7 +765,7 @@ module Stager_CableEndAndStop(Tube_OD=PML98Body_OD){
 	} // difference
 } // Stager_CableEndAndStop
 
-//rotate([0,180,-60]) Stager_CableEndAndStop(Tube_OD=PML98Body_OD);
+//rotate([0,180,-60]) Stager_CableEndAndStop(Tube_OD=PML98Body_OD, Xtra3=true);
 //Stager_CableEndAndStop(Tube_OD=PML150Body_OD);
 
 module Stager_LockRodBoltPattern(){

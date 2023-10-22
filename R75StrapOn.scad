@@ -16,7 +16,7 @@
 //
 //  ***** Parts *****
 //
-// Blue Tube 2.1" Body Tube: 454mm (Motor Tube)
+// Blue Tube 2.1" Body Tube: 600mm (Motor Tube)
 // Blue Tube 3.0" Body Tube: 190mm (Upper Body), 404mm (Lower Body)
 // 36" Parachute
 // 1/8" Paracord (3 feet)
@@ -84,7 +84,7 @@
 // rotate([180,0,0]) TailCone(Threaded=true, Cone_Len=TailConeLen, Interface_OD=Body_ID);
 // MotorRetainer();
 //
-// BoosterButton(XtraLen=0.3);
+// BoosterButton(XtraLen=0.6); // 0.3 is too short
 //
 // ***********************************
 //  ***** Routines *****
@@ -145,6 +145,7 @@ Nut_Len=Retainer_h+AftClosure_h+10;
 BoosterDropperCL=550; // for 54/2560 case in sustainer
 //BoosterDropperCL=480; // for 54/852 case, minimum for sustainer
 //BoosterDropperCL=419.5; // minimum, no mid body tube and alignment pins
+echo(BoosterDropperCL=BoosterDropperCL);
 
 UpperTubeLen=190;
 BodyTubeLen=BoosterDropperCL-EBay_Len; //-BD_ThrustRing_h();
@@ -273,14 +274,15 @@ module PetalSpringHolder(Len=75){
 	Width=11;
 	Thickness=3;
 	Spring_d=5/16*25.4;
+	SpringCL=Coupler_OD/2-Thickness-Width/2-0.5;
 	Axle_d=4;
-	Axle_L=Width+7;
+	Axle_L=Width+9;
 	AxleBoss_d=Axle_d+2.4;
 	
 	difference(){
 		union(){
 			translate([0,0,8]) hull(){
-				translate([0,Coupler_OD/2-Thickness-Width/2,0]) cylinder(d=Width, h=10);
+				translate([0,SpringCL,0]) cylinder(d=Width, h=10);
 				translate([-Width/2,Coupler_OD/2-Thickness-1,0]) cube([Width,1,1]);
 			
 				translate([0,Coupler_OD/2-Thickness,Bolt4Inset*3]) rotate([90,0,0]) cylinder(d=Width,h=3);
@@ -293,12 +295,12 @@ module PetalSpringHolder(Len=75){
 			
 			// Axle
 			translate([0,Coupler_OD/2-Thickness-AxleBoss_d/2,0])
-			rotate([0,90,0]) cylinder(d=Axle_d, h=Axle_L, center=true);
+				rotate([0,90,0]) cylinder(d=Axle_d, h=Axle_L, center=true);
 		} // union
 		
 		
 		// Sping	
-		translate([0,Coupler_OD/2-Thickness-Width/2,-AxleBoss_d/2-Overlap]) {
+		translate([0,SpringCL,-AxleBoss_d/2-Overlap]) {
 			cylinder(d=Spring_d+IDXtra, h=16+AxleBoss_d/2);
 			cylinder(d=4, h=30);
 		}
@@ -311,7 +313,7 @@ module PetalSpringHolder(Len=75){
 //translate([0,-1,7]) PetalSpringHolder();
 //rotate([-90,0,0]) PetalSpringHolder();
 
-module PetalHub(HasNCSkirt=true, nPetals=4){
+module PetalHub(HasNCSkirt=true, SkirtLen=10, nPetals=4){
 	Width=PetalWidth+1;
 	Thickness=3;
 
@@ -322,9 +324,12 @@ module PetalHub(HasNCSkirt=true, nPetals=4){
 	Axle_L=Width+7;
 	AxleBoss_d=Axle_d+2.4;
 	
+	Skirt_OD=Body_ID-IDXtra;
+	Skirt_ID=Skirt_OD-4.4;
+	
 	difference(){
 		union(){
-			STB_SpringEnd(Tube_ID=Coupler_OD, CouplerTube_ID=Coupler_OD-3.6, SleeveLen=16, nRopeHoles=0);
+			STB_SpringEnd(Tube_ID=Skirt_OD, CouplerTube_ID=Coupler_OD-3.6, SleeveLen=16, nRopeHoles=0);
 			
 			// Close bottom
 			//translate([0,0,3]) 
@@ -339,15 +344,30 @@ module PetalHub(HasNCSkirt=true, nPetals=4){
 						cube([Spring_d+5,11,1]);
 				} // hull
 				
-			if (HasNCSkirt) translate([0,0,-NC_Base]) // Fit to nosecone
-				Tube(OD=Coupler_OD-IDXtra*2, ID=Coupler_OD-IDXtra*2-4.4, Len=NC_Base+Overlap, myfn=$preview? 36:360);
+			if (HasNCSkirt){
+				
+				// Nosecone
+				translate([0,0,-SkirtLen-NC_Base-3]) // Fit to nosecone
+				Tube(OD=Coupler_OD-IDXtra*2, ID=Skirt_ID, 
+					Len=NC_Base+Overlap, myfn=$preview? 90:360);
+					
+				// Nosecone stop
+				translate([0,0,-SkirtLen-3]) // Fit to nosecone
+				Tube(OD=Body_OD+IDXtra, ID=Skirt_ID, 
+					Len=3+Overlap, myfn=$preview? 90:360);
+					
+				// Skirt
+				translate([0,0,-SkirtLen]) // Fit to nosecone
+				Tube(OD=Skirt_OD, ID=Skirt_ID, 
+					Len=SkirtLen+16, myfn=$preview? 90:360);
+			}
 				
 			//if (HasNCSkirt) translate([0,0,-0.5]) 
 			//	cylinder(d1=Coupler_OD-IDXtra*2, d2=Coupler_OD-IDXtra*2, h=0.5, $fn=$preview? 36:360);
 		} // union
 		
 		if (HasNCSkirt){
-			translate([0,0,-NC_Base/2]) RivetPattern(BT_Dia=Body_ID, nRivets=3, Dia=5/32*25.4);
+			translate([0,0,-SkirtLen-3-NC_Base/2]) RivetPattern(BT_Dia=Body_ID, nRivets=3, Dia=5/32*25.4);
 		}else{
 			// Bolt to BallRetainerBottom
 			for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*(j+0.35)]) 
@@ -371,6 +391,7 @@ module PetalHub(HasNCSkirt=true, nPetals=4){
 				// Petal clearance
 				hull(){
 					rotate([0,90,0]) cylinder(d=AxleBoss_d+5, h=Width, center=true);
+					translate([0,-3,2]) rotate([0,90,0]) cylinder(d=AxleBoss_d+5, h=Width, center=true);
 					translate([0,10,0]) rotate([0,90,0]) cylinder(d=AxleBoss_d+5, h=Width, center=true);
 					translate([0,0,10]) rotate([0,90,0]) cylinder(d=AxleBoss_d+4, h=Width, center=true);
 					}}
@@ -455,7 +476,7 @@ module SpringEndTop(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=3){
 // SpringEndTop();
 
 module R75SRB_LockingPin(){
-	LockPin_Len=50;
+	LockPin_Len=42;
 	
 	LockingPin(LockPin_Len=LockPin_Len);
 	

@@ -14,6 +14,7 @@
 //  Warning! This is a complex rocket, skill level 11!
 //  The only pyrotecnics used in this rocket are the motors.
 //  Motors J460T/J275W and J180T/J90W-P/I115W-P. 
+//  Flew to 4200' on J615ST >> J275W
 //  Threaded forward closures are required to connect the shock cord to the motor. 
 //
 //  The Sustainer has a Mission Control V3 for detection of booster separation,
@@ -149,8 +150,10 @@ FairingConeOGive(Fairing_OD=R9852_Body_OD,
 //
 // --------------
 //  ** Stager Parts, top of booster **
-// rotate([180,0,0]) Stager_Cup(Tube_OD=R9852_Body_OD, ID=78, nLocks=2, BoltsOn=true, Collar_h=29);
-// rotate([-90,0,0]) Stager_LockRod(Adj=-0.5); // print 4
+// rotate([180,0,0]) SustainerCup(); // old Stager_Cup(Tube_OD=R9852_Body_OD, ID=78, nLocks=2, BoltsOn=true, Collar_h=29);
+// rotate([-90,0,0]) Stager_LockRod(Adj=-0.5); // too tight
+// rotate([-90,0,0]) Stager_LockRod(Adj=0.0);
+// rotate([-90,0,0]) Stager_LockRod(Adj=1.0); // print 4
 //
 // Stager_Saucer(Tube_OD=R9852_Body_OD, nLocks=2); // Bolts on
 //
@@ -162,7 +165,7 @@ FairingConeOGive(Fairing_OD=R9852_Body_OD,
 // Booster_Stager_CableRedirect();
 // Stager_CableBearing();
 // 
-// Stager_CableEndAndStop(Tube_OD=R9852_Body_OD);
+// Stager_CableEndAndStop(Tube_OD=R9852_Body_OD, Xtra3=true);
 // Stager_Detent();
 //
 // -------------
@@ -901,6 +904,24 @@ module Rocket9852Fin(){
 
 // Rocket9852Fin();
 
+module SustainerCup(){
+	difference(){
+		Stager_Cup(Tube_OD=R9852_Body_OD, ID=78, nLocks=2, BoltsOn=true, Collar_h=29);
+		
+		ID=94;
+		difference(){
+			union(){
+				cylinder(d1=78, d2=ID, h=10+Overlap);
+				translate([0,0,10]) cylinder(d=ID, h=10);
+				translate([0,0,20-Overlap]) cylinder(d2=78, d1=ID, h=10);
+			} // union
+			
+			for (j=[0:1]) rotate([0,0,180*j]) translate([0,ID/2,15]) cube([9.5,20,40], center=true);
+		} // difference
+	} // difference
+} // SustainerCup
+
+//rotate([180,0,0]) SustainerCup();
 
 //  ******************* BOOSTER PARTS *********************
 

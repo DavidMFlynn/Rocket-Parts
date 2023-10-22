@@ -422,26 +422,27 @@ module TLServoGear(nTeeth=24){
 //TLServoGear();
 
 module ServoGear(nTeeth=24){
-	//ServoWheel_d=20.84+IDXtra; // MG996R
-	//ServoWheel_h=2.7;
-	//ServoBC_r=8;
-	ServoWheel_d=23.75+IDXtra; // HS5645MG
-	ServoWheel_h=2.0;
-	ServoBC_r=17/2;
-	ServoBC2_r=20/2;
+	ServoWheel_d=20.84+IDXtra*2; // MG996R
+	ServoWheel_h=4; //2.7;
+	ServoBC_r=8;
+	ServoBC2_r=8;
+	//ServoWheel_d=23.75+IDXtra*2; // HS5645MG
+	//ServoWheel_h=2.0;
+	//ServoBC_r=17/2;
+	//ServoBC2_r=20/2;
 	
 	difference(){
 		BB_Gear(nTeeth=nTeeth);
 		
 		translate([0,0,-Overlap]) cylinder(d=ServoWheel_d, h=ServoWheel_h);
-		translate([0,0,8]){ // gear thickness
+		translate([0,0,ServoWheel_h+5.3]){ // gear thickness
 			for (j=[0:1]) rotate([0,0,180*j]) translate([ServoBC_r,0,0]) Bolt4HeadHole();
 			for (j=[0:1]) rotate([0,0,180*j+90]) translate([ServoBC2_r,0,0]) Bolt4HeadHole();
 			}
 	} // difference
 } // ServoGear
 
-//ServoGear();
+//ServoGear(30);
 
 module BB_LockShaft(Len=50, nTeeth=24, Gear_z=14){
 	nBolts=3;

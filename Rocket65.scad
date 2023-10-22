@@ -796,7 +796,7 @@ module MotorRetainer(HasWrenchCuts=false, Cone_Len=35, ExtraLen=0){
 	} // difference
 } // MotorRetainer
 
-//translate([0,0,-0.2]) MotorRetainer(ExtraLen=4);
+//translate([0,0,-0.2]) MotorRetainer(ExtraLen=0);
 
 /*
 difference(){
@@ -809,7 +809,69 @@ difference(){
 } // difference
 /**/
 
+module MotorRetainer29Fix(Cone_Len=35, ExtraLen=0){
+	
+	
+	AftClosure_h=10;
+	Retainer_h=2;
+	Nut_Len=Retainer_h+AftClosure_h+10;
+	MotorTube_OD=PML29Body_OD;
+	MotorTube_ID=PML29Body_ID;
+	
+	difference(){
+		hull(){
+			difference(){
+				hull(){
+					// Bottom
+					translate([0,0,-Cone_Len]) cylinder(d=MotorTube_OD+2.4+IDXtra*2, h=2, $fn=$preview? 90:360);
+						
+					// Top
+					//rotate_extrude($fn=$preview? 90:360) translate([Body_OD/2-8,0,0]) circle(d=16);
+					translate([0,0,-13-Overlap]) cylinder(d=54,h=Overlap, $fn=$preview? 90:360);
+				} // hull
+				
+				// Trim Top	
+				translate([0,0,-Cone_Len+Nut_Len-Overlap]) cylinder(d=Body_OD+1, h=Cone_Len);
+			} // difference
+		
+			translate([0,0,-Cone_Len-ExtraLen]) 
+				cylinder(d=MotorTube_OD+2.4+IDXtra*2, h=2, $fn=$preview? 90:360);
+		} // hull
+			
+		// Exit
+		translate([0,0,-Cone_Len-ExtraLen-Overlap]) 
+			cylinder(d=MotorTube_ID+IDXtra*2, h=Cone_Len);
+			
+		// Motor tube
+		translate([0,0,-Cone_Len-ExtraLen+Retainer_h]) 
+			cylinder(d=MotorTube_OD+IDXtra*3, h=Cone_Len);
+	
+		translate([0,0,-Cone_Len+Nut_Len-12+Overlap])
+			ExternalThread(Pitch=2.5, Dia_Nominal=MotorTube_OD+6+IDXtra*4, 
+							Length=15, Step_a=$preview? 10:2, TrimEnd=true, TrimRoot=false);
+		
+		
+		if ($preview) translate([0,0,-Cone_Len-ExtraLen-1]) cube([50,50,100]);
+	} // difference
+} // MotorRetainer29Fix
 
+//MotorRetainer29Fix();
+
+module MotorAdptr3829(){
+	difference(){
+		union(){
+			translate([0,0,10-Overlap])
+				Tube(OD=MotorTube_ID, ID=PML29Body_ID, Len=10, myfn=$preview? 36:360);
+			Tube(OD=MotorTube_OD, ID=PML29Body_ID, Len=10, myfn=$preview? 36:360);
+		} // union
+		
+		translate([0,0,-Overlap]) cylinder(d=PML29Body_OD+IDXtra*3, h=6);
+		
+		if ($preview) translate([0,0,-Overlap]) cube([50,50,50]);
+	} // difference
+} // MotorAdptr3829
+
+// translate([0,0,-32.8]) MotorAdptr3829();
 
 
 
