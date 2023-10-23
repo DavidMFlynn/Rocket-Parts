@@ -3,7 +3,7 @@
 // Filename: Rocket65.scad
 // by David M. Flynn
 // Created: 6/16/2023 
-// Revision: 1.0.10  9/10/2023 
+// Revision: 1.0.11  10/22/2023 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -48,7 +48,8 @@
 //
 //  ***** History *****
 //
-// 1.0.10  9/10/2023  Increased Alt_DoorXtra_X fron 2 to 6
+// 1.0.11 10/22/2023 Now uses PetalDeploymentLib.scad
+// 1.0.10 9/10/2023  Increased Alt_DoorXtra_X fron 2 to 6
 // 1.0.9  8/8/2023   Improved fin can
 // 1.0.8  7/21/2023  Updated PetalHub()
 // 1.0.7  7/10/2023  Set aft closure to 10mm for 29mm, working on a more robust petal.
@@ -86,9 +87,9 @@
 //
 // *** optional petal deployer ***
 //
-// PetalHub();
-// rotate([-90,0,0]) PetalSpringHolder();
-// rotate([180,0,0]) Petals(Len=110, nPetals=3);
+// PD_PetalHub(Coupler_OD=Coupler_OD, nPetals=3, ShockCord_a=PD_ShockCordAngle());
+// rotate([-90,0,0]) PD_PetalSpringHolder(Coupler_OD=Coupler_OD);
+// rotate([180,0,0]) PD_Petals(Coupler_OD=Coupler_OD, Len=110, nPetals=3);
 //
 // SpringEndTop(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=3);
 // SpringEndBottom(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=3);
@@ -122,6 +123,7 @@ use<NoseCone.scad>
 use<AltBay.scad>
 use<BatteryHolderLib.scad>
 use<SpringThingBooster.scad>
+use<PetalDeploymentLib.scad>
 use<ThreadLib.scad>
 
 //also included
@@ -173,7 +175,7 @@ Alt_DoorXtra_Y=2;
 FinInset_Len=5;
 Can_Len=Fin_Root_L+FinInset_Len*2;
 Bolt4Inset=4;
-PetalWidth=Coupler_OD/5;
+ShockCord_a=33; // offset between PD_PetalHub and R65_BallRetainerBottom
 
 
 module ShowRocket(){
@@ -215,171 +217,12 @@ module R65_BallRetainerBottom(){
 	difference(){
 		STB_BallRetainerBottom(BallPerimeter_d=Body_OD, Body_OD=Body_ID, nLockBalls=3, HasSpringGroove=false);
 		
-		for (j=[0:2]) rotate([0,0,120*(j+0.5)]) translate([0,Body_OD/2-5,0]) Bolt4Hole();
+		rotate([0,0,PD_ShockCordAngle()-ShockCord_a]) 
+			PD_PetalHubBoltPattern(Coupler_OD=Coupler_OD, nPetals=3) Bolt4Hole();
 	} // difference
 } // R65_BallRetainerBottom
 
-// translate([0,0,-8]) rotate([180,0,0]) R65_BallRetainerBottom();
-
-
-module Petals(Len=25, nPetals=3){
-	Bolt1_Z=11.75;
-	Thickness=3;
-	BaseOffset=11.2;
-	
-	difference(){
-		union(){
-			translate([0,0,BaseOffset]) Tube(OD=Coupler_OD-IDXtra*2, ID=Coupler_OD-3.6, Len=Len, myfn=$preview? 90:360);
-			
-			for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]) difference(){
-				intersection(){
-					cylinder(d=Coupler_OD-IDXtra*2, h=16+BaseOffset, $fn=$preview? 90:360);
-						
-					translate([-PetalWidth/2,Coupler_OD/2-Thickness,0]) 
-						cube([PetalWidth, Coupler_OD, 16+BaseOffset]);
-				} // intersection
-				translate([0,0,16+BaseOffset-3])
-					cylinder(d1=Coupler_OD-Thickness*2, d2=Coupler_OD-3.6+Overlap, h=3+Overlap, $fn=$preview? 90:360);
-			}
-		} // union
-		
-		// Bolt Holes
-		for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]){
-			translate([0,Coupler_OD/2,Bolt1_Z]) rotate([-90,0,0]) Bolt4ButtonHeadHole();
-			translate([0,Coupler_OD/2,Bolt1_Z+Bolt4Inset*2]) rotate([-90,0,0]) Bolt4ButtonHeadHole();
-			}
-		
-		// Cut here
-		for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*(j+0.5)])
-			translate([0,Coupler_OD/2,Len/2+BaseOffset]) cube([2,2,Len+Overlap*2], center=true);
-	} // difference
-} // Petals
-
-//rotate([180,0,0]) Petals(Len=110, nPetals=3);
-
-module PetalSpringHolder(Len=75){
-	Width=11;
-	Thickness=3;
-	Spring_d=5/16*25.4;
-	Axle_d=4;
-	Axle_L=Width+7;
-	AxleBoss_d=Axle_d+2.4;
-	
-	difference(){
-		union(){
-			translate([0,0,8]) hull(){
-				translate([0,Coupler_OD/2-Thickness-Width/2,0]) cylinder(d=Width, h=10);
-				translate([-Width/2,Coupler_OD/2-Thickness-1,0]) cube([Width,1,1]);
-			
-				translate([0,Coupler_OD/2-Thickness,Bolt4Inset*3]) rotate([90,0,0]) cylinder(d=Width,h=3);
-			} // hull
-			
-			translate([0,Coupler_OD/2-Thickness-AxleBoss_d/2,0]) hull(){
-				rotate([0,90,0]) cylinder(d=AxleBoss_d, h=PetalWidth, center=true);
-				translate([0,0,8]) rotate([0,90,0]) cylinder(d=AxleBoss_d, h=Width, center=true);
-			} // hull
-			
-			// Axle
-			translate([0,Coupler_OD/2-Thickness-AxleBoss_d/2,0])
-			rotate([0,90,0]) cylinder(d=Axle_d, h=Axle_L, center=true);
-		} // union
-		
-		
-		// Sping	
-		translate([0,Coupler_OD/2-Thickness-Width/2,-AxleBoss_d/2-Overlap]) {
-			cylinder(d=Spring_d+IDXtra, h=16+AxleBoss_d/2);
-			cylinder(d=4, h=30);
-		}
-		
-		translate([0,Coupler_OD/2,12]) rotate([-90,0,0]) Bolt4Hole(depth=6);
-		translate([0,Coupler_OD/2,12+Bolt4Inset*2]) rotate([-90,0,0]) Bolt4Hole(depth=9.5);
-	} // difference
-} // PetalSpringHolder
-
-//translate([0,-1,7]) PetalSpringHolder();
-//rotate([-90,0,0]) PetalSpringHolder();
-
-module PetalHub(){
-	Width=PetalWidth+1;
-	Thickness=3;
-	nPetals=3;
-	Spring_d=5/16*25.4;
-	Shelf_Z=16;
-	SpringEnd_Y=Coupler_OD/2-16;
-	Axle_d=4+IDXtra*3;
-	Axle_L=Width+7;
-	AxleBoss_d=Axle_d+2.4;
-	
-	difference(){
-		union(){
-			STB_SpringEnd(Tube_ID=Coupler_OD, CouplerTube_ID=Coupler_OD-3.6, SleeveLen=16, nRopeHoles=0);
-			
-			// Close bottom
-			//translate([0,0,3]) 
-			cylinder(d=Coupler_OD-1, h=6);
-			
-			// Spring holders
-			for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]) 
-				hull(){
-					translate([0,SpringEnd_Y,Shelf_Z-10+Spring_d/2]) 
-						rotate([90,0,0]) cylinder(d=Spring_d+3, h=11);
-					translate([-(Spring_d+5)/2,SpringEnd_Y-11,Shelf_Z-12]) 
-						cube([Spring_d+5,11,1]);
-				} // hull
-		} // union
-		
-		// Bolt to BallRetainerBottom
-		for (j=[0:2]) rotate([0,0,120*(j+0.5)]) translate([0,Body_OD/2-5,5]) Bolt4HeadHole(lHead=20);
-		
-		// Petal ledge and Spring slot
-		for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]){
-			translate([-Width/2,5,Shelf_Z]) cube([Width,Coupler_OD/2,20]);
-			
-			// Axle 
-			translate([0,Coupler_OD/2-Thickness-AxleBoss_d/2-0.5,7]){
-			
-				// Petal pivot socket
-				hull(){
-					rotate([0,90,0]) cylinder(d=Axle_d, h=Axle_L, center=true);
-					translate([0,-6,5])
-						rotate([0,90,0]) cylinder(d=Axle_d, h=Axle_L, center=true);
-				} // hull
-				
-				// Petal clearance
-				hull(){
-					rotate([0,90,0]) cylinder(d=AxleBoss_d+5, h=Width, center=true);
-					translate([0,10,0]) rotate([0,90,0]) cylinder(d=AxleBoss_d+5, h=Width, center=true);
-					translate([0,0,10]) rotate([0,90,0]) cylinder(d=AxleBoss_d+4, h=Width, center=true);
-					}}
-				
-			// Spring clearance
-			hull(){
-				translate([0,Coupler_OD/2-16,Shelf_Z-10+Spring_d/2]) 
-					rotate([-90,0,0]) cylinder(d=Spring_d+1, h=20);
-				translate([0,Coupler_OD/2-16,Shelf_Z+Spring_d/2]) 
-					rotate([-90,0,0]) cylinder(d=Spring_d+1, h=20);
-			} // hull
-		}
-		
-		// Spring holders
-		for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]) 
-			translate([0,SpringEnd_Y+Overlap,Shelf_Z-10+Spring_d/2]) {
-				rotate([90,0,0]) cylinder(d=Spring_d, h=8);
-				rotate([90,0,0]) cylinder(d=4, h=12);
-		}
-				
-		// Shock cord hole
-		translate([0,0,-Overlap]) rotate([0,0,-60+33]) hull(){
-			translate([0,-Coupler_OD/2+6,0]) cylinder(d=4, h=15);
-			translate([0,-Coupler_OD/2+16.5,0]) cylinder(d=4, h=15);
-		}
-		
-		
-	} // difference
-	
-} // PetalHub
-
-//PetalHub();
+// translate([0,0,-8]) rotate([180,0,192]) R65_BallRetainerBottom();
 
 module EggFinderBracket(){
 	Battery_X=14;
