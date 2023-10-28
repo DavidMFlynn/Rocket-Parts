@@ -3,7 +3,7 @@
 // Filename: SpringThingBooster.scad
 // by David M. Flynn
 // Created: 2/26/2023
-// Revision: 1.2.9   6/23/2023
+// Revision: 1.2.10   10/26/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -38,7 +38,11 @@
 //  Steel Dowel Pin 4mm (Undersized) x 16mm (3 Req.)
 //
 //  ***** History *****
-echo("SpringThingBooster Rev. 1.2.9");
+module SpringThingBoosterRev(){
+	echo("SpringThingBooster Rev. 1.2.10");
+} // SpringThingBoosterRev
+SpringThingBoosterRev();
+// 1.2.10  10/26/2023 Filled small gap below integrated coupler
 // 1.2.9   6/23/2023  Added CenterHole_d to STB_SpringEnd
 // 1.2.8   6/11/2023  Changed small servo arm length to 4mm.
 // 1.2.7   6/5/2023   Removed overrides.
@@ -1024,6 +1028,9 @@ module STB_BallRetainerTop(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID
 			if (HasIntegratedCouplerTube){
 				translate([0,0,Engagement_Len/2]) 
 					Tube(OD=Body_ID, ID=Body_ID-6, Len=IntCouplerLen+13, myfn=$preview? 90:360);
+				// gap filler
+				translate([0,0,Engagement_Len/2-5]) 
+					Tube(OD=Body_ID-1, ID=Body_ID-6, Len=6, myfn=$preview? 90:360);
 				translate([0,0,Engagement_Len/2]) 
 					Tube(OD=BallPerimeter_d, ID=Body_ID-4.4, Len=IntCouplerLen, myfn=$preview? 90:360);
 				}
@@ -1105,6 +1112,8 @@ module STB_BallRetainerTop(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID
 				translate([0,STB_LockPinBC_d(BallPerimeter_d)/2+5,0])
 					cylinder(d=Magnet_h+IDXtra*4, h=LockDisk_H+4, center=true);
 			}
+			
+		//if ($preview) translate([0,0,-1]) cube([Body_OD/2+10,Body_OD/2+10,50]);
 	} // difference
 	
 	// Shock cord hole
@@ -1120,8 +1129,16 @@ module STB_BallRetainerTop(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID
 
 } // STB_BallRetainerTop
 
-// STB_BallRetainerTop();
-//STB_LockDisk(BallPerimeter_d=PML54Body_ID, nLockBalls=3);
+/*
+STB_BallRetainerTop(BallPerimeter_d=BT98Body_OD, Body_OD=BT98Body_ID, nLockBalls=6,
+HasIntegratedCouplerTube=true,
+			IntegratedCouplerLenXtra=10,
+			Body_ID=BT98Body_ID,
+			HasSecondServo=false,
+			UsesBigServo=true,
+			Engagement_Len=20);
+/**/		
+//STB_LockDisk(BallPerimeter_d=BT98Body_ID, nLockBalls=6);
 
 /*
 STB_BallRetainerTop(BallPerimeter_d=67.2, Body_OD=65, nLockBalls=3, HasIntegratedCouplerTube=true, IntegratedCouplerLenXtra=-10, Body_ID=65, HasSecondServo=false, UsesBigServo=false, Engagement_Len=20);
