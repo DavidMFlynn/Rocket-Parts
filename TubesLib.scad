@@ -94,8 +94,10 @@ PML54Coupler_ID=2.02*25.4;
 // Blue Tube 2.0
 BT137Body_ID=5.385*25.4;
 BT137Body_OD=BT137Body_ID+0.077*2*25.4;
-BT137Coupler_ID=5.198*25.4;
-BT137Coupler_OD=BT137Coupler_ID+0.084*2*25.4;
+BT137Coupler_ID=132.4; // was 5.198*25.4 measured 132.4
+echo(BT137Coupler_ID=BT137Coupler_ID);
+BT137Coupler_OD=135.4; // was BT137Coupler_ID+0.084*2*25.4 measured 135.4
+echo(BT137Coupler_OD=BT137Coupler_OD);
 
 BT98Body_OD=101.9;
 BT98Body_ID=98.9;

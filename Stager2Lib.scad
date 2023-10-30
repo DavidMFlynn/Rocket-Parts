@@ -3,7 +3,7 @@
 // Filename: Stager2Lib.scad
 // by David M. Flynn
 // Created: 10/10/2022 
-// Revision: 1.0.1  5/16/2023
+// Revision: 1.0.2  10/29/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -49,8 +49,9 @@
 //
 //  ***** History *****
 //
-echo("StagerLib 1.0.1");
-// 1.0.1  5/16/2023    Added Height parameter to Stager_CableRedirect()
+echo("StagerLib 1.0.2");
+// 1.0.2   10/29/2023  Remved IDXtra*2 from OD of CableRedirect
+// 1.0.1   5/16/2023   Added Height parameter to Stager_CableRedirect()
 // 1.0.0   2/6/2023    It works good.
 // 0.9.25  2/4/2023    Added inner tube skirt to Stager_Drogue_Cup
 // 0.9.24  2/3/2023    Added Stager_Drogue_Cup()
@@ -378,7 +379,7 @@ module Stager_CableRedirectTop(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 
 	difference(){
 		union(){
-			rotate([0,0,22.5]) CenteringRing(OD=Skirt_ID-IDXtra*2, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=0);
+			rotate([0,0,22.5]) CenteringRing(OD=Skirt_ID, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=0);
 			
 			//Cable Bearing
 			difference(){
@@ -514,7 +515,7 @@ module Stager_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 		union(){
 			
 			translate([0,0,-Height]) {
-				rotate([0,0,-20]) CenteringRing(OD=Tube_ID-IDXtra*2, ID=InnerTube_OD+IDXtra*2, 
+				rotate([0,0,-20]) CenteringRing(OD=Tube_ID, ID=InnerTube_OD+IDXtra*2, 
 										Thickness=5, nHoles=0);
 				Tube(OD=InnerTube_OD+Bolt4Inset*4, ID=InnerTube_OD+IDXtra*2,
 						Len=Height, myfn=$preview? 36:360);
@@ -548,6 +549,7 @@ module Stager_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 		for (j=[2:nBolts]) rotate([0,0,180/nBolts+360/nBolts*j-5]) 
 			translate([0,InnerTube_OD/2+Bolt4Inset,0]) Bolt4Hole();
 		
+		// Ball detent bolt holes
 		rotate([0,0,BallDetent_a]) translate([0,BoltCircle_d(Tube_OD=Tube_OD)/2+3,0]) {
 			translate([10,0,0]) Bolt4Hole();
 			translate([-10,0,0]) Bolt4Hole();
@@ -561,7 +563,7 @@ module Stager_CableRedirect(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 		
 		// Ball Detent
 		rotate([0,0,BallDetent_a]) translate([0,BoltCircle_d(Tube_OD=Tube_OD)/2+3,-Height-1]) 
-			cylinder(d=14-Overlap, h=Height+2);
+			cylinder(d=12, h=Height+2);
 
 		
 		// vertical tube for cable

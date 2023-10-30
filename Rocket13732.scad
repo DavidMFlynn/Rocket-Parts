@@ -204,6 +204,7 @@ LargeFairing(IsLeftHalf=false,
 // ST_Frame(Tube_OD=Body_OD, Skirt_ID=Body_ID, Collar_Len=26, Skirt_Len=34, HasStagerCableRaceway=true, HasWireRaceway=true);
 // ST_CableRedirectTop(Tube_OD=Body_OD, Skirt_ID=Body_ID, InnerTube_OD=DualDepTube_OD);
 // ST_CableRedirect(Tube_OD=Body_OD, Skirt_ID=Body_ID, Tube_ID=Coupler_ID, InnerTube_OD=EBayTube_OD, InnerTube2_OD=DualDepTube_OD);
+// ST_CableBearing();
 // ST_BallKeeper(InnerTube_OD=DualDepTube_OD);
 // ST_BallSpacer(Tube_OD=Body_OD);
 // rotate([180,0,0]) ST_LockBallRetainer(Tube_OD=Body_OD, InnerTube_OD=DualDepTube_OD);
@@ -216,7 +217,7 @@ LargeFairing(IsLeftHalf=false,
 //
 //  *** Stager parts for dual deploy ***
 //
-// Stager_CableRedirectTop(Tube_OD=Body_OD, Skirt_ID=Body_ID, InnerTube_OD=DualDepTube_OD, HasRaceway=true, Raceway_a=300);
+// Stager_CableRedirectTop(Tube_OD=Body_OD, Skirt_ID=Body_ID-IDXtra*2, InnerTube_OD=DualDepTube_OD, HasRaceway=true, Raceway_a=300);
 // Stager_CableRedirect(Tube_OD=Body_OD, Skirt_ID=Body_ID, Tube_ID=Coupler_ID, InnerTube_OD=DualDepTube_OD, HasRaceway=true, Raceway_a=300);
 // Stager_CableBearing();
 // Stager_Detent(Tube_OD=Body_OD);
@@ -591,6 +592,34 @@ module ShowRocket(){
 
 //ShowRocket();
 
+module EBaySpringStop(){
+	Al_Tube_d=12.7;
+	Al_Tube_Z=20;
+	Len=40;
+	
+	difference(){
+		union(){
+			Tube(OD=EBayTube_ID, ID=ST_Spring_ID(), Len=Len, myfn=$preview? 36:360);
+			
+			
+			translate([0,0,Al_Tube_Z]) rotate([90,0,0]) 
+				cylinder(d=Al_Tube_d+7, h=EBayTube_ID-6+Overlap, center=true);
+		} // union
+		
+		translate([0,0,Al_Tube_Z]) rotate([90,0,0]) {
+			cylinder(d=Al_Tube_d+IDXtra, h=EBayTube_ID+1, center=true);
+			cylinder(d=Al_Tube_d+8, h=20, center=true);
+		}
+		
+		translate([0,0,Al_Tube_Z+Al_Tube_d/2+4]) {
+			cylinder(d=ST_Spring_OD(), h=5);
+			translate([0,0,4]) cylinder(d1=ST_Spring_OD(), d2=ST_Spring_OD()+4, h=6);
+			}
+	} // difference
+	
+} // EBaySpringStop
+
+// EBaySpringStop();
 
 module R137_Electronics_Bay(){
 	Len=EBay_Len;
@@ -605,7 +634,11 @@ module R137_Electronics_Bay(){
 	Alt_a=300;
 	Batt1_a=240; // Altimeter Battery
 	Batt2_a=120; // Cable puller battery and switch
-
+	// added 10/28/23
+	Al_Tube_d=12.7;
+	Al_Tube_L=Body_ID-20;
+	Al_Tube_Z=Len-5-TopSkirt_Len-Al_Tube_d/2-6;
+	
 	// The Fairing clamps onto this.
 	translate([0,0,Len]) FairingBaseLockRing(Tube_OD=Body_OD, Tube_ID=Body_ID, Fairing_ID=Fairing_ID, Interface=Overlap, BlendToTube=true);
 
@@ -618,6 +651,13 @@ module R137_Electronics_Bay(){
 
 			translate([0,0,Len-5-TopSkirt_Len])
 				CenteringRing(OD=Body_OD-1, ID=EBayTube_OD+IDXtra*2, Thickness=5, nHoles=4);
+				
+			// Shock cord mount
+			translate([0,0,Al_Tube_Z])
+				hull(){
+					rotate([90,0,0]) cylinder(d=Al_Tube_d+7, h=Al_Tube_L, center=true);
+					translate([0,0,Al_Tube_d/2+8]) cube([Al_Tube_d+12,Al_Tube_L,Overlap], center=true);
+				} // hull
 		} // union
 
 		// Altimeter
@@ -633,6 +673,14 @@ module R137_Electronics_Bay(){
 		// Cable Puller door hole
 		translate([0,0,CablePuller_Z]) rotate([0,0,180+CP3_a])
 			CP_BayFrameHole(Tube_OD=Body_OD);
+			
+		// Shock cord mount
+		translate([0,0,Al_Tube_Z]) {
+			rotate([90,0,0]) cylinder(d=Al_Tube_d+IDXtra, h=Al_Tube_L+Overlap, center=true);
+			cylinder(d=EBayTube_OD+IDXtra*2, h=50, center=true);
+			
+		}
+		
 
 		// Cable Puller cable holes
 		rotate([0,0,CP1_a]) translate([0,Body_OD/2-CableInset_Y,0]) cylinder(d=6, h=50);

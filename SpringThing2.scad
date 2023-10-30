@@ -116,7 +116,8 @@ function Race_ID(InnerTube_OD=BT54Body_OD)=InnerTube_OD+5;
 
 Bolt4Inset=4;
 
-
+function ST_Spring_OD()=ST_DSpring_OD;
+function ST_Spring_ID()=ST_DSpring_ID;
 function BoltCircle_d(Tube_OD=PML98Body_OD)=BearingBallCircle_d(Tube_OD=Tube_OD)-BearingBall_d-Bolt4Inset*2;
 
 function nBearingBalls(Tube_OD=PML98Body_OD)=floor(BearingBallCircle_d(Tube_OD=Tube_OD)*PI/BearingBall_d/3)+
@@ -411,7 +412,7 @@ module ST_CableRedirectTop(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, InnerTub
 	
 	difference(){
 		union(){
-			CenteringRing(OD=Skirt_ID-IDXtra, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=0);
+			CenteringRing(OD=Skirt_ID, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=0);
 			
 			// Locked position stop
 			rotate([0,0,Stop_a(CablePath_Y)]) translate([0,CablePath_Y,0]) cylinder(d=8, h=10);
