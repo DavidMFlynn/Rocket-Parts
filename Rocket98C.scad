@@ -3,7 +3,7 @@
 // Filename: Rocket98C.scad
 // by David M. Flynn
 // Created: 10/23/2023 
-// Revision: 1.0.1  10/29/2023 
+// Revision: 1.0.2  10/30/2023 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -17,22 +17,23 @@
 //  ***** Parts *****
 //
 // BlueTube 2.0 4" Body Tube by 10 inches Forward Bay
-// BlueTube 2.0 4" Body Tube by 22 inches Lower Body
-// Blue Tube 2.1" Body Tube by 19.5 inches Motor Tube
+// BlueTube 2.0 4" Body Tube by 19 inches minimum Lower Body
+// Blue Tube 2.1" Body Tube by 19.5 inches minimum Motor Tube (Fits 54/1706 case)
 // Drogue parachute
 // 63" Parachute
 // 1/2" Braided Nylon Shock Cord (40 feet)
-// 1/2" x 0.035" wall Aluminum tubing 2ea 92mm, 2ea 80mm
 //
 //  ***** Hardware *****
 //
-// #6-32 x 3/4" Button Head Cap Screw (2 req) Rail Buttons
-// #4-40 x 1/2" Socket Head Cap Screw (3 req) Ball Lock
-// #4-40 x 3/8" Button Head Cap Screw (6 req) Doors
+// #6-32 x 3/4" Button Head Cap Screw (4 req) Rail Guides
+// #4-40 x 1/2" Socket Head Cap Screw (12 req) Ball Lock
+// #4-40 x 3/8" Button Head Cap Screw (14 req) Doors
 // #4-40 x 3/8" Socket Head Cap Screw (3 req) PetalHub
 // #4-40 x 1/4" Button Head Cap Screw (4 req) Altimeter
-// #2-56 x 1/4" Socket Head Cap Screw (2 req) Servo
-// MR84-2RS Bearing (14 req) Ball Lock
+// #4-40 x 1/4" Button Head Cap Screw (12 req) Petals
+// #4-40 x 3/8" Button Socket Head Cap Screw (8 req) Servos
+// 1/2" x 0.035" wall Aluminum tubing 2ea 92mm, 2ea 80mm Shock cord mounts
+// MR84-2RS Bearing (16 req) Ball Lock
 // 3/8" Delrin Ball (12 req) Ball Lock
 // 4mm Dia. x 10mm Undersize Steel Dowel (12 req) Ball Lock
 // 4mm Dia. x 16mm Undersize Steel Dowel (6 req) Ball Lock
@@ -42,11 +43,12 @@
 // Mission Control V3 Altimeter PCBA
 // Rocket Servo PCBA (2 req)
 // 1/4" Rail Guides (30mm long) (2 req)
-// CS4323 Spring
-// 5/16" Dia x 1-1/4" Spring (3 req) PetalHub
+// Spring 0.3" Dia x 1.25" PN:CS3715 (6 Req) Petals
+// Spring 1.4" Dia x 8" PN:CS4323 (4 Req) Deployment
 //
 //  ***** History *****
 //
+// 1.0.2  10/30/2023 Ready for first printing.
 // 1.0.1  10/29/2023 Added MotorTubeTopper(), removed obsolete routines
 // 1.0.0  10/23/2023 Copied from Rocket75C Rev 1.1.1
 //
@@ -172,7 +174,7 @@ ForwardTubeLen=10*25.4;
 EBay_Len=162;
 AftPetalLen=150;
 MotorTubeLen=19.5*25.4;
-BodyTubeLen=22*25.4;
+BodyTubeLen=19*25.4; // Range 19-22
 
 Alt_DoorXtra_X=6;
 Alt_DoorXtra_Y=4;
@@ -241,10 +243,9 @@ module ShowRocket(ShowInternals=false){
 	if (ShowInternals) translate([0,0,AftBallLock_Z-17]) rotate([0,0,200]) rotate([180,0,0]) 
 		PD_Petals(Coupler_OD=Coupler_OD, Len=150, nPetals=nPetals, AntiClimber_h=3);	
 	
-	if (ShowInternals) translate([0,0,AftBallLock_Z-120-AftPetalLen]){
-		color("Blue") translate([0,0,12.5]) Tube(OD=Coupler_OD, ID=Coupler_ID, Len=75, myfn=90);
-		SpringTop();
-		translate([0,0,-30]) ST_SpringMiddle(Tube_ID=BT54Coupler_OD);
+	if (ShowInternals) translate([0,0,MotorTubeLen+50]){
+		translate([0,0,35]) SpringTop();
+		ST_SpringMiddle(Tube_ID=BT54Coupler_OD);
 	}
 	if (ShowInternals) translate([0,0,MotorTubeLen+12]) rotate([0,0,180]) color("Gray") MotorTubeTopper();
 	/**/
@@ -321,12 +322,15 @@ module NC_ShockcordRing(){
 module SpringTop(){
 	ST_DSpring_OD=44.30;
 	
+	Piston_Len=60;
+	
+	translate([0,0,-Piston_Len+12]) Tube(OD=Coupler_OD, ID=Coupler_OD-4.4, Len=Piston_Len, myfn=$preview? 90:360);
 	difference(){
 		union(){
 			cylinder(d=MotorCoupler_OD, h=10+Overlap);
 			
-			translate([0,0,10]) cylinder(d=Coupler_OD, h=2+Overlap);
-			translate([0,0,10]) cylinder(d=Coupler_ID-1, h=5+Overlap);
+			//translate([0,0,10]) cylinder(d=Coupler_OD, h=2+Overlap);
+			translate([0,0,10]) cylinder(d=Coupler_OD, h=5+Overlap);
 			//translate([0,0,10]) Tube(OD=Coupler_ID-1, ID=Coupler_ID-6, Len=10, myfn=$preview? 36:360);
 		} // union
 		
