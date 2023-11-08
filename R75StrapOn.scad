@@ -58,11 +58,11 @@
 //
 // BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=NC_Len, Base_L=NC_Base, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
 //
-// rotate([180,0,0]) PD_Petals(Coupler_OD=Coupler_OD, Len=110, nPetals=4);
-// rotate([-90,0,0]) PD_PetalSpringHolder(Coupler_OD=Coupler_OD);
+// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=110, nPetals=nPetals);
+// rotate([-90,0,0]) PD_PetalSpringHolder(OD=Coupler_OD);
 /*
-PD_PetalHub(Coupler_OD=Coupler_OD, 
-					nPetals=4, 
+PD_PetalHub(OD=Coupler_OD, 
+					nPetals=nPetals, 
 					ShockCord_a=PD_ShockCordAngle(),
 					HasNCSkirt=true, 
 						Body_OD=Body_OD,
@@ -115,7 +115,7 @@ use<Fins.scad>
 use<NoseCone.scad>
 use<AltBay.scad>
 use<BatteryHolderLib.scad>
-use<SpringThingBooster.scad>
+use<SpringThingBooster.scad> SpringThingBoosterRev();
 use<CableReleaseBB.scad>
 use<PetalDeploymentLib.scad>
 use<ThreadLib.scad>
@@ -172,6 +172,7 @@ Alt_DoorXtra_Y=4;
 
 Bolt4Inset=4;
 ShockCord_a=45;
+nPetals=3;
 
 
 module ShowRocketStrapOn(ShowInternals=true){
@@ -257,6 +258,20 @@ module SpringEndTop(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=3){
 		} // hull
 	} // SCH
 	
+	module PetalLock(){
+		intersection(){
+			translate([0,0,Len-10]) Tube(OD=OD-6, ID=OD-18, Len=16, myfn=$preview? 36:360);
+			//translate([0,0,Len-10]) cylinder(d=OD-6, h=16);
+			translate([-1.5,-OD/2,Len-10]) cube([10,10,16]);
+			union(){
+				translate([-1.5,-OD/2+3,Len-10]) cube([3,9,14]);
+				//translate([0,-OD/2+6,Len-10]) cube([9,3,14]);
+				translate([-1.5,-OD/2+3,Len+4]) cube([10.5,9,2]);
+				translate([0,0,Len-10]) Tube(OD=OD-13, ID=OD-18, Len=14, myfn=$preview? 36:360);
+			} // union
+		} // intersection
+	} // PetalLock
+	
 	difference(){
 		union(){
 			Tube(OD=OD, ID=Tube_ID, Len=Len, myfn=$preview? 36:360);
@@ -265,14 +280,14 @@ module SpringEndTop(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=3){
 		} // union
 		
 		// Rope Holes
-		nRopes=5;
+		nRopes=nRopeHoles;
 		Rope_d=4;
-		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*(j+0.5)]) translate([0,OD/2-Rope_d/2-2,0])
-			cylinder(d=Rope_d, h=Len);
+		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*(j+0.5)]) translate([0,OD/2-Rope_d/2-6,0])
+			cylinder(d=Rope_d, h=Len+Overlap);
 		
 		// Top dish
 		translate([0,0,Len-Piston_h+3+Plate_t]) 
-			cylinder(d1=Tube_ID-20, d2=Tube_ID, h=Piston_h-3-Plate_t+Overlap);
+			cylinder(d1=Tube_ID-20, d2=OD-6, h=Piston_h-3-Plate_t+Overlap);
 	
 		// Spring
 		cylinder(d=ST_DSpring_OD, h=Len-Piston_h+3);
@@ -289,6 +304,8 @@ module SpringEndTop(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=3){
 			cylinder(d=Vent_d, h=Len);
 	} // difference
 	
+	// Petal locks
+	for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j+15]) PetalLock();
 
 } // SpringEndTop
 

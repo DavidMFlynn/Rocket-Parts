@@ -89,9 +89,9 @@ CouplerLenXtra=3;
 //
 // *** optional petal deployer ***
 //
-// PD_PetalHub(Coupler_OD=Coupler_OD, nPetals=3, ShockCord_a=PD_ShockCordAngle());
-// rotate([-90,0,0]) PD_PetalSpringHolder(Coupler_OD=Coupler_OD);
-// rotate([180,0,0]) PD_Petals(Coupler_OD=Coupler_OD, Len=150, nPetals=3);
+// PD_PetalHub(OD=Coupler_OD, nPetals=3, ShockCord_a=PD_ShockCordAngle());
+// rotate([-90,0,0]) PD_PetalSpringHolder(OD=Coupler_OD);
+// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=150, nPetals=3);
 //
 // rotate([180,0,0]) SpringTop();
 //
@@ -117,8 +117,10 @@ CouplerLenXtra=3;
 // ***********************************
 //  ***** for Viewing *****
 //
-// ShowRocket();
-// ShowRocket(ShowInternals=true);
+// 
+ShowRocket();
+// 
+translate([300,0,0]) ShowRocket(ShowInternals=true);
 //
 // ***********************************
 include<TubesLib.scad>
@@ -201,7 +203,9 @@ module ShowRocket(ShowInternals=false){
 	if (ShowInternals){
 		translate([0,0,BodyTube_Z+BodyTubeLen+10+Overlap*2-0.2]) R75_BallRetainerBottom();
 		translate([0,0,BodyTube_Z+BodyTubeLen+10+Overlap*2-9.2]) rotate([0,0,200]) rotate([180,0,0]) 
-			PD_PetalHub(Coupler_OD=BT75Coupler_OD, nPetals=3, ShockCord_a=PD_ShockCordAngle());
+			PD_PetalHub(OD=BT75Coupler_OD, nPetals=3, ShockCord_a=PD_ShockCordAngle());
+		translate([0,0,BodyTube_Z+BodyTubeLen+10+Overlap*2-15]) 
+			rotate([0,0,200]) rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=150, nPetals=3);
 	}
 	
 	if (ShowInternals==false)
@@ -230,7 +234,7 @@ module R75_BallRetainerBottom(){
 	difference(){
 		STB_BallRetainerBottom(BallPerimeter_d=Body_OD, Body_OD=Body_ID, nLockBalls=3, HasSpringGroove=false);
 		
-		rotate([0,0,PD_ShockCordAngle()-ShockCord_a]) PD_PetalHubBoltPattern(Coupler_OD=Coupler_OD, nPetals=3) Bolt4Hole();
+		rotate([0,0,PD_ShockCordAngle()-ShockCord_a]) PD_PetalHubBoltPattern(OD=Coupler_OD, nPetals=3) Bolt4Hole();
 
 	} // difference
 } // R75_BallRetainerBottom

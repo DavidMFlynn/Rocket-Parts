@@ -401,6 +401,8 @@ module STB_SpringEnd(Tube_ID=PML75Body_ID, CouplerTube_ID=BT75Coupler_ID, Sleeve
 		Tube(OD=Tube_ID-IDXtra*2, ID=CouplerTube_ID-IDXtra-Overlap, Len=SleeveLen, myfn=$preview? 90:360);
 } // STB_SpringEnd
 
+//STB_SpringEnd(Tube_ID=BT75Body_ID, CouplerTube_ID=BT75Coupler_ID, SleeveLen=0, nSprings=1, nRopeHoles=8, CenterHole_d=ST_DSpring_ID);
+
 // STB_SpringEnd(Tube_ID=PML98Body_ID, CouplerTube_ID=BT98Coupler_ID, SleeveLen=0);
 
 //STB_SpringEnd(Tube_ID=LOC65Body_ID, CouplerTube_ID=LOC65Coupler_ID, SleeveLen=30, nSprings=1, nRopeHoles=0, CenterHole_d=10);

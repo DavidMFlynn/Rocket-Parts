@@ -108,7 +108,8 @@ F54_FairingHalf(IsLeftHalf=false,
 // ***********************************
 //  ***** for Viewing *****
 //
-// ShowRocket98();
+// 
+ShowRocket98();
 //
 // ***********************************
 include<TubesLib.scad>

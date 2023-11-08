@@ -16,7 +16,7 @@
 //
 //  ***** Parts *****
 //
-// BlueTube 2.0 4" Body Tube by 10 inches Forward Bay
+// BlueTube 2.0 4" Body Tube by 10.5 inches Forward Bay
 // BlueTube 2.0 4" Body Tube by 19 inches minimum Lower Body
 // Blue Tube 2.1" Body Tube by 19.5 inches minimum Motor Tube (Fits 54/1706 case)
 // Drogue parachute
@@ -108,6 +108,7 @@ CouplerLenXtra=-10;
 // MotorRetainer(Cone_Len=TailCone_Len);
 //
 // rotate([90,0,0]) BoltOnRailGuide(Length = 30, BoltSpace=12.7, RoundEnds=true);
+// rotate([-90,0,0]) RailGuideSpacer(OD=Body_OD, H=RailGuide_h, Length = 30, BoltSpace=12.7);
 //
 // ***********************************
 //  ***** Routines *****
@@ -116,7 +117,8 @@ CouplerLenXtra=-10;
 // ***********************************
 //  ***** for Viewing *****
 //
-// ShowRocket();
+// 
+ShowRocket();
 // ShowRocket(ShowInternals=true);
 //
 // ***********************************
@@ -170,7 +172,7 @@ NC_Wall_t=1.8;
 NC_Base_L=15;
 
 ForwardPetalLen=180;
-ForwardTubeLen=10*25.4;
+ForwardTubeLen=10.5*25.4;
 EBay_Len=162;
 AftPetalLen=150;
 MotorTubeLen=19.5*25.4;
@@ -276,6 +278,110 @@ module ShowRocket(ShowInternals=false){
 //ShowRocket();
 //ShowRocket(ShowInternals=true);
 
+module R98_UpperSpringMiddle(){
+// costom version of ST_SpringMiddle()
+
+	ST_DSpring_OD=44.30;
+	ST_DSpring_ID=40.50;
+	Len=48;
+	nRopes=6;
+	OD=93;
+	
+	Tube(OD=ST_DSpring_OD+6, ID=ST_DSpring_OD+IDXtra*3, 
+			Len=Len, myfn=$preview? 90:360);
+			
+	translate([0,0,Len*0.4]) Tube(OD=ST_DSpring_ID-0.5, ID=ST_DSpring_ID-6, 
+			Len=Len*0.6, myfn=$preview? 90:360);
+			
+	translate([0,0,Len/2-1.5]) Tube(OD=ST_DSpring_OD+1, ID=ST_DSpring_ID-5, 
+			Len=3, myfn=$preview? 90:360);
+			
+	Tube(OD=OD, ID=89, 
+			Len=35, myfn=$preview? 90:360);
+	difference(){
+		cylinder(d1=92, d2=ST_DSpring_OD+1, h=35);
+		
+		translate([0,0,-3]) cylinder(d1=92, d2=ST_DSpring_OD+1, h=35);
+		translate([0,0,-Overlap]) cylinder(d=ST_DSpring_OD+1, h=35+Overlap*2);
+		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) translate([0,OD/2-7,-Overlap])
+			cylinder(d=10,h=Len);
+	} // difference
+
+
+} // R98_UpperSpringMiddle
+
+//R98_UpperSpringMiddle();
+
+module R98_LowerSpringMiddle(){
+// costom version of ST_SpringMiddle()
+
+	ST_DSpring_OD=44.30;
+	ST_DSpring_ID=40.50;
+	Len=40;
+	nRopes=6;
+	OD=Coupler_OD;
+	
+	Tube(OD=ST_DSpring_OD+IDXtra*3+4.4, ID=ST_DSpring_OD+IDXtra*3, 
+			Len=Len, myfn=$preview? 90:360);
+			
+	Tube(OD=ST_DSpring_ID-0.5, ID=ST_DSpring_ID-0.5-4.4, 
+			Len=Len, myfn=$preview? 90:360);
+			
+	translate([0,0,Len/2-1.5]) Tube(OD=ST_DSpring_OD+1, ID=ST_DSpring_ID-5, 
+			Len=3, myfn=$preview? 90:360);
+			
+	Tube(OD=OD, ID=OD-4.4, 
+			Len=35, myfn=$preview? 90:360);
+	difference(){
+		cylinder(d1=OD-1, d2=ST_DSpring_OD+1, h=35);
+		
+		translate([0,0,-3]) cylinder(d1=92, d2=ST_DSpring_OD+1, h=35);
+		translate([0,0,-Overlap]) cylinder(d=ST_DSpring_OD+1, h=35+Overlap*2);
+		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) translate([0,OD/2-7,-Overlap])
+			cylinder(d=10,h=Len);
+	} // difference
+
+
+} // R98_LowerSpringMiddle
+
+//R98_LowerSpringMiddle();
+
+module R98_LowerSpringBottom(){
+// costom version of ST_SpringMiddle()
+
+	ST_DSpring_OD=44.30;
+	ST_DSpring_ID=40.50;
+	Len=12;
+	nRopes=6;
+	OD=Coupler_OD;
+	
+	//Tube(OD=ST_DSpring_OD+IDXtra*3+4.4, ID=ST_DSpring_OD+IDXtra*3, 
+	//		Len=Len, myfn=$preview? 90:360);
+			
+	//Tube(OD=ST_DSpring_ID-0.5, ID=ST_DSpring_ID-0.5-4.4, 
+	//		Len=Len, myfn=$preview? 90:360);
+			
+	//translate([0,0,Len/2-1.5]) Tube(OD=ST_DSpring_OD+1, ID=ST_DSpring_ID-5, 
+	//		Len=3, myfn=$preview? 90:360);
+			
+	Tube(OD=OD, ID=OD-4.4, 
+			Len=Len, myfn=$preview? 90:360);
+			
+	difference(){
+		translate([0,0,Len-5]) cylinder(d=OD-1, h=5);
+		
+		translate([0,0,Len-3]) cylinder(d=ST_DSpring_OD, h=5);
+		translate([0,0,-Overlap]) cylinder(d=ST_DSpring_ID-1, h=35+Overlap*2);
+		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) translate([0,OD/2-7,-Overlap])
+			cylinder(d=4,h=Len+Overlap*2);
+	} // difference
+
+
+} // R98_LowerSpringBottom
+
+//rotate([180,0,0]) R98_LowerSpringBottom();
+
+
 module R98_BallRetainerBottom(){
 	difference(){
 		STB_BallRetainerBottom(BallPerimeter_d=Body_OD, Body_OD=Body_ID, 
@@ -321,10 +427,12 @@ module NC_ShockcordRing(){
 
 module SpringTop(){
 	ST_DSpring_OD=44.30;
+	nRopes=6;
+	Piston_Len=50;
 	
-	Piston_Len=60;
+	translate([0,0,-10]) Tube(OD=Coupler_OD, ID=Coupler_OD-4.4, Len=Piston_Len, myfn=$preview? 90:360);
 	
-	translate([0,0,-Piston_Len+12]) Tube(OD=Coupler_OD, ID=Coupler_OD-4.4, Len=Piston_Len, myfn=$preview? 90:360);
+	
 	difference(){
 		union(){
 			cylinder(d=MotorCoupler_OD, h=10+Overlap);
@@ -337,10 +445,14 @@ module SpringTop(){
 		translate([0,0,-Overlap]) cylinder(d1= MotorCoupler_OD-4.4, d2=ST_DSpring_OD, h=10);
 		cylinder(d= ST_DSpring_OD, h=13);
 		cylinder(d= ST_DSpring_OD-6, h=20);
+		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) translate([0,Coupler_OD/2-7,-Overlap])
+			cylinder(d=4,h=Piston_Len+Overlap*2);
 	} // difference
 } // SpringTop
 
-//rotate([180,0,0]) SpringTop();
+//rotate([180,0,0]) 
+//translate([0,0,50]) 
+//SpringTop();
 
 module FW_GPS_SW_Hole(a=0){
 	translate([-4,-1.6-1,-1]) 
@@ -718,7 +830,6 @@ module FinCan(Cone_Len=35, LowerHalfOnly=false, UpperHalfOnly=false){
 } // FinCan
 
 //rotate([180,0,0]) FinCan(LowerHalfOnly=false, UpperHalfOnly=false);
-
 
 module RocketFin(){
 	

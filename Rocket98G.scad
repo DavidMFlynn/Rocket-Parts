@@ -58,7 +58,8 @@ FairingConeOGive(Fairing_OD=R98_Body_OD,
 // ***********************************
 //  ***** for Viewing *****
 //
-// ShowRocket98();
+// 
+ShowRocket98();
 //
 // ***********************************
 use<Rocket98Dual.scad>

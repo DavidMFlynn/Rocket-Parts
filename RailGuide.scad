@@ -3,7 +3,7 @@
 // Filename: RailGuide.scad
 // by David M. Flynn
 // Created: 6/11/2022 
-// Revision: 1.0.4  1/1/2023
+// Revision: 1.0.5  11/2/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,14 +12,15 @@
 //
 //  ***** History *****
 //
-echo("RailGuide 1.0.4");
-// 1.0.4  1/1/2023  Bolt holes now thru in RailGuidePost. 
-// 1.0.3  11/7/2022 Shorter cap to clear 8020-1010 rail better. 
+echo("RailGuide 1.0.5");
+// 1.0.5  11/2/2023  Added RailGuideSpacer()
+// 1.0.4  1/1/2023   Bolt holes now thru in RailGuidePost. 
+// 1.0.3  11/7/2022  Shorter cap to clear 8020-1010 rail better. 
 // 1.0.2  10/29/2022 Narrower and taller by 0.3mm.
 // 1.0.1  10/11/2022 Added TubeBoltedRailGuide
-// 1.0.0  10/4/2022 Printed and verified function.  
-// 0.9.1  10/4/2022 Added BoltOnRailGuide()
-// 0.9.0  6/11/2022 First code.
+// 1.0.0  10/4/2022  Printed and verified function.  
+// 0.9.1  10/4/2022  Added BoltOnRailGuide()
+// 0.9.0  6/11/2022  First code.
 //
 // ***********************************
 //  ***** for STL output *****
@@ -28,6 +29,8 @@ echo("RailGuide 1.0.4");
 //
 // rotate([90,0,0]) BoltOnRailGuide(Length = 40, BoltSpace=12.7, RoundEnds=true);
 // RialGuide(TubeOD = 98, Length = 40, Offset = 3);
+//
+// rotate([-90,0,0]) RailGuideSpacer(OD=PML98Body_OD, H=PML98Body_OD/2+2, Length = 30, BoltSpace=12.7);
 //
 // TubeBoltedRailGuide(TubeOD=PML98Body_OD, Length = 30, Offset = 3);
 //
@@ -167,6 +170,33 @@ module RailGuideMountingPlate(Length = 40, BoltSpace=12.7){
 //RailGuideMountingPlate();
 
 
+module RailGuideSpacer(OD=PML98Body_OD, H=PML98Body_OD/2+2, Length = 30, BoltSpace=12.7){
+	TubeLen=Length+4;
+	TubeWidth=RG_Back_w+2;
+	
+	difference(){
+			
+		hull(){
+			
+			translate([0,0,Length/2-TubeWidth/2+2]) 
+				rotate([-90,0,0]) cylinder(d=TubeWidth, h=OD/2);
+			translate([0,0,-Length/2+TubeWidth/2-2]) 
+				rotate([-90,0,0]) cylinder(d=TubeWidth, h=OD/2);
+			
+			translate([0,0,Length/2-RG_Back_w/2]) 
+				rotate([-90,0,0]) cylinder(d=RG_Back_w, h=H-IDXtra);
+			translate([0,0,-Length/2+RG_Back_w/2]) 
+				rotate([-90,0,0]) cylinder(d=RG_Back_w, h=H-IDXtra);
+			
+		} // hull
+	
+		translate([0,0,-TubeLen/2-10]) cylinder(d=OD,h=TubeLen+20, $fn=$preview? 36:360);
+		translate([0,H,0]) RailGuideBoltPattern(BoltSpace=BoltSpace) Bolt6Hole(depth=H);
+	} // difference
+} // RailGuideSpacer
+
+//RailGuideSpacer(OD=PML98Body_OD, H=PML98Body_OD/2+2, Length = 30, BoltSpace=12.7);
+
 module RailGuidePost(OD=PML98Body_OD, MtrTube_OD=PML54Body_OD, H=5.5*25.4/2, TubeLen=60,
 						Length = 30, BoltSpace=12.7){
 	Size_Z=TubeLen;
@@ -195,8 +225,6 @@ module RailGuidePost(OD=PML98Body_OD, MtrTube_OD=PML54Body_OD, H=5.5*25.4/2, Tub
 				translate([0,0,-Length/2+RG_Back_w/2]) 
 					rotate([-90,0,0]) cylinder(d=RG_Back_w, h=H-MtrTube_OD/2-IDXtra);
 				
-				//translate([0,H-MtrTube_OD/2-IDXtra,0]) 
-				//RailGuideMountingPlate(Length = Length, BoltSpace=BoltSpace);
 			} // hull
 		} // union
 		

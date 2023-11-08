@@ -89,7 +89,8 @@
 // ***********************************
 //  ***** for Viewing *****
 //
-// ShowRocket75();
+// 
+ShowRocket75();
 // ShowRocket75(ShowInternals=true);
 //
 // ***********************************
@@ -171,7 +172,7 @@ module ShowRocket75(ShowInternals=false){
 			STB_BallRetainerTop(BallPerimeter_d=R75_Body_OD, Body_OD=R75_Body_ID, 
 								nLockBalls=5, HasIntegratedCouplerTube=true, Body_ID=R75_Body_ID);
 		if (ShowInternals==false) color("Orange")
-			TubeEnd(BallPerimeter_d=R75_Body_OD, nLockBalls=5, Body_OD=R75_Body_OD, 
+			STB_TubeEnd(BallPerimeter_d=R75_Body_OD, nLockBalls=5, Body_OD=R75_Body_OD, 
 						Body_ID=R75_Body_ID, Skirt_Len=20);
 			}
 	
@@ -289,9 +290,9 @@ module R75A_Electronics_Bay(Tube_OD=R75_Body_OD, Tube_ID=R75_Body_ID,
 	
 	// Battery and Switch door2
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a+180]) 
-		Batt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, HasSwitch=false, ShowDoor=ShowDoors);
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=false, ShowDoor=ShowDoors);
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a+180]) 
-		Batt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, HasSwitch=true, ShowDoor=ShowDoors);
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=true, ShowDoor=ShowDoors);
 	
 } // R75A_Electronics_Bay
 
