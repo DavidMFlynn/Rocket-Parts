@@ -83,6 +83,8 @@
 //
 //ShowST_Assy(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID, InnerTube_OD=BT54Mtr_OD, InnerTube2_OD=BT54Mtr_OD, InnerTube_ID=PML98Coupler_ID, Triggered=false);
 //
+//ShowST_Assy(Tube_OD=BT137Body_OD, Skirt_ID=BT137Body_ID, InnerTube_OD=BT98Body_OD, InnerTube2_OD=BT98Body_OD, InnerTube_ID=BT98Coupler_ID, Triggered=false);
+//
 // ***********************************
 
 include<TubesLib.scad>

@@ -336,7 +336,7 @@ module PD_PetalHub(OD=BT75Coupler_OD,
 	difference(){
 		union(){
 			difference(){
-				cylinder(d=OD, h=16);
+				cylinder(d=OD, h=16, $fn=$preview? 90:360);
 				
 				translate([0, 0, 6+Overlap]) cylinder(d1=OD-40, d2=OD-6, h=10);
 			} // difference

@@ -82,7 +82,7 @@ echo("CablePuller 1.2.0");
 // CPDoorHole(Tube_OD=PML98Body_OD);
 // CP_DoorBoltPattern(Tube_OD=PML98Body_OD) Bolt4Hole();
 // CP_BayFrameHole(Tube_OD=PML98Body_OD);
-// CP_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, ShowDoor=false);
+// CP_BayDoorFrame(Tube_OD=PML98Body_OD, ShowDoor=false);
 //
 // ***********************************
 //  ***** for Viewing *****
@@ -242,7 +242,7 @@ module CP_BayDoorFrame(Tube_OD=PML98Body_OD, ShowDoor=false){
 	
 	DoorFrame(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t, Tube_OD=Tube_OD, HasSixBolts=true);
 	
-	if (ShowDoor) CP_Door(Tube_OD=PML98Body_OD, BoltBossInset=3, HasArmingSlot=true);
+	if (ShowDoor) CP_Door(Tube_OD=Tube_OD, BoltBossInset=3, HasArmingSlot=true);
 } // CP_BayDoorFrame
 
 //CP_BayDoorFrame(ShowDoor=false);

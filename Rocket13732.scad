@@ -172,6 +172,7 @@ LargeFairing(IsLeftHalf=false,
 //
 // *** Electronics Bay ***
 // R137_Electronics_Bay();
+// SE_EBaySpringStop(OD=EBayTube_ID);
 // FairingBaseBulkPlate(Tube_ID=Body_ID, Fairing_ID=Fairing_ID, ShockCord_a=-1);
 // rotate([0,180,0]) AltDoor54(Tube_OD=Body_OD, IsLoProfile=true, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
 // rotate([0,180,0]) AltDoor54(Tube_OD=Body_OD, IsLoProfile=true, DoorXtra_X=0, DoorXtra_Y=0); // old
@@ -301,6 +302,7 @@ LargeFairing(IsLeftHalf=false,
 //
 // ***********************************
 include<TubesLib.scad>
+use<AT-RMS-Lib.scad>
 use<RailGuide.scad>
 use<NoseCone.scad>
 use<Fairing54.scad>
@@ -311,6 +313,7 @@ use<CablePuller.scad>
 use<BatteryHolderLib.scad>
 use<SpringThing2.scad>
 use<SpringThingBooster.scad>
+use<SpringEndsLib.scad>
 use<RacewayLib.scad>
 
 //also included
@@ -394,68 +397,6 @@ RailGuide_H=88;
 RailGuide_a=90-360/nFins;
 Wire_a=60;
 
-module RocketStand(){
-	// Adaptor to use 1-1/2" PVC pipe and a 2.5kg spool as a stand.
-	Spool_ID=52.7;
-	H=75;
-	Pipe_OD=48.3;
-
-	difference(){
-		union(){
-			cylinder(d=Spool_ID+8, h=3);
-			cylinder(d1=Spool_ID, d2=Spool_ID-0.5, h=H+3);
-		} // union
-
-		translate([0,0,-Overlap]) cylinder(d=Pipe_OD+IDXtra*3, h=H+Overlap*2);
-		translate([0,0,H]) cylinder(d1=Pipe_OD+IDXtra*2, d2=Pipe_OD-2, h=3+Overlap);
-	} // difference
-
-} // RocketStand
-
-//RocketStand();
-
-module ShowMotorK185W(){
-	Casing_Len=296+84.5;
-
-	color("Black") cylinder(d=57, h=10);
-	translate([0,0,10]) color("Red") cylinder(d=54, h=Casing_Len);
-	translate([0,0,10+Casing_Len]) color("Black"){
-		cylinder(d=54, h=3);
-		cylinder(d=39, h=23);
-		cylinder(d=20, h=30);
-	}
-} // ShowMotorK185W
-
-// ShowMotorK185W();
-
-module ShowMotorJ800T(){
-	Casing_Len=296;
-
-	color("Black") cylinder(d=57, h=10);
-	translate([0,0,10]) color("Red") cylinder(d=54, h=Casing_Len);
-	translate([0,0,10+Casing_Len]) color("Black"){
-		cylinder(d=54, h=3);
-		cylinder(d=39, h=23);
-		cylinder(d=20, h=30);
-	}
-} // ShowMotorJ800T
-
-// ShowMotorJ800T();
-
-module ShowMotorJ460T(){
-	Casing_Len=211;
-
-	color("Black") cylinder(d=57, h=10);
-	translate([0,0,10]) color("Red") cylinder(d=54, h=Casing_Len);
-	translate([0,0,10+Casing_Len]) color("Black"){
-		cylinder(d=54, h=3);
-		cylinder(d=39, h=23);
-		cylinder(d=20, h=30);
-	}
-} // ShowMotorJ460T
-
-//ShowMotorJ460T();
-
 module ShowBooster(){
 
 	//*
@@ -493,8 +434,9 @@ module ShowBooster(){
 
 	BoosterLowerFinCan();
 
-	//translate([0,0,-40]) ShowMotorJ460T();
-	translate([0,0,-20]) ShowMotorJ800T();
+	translate([0,0,-20]) 
+	ATRMS_54_1280_Motor(Extended=false, HasEyeBolt=true); // J415W, J800T
+	
 } // ShowBooster
 
 //ShowBooster();
@@ -528,7 +470,8 @@ module ShowSustainerFinCan(){
 	}
 	/**/
 
-	translate([0,0,Booster_Body_Len-15]) ShowMotorK185W();
+	translate([0,0,Booster_Body_Len-15]) 
+		ATRMS_54_1706_Motor(Extended=true, HasEyeBolt=true); // K185W
 
 
 
@@ -592,34 +535,6 @@ module ShowRocket(){
 
 //ShowRocket();
 
-module EBaySpringStop(){
-	Al_Tube_d=12.7;
-	Al_Tube_Z=20;
-	Len=40;
-	
-	difference(){
-		union(){
-			Tube(OD=EBayTube_ID, ID=ST_Spring_ID(), Len=Len, myfn=$preview? 36:360);
-			
-			
-			translate([0,0,Al_Tube_Z]) rotate([90,0,0]) 
-				cylinder(d=Al_Tube_d+7, h=EBayTube_ID-6+Overlap, center=true);
-		} // union
-		
-		translate([0,0,Al_Tube_Z]) rotate([90,0,0]) {
-			cylinder(d=Al_Tube_d+IDXtra, h=EBayTube_ID+1, center=true);
-			cylinder(d=Al_Tube_d+8, h=20, center=true);
-		}
-		
-		translate([0,0,Al_Tube_Z+Al_Tube_d/2+4]) {
-			cylinder(d=ST_Spring_OD(), h=5);
-			translate([0,0,4]) cylinder(d1=ST_Spring_OD(), d2=ST_Spring_OD()+4, h=6);
-			}
-	} // difference
-	
-} // EBaySpringStop
-
-// EBaySpringStop();
 
 module R137_Electronics_Bay(){
 	Len=EBay_Len;

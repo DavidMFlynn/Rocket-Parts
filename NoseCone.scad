@@ -3,7 +3,7 @@
 // Filename: NoseCone.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.9  10/22/2023
+// Revision: 0.9.10  11/20/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,7 +12,8 @@
 //
 //  ***** History *****
 //
-echo("NoseCone 0.9.9");
+echo("NoseCone 0.9.10");
+// 0.9.10 11/20/2023 Added nRivets=3 parameter
 // 0.9.9  10/22/2023 fixed BluntOgiveNoseCone skirt
 // 0.9.8  10/21/2023 fixed BluntOgiveNoseCone thicness again
 // 0.9.7  2/23/2023  Added HasUBolt to NoseconeBase, fixed nosecode inside again.
@@ -27,7 +28,10 @@ echo("NoseCone 0.9.9");
 // ***********************************
 //  ***** for STL output *****
 //
-// BluntConeNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=180, Base_L=21, Tip_R=15, Wall_T=3);
+// NC_ShockcordRingDual(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, NC_Base_L=25, nRivets=6);
+// NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_Base_L=15, nRivets=3);
+//
+// BluntConeNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=180, Base_L=21, nRivets=3, Tip_R=15, Wall_T=3);
 // OgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=170, Base_L=21, Wall_T=3);
 //
 // BluntOgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=280, Base_L=5, Tip_R=5, Wall_T=3, Cut_Z=130, Transition_OD=PML98Body_OD, LowerPortion=false);
@@ -52,6 +56,185 @@ include<CommonStuffSAEmm.scad>
 Overlap=0.05;
 $fn=$preview? 24:90;
 IDXtra=0.2;
+
+
+module NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_Base_L=20, nRivets=3){
+	// Connects nosecone to deployment tube
+	// Has aluminum tube shock cord mount
+	// Has spring end and resess for spring into nosecone
+	// Mount for Featherweight GPS tracker
+
+	
+// Big Spring
+Spring_CS4009_OD=2.328*25.4;
+Spring_CS4009_ID=2.094*25.4;
+Spring_CS4009_FL=18.5*25.4;
+Spring_CS4009_CL=1.64*25.4;
+// Small Spring
+Spring_CS4323_OD=44.30;
+Spring_CS4323_ID=40.50;
+Spring_CS4323_CBL=22; // coil bound length
+Spring_CS4323_FL=200; // free length
+
+
+	Plate_t=4;
+	nHoles=6;
+	Rivet_d=4;
+	Tube_d=12.7;
+	Tube_Z=30;
+	CR_z=-3;
+	Spring_OD=(Tube_OD>110)? Spring_CS4009_OD:Spring_CS4323_OD;
+	BodyTube_L=15;
+	SpringEnd_Z=Tube_Z-Tube_d/2-3;
+	SpringSplice_OD=BT54Body_ID;
+	
+		
+	module FW_GPS_SW_Hole(a=0){
+		translate([-4,-1.6-1,-1]) 
+			rotate([0,-90+a,0]) cylinder(d=1.7, h=100);
+	} // FW_GPS_SW_Hole
+
+	module FW_GPS_Mount(){
+		Boss_d=12;
+		
+		module Boss(){
+			difference(){
+				rotate([-90,0,0]) cylinder(d1=7,d2=Boss_d,h=8);
+					
+				rotate([90,0,0]) Bolt4Hole();
+			} // difference
+		} // Boss
+		
+		// Backing plate
+		translate([-4,6,-8]) 
+		hull(){
+			cube([20.4+8,3,42+12]);
+			cube([20.4+8,10,1]);
+		}
+		
+		translate([4,0,13.5]){
+			Boss();
+			translate([12.7,0,25.4]) Boss();
+			}
+			
+		/*
+		// Switch access
+		translate([-4,-1.6-1,-1]) 
+		rotate([0,90,0])
+		difference(){
+			hull(){
+				cylinder(d=4, h=4);
+				translate([4,10,0]) cylinder(d=4, h=4);
+			} // hull
+			
+			translate([0,0,-Overlap]) cylinder(d=1.7, h=5);
+		}
+		/**/
+	} // FW_GPS_Mount
+		
+	//FW_GPS_Mount();
+
+	module FW_GPS_Batt_Mount(){
+		Batt_X=25;
+		Batt_Y=5;
+		Batt_Z=37;
+		Wall_t=2.4;
+		
+		difference(){
+			union(){
+				cube([Batt_X+Wall_t*2, Batt_Y+Wall_t*2, Batt_Z+Wall_t*2], center=true);
+				hull(){
+					translate([0,Batt_Y/2+Wall_t,Batt_Z/2+Wall_t/2]) 
+						cube([10,Overlap,Wall_t],center=true);
+					translate([0,Batt_Y/2+Wall_t+10,-Batt_Z/2-Wall_t]) 
+						cube([10,20,Overlap],center=true);
+				} // hull
+			} // union
+			
+			cube([Batt_X, Batt_Y, Batt_Z], center=true);
+			
+			// Wire Path
+			hull(){
+				cylinder(d=Batt_Y, h=Batt_Z);
+				translate([0,-5,0]) cylinder(d=Batt_Y, h=Batt_Z);
+			} // hull
+			
+			//ty-wrap
+			translate([0,Batt_Y/2+Wall_t+2,0]) 
+				rotate([0,90,0]) cylinder(d=4, h=Batt_X+Wall_t*2+Overlap, center=true);
+			translate([0,-Batt_Y/2-2.4,0]) 
+				rotate([0,90,0]) cylinder(d=4, h=Batt_X+Wall_t*2+Overlap, center=true);
+			
+			translate([0, -5, 5]) cube([Batt_X, Batt_Y, Batt_Z], center=true);
+			translate([0, -3, 5]) cube([Batt_X, Batt_Y+1, Batt_Z-10], center=true);
+			translate([0, -3, 0]) cube([Batt_X, Batt_Y, Batt_Z-10], center=true);
+		} // difference
+		
+	} // FW_GPS_Batt_Mount
+
+	//FW_GPS_Batt_Mount();
+		
+	difference(){
+		union(){
+			// GPS mount
+			rotate([0,0,-40]) translate([-4,-Spring_OD/2-12,4]) FW_GPS_Mount();
+			rotate([0,0,32]) translate([0,-Spring_OD/2-13,20]) FW_GPS_Batt_Mount();
+			
+			// Stop ring
+			translate([0,0,CR_z]) Tube(OD=Tube_OD, ID=Tube_ID-1, Len=3, myfn=$preview? 90:360);
+	
+			// Nosecone interface
+			translate([0,0,-1]) Tube(OD=Tube_ID-IDXtra*2, 
+									ID=Tube_ID-IDXtra*2-4.4, Len=NC_Base_L+1, myfn=$preview? 90:360);
+			// Body tube interface
+			translate([0,0,-BodyTube_L-3]) Tube(OD=Tube_ID, 
+									ID=Tube_ID-4.4, Len=BodyTube_L+1, myfn=$preview? 90:360);
+				
+			// Stiffener Plate
+			translate([0,0,-5])
+				cylinder(d=Tube_ID-1, h=6);
+				
+			// Tube holder
+			hull(){
+				translate([0,0,Tube_Z]) 
+					rotate([0,90,0]) cylinder(d=Tube_d+4.4, h=Tube_ID-8, center=true);
+				translate([0,0,CR_z+5]) cube([Tube_ID-4, Tube_d+12, 10],center=true);
+			} // hull
+			
+			// Spring Holder
+			cylinder(d1=SpringSplice_OD+10, d2=Spring_OD+6, h=SpringEnd_Z+4);
+		} // union
+		
+		//translate([-4,-34,4]) FW_GPS_SW_Hole(-9);
+		
+		// Nosecone rivets
+		for (j=[0:nRivets-1]) rotate([0,0,360/nRivets*j]) translate([0,-Tube_ID/2-1,NC_Base_L/2])
+			rotate([-90,0,0]){ cylinder(d=Rivet_d, h=10); translate([0,0,3.2]) cylinder(d=Rivet_d*2, h=6);}
+		
+		// Center hole
+		translate([0,0,-6]) cylinder(d=Spring_OD-6, h=Tube_Z+30);
+		
+		// Spring
+		translate([0,0,SpringEnd_Z]) rotate([180,0,0]) {
+			cylinder(d=Spring_OD, h=30);
+			translate([0,0,4]) cylinder(d1=Spring_OD, d2=SpringSplice_OD, h=8);
+			translate([0,0,12-Overlap]) cylinder(d=SpringSplice_OD, h=30);
+			}
+		
+		// Tube hole
+		translate([0,0,Tube_Z]) rotate([0,90,0]) cylinder(d=Tube_d, h=Tube_OD, center=true);
+		
+		// Retention cord
+		for (j=[0:nHoles-1]) rotate([0,0,360/nHoles*j]) translate([0,Tube_ID/2-8,-10]) cylinder(d=4, h=30);
+		
+		//if ($preview) cube([50,50,50]);
+	} // difference
+	
+} // NC_ShockcordRingDual
+
+//NC_ShockcordRingDual(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, NC_Base_L=25, nRivets=6);
+//NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_Base_L=15, nRivets=3);
+//NC_ShockcordRingDual(Tube_OD=Body_OD+Vinyl_t, Tube_ID=Body_ID, NC_Base_L=NC_Base_L);
 
 module BluntConeShape(L=100, D=50, Base_L=2, Tip_R=5){
 	//Spherically blunted conic
@@ -206,7 +389,7 @@ module BluntOgiveShape(L=150, D=50, Base_L=10, Tip_R=5, Thickness=0){
 //rotate_extrude() 
 //offset(-3) BluntOgiveShape(L=190, D=137, Base_L=1, Tip_R=15);
 
-module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3, Cut_Z=0, Transition_OD=58, LowerPortion=false){
+module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, Tip_R=5, Wall_T=3, Cut_Z=0, Transition_OD=58, LowerPortion=false){
 
 	R=OD/2;
 	p=(R*R+L*L)/(2*R);
@@ -225,8 +408,8 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3, Cut
 		// Taper so no support is needed
 		translate([0,0,Base_L]) cylinder(d1=ID, d2=OD-Wall_T*2, h=Wall_T, $fn=$preview? 90:720);
 		
-		if (Base_L>12) translate([0,0,Base_L/2])
-			RivetPattern(BT_Dia=OD, nRivets=3, Dia=5/32*25.4);
+		if (Base_L>12 && nRivets>0) translate([0,0,Base_L/2])
+			RivetPattern(BT_Dia=OD, nRivets=nRivets, Dia=5/32*25.4);
 		
 		if ($preview==true) translate([0,-100,-1]) cube([100,100,L+2]);
 			

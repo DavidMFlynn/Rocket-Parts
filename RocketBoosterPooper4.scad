@@ -31,17 +31,20 @@
 // ***********************************
 //  ***** for STL output *****
 //
-// BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD, L=NC_Len, Base_L=NC_Base_L, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
+// BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD, L=NC_Len, Base_L=NC_Base_L, nRivets=6, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
 //
-// NC_ShockcordRingDual();
+// NC_ShockcordRingDual(Tube_OD=Body_OD+Vinyl_t, Tube_ID=Body_ID, NC_Base_L=NC_Base_L, nRivets=6);
+// SE_Tri_Spring_End(OD=Body_ID-5, Rope_BC_r=Coupler_ID/2-5);
+// SE_Tri_Spring_Slider(OD=Coupler_OD, ID=Coupler_ID);
 // NC_PetalHub();
+//
 // rotate([-90,0,0]) PD_PetalSpringHolder(OD=Coupler_OD);
-// rotate([180,0,0]) PD_GridPetals(OD=Coupler_OD, Len=150, nPetals=nPetals, Wall_t=1.2);
+// rotate([180,0,0]) PD_GridPetals(OD=Coupler_OD, Len=180, nPetals=nPetals, Wall_t=1.2);
 //
 //  ***** Ball Lock *****
 //
 // STB_LockDisk(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls);
-// rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=BT137BallPerimeter_d, Body_OD=Body_ID, nLockBalls=nBT137Balls, IntegratedCouplerLenXtra=-19, HasIntegratedCouplerTube=true, Body_ID=Body_ID, HasSecondServo=true, UsesBigServo=true, Engagement_Len=25);
+// rotate([180,0,0]) RBP4_BallRetainerTop();
 // STB_BallRetainerBottom(BallPerimeter_d=BT137BallPerimeter_d, Body_OD=Body_ID, nLockBalls=nBT137Balls, HasSpringGroove=false, Engagement_Len=25);
 // rotate([180,0,0]) STB_TubeEnd(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=25);
 //
@@ -91,6 +94,7 @@
 use<AT-RMS-Lib.scad>
 include<TubesLib.scad>
 use<LD-20MGServoLib.scad>
+use<CablePuller.scad>
 use<BoosterDropperLib.scad>
 use<RailGuide.scad>
 use<Fins.scad>
@@ -104,6 +108,7 @@ use<ThreadLib.scad>
 use<R75StrapOn.scad>
 use<PetalDeploymentLib.scad>
 use<Stager2Lib.scad>
+use<SpringEndsLib.scad>
 //use<Rocket13732.scad>
 
 //also included
@@ -191,10 +196,24 @@ BodyTubeLen=BoosterDropperCL+BoosterButton1_z-FinCanLen-90-126;
 echo(BodyTubeLen=BodyTubeLen);
 
 G_a=90; // was 22.5; // Gear angle
-BigSpring_OD=59;
-BigSpring_ID=53;
+// Big Spring
+Spring_CS4009_OD=2.328*25.4;
+Spring_CS4009_ID=2.094*25.4;
+Spring_CS4009_FL=18.5*25.4;
+Spring_CS4009_CL=1.64*25.4;
+// Small Spring
+Spring_CS4323_OD=44.30;
+Spring_CS4323_ID=40.50;
+Spring_CS4323_CBL=22; // coil bound length
+Spring_CS4323_FL=200; // free length
+
 nPetals=3;
 FwdTube_L=300;
+Vinyl_t=0.5;
+UpperBay_Len=162;
+UpperEBayTube_OD=BT54Body_OD;
+
+
 
 module ShowRocket(ShowInternals=false){
 	MotorTube_Z=-TailConeLen+12;
@@ -211,7 +230,10 @@ module ShowRocket(ShowInternals=false){
 	BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD, L=NC_Len, Base_L=NC_Base_L, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
 	/**/
 	
-	translate([0,0,NC_Z-0.2]) color("Tan") NC_ShockcordRingDual();
+	translate([0,0,NC_Z-0.2]) color("Tan") 
+		NC_ShockcordRingDual(Tube_OD=Body_OD+Vinyl_t, Tube_ID=Body_ID, 
+								NC_Base_L=NC_Base_L, nRivets=6);
+								
 	if (ShowInternals) translate([0,0,NC_Z-100]) {
 		rotate([180,0,0]) NC_PetalHub();
 		translate([0,0,-10]) rotate([180,0,0]) 
@@ -281,151 +303,30 @@ module ShowRocket(ShowInternals=false){
 } // ShowRocket
 
 // ShowRocket(ShowInternals=true);
-ShowRocket(ShowInternals=false);
-
-module FW_GPS_SW_Hole(a=0){
-	translate([-4,-1.6-1,-1]) 
-		rotate([0,-90+a,0]) cylinder(d=1.7, h=100);
-} // FW_GPS_SW_Hole
-
-module FW_GPS_Mount(){
-	Boss_d=12;
-	
-	module Boss(){
-		difference(){
-			rotate([-90,0,0]) cylinder(d1=7,d2=Boss_d,h=8);
-				
-			rotate([90,0,0]) Bolt4Hole();
-		} // difference
-	} // Boss
-	
-	// Backing plate
-	translate([-4,6,-8]) 
-	hull(){
-		cube([20.4+8,3,42+12]);
-		cube([20.4+8,10,1]);
-	}
-	
-	translate([4,0,13.5]){
-		Boss();
-		translate([12.7,0,25.4]) Boss();
-		}
-		
-	/*
-	// Switch access
-	translate([-4,-1.6-1,-1]) 
-	rotate([0,90,0])
-	difference(){
-		hull(){
-			cylinder(d=4, h=4);
-			translate([4,10,0]) cylinder(d=4, h=4);
-		} // hull
-		
-		translate([0,0,-Overlap]) cylinder(d=1.7, h=5);
-	}
-	/**/
-} // FW_GPS_Mount
-	
-//FW_GPS_Mount();
-	
-module NC_ShockcordRingDual(){
-	// Connects nosecone to deployment tube
-	// Has aluminum tube shock cord mount
-	// Has spring end and resess for spring into nosecone
-	// Mount for Featherweight GPS tracker
-
-	Plate_t=4;
-	nHoles=6;
-	nRivets=3;
-	Rivet_d=4;
-	Tube_d=12.7;
-	Tube_Z=40;
-	CR_z=-3;
-	ST_DSpring_OD=BigSpring_OD;
-	BodyTube_L=15;
-	SpringEnd_Z=Tube_Z-Tube_d/2-3;
-	
-	difference(){
-		union(){
-			translate([-4,-BigSpring_OD/2-12,4]) FW_GPS_Mount();
-			
-			// Stop ring
-			translate([0,0,CR_z]) Tube(OD=Body_OD, ID=Body_ID-2, Len=3, myfn=$preview? 90:360);
-	
-			// Nosecone interface
-			translate([0,0,-1]) Tube(OD=Body_ID-IDXtra*2, 
-									ID=Body_ID-IDXtra*2-4.4, Len=NC_Base_L+1, myfn=$preview? 90:360);
-			// Body tube interface
-			translate([0,0,-BodyTube_L-3]) Tube(OD=Body_ID, 
-									ID=Body_ID-4.4, Len=BodyTube_L+1, myfn=$preview? 90:360);
-				
-			// Stiffener Plate
-			translate([0,0,-5])
-				cylinder(d=Body_ID-1, h=6);
-				
-			// Tube holder
-			hull(){
-				translate([0,0,Tube_Z]) 
-					rotate([0,90,0]) cylinder(d=Tube_d+4.4, h=Body_ID-8, center=true);
-				translate([0,0,CR_z+5]) cube([Body_ID-4, Tube_d+12, 10],center=true);
-			} // hull
-			
-			// Spring Holder
-			cylinder(d1=ST_DSpring_OD+12, d2=ST_DSpring_OD+6, h=SpringEnd_Z+4);
-		} // union
-		
-		// Nosecone rivets
-		for (j=[0:nRivets-1]) rotate([0,0,360/nRivets*j]) translate([0,-Body_ID/2-1,NC_Base_L/2])
-			rotate([-90,0,0]){ cylinder(d=Rivet_d, h=10); translate([0,0,3.2]) cylinder(d=Rivet_d*2, h=6);}
-		
-		// Center hole
-		translate([0,0,-6]) cylinder(d=ST_DSpring_OD-6, h=Tube_Z+30);
-		
-		// Spring
-		translate([0,0,SpringEnd_Z]) rotate([180,0,0]) {
-			cylinder(d=ST_DSpring_OD, h=30);
-			translate([0,0,4]) cylinder(d1=ST_DSpring_OD, d2=ST_DSpring_OD+2, h=8);
-			translate([0,0,12-Overlap]) cylinder(d=ST_DSpring_OD+2, h=30);
-			}
-		
-		// Tube hole
-		translate([0,0,Tube_Z]) rotate([0,90,0]) cylinder(d=Tube_d, h=Body_OD, center=true);
-		
-		// Retention cord
-		for (j=[0:nHoles-1]) rotate([0,0,360/nHoles*j]) translate([0,Coupler_ID/2-5,-10]) cylinder(d=4, h=30);
-		
-		//if ($preview) cube([50,50,50]);
-	} // difference
-	
-} // NC_ShockcordRingDual
-
-//translate([0,0,-15]) color("Green") NC_ShockcordRingDual();
-
+// ShowRocket(ShowInternals=false);
 
 module NC_PetalHub(){
-	ST_DSpring_OD=BigSpring_OD;
-	ST_DSpring_ID=BigSpring_ID;
-	BodyTube_L=50;
+	BodyTube_L=10;
 	nHoles=6;
+	OD=Body_ID-IDXtra*3;
 	
-	// Body tube interface
-	translate([0,0,-BodyTube_L]) Tube(OD=Body_ID-IDXtra*2, 
-									ID=Body_ID-IDXtra*2-4.4, Len=BodyTube_L+1, myfn=$preview? 90:360);
 	difference(){
 		union(){
-			PD_PetalHub(OD=Body_ID, nPetals=nPetals, HasBolts=false, ShockCord_a=-1);
+			PD_PetalHub(OD=OD, nPetals=nPetals, HasBolts=false, ShockCord_a=-1);
 			
-			translate([0,0,-BodyTube_L]) Tube(OD=ST_DSpring_ID-IDXtra*2, 
-								ID=ST_DSpring_ID-IDXtra*2-4.4, Len=BodyTube_L+1, myfn=$preview? 90:360);
+			// Coupler tube interface
+			translate([0,0,-BodyTube_L]) 
+				cylinder(d=Coupler_ID, h=BodyTube_L+1, $fn=$preview? 90:360);
+				
 		} // union
 			
 		// Center Hole
 		translate([0,0,-BodyTube_L-Overlap]) 
-			cylinder(d=ST_DSpring_ID-IDXtra*2-4.4, h=BodyTube_L+30, $fn=$preview? 90:360);
+			cylinder(d=80, h=BodyTube_L+30, $fn=$preview? 90:360);
 		
 		// Retention cord
 		for (j=[0:nHoles-1]) rotate([0,0,360/nHoles*(j+0.5)]) {
-				translate([0,Coupler_ID/2-5,-10]) cylinder(d=4, h=30);
+				translate([0,Coupler_ID/2-5,-BodyTube_L-Overlap]) cylinder(d=4, h=BodyTube_L+20);
 				translate([0,Coupler_ID/2-5,5]) cylinder(d=8, h=30);
 			}
 	} // difference
@@ -433,6 +334,162 @@ module NC_PetalHub(){
 
 //NC_PetalHub();
 
+
+
+module RBP4_BallRetainerTop(){
+	XtraLen=-4;
+	Tube_d=12.7;
+	Tube_Z=XtraLen+13+31;
+	Tube_a=-30;
+	TubeSlot_w=Body_ID-50; //35;
+	TubeOffset_X=0; //22;
+	
+	
+	difference(){
+		union(){
+			STB_BallRetainerTop(BallPerimeter_d=BT137BallPerimeter_d, 
+								Body_OD=Body_ID, nLockBalls=nBT137Balls,
+								HasIntegratedCouplerTube=true, 
+								IntegratedCouplerLenXtra=XtraLen,
+								Body_ID=Body_ID, HasSecondServo=true, UsesBigServo=true,
+								Engagement_Len=25);
+				
+			translate([0,0,XtraLen+13+35.5]) 
+				Tube(OD=Body_ID, ID=Body_ID-6, Len=5, myfn=$preview? 90:360);
+			
+			// Shock cord retention
+			difference(){
+				union(){
+					rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z]) 
+						rotate([90,0,0]) cylinder(d=Tube_d+6, h=Body_ID-2, center=true);
+					rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z+XtraLen-12.2])
+						cube([Tube_d-3, Body_ID-2, XtraLen+13+21], center=true);
+				} // union
+				
+				rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z]) 
+					rotate([90,0,0]) cylinder(d=Tube_d+7, h=TubeSlot_w, center=true);
+				rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z-12.2])
+					cube([Tube_d-1, TubeSlot_w,21.1], center=true);
+					
+				Tube(OD=Body_OD+20, ID=Body_ID-1, Len=50, myfn=$preview? 90:360);
+			} // difference
+		} // union
+	
+		translate([TubeOffset_X,0,Tube_Z]) rotate([90,0,Tube_a]) cylinder(d=Tube_d, h=Body_OD, center=true);
+	} // difference
+} // RBP4_BallRetainerTop
+
+// rotate([180,0,0]) RBP4_BallRetainerTop();
+
+module UpperElectronicsBay(Tube_OD=Body_OD+Vinyl_t, Tube_ID=Body_ID, ShowDoors=false){
+
+	Wall_t=(Tube_OD-Tube_ID)/2;
+	Coupler_Len=15;
+	Len=UpperBay_Len;
+	BattSwDoor_Z=Len/2;
+	CP_Door_Z=Len/2-10;
+	Altimeter_Z=Len/2;
+
+	Alt_a=120;
+	Batt3_a=300;
+	Batt1_a=0;
+	Batt2_a=180;
+	CP1_a=60;
+	CP2_a=180+60;
+	
+	//*
+	// Centering rings
+	difference(){
+		union(){
+			translate([0,0,-Coupler_Len])
+				CenteringRing(OD=Body_ID-1, ID=BT75Body_OD+IDXtra*2, 
+								Thickness=8+Overlap, nHoles=6, Offset=0);
+			translate([0,0,-Coupler_Len+8])
+				CenteringRing(OD=Body_ID-1, ID=UpperEBayTube_OD+IDXtra*2, 
+								Thickness=5, nHoles=6, Offset=0);
+								
+			translate([0,0,UpperBay_Len-22])
+				CenteringRing(OD=Body_ID+1, ID=UpperEBayTube_OD+IDXtra*2, 
+								Thickness=5, nHoles=6, Offset=0);
+		} // union
+		
+		// cable paths
+		translate([0,0,-Coupler_Len-Overlap]) rotate([0,0,CP1_a]) 
+			translate([0,Body_OD/2-10,0]) cylinder(d=10, h=30);
+		translate([0,0,-Coupler_Len-Overlap]) rotate([0,0,CP2_a]) 
+			translate([0,Body_OD/2-10,0]) cylinder(d=10, h=30);
+	} // difference
+	/**/
+	
+	difference(){
+		union(){
+			Tube(OD=Tube_OD, ID=Tube_ID, Len=Len, myfn=$preview? 90:360);
+			
+			//*
+			// integrated coupler
+			translate([0,0,-Coupler_Len])
+				Tube(OD=Tube_ID-IDXtra, ID=Tube_ID-4, Len=Coupler_Len+Overlap, myfn=$preview? 90:360);
+			
+			
+			difference(){
+				Tube(OD=Tube_OD-1, ID=Tube_ID-4, Len=5, myfn=$preview? 90:360);
+				translate([0,0,-Overlap]) 
+					cylinder(d2=Tube_ID+Overlap, d1=Tube_ID-4-Overlap, h=5+Overlap*2, $fn=$preview? 90:360);
+			} // difference
+			/**/
+		} // union
+		
+		//if ($preview==false)
+		{
+		// Altimeter
+		translate([0,0,Altimeter_Z]) rotate([0,0,Alt_a]) 
+			Alt_BayFrameHole(Tube_OD=Tube_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, DeepHole_t=42);
+		
+		// Battery and Switch door holes
+		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt3_a]) 
+			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=false, DeepHole_t=42);
+	
+		}
+		
+		// Battery and Switch door holes
+		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
+			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
+		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
+			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
+		translate([0,0,CP_Door_Z]) rotate([0,0,CP1_a]) 
+			CP_BayFrameHole(Tube_OD=Tube_OD);
+		translate([0,0,CP_Door_Z]) rotate([0,0,CP2_a]) 
+			CP_BayFrameHole(Tube_OD=Tube_OD);
+			
+		//if ($preview) cube([100,100,200]);
+	} // difference
+	
+	// Altimeter
+	translate([0,0,Altimeter_Z]) rotate([0,0,Alt_a])
+			Alt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=ShowDoors);
+			
+	// Alt Battery
+	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt3_a]) 
+			Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=false, ShowDoor=ShowDoors);
+
+			
+	// Battery and Switch doors
+	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=true, ShowDoor=ShowDoors);
+	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=true, ShowDoor=ShowDoors);
+		
+	// Cable Puller doors
+	translate([0,0,CP_Door_Z]) rotate([0,0,CP1_a]) 
+		CP_BayDoorFrame(Tube_OD=Tube_OD, ShowDoor=ShowDoors);
+	translate([0,0,CP_Door_Z]) rotate([0,0,CP2_a]) 
+		CP_BayDoorFrame(Tube_OD=Tube_OD, ShowDoor=ShowDoors);
+	
+	
+} // UpperElectronicsBay
+
+//UpperElectronicsBay();
+//translate([0,0,UpperBay_Len+12.5+12]) rotate([180,0,0]) RBP4_BallRetainerTop();
 
 module Drogue_Cup(){
 	WireHole_d=5.5;
@@ -710,7 +767,7 @@ module ElectronicsBay(ShowDoors=false){
 } // ElectronicsBay
 
 //ElectronicsBay();
-
+	
 module ServoMountHolePattern(){
 	Tray_W=30;
 	MountFace_X=6;
