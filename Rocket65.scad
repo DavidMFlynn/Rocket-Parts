@@ -69,6 +69,7 @@
 // BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=NC_Len, Base_L=13, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
 //
 // ShockCordPlate();
+// FeatherWeightBracket(); // Replaces ShockCordPlate
 // EggFinderBracket(); // Replaces ShockCordPlate
 //
 // *** Electronics Bay ***
@@ -99,7 +100,7 @@
 //
 // *** Fin Can ***
 //
-// FinCan(LowerHalfOnly=false, UpperHalfOnly=true);
+// rotate([180,0,0]) FinCan(LowerHalfOnly=false, UpperHalfOnly=false);
 // RocketFin();
 // rotate([180,0,0]) FinCan(LowerHalfOnly=true, UpperHalfOnly=false);
 // MotorRetainer();
@@ -113,8 +114,7 @@
 // ***********************************
 //  ***** for Viewing *****
 //
-// 
-ShowRocket();
+// ShowRocket();
 //
 // ***********************************
 include<TubesLib.scad>
@@ -252,6 +252,131 @@ module EggFinderBracket(){
 } // EggFinderBracket
 
 //EggFinderBracket();
+
+module FeatherWeightBracket(){
+	NC_Base_L=13;
+
+	module FW_GPS_SW_Hole(a=0){
+		translate([-4,-1.6-1,-1]) 
+			rotate([0,-90+a,0]) cylinder(d=1.7, h=100);
+	} // FW_GPS_SW_Hole
+
+	module FW_GPS_Mount(){
+		Boss_d=10;
+		
+		module Boss(){
+			difference(){
+				rotate([-90,0,0]) cylinder(d1=7,d2=Boss_d,h=6);
+					
+				rotate([90,0,0]) Bolt4Hole();
+			} // difference
+		} // Boss
+		
+		// Backing plate
+		
+		Boss_Y=2;
+		Boss_Z=13.5;
+		difference(){
+			union(){
+				hull(){
+					translate([-4,6,-8]) cube([20.4+8,3,42+12]);
+					translate([-4,6,-8]) cube([20.4+8,10,1]);
+				} // hull
+				
+				translate([4,Boss_Y,Boss_Z])Boss();
+				translate([4,Boss_Y,Boss_Z])translate([12.7,0,25.4]) Boss();
+			} // union
+			
+			translate([4,Boss_Y,Boss_Z]) rotate([90,0,0]) Bolt4Hole(depth=20);
+			translate([4,Boss_Y,Boss_Z]) translate([12.7,0,25.4]) rotate([90,0,0]) Bolt4Hole();
+		} // difference
+		
+	
+			
+	} // FW_GPS_Mount
+		
+	//FW_GPS_Mount();
+
+	module FW_GPS_Batt_Mount(){
+		Batt_X=25;
+		Batt_Y=5;
+		Batt_Z=37;
+		Wall_t=2.4;
+		
+		difference(){
+			union(){
+				cube([Batt_X+Wall_t*2, Batt_Y+Wall_t*2, Batt_Z+Wall_t*2], center=true);
+				hull(){
+					translate([0,Batt_Y/2+Wall_t,Batt_Z/2+Wall_t/2]) 
+						cube([10,Overlap,Wall_t],center=true);
+					translate([0,Batt_Y/2+Wall_t+10,-Batt_Z/2-Wall_t]) 
+						cube([10,20,Overlap],center=true);
+				} // hull
+			} // union
+			
+			cube([Batt_X, Batt_Y, Batt_Z], center=true);
+			
+			// Wire Path
+			hull(){
+				cylinder(d=Batt_Y, h=Batt_Z);
+				translate([0,-5,0]) cylinder(d=Batt_Y, h=Batt_Z);
+			} // hull
+			
+			//ty-wrap
+			translate([0,Batt_Y/2+Wall_t+2,0]) 
+				rotate([0,90,0]) cylinder(d=4, h=Batt_X+Wall_t*2+Overlap, center=true);
+			translate([0,-Batt_Y/2-2.4,0]) 
+				rotate([0,90,0]) cylinder(d=4, h=Batt_X+Wall_t*2+Overlap, center=true);
+			
+			translate([0, -5, 5]) cube([Batt_X, Batt_Y, Batt_Z], center=true);
+			translate([0, -3, 5]) cube([Batt_X, Batt_Y+1, Batt_Z-10], center=true);
+			translate([0, -3, 0]) cube([Batt_X, Batt_Y, Batt_Z-10], center=true);
+		} // difference
+		
+	} // FW_GPS_Batt_Mount
+
+	//FW_GPS_Batt_Mount();
+	
+	// GPS mount 
+	translate([-2,0,0]){
+	rotate([0,0,90]) translate([-10,-23,NC_Base_L+11]) rotate([-10,0,0]) FW_GPS_Mount();
+	rotate([0,0,270]) translate([1,-13,NC_Base_L+23]) FW_GPS_Batt_Mount();
+	}
+			
+	Plate_t=4;
+	
+	module SCH(){
+		hull(){
+			translate([-6,0,-Overlap]) cylinder(d=3, h=Plate_t+Overlap*2);
+			translate([6,0,-Overlap]) cylinder(d=3, h=Plate_t+Overlap*2);
+		} // hull
+	} // SCH
+	
+	translate([0,0,NC_Base_L]) difference(){
+		cylinder(d1=Body_OD-NC_Wall_t*2-IDXtra*2, d2=Body_OD-NC_Wall_t*2-IDXtra*4, h=Plate_t);
+		
+		//translate([0,0,-Overlap]) cylinder(d=25, h=Plate_t+Overlap*2);
+		translate([-2,16,0]) {
+			SCH();
+			translate([0,10,0]) SCH();
+			translate([0,-10,0]) SCH();
+		}
+	}
+		
+	difference(){
+		Splice_BONC(OD=Body_OD, H=30, L=NC_Len, Base_L=NC_Base_L, 
+			Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=30);
+			
+		translate([0,-6,NC_Base_L+26]) rotate([0,90,0]) cylinder(d=6,h=40);
+		
+		
+
+	} // difference
+		
+		
+} // FeatherWeightBracket
+
+//FeatherWeightBracket();
 
 module ShockCordPlate(Offset_X=0){
 	Plate_t=4;

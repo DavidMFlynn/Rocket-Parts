@@ -74,6 +74,8 @@
 // CenteringRing(OD=BT98Coupler_ID, ID=BT54Body_OD+IDXtra*2, Thickness=3, nHoles=0);
 // rotate([180,0,0]) LowerTailCone();
 //
+// rotate([90,0,0]) BoltOnRailGuide(Length = 30, BoltSpace=12.7, RoundEnds=true);
+//
 // ***********************************
 //  ***** Routines *****
 //

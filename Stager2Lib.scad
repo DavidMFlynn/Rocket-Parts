@@ -854,8 +854,10 @@ module Stager_Cup(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true, Collar_h=
 				translate([0,Tube_OD/2-7.5,Collar_h-6]) 
 					rotate([180,0,0]) Bolt4HeadHole(depth=8,lHead=Collar_h);
 		
+		if (nLocks>0)
 		Stager_LockRod_Holes(Tube_OD=Tube_OD, nLocks=nLocks);
 		
+		if (nLocks>0)
 		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j]) 
 			translate([0,Tube_OD/2-StagerLockInset_Y,-16])
 				Stager_LockRodBoltPattern() Bolt6Hole(depth=StagerLockInset_Y);
@@ -867,7 +869,8 @@ module Stager_Cup(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true, Collar_h=
 		}
 	} // difference
 	
-	if (HasElectrical) rotate([0,0,-180/nLocks])
+	E_a=(nLocks>0)? -180/nLocks:0;
+	if (HasElectrical) rotate([0,0,E_a])
 			difference(){
 				intersection(){
 					translate([0,0,-2]) cylinder(d=Tube_OD-8, h=10);
@@ -879,7 +882,7 @@ module Stager_Cup(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true, Collar_h=
 					RoundRect(X=10, Y=10, Z=10+Overlap*2, R=0.2);
 			} // difference
 			
-	if ($preview)
+	if ($preview && (nLocks>0))
 		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j]) translate([0, Tube_OD/2-StagerLockInset_Y,-16])
 				color("Orange") Stager_LockRod();
 } // Stager_Cup
@@ -1067,11 +1070,15 @@ module Stager_Saucer(Tube_OD=PML98Body_OD, nLocks=2, HasElectrical=false){
 		// Center hole
 		translate([0,0,-Len-Overlap]) cylinder(d=ID, h=Len, $fn=$preview? 90:360);
 		
-		translate([0,0,-2]) Stager_SaucerBoltPattern(Tube_OD=Tube_OD, nLocks=nLocks) Bolt4ButtonHeadHole();
+		if (nLocks>0)
+			translate([0,0,-2]) 
+				Stager_SaucerBoltPattern(Tube_OD=Tube_OD, nLocks=nLocks) Bolt4ButtonHeadHole();
 		
-		Stager_LockRod_Holes(Tube_OD=Tube_OD, nLocks=nLocks);
+		if (nLocks>0)
+			Stager_LockRod_Holes(Tube_OD=Tube_OD, nLocks=nLocks);
 		
-		if (HasElectrical) rotate([0,0,-180/nLocks]) {
+		E_a=(nLocks>0)? -180/nLocks:0;
+		if (HasElectrical) rotate([0,0,E_a]) {
 			translate([0,ID/2+EConnInset,-Len]) cube([10,10,22], center=true);
 			translate([0,0,-2]) SaucerEConnBoltPattern(Tube_OD=Tube_OD) Bolt4ButtonHeadHole();
 		}

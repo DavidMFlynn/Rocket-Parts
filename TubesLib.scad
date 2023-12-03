@@ -3,7 +3,7 @@
 // Filename: TubesLib.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.12  9/13/2023
+// Revision: 0.9.13  11/28/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-function TubesLib_Rev()="TubesLib 0.9.11";
+function TubesLib_Rev()="TubesLib 0.9.12";
 echo(TubesLib_Rev());
+// 0.9.13  11/28/2023 Added BT190...
 // 0.9.12  9/13/2023 Changed BT75Coupler, smaller, to measured values.
 // 0.9.11  6/16/2023 Added PML29 and LOD65
 // 0.9.10  2/23/2023 Added MotorRetainer();
@@ -91,14 +92,20 @@ PML54Coupler_ID=2.02*25.4;
 
 //echo(PML54Body_OD=PML54Body_OD);
 
-// Blue Tube 2.0
+// Blue Tube 2.0, 7.5 inch
+BT190Body_ID=7.513*25.4;
+BT190Body_OD=BT190Body_ID+0.084*25.4;
+BT190Coupler_ID=7.312*25.4; 
+BT190Coupler_OD=BT190Coupler_ID+0.084*25.4;
+
+// Blue Tube 2.0, 5.5 inch
 BT137Body_ID=5.385*25.4;
-//echo(BT137Body_ID=BT137Body_ID);
 BT137Body_OD=140.1; // measured,  was BT137Body_ID+0.077*2*25.4;
-//echo(BT137Body_OD=BT137Body_OD);
 BT137Coupler_ID=132.4; // was 5.198*25.4 measured 132.4
-//echo(BT137Coupler_ID=BT137Coupler_ID);
 BT137Coupler_OD=135.4; // was BT137Coupler_ID+0.084*2*25.4 measured 135.4
+//echo(BT137Body_ID=BT137Body_ID);
+//echo(BT137Body_OD=BT137Body_OD);
+//echo(BT137Coupler_ID=BT137Coupler_ID);
 //echo(BT137Coupler_OD=BT137Coupler_OD);
 
 BT98Body_OD=101.9;

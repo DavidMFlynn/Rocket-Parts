@@ -69,7 +69,8 @@ CouplerLenXtra=-10;
 //
 // NC_ShockcordRingDual();
 // ST_SpringMiddle(Tube_ID=BT54Coupler_OD);
-// NC_PetalHub();
+//
+// PD_NC_PetalHub(OD=Coupler_OD, nPetals=nPetals, nRopes=6);
 // rotate([-90,0,0]) PD_PetalSpringHolder(Coupler_OD=Coupler_OD);
 // rotate([180,0,0]) PD_Petals(Coupler_OD=Coupler_OD, Len=ForwardPetalLen, nPetals=nPetals, AntiClimber_h=3);
 //
@@ -117,8 +118,7 @@ CouplerLenXtra=-10;
 // ***********************************
 //  ***** for Viewing *****
 //
-// 
-ShowRocket();
+// ShowRocket();
 // ShowRocket(ShowInternals=true);
 //
 // ***********************************
@@ -575,35 +575,8 @@ module NC_ShockcordRingDual(){
 
 //translate([0,0,-15]) color("Green") NC_ShockcordRingDual();
 
-module NC_PetalHub(){
-	ST_DSpring_OD=44.30;
-	ST_DSpring_ID=40.50;
-	BodyTube_L=20;
-	nHoles=6;
-	
-	// Body tube interface
-	translate([0,0,-BodyTube_L]) Tube(OD=Body_ID-IDXtra*2, 
-									ID=Body_ID-IDXtra*2-4.4, Len=BodyTube_L+1, myfn=$preview? 90:360);
-	difference(){
-		union(){
-			PD_PetalHub(Coupler_OD=Body_ID, nPetals=nPetals, HasBolts=false, ShockCord_a=-1);
-			
-			translate([0,0,-BodyTube_L]) Tube(OD=ST_DSpring_ID-IDXtra*2, 
-									ID=ST_DSpring_ID-IDXtra*2-4.4, Len=BodyTube_L+1, myfn=$preview? 90:360);
-		} // union
-			
-		// Center Hole
-		translate([0,0,-BodyTube_L-Overlap]) cylinder(d=ST_DSpring_ID-IDXtra*2-4.4, h=50, $fn=$preview? 90:360);
-		
-		// Retention cord
-		for (j=[0:nHoles-1]) rotate([0,0,360/nHoles*(j+0.5)]) {
-				translate([0,Coupler_ID/2-5,-10]) cylinder(d=4, h=30);
-				translate([0,Coupler_ID/2-5,5]) cylinder(d=8, h=30);
-			}
-	} // difference
-} // NC_PetalHub
 
-//NC_PetalHub();
+
 
 module R98C_BallRetainerTop(){
 	Tube_d=12.7;

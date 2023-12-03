@@ -40,6 +40,7 @@ PD_PetalHub(OD=BT75Coupler_OD,
 						NC_Base=NC_Base, 
 						SkirtLen=10);
 /**/
+// PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, nRopes=3);
 //
 // ***********************************
 //  ***** Routines *****
@@ -442,6 +443,41 @@ PD_PetalHub(OD=BT137Coupler_OD, Body_OD=BT137Body_OD,
 /**/
 
 
+module PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, nRopes=3){
+	ST_DSpring_OD=44.30;
+	ST_DSpring_ID=40.50;
+	BodyTube_L=20;
+	SpringHole_ID=ST_DSpring_ID-IDXtra*2-4.4;
+	CenterHole_d=OD>80? SpringHole_ID : 21;
+	
+	
+	// Body tube interface
+	translate([0,0,-BodyTube_L]) Tube(OD=OD, 
+									ID=OD-4.4, Len=BodyTube_L+1, myfn=$preview? 90:360);
+	difference(){
+		union(){
+			PD_PetalHub(OD=OD, nPetals=nPetals, HasBolts=false, ShockCord_a=-1);
+			
+			translate([0,0,-BodyTube_L]) Tube(OD=ST_DSpring_ID-IDXtra*2, 
+									ID=ST_DSpring_ID-IDXtra*2-4.4, Len=BodyTube_L+1, myfn=$preview? 90:360);
+		} // union
+			
+		// Center Hole
+		translate([0,0,-BodyTube_L-Overlap]) 
+			cylinder(d=SpringHole_ID, h=BodyTube_L, $fn=$preview? 90:360);
+		translate([0,0,-Overlap]) 
+			cylinder(d=CenterHole_d, h=10, $fn=$preview? 90:360);
+			
+		// Retention cord
+		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*(j+0.5)]) {
+				translate([0,OD/2-6,-10]) cylinder(d=4, h=30);
+				translate([0,OD/2-6,5]) cylinder(d=8, h=30);
+			}
+	} // difference
+} // PD_NC_PetalHub
+
+//PD_NC_PetalHub();
+//PD_NC_PetalHub(OD=BT98Coupler_OD, nPetals=3, nRopes=6);
 
 
 

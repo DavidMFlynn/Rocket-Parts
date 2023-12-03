@@ -3,7 +3,7 @@
 // Filename: RocketBoosterPooper4.scad
 // by David M. Flynn
 // Created: 9/15/2023 
-// Revision: 0.9.4  11/7/2023
+// Revision: 0.9.5  12/2/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -18,10 +18,9 @@
 //  Body Tube Length 130.8mm
 //
 //  Boosters are in R75StrapOn.scad
-//  See Rocket13732 for forward section
 //
 //  ***** History *****
-//
+// 0.9.5  12/2/2023 Now using Motor Pod Lock for drogue deployment.
 // 0.9.4  11/7/2023 Working down from the nosecone
 // 0.9.3  9/25/2023 Independant electronics bay
 // 0.9.2  9/22/2023 Three part fin can
@@ -50,8 +49,9 @@
 //
 //
 //  ***** Stager *****
-//
-// rotate([-90,0,0]) Stager_LockRod(Adj=-0.5); // Print 6
+// Drogue_InnerRace();
+// Drogue_OuterRace();
+// Drogue_Saucer();
 // Drogue_Cup();
 //
 // ForwardBoosterLock();
@@ -109,7 +109,7 @@ use<R75StrapOn.scad>
 use<PetalDeploymentLib.scad>
 use<Stager2Lib.scad>
 use<SpringEndsLib.scad>
-//use<Rocket13732.scad>
+use<MotorPodLockLib.scad>
 
 //also included
  //include<CommonStuffSAEmm.scad>
@@ -126,6 +126,10 @@ Body_ID=BT137Body_ID;
 Coupler_OD=BT137Coupler_OD;
 Coupler_ID=BT137Coupler_ID;
 BoosterBody_OD=BT75Body_OD;
+DrogueBody_OD=BT98Body_OD;
+DrogueBody_ID=BT98Body_ID;
+DrogueInnerTube_OD=BT98Coupler_OD;
+DrogueInnerTube_ID=BT98Coupler_ID;
 
 LockBall_d=1/2 * 25.4;
 nBT137Balls=7;
@@ -390,27 +394,51 @@ module UpperElectronicsBay(Tube_OD=Body_OD+Vinyl_t, Tube_ID=Body_ID, ShowDoors=f
 	CP_Door_Z=Len/2-10;
 	Altimeter_Z=Len/2;
 
-	Alt_a=120;
-	Batt3_a=300;
+	Alt1_a=120;
+	Alt2_a=300;
 	Batt1_a=0;
 	Batt2_a=180;
 	CP1_a=60;
 	CP2_a=180+60;
+	
+	module TubeHolder(){
+		Al_Tube_d=12.7;
+		Al_Tube_Len=UpperEBayTube_OD+30;
+		H=20;
+		
+		difference(){
+			union(){
+				rotate([90,0,0]) cylinder(d=Al_Tube_d+6, h=Al_Tube_Len, center=true);
+				
+				hull(){
+					rotate([90,0,0]) cylinder(d=Al_Tube_d, h=Al_Tube_Len, center=true);
+					
+					translate([0,0,-H]) cube([Al_Tube_d,Al_Tube_Len,Overlap],center=true);
+				} // hull
+			} // union
+			
+			rotate([90,0,0]) cylinder(d=Al_Tube_d, h=Al_Tube_Len+Overlap*2, center=true);
+			
+			translate([0,0,-H-Overlap]) cylinder(d=UpperEBayTube_OD+IDXtra*2, h=H+Al_Tube_d);
+		} // difference
+	} // TubeHolder
+	
+	//translate([0,0,UpperBay_Len-40]) rotate([180,0,0]) rotate([0,0,-60]) TubeHolder();
 	
 	//*
 	// Centering rings
 	difference(){
 		union(){
 			translate([0,0,-Coupler_Len])
-				CenteringRing(OD=Body_ID-1, ID=BT75Body_OD+IDXtra*2, 
-								Thickness=8+Overlap, nHoles=6, Offset=0);
+				CenteringRing(OD=Body_ID-1, ID=BT98Body_OD+IDXtra*2, 
+								Thickness=8+Overlap, nHoles=0, Offset=0);
 			translate([0,0,-Coupler_Len+8])
 				CenteringRing(OD=Body_ID-1, ID=UpperEBayTube_OD+IDXtra*2, 
-								Thickness=5, nHoles=6, Offset=0);
+								Thickness=5, nHoles=0, Offset=0);
 								
 			translate([0,0,UpperBay_Len-22])
 				CenteringRing(OD=Body_ID+1, ID=UpperEBayTube_OD+IDXtra*2, 
-								Thickness=5, nHoles=6, Offset=0);
+								Thickness=5, nHoles=0, Offset=0);
 		} // union
 		
 		// cable paths
@@ -439,17 +467,15 @@ module UpperElectronicsBay(Tube_OD=Body_OD+Vinyl_t, Tube_ID=Body_ID, ShowDoors=f
 			/**/
 		} // union
 		
-		//if ($preview==false)
-		{
+		/*
 		// Altimeter
-		translate([0,0,Altimeter_Z]) rotate([0,0,Alt_a]) 
+		translate([0,0,Altimeter_Z]) rotate([0,0,Alt1_a]) 
 			Alt_BayFrameHole(Tube_OD=Tube_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, DeepHole_t=42);
 		
-		// Battery and Switch door holes
-		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt3_a]) 
-			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=false, DeepHole_t=42);
-	
-		}
+		// Altimeter
+		translate([0,0,Altimeter_Z]) rotate([0,0,Alt2_a]) 
+			Alt_BayFrameHole(Tube_OD=Tube_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, DeepHole_t=42);
+		/**/
 		
 		// Battery and Switch door holes
 		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
@@ -465,13 +491,12 @@ module UpperElectronicsBay(Tube_OD=Body_OD+Vinyl_t, Tube_ID=Body_ID, ShowDoors=f
 	} // difference
 	
 	// Altimeter
-	translate([0,0,Altimeter_Z]) rotate([0,0,Alt_a])
+	translate([0,0,Altimeter_Z]) rotate([0,0,Alt1_a])
 			Alt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=ShowDoors);
-			
-	// Alt Battery
-	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt3_a]) 
-			Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=false, ShowDoor=ShowDoors);
-
+	translate([0,0,Altimeter_Z]) rotate([0,0,Alt2_a])
+			Alt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=ShowDoors);
+		
+	
 			
 	// Battery and Switch doors
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
@@ -490,6 +515,64 @@ module UpperElectronicsBay(Tube_OD=Body_OD+Vinyl_t, Tube_ID=Body_ID, ShowDoors=f
 
 //UpperElectronicsBay();
 //translate([0,0,UpperBay_Len+12.5+12]) rotate([180,0,0]) RBP4_BallRetainerTop();
+
+MPL_Ball_d=6;
+MPL_PreLoad=-0.4;
+MPL_BallCircle_d=BT137Coupler_ID-MPL_Ball_d-1;
+MPL_Race_OD=BT137Body_OD+Vinyl_t;
+MPL_Body_ID=BT137Body_ID;
+MPL_Race_ID=MPL_BallCircle_d-MPL_Ball_d-6;
+MPL_Race_w=10;
+MPL_LockBall_d=3/8*25.4; // 1/2*25.4;
+MPL_nLockBalls=6;
+MPL_InnerTube_OD=DrogueInnerTube_OD;
+MPL_LockBallBC_d=MPL_InnerTube_OD-5+MPL_LockBall_d; // Locked position
+MPL_UnlockedBC_d=MPL_InnerTube_OD+MPL_LockBall_d;
+
+MPL_Offset_Z=6;           // Bearing balls to lock balls
+MPL_LockBall_Z=MPL_Race_w/2+MPL_Offset_Z;
+MPL_Shelf_t=3;
+
+module Drogue_InnerRace(){
+	MPL_InnerRace(ShowLocked=false, Body_ID=MPL_Body_ID,
+			LockBallBC_d=MPL_LockBallBC_d, 
+			LockBall_d=MPL_LockBall_d, 
+			nLockBalls=MPL_nLockBalls, UnlockedBC_d=MPL_UnlockedBC_d, LockBall_Z=MPL_LockBall_Z,
+			BallCircle_d=MPL_BallCircle_d, Ball_d=MPL_Ball_d, PreLoad=MPL_PreLoad,
+			Race_w=MPL_Race_w, Race_ID=MPL_Race_ID, 
+			Offset_Z=MPL_Offset_Z); 
+} // Drogue_InnerRace
+
+// translate([0,0,10.0]) Drogue_InnerRace();
+
+module Drogue_OuterRace(){
+	MPL_OuterRace(Body_ID=MPL_Body_ID,
+		BallCircle_d=MPL_BallCircle_d, Ball_d=MPL_Ball_d, PreLoad=MPL_PreLoad, Race_w=MPL_Race_w,
+		LockBallBC_d=MPL_LockBallBC_d, LockBall_d=MPL_LockBall_d, nLockBalls=MPL_nLockBalls,
+		Race_OD=MPL_Race_OD, Race_ID=MPL_Race_ID,
+		Shelf_t=MPL_Shelf_t, FCCoupler_Len=0.6); 
+} // Drogue_OuterRace
+
+//translate([0,0,10.0]) Drogue_OuterRace();
+		
+module Drogue_Saucer(){
+	difference(){
+		union(){
+			rotate([180,0,0]) Stager_Saucer(Tube_OD=Body_OD, nLocks=0, HasElectrical=false);
+			translate([0,0,10-Overlap])
+				MPL_LockBallRetainer(FixedTube_OD=DrogueBody_OD, LockBallCircle_d=MPL_LockBallBC_d,
+					LockBall_d=MPL_LockBall_d, LockBall_Z=MPL_LockBall_Z, 
+					BallCircle_d=MPL_BallCircle_d, Ball_d=MPL_Ball_d, Race_w=MPL_Race_w,
+					Shelf_t=MPL_Shelf_t, Body_ID=MPL_Body_ID, nBalls=MPL_nLockBalls); 
+			translate([0,0,2]) Tube(OD=DrogueBody_OD+6, ID=DrogueBody_ID+IDXtra*3, Len=5, myfn=$preview? 36:360);
+		} // union
+		
+		cylinder(d=Body_ID-4.0, h=3, $fn=$preview? 90:360); // allow support to hang down
+	} // difference
+} // Drogue_Saucer
+
+//
+Drogue_Saucer();
 
 module Drogue_Cup(){
 	WireHole_d=5.5;
@@ -513,28 +596,27 @@ module Drogue_Cup(){
 	difference(){
 		translate([0,0,CR_Z]) CenteringRing(OD=Body_ID-IDXtra, ID=0, Thickness=5, nHoles=0);
 		
-		translate([0,0,2]) Stager_CupHoles(Tube_OD=Body_OD, ID=78, nLocks=nLocks, BoltsOn=true);
-		
-		//Rivets();
-		
 		// Shockcord
-		rotate([0,0,40]) translate([0,-Body_ID/2+30,CR_Z-Overlap]) cylinder(d=20, h=10);
+		rotate([0,0,40]) translate([0,-Body_ID/2+34, CR_Z-Overlap]) cylinder(d=20, h=10);
 	} // difference
 	
 	difference(){
-		rotate([0,180,0]) 
-			Stager_Cup(Tube_OD=Body_OD, ID=Body_OD-28, nLocks=nLocks, 
+		union(){
+			rotate([0,180,0]) 
+				Stager_Cup(Tube_OD=Body_OD, ID=Body_OD-28, nLocks=0, 
 							BoltsOn=false, Collar_h=18, HasElectrical=false);
+							
+			translate([0,0,MPL_LockBall_d+10])
+				MPL_LockRing(OD=DrogueInnerTube_OD, ID=DrogueInnerTube_OD, 
+							Ball_d=MPL_LockBall_d, nBalls=MPL_nLockBalls);
+		} // union
 			
 		// Skirt
 		translate([0,0,-30]) Tube(OD=Body_OD+3, ID=Body_ID-IDXtra, Len=25, myfn=$preview? 36:360);
 		
 		// Trim inside
-		translate([0,0,-21]) difference(){
-			cylinder(d1=Body_ID-8, d2=Body_ID-24, h=22);
-			for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j]) translate([0,Body_ID/2-4,-Overlap])
-				RoundRect(X=11,Y=6,Z=30,R=2);
-			}
+		translate([0,0,-21])
+			cylinder(d1=Body_ID-8, d2=Body_ID-24, h=20);
 			
 		Rivets();
 	} // difference
@@ -542,7 +624,7 @@ module Drogue_Cup(){
 	
 } // Drogue_Cup
 
-// Drogue_Cup();
+// translate([0,0,-0.2]) rotate([0,0,-21]) Drogue_Cup();
 
 module AlignmentPins(nPins=6){
 	Pin_d=4;
@@ -1063,7 +1145,60 @@ module MotorRetainer(HasWrenchCuts=false, Cone_Len=TailConeLen, ExtraLen=0){
 
 //translate([0,0,-0.2]) MotorRetainer(ExtraLen=0);
 
+// ****************************************************************
+// old stuff
+/*
+module Drogue_Cup(){
+	WireHole_d=5.5;
+	RailGuide_Z=-40;
+	RG_Len=35;
+	Rivet_Z=-15;
+	nRivets=6;
+	nLocks=3;
 
+	module Rivets(){
+	// Rivet holes
+		for (j=[0:nRivets-1]) rotate([0,0,360/nRivets*j+180/nRivets]){
+			translate([0, Body_OD/2+1, Rivet_Z])
+				rotate([90,0,0]) cylinder(d=4, h=10);
+			translate([0, Body_ID/2-3, Rivet_Z])
+				rotate([90,0,0]) cylinder(d=7, h=5);
+		}}
+		
+	CR_Z=-5;
+	
+	difference(){
+		translate([0,0,CR_Z]) CenteringRing(OD=Body_ID-IDXtra, ID=0, Thickness=5, nHoles=0);
+		
+		translate([0,0,2]) Stager_CupHoles(Tube_OD=Body_OD, ID=78, nLocks=nLocks, BoltsOn=true);
+		
+		//Rivets();
+		
+		// Shockcord
+		rotate([0,0,40]) translate([0,-Body_ID/2+30,CR_Z-Overlap]) cylinder(d=20, h=10);
+	} // difference
+	
+	difference(){
+		rotate([0,180,0]) 
+			Stager_Cup(Tube_OD=Body_OD, ID=Body_OD-28, nLocks=nLocks, 
+							BoltsOn=false, Collar_h=18, HasElectrical=false);
+			
+		// Skirt
+		translate([0,0,-30]) Tube(OD=Body_OD+3, ID=Body_ID-IDXtra, Len=25, myfn=$preview? 36:360);
+		
+		// Trim inside
+		translate([0,0,-21]) difference(){
+			cylinder(d1=Body_ID-8, d2=Body_ID-24, h=22);
+			for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j]) translate([0,Body_ID/2-4,-Overlap])
+				RoundRect(X=11,Y=6,Z=30,R=2);
+			}
+			
+		Rivets();
+	} // difference
+
+	
+} // Drogue_Cup
+/**/
 
 
 
