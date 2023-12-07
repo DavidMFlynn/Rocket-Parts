@@ -16,32 +16,38 @@
 //
 //  ***** Parts *****
 //
-// BlueTube 2.0 3" Body Tube by 24 inches
-// Blue Tube 2.1" Body Tube by 12 inches
+// BlueTube 2.0 3" Body Tube by 8.5 inches (for dual deploy)
+// BlueTube 2.0 3" Body Tube by 18 to 24 inches
+// Blue Tube 2.1" Body Tube by 16 inches
 // 45" Parachute
 // 1/8" Paracord (3 feet)
 // 1/2" Braided Nylon Shock Cord (20 feet)
 //
 //  ***** Hardware *****
-//
-// #6-32 x 3/4" Button Head Cap Screw (2 req) Rail Buttons
-// #4-40 x 1/2" Socket Head Cap Screw (3 req) Ball Lock
-// #4-40 x 3/8" Button Head Cap Screw (6 req) Doors
+//    Note: Qty for Single Deploy/Qty for Dual Deploy
+// 5/32" x 1/8" Plastic Rivets (3 req) Nosecone
+// #8-32 x 3/4" Button Head Cap Screw (2 req) Rail Buttons
+// #4-40 x 1/2" Socket Head Cap Screw (3/6 req) Ball Lock
+// #4-40 x 3/8" Button Head Cap Screw (6/10 req) Doors
 // #4-40 x 3/8" Socket Head Cap Screw (3 req) PetalHub
+// #4-40 x 1/4" Button Head Cap Screw (6/12 req) Petals
+// #4-40 x 1/4" Button Head Cap Screw (6/9 req) Couplers
 // #4-40 x 1/4" Button Head Cap Screw (4 req) Altimeter
-// #2-56 x 1/4" Socket Head Cap Screw (2 req) Servo
-// MR84-2RS Bearing (5 req) Ball Lock
-// 3/8" Delrin Ball (3 req) Ball Lock
-// 4mm Dia. x 10mm Undersize Steel Dowel (3 req) Ball Lock
-// 4mm Dia. x 16mm Undersize Steel Dowel (3 req) Ball Lock
-// 3/16" Dia x 1/8" Disc Magnet N42 (2 req) Ball Lock
-// SG90 or MG90S Micro Servo (1 req) Ball Lock
-// C&K Rotary Switch (1 req) Battery Door
+// #2-56 x 1/4" Socket Head Cap Screw (2/4 req) Servo
+// MR84-2RS Bearing (5/10 req) Ball Lock
+// 3/8" Delrin Ball (3/6 req) Ball Lock
+// 4mm Dia. x 10mm Undersize Steel Dowel (3/6 req) Ball Lock
+// 4mm Dia. x 16mm Undersize Steel Dowel (3/6 req) Ball Lock
+// 3/16" Dia x 1/8" Disc Magnet N42 (2/4 req) Ball Lock
+// SG90 or MG90S Micro Servo (1/2 req) Ball Lock
+// C&K Rotary Switch (1/2 req) Battery Door
 // Mission Control V3 Altimeter PCBA
-// Rocket Servo PCBA
+// Rocket Servo PCBA (1/2 req)
+// FeatherWeight GPS
 // 1/4" Rail Button (2 req)
-// CS4323 Spring
-// 5/16" Dia x 1-1/4" Spring (3 req) PetalHub
+// CS4323 Spring (1/2 req)
+// 5/16" Dia x 1-1/4" Spring (3/6 req) PetalHub
+// 1/2" Dia x 0.035" Wall x 74mm Long Aluminum Tube (1/3 req)
 //
 //  ***** History *****
 //
@@ -58,25 +64,26 @@
 //
 // BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=NC_Len, Base_L=NC_Base_L, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
 
-// BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=NC_Len, Base_L=13, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=120, LowerPortion=false);
+// BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=NC_Len, Base_L=NC_Base_L, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=120, LowerPortion=false); // Upper half
 
-// BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=NC_Len, Base_L=13, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=120, Transition_OD=BT75Body_OD-18, LowerPortion=true);
+// BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=NC_Len, Base_L=NC_Base_L, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=120, Transition_OD=BT75Body_OD-18, LowerPortion=true); // Lower half
 //
 // NC_ShockcordRing75(Body_OD=Body_OD, Body_ID=Body_ID, NC_Base_L=NC_Base_L);
 //
 // *** Electronics Bay ***
 //
-// Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID);
+// Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID, DualDeploy=false);
 //
 // *** Dual Deploy Electronics Bay ***
 //
-// Electronics_BayDual(Tube_OD=Body_OD, Tube_ID=Body_ID);
+// Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID, DualDeploy=true);
 // 
 // *** Doors ***
 //
 // rotate([-90,0,0]) AltDoor54(Tube_OD=Body_OD, IsLoProfile=false, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowAlt=true);
 // 
 // rotate([-90,0,0]) Batt_Door(Tube_OD=Body_OD, InnerTube_OD=0, HasSwitch=true);
+// rotate([-90,0,0]) Batt_Door(Tube_OD=Body_OD, InnerTube_OD=0, HasSwitch=true, DoubleBatt=true);
 //
 // *** Ball Lock ***
 //
@@ -88,12 +95,13 @@
 // *** petal deployer ***
 //
 // PD_NC_PetalHub(OD=Coupler_OD, nPetals=3, nRopes=3); // for dual deploy only
-// PD_PetalHub(OD=Coupler_OD, nPetals=3, ShockCord_a=PD_ShockCordAngle());
+// PD_PetalHub(OD=Coupler_OD, nPetals=3, ShockCord_a=ShockCord_a);
 // rotate([-90,0,0]) PD_PetalSpringHolder(OD=Coupler_OD);
 // rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=150, nPetals=3, Wall_t=1.8, AntiClimber_h=3, HasLocks=false);
 //
 // SpringEndTop(OD=Coupler_OD-IDXtra, Tube_ID=Coupler_OD-IDXtra-3.6, nRopeHoles=3);
-// SpringEndBottom(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=3);
+// SpringEndBottom(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=3); // required for 54/1706 (K185W)
+// SpringEndBottom(OD=MotorCoupler_OD, Tube_ID=MotorCoupler_OD-2.4, nRopeHoles=3); // slides into motor tube
 // SpringSpacer(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, Len=40); // optional
 //
 // UpperRailBtnMount();
@@ -160,59 +168,81 @@ MotorCoupler_OD=BT54Coupler_OD;
 
 MotorTubeHole_d=MotorTube_OD+IDXtra*3;
 
-EBay_Len=152;
-
 NC_Len=180*Scale;
 NC_Tip_r=5*Scale;
 NC_Wall_t=1.8;
 NC_Base_L=13;
 
-BodyTubeLen=24*25.4;
+MainBay_Len=8.5*25.4;
+EBay_Len=152;
+BodyTubeLen=16*25.4;
+MotorTubeLen=16*25.4;
 
-Alt_DoorXtra_X=4;
+Alt_DoorXtra_X=6;
 Alt_DoorXtra_Y=2;
 
 FinInset_Len=5*Scale;
 Can_Len=Fin_Root_L+FinInset_Len*2;
 Bolt4Inset=4;
-ShockCord_a=25;// offset between PD_PetalHub and R65_BallRetainerBottom
+ShockCord_a=35;// offset between PD_PetalHub and R65_BallRetainerBottom
 CouplerLenXtra=-5;
 
-module ShowRocket(ShowInternals=false){
+module ShowRocket(ShowInternals=false, DualDeploy=false, ShowDoors=false){
 	FinCan_Z=35;
 	Fin_Z=FinCan_Z+Fin_Root_L/2+FinInset_Len;
 	BodyTube_Z=FinCan_Z+Can_Len+Overlap*2;
 	EBay_Z=BodyTube_Z+BodyTubeLen+33.5;
-	NoseCone_Z=EBay_Z+EBay_Len-13+Overlap*2;
+	UpperBallLock_Z=EBay_Z+EBay_Len+18.5;
+	NoseCone_Z=DualDeploy? MainBay_Len+29+EBay_Z+EBay_Len+2+Overlap*2:EBay_Z+EBay_Len+2+Overlap*2;
+
 	
 	//*
-	translate([0,0,NoseCone_Z])
+	translate([0,0,NoseCone_Z]){
 		BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=NC_Len, Base_L=13, 
 							Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
+		rotate([0,0,-30]) color("LightGreen")
+			NC_ShockcordRing75(Body_OD=Body_OD, Body_ID=Body_ID, NC_Base_L=NC_Base_L);}
 	
-	translate([0,0,EBay_Z]) Electronics_Bay();
+	if (DualDeploy){
 	
-	translate([0,0,BodyTube_Z+BodyTubeLen+10+Overlap*2])
-		STB_BallRetainerTop(BallPerimeter_d=Body_OD, Body_OD=Body_ID, nLockBalls=3, 
-			HasIntegratedCouplerTube=true, Body_ID=Body_ID, HasSecondServo=false, UsesBigServo=false);
+		if (ShowInternals==false)
+			translate([0,0,UpperBallLock_Z+10]) color("LightBlue") Tube(OD=Body_OD, ID=Body_ID, 
+				Len=MainBay_Len-Overlap*2, myfn=$preview? 90:360);
+		//*
+		if (ShowInternals==false)
+			translate([0,0,UpperBallLock_Z]) rotate([180,0,0])
+				STB_TubeEnd(BallPerimeter_d=Body_OD, nLockBalls=3, Body_OD=Body_OD, 
+								Body_ID=Body_ID, Skirt_Len=20);
+		/**/
+		translate([0,0,UpperBallLock_Z]) rotate([180,0,0]) color("Tan") R75_BallRetainerTop();
+	
+	}
+	translate([0,0,EBay_Z]) Electronics_Bay(DualDeploy=DualDeploy, ShowDoors=ShowDoors);
+	
+	translate([0,0,BodyTube_Z+BodyTubeLen+15+Overlap*2])
+		color("Tan") R75_BallRetainerTop();
 	/**/
 	
 	if (ShowInternals){
-		translate([0,0,BodyTube_Z+BodyTubeLen+10+Overlap*2-0.2]) R75_BallRetainerBottom();
-		translate([0,0,BodyTube_Z+BodyTubeLen+10+Overlap*2-9.2]) rotate([0,0,200]) rotate([180,0,0]) 
-			PD_PetalHub(OD=BT75Coupler_OD, nPetals=3, ShockCord_a=PD_ShockCordAngle());
-		translate([0,0,BodyTube_Z+BodyTubeLen+10+Overlap*2-15]) 
+		translate([0,0,BodyTube_Z+BodyTubeLen+15+Overlap*2-0.2]) R75_BallRetainerBottom();
+		translate([0,0,BodyTube_Z+BodyTubeLen+15+Overlap*2-9.2]) rotate([0,0,200]) rotate([180,0,0]) 
+			PD_PetalHub(OD=BT75Coupler_OD, nPetals=3, ShockCord_a=ShockCord_a);
+		translate([0,0,BodyTube_Z+BodyTubeLen+15+Overlap*2-15]) 
 			rotate([0,0,200]) rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=150, nPetals=3);
 	}
 	
 	if (ShowInternals==false)
-	translate([0,0,BodyTube_Z+BodyTubeLen+10])
+	translate([0,0,BodyTube_Z+BodyTubeLen+15])
 		STB_TubeEnd(BallPerimeter_d=Body_OD, nLockBalls=3, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=20);
 	
 	if (ShowInternals==false)
 	translate([0,0,BodyTube_Z]) color("LightBlue") Tube(OD=Body_OD, ID=Body_ID, 
 			Len=BodyTubeLen-Overlap*2, myfn=$preview? 90:360);
 	
+	if (ShowInternals)
+	translate([0,0,FinCan_Z-23]) color("Blue") Tube(OD=MotorTube_OD, ID=MotorTube_ID, 
+			Len=MotorTubeLen-Overlap*2, myfn=$preview? 90:360);
+			
 	translate([0,0,FinCan_Z]) color("White") FinCan(LowerHalfOnly=false, UpperHalfOnly=false);
 	
 	//*
@@ -221,10 +251,10 @@ module ShowRocket(ShowInternals=false){
 			rotate([0,90,0]) color("Yellow") RocketFin();
 	/**/
 	
-	translate([0,0,FinCan_Z-0.2]) MotorRetainer();
+	translate([0,0,FinCan_Z-0.2]) MotorRetainer(ShowCut=false);
 } // ShowRocket
 
-//ShowRocket();
+//ShowRocket(DualDeploy=true, ShowDoors=true);
 //ShowRocket(ShowInternals=true);
 
 module R75_BallRetainerBottom(){
@@ -237,6 +267,9 @@ module R75_BallRetainerBottom(){
 } // R75_BallRetainerBottom
 
 // translate([0,0,-8]) rotate([180,0,0]) R75_BallRetainerBottom();
+
+//rotate([0,0,170]) PD_PetalHub(OD=Coupler_OD, nPetals=3, ShockCord_a=ShockCord_a);
+
 module R75_BallRetainerTop(){
 	// combined with NC_ShockcordRingDual(){
 	
@@ -286,14 +319,15 @@ module R75_BallRetainerTop(){
 
 //R75_BallRetainerTop();
 
-module Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID){
-	// One Battery Door w/ Switch and One Altimeter
+module Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID, DualDeploy=false, ShowDoors=false){
+	// One/two Battery Door w/ Switch and One Altimeter
 	Len=EBay_Len;
 	Altimeter_Z=Len/2;
 	BattSwDoor_Z=Len/2;
 
-	Alt_a=180;
-	Batt1_a=0;
+	Alt_a=0;
+	Batt1_a=DualDeploy? 120:180;
+	Batt2_a=240;
 	
 	difference(){
 		
@@ -306,62 +340,28 @@ module Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID){
 		// Battery and Switch door holes
 		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
 			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
+			
+		if (DualDeploy)
+			translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
+				Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
 		
 	} // difference
 	
 	// Altimeter
 	translate([0,0,Altimeter_Z]) rotate([0,0,Alt_a])
-		Alt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=false);
+		Alt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=ShowDoors);
 	
 	// Battery and Switch door2
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
-		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=true, ShowDoor=false);
+		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=true, ShowDoor=ShowDoors);
+		
+	if (DualDeploy)
+		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
+			Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=true, ShowDoor=ShowDoors);
 	
 } // Electronics_Bay
 
 // Electronics_Bay();
-
-module Electronics_BayDual(Tube_OD=Body_OD, Tube_ID=Body_ID){
-	// Two Battery Doors w/ Switch and One Altimeter
-	
-	Len=EBay_Len;
-	Altimeter_Z=Len/2;
-	BattSwDoor_Z=Len/2;
-	TopSkirt_Len=13;
-	BottomSkirt_Len=15;
-
-	Alt_a=120;
-	Batt1_a=0;
-	Batt2_a=240;
-	
-	difference(){
-		Tube(OD=Tube_OD, ID=Tube_ID, Len=Len, myfn=$preview? 36:360);
-		
-		// Altimeter
-		translate([0,0,Altimeter_Z]) rotate([0,0,Alt_a]) 
-			Alt_BayFrameHole(Tube_OD=Tube_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
-		
-		// Battery and Switch door holes
-		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
-			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
-		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
-			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
-		
-	} // difference
-	
-	// Altimeter
-	translate([0,0,Altimeter_Z]) rotate([0,0,Alt_a])
-		Alt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=false);
-	
-	// Battery and Switch door2
-	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
-		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=true, ShowDoor=false);
-	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
-		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=true, ShowDoor=false);
-	
-} // Electronics_BayDual
-
-// Electronics_BayDual();
 
 module SpringSpacer(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, Len=40){
 	Tube(OD=OD, ID=Tube_ID, Len=Len, myfn=$preview? 36:360);
@@ -642,7 +642,7 @@ module TailCone(Threaded=true, Cone_Len=35, Interface_OD=Body_ID){
 
 //rotate([180,0,0]) TailCone();
 
-module MotorRetainer(HasWrenchCuts=false, Cone_Len=35, ExtraLen=0){
+module MotorRetainer(HasWrenchCuts=false, Cone_Len=35, ExtraLen=0, ShowCut=true){
 	
 	AftClosure_h=10;
 	Retainer_h=2;
@@ -688,7 +688,7 @@ module MotorRetainer(HasWrenchCuts=false, Cone_Len=35, ExtraLen=0){
 			translate([SW_W/2,-Body_OD/2,-Cone_Len]) cube([Body_OD,Body_OD,SW_Z]);
 		} // if
 		
-		if ($preview) translate([0,0,-Cone_Len-ExtraLen-1]) cube([50,50,100]);
+		if ($preview && ShowCut) translate([0,0,-Cone_Len-ExtraLen-1]) cube([50,50,100]);
 	} // difference
 } // MotorRetainer
 

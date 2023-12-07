@@ -571,8 +571,7 @@ module Drogue_Saucer(){
 	} // difference
 } // Drogue_Saucer
 
-//
-Drogue_Saucer();
+//color("Tan") Drogue_Saucer();
 
 module Drogue_Cup(){
 	WireHole_d=5.5;
@@ -594,29 +593,33 @@ module Drogue_Cup(){
 	CR_Z=-5;
 	
 	difference(){
-		translate([0,0,CR_Z]) CenteringRing(OD=Body_ID-IDXtra, ID=0, Thickness=5, nHoles=0);
-		
-		// Shockcord
-		rotate([0,0,40]) translate([0,-Body_ID/2+34, CR_Z-Overlap]) cylinder(d=20, h=10);
-	} // difference
-	
-	difference(){
 		union(){
+			translate([0,0,CR_Z]) CenteringRing(OD=Body_ID-7, ID=0, Thickness=5, nHoles=0);
+			
 			rotate([0,180,0]) 
 				Stager_Cup(Tube_OD=Body_OD, ID=Body_OD-28, nLocks=0, 
 							BoltsOn=false, Collar_h=18, HasElectrical=false);
 							
-			translate([0,0,MPL_LockBall_d+10])
+			translate([0,0,MPL_LockBall_d+10+1.5])
 				MPL_LockRing(OD=DrogueInnerTube_OD, ID=DrogueInnerTube_OD, 
 							Ball_d=MPL_LockBall_d, nBalls=MPL_nLockBalls);
+				
+			difference(){
+				translate([0,0,CR_Z]) cylinder(d=DrogueInnerTube_OD-1, h=10);
+				translate([0,0,CR_Z-Overlap]) 
+					cylinder(d1=DrogueInnerTube_OD-25, d2=DrogueInnerTube_OD-9.5, h=10+Overlap*2, $fn=$preview? 90:360);
+			} // difference
 		} // union
 			
+		// Shockcord
+		rotate([0,0,40]) translate([0,-Body_ID/2+34, CR_Z-Overlap]) cylinder(d=20, h=10);
+		
 		// Skirt
 		translate([0,0,-30]) Tube(OD=Body_OD+3, ID=Body_ID-IDXtra, Len=25, myfn=$preview? 36:360);
 		
 		// Trim inside
 		translate([0,0,-21])
-			cylinder(d1=Body_ID-8, d2=Body_ID-24, h=20);
+			cylinder(d1=Body_ID-8, d2=Body_ID-22, h=21+CR_Z-Overlap, $fn=$preview? 36:360);
 			
 		Rivets();
 	} // difference
@@ -625,6 +628,7 @@ module Drogue_Cup(){
 } // Drogue_Cup
 
 // translate([0,0,-0.2]) rotate([0,0,-21]) Drogue_Cup();
+// translate([0,0,-0.2]) rotate([0,0,0]) Drogue_Cup();
 
 module AlignmentPins(nPins=6){
 	Pin_d=4;

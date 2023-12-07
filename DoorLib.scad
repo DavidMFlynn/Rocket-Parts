@@ -304,7 +304,7 @@ module Door(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBolts=tr
 		// Outer surface
 		difference(){
 			translate([0,0,-DY/2-Overlap]) 
-				cylinder(d=Tube_OD*2, h=DY+Overlap*2);
+				cylinder(d=Tube_OD*3, h=DY+Overlap*2);
 			translate([0,0,-DY/2-Overlap]) 
 				cylinder(d=Tube_OD, h=DY+Overlap*2, $fn=$preview? 90:360);
 		} // difference

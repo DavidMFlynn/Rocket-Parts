@@ -1,0 +1,86 @@
+Rocket 75C Parts List
+--------------------------------------------------------
+Nosecone						3D Printed
+NC_ShockcordRing75				3D Printed
+	5/32" x 1/8" Plastic Rivets (3 req)
+	#4-40 x 1/4" Button Head Cap Screw (3 req)
+	1/2" Dia x 0.035" Wall x 74mm Long Aluminum Tube
+	FeatherWeight GPS (optional)
+
+Main Parachute Bay *
+	Body Tube, Blue Tube 2.0, 2.1" Body x 8.5"
+	PD_NC_PetalHub				3D Printed
+		5/16" Dia x 1-1/4" Spring (3 req)
+	PD_PetalSpringHolder		3D Printed
+		#4-40 x 1/4" Button Head Cap Screw (6 req)
+	PD_Petals					3D Printed
+	Spring CS4323
+	4mm knit pp cord 3.5 feet
+	Ball Lock Unit 75 Assy.
+
+Single Deployment E-Bay (only)
+	Electronics_Bay (2 Doors) 		3D Printed
+
+Dual Deployment E-Bay (only)
+	Electronics_Bay (3 Doors) 		3D Printed
+
+Battery Door w/ Switch	(1 or 2 req*)	3D Printed
+	#4-40 x 3/8" Button Head Cap Screw (4 req)
+	C&K Rotary Switch
+	Rocket Servo PCBA
+
+Altimeter Door					3D Printed
+	#4-40 x 3/8" Button Head Cap Screw (2 req)
+	Mission Control V3 Altimeter
+	#4-40 x 1/4" Button Head Cap Screw (4 req)
+
+Ball Lock Unit 75 Assy.
+
+PD_PetalHub							3D Printed
+	5/16" Dia x 1-1/4" Spring (3 req)
+	#4-40 x 3/8" Socket Head Cap Screw (3 req)
+PD_PetalSpringHolder				3D Printed
+	#4-40 x 1/4" Button Head Cap Screw (6 req)
+PD_Petals							3D Printed
+
+SpringEndTop						3D Printed
+Spring CS4323
+4mm knit pp cord 3.5 feet
+SpringEndBottom						3D Printed
+SpringSpacer (optional as needed) 	3D Printed
+Body Tube, Blue Tube 2.0, 3" Body x 20" (18" min.)
+
+
+UpperRailBtnMount				3D Printed
+Motor Tube, Blue Tube 2.0, 2.1" Body x 16"
+FinCan							3D Printed
+RocketFin (5 req)				3D Printed
+MotorRetainer					3D Printed
+
+RailButton  (2 req)				3D Printed
+#8-32 x 3/4" Button Head Cap Screw (2 req)
+
+Ball Lock Unit 75 Assy.
+--------------------------
+	STB_LockDisk				3D Printed
+	R75_BallRetainerTop			3D Printed
+	R75_BallRetainerBottom		3D Printed
+	STB_TubeEnd					3D Printed
+	MG90S Micro Servo
+	MR84-2RS Bearing (5 req)
+	3/8" Delrin Ball (3 req)
+	#2-56 x 1/4" Socket Head Cap Screw (2 req)
+	#4-40 x 1/2" Socket Head Cap Screw (3 req)
+	4mm Dia. x 10mm Undersize Steel Dowel (3 req)
+	4mm Dia. x 16mm Undersize Steel Dowel (3 req)
+	3/16" Dia x 1/8" Disc Magnet N42 (2 req)
+	1/2" Dia x 0.035" Wall x 74mm Long Aluminum Tube*
+	#4-40 x 1/4" Button Head Cap Screw (3 req)
+
+
+
+
+
+* Only needed for dual deploy
+
+

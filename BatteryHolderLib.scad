@@ -3,7 +3,7 @@
 // Filename: BatteryHolderLib.scad
 // by David M. Flynn
 // Created: 9/30/2022 
-// Revision: 1.2.1  9/16/2023
+// Revision: 1.2.2  12/6/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-echo("BatteryHolderLib 1.2.1");
+echo("BatteryHolderLib 1.2.2");
 //
+// 1.2.2  12/6/2023   Added DoubleBatteryPocket, Batt_Door(DoubleBatt=false)
 // 1.2.1  9/16/2023   Added DeepHole_t to Batt_BayFrameHole()
 // 1.2.0  4/29/2023   Now using DoorLib.scad.
 // 1.1.0  1/2/2023    Added Batt_Door6xAAA()
@@ -28,7 +29,7 @@ echo("BatteryHolderLib 1.2.1");
 // ***********************************
 //  ***** for STL output *****
 //
-//  Batt_Door(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, InnerTube_OD=PML54Body_OD, HasSwitch=false);
+//  Batt_Door(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, InnerTube_OD=PML54Body_OD, HasSwitch=false, DoubleBatt=false);
 //  Batt_Door6xAAA(Tube_OD=BT137Body_OD, InnerTube_OD=BT54Body_OD, HasSwitch=true);
 //  SingleBatteryPocket(ShowBattery=true);
 //
@@ -48,6 +49,9 @@ echo("BatteryHolderLib 1.2.1");
 //
 //  SingleBatteryHolder(Tube_ID=PML75Body_ID);
 //  DoubleBatteryHolder(Tube_ID=PML75Body_ID);
+//
+//  SingleBatteryPocket(ShowBattery=true);
+//  DoubleBatteryPocket(ShowBattery=true);
 //
 // ***********************************
 //  ***** for Viewing *****
@@ -129,7 +133,9 @@ module Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, HasSwitch=fal
 //Batt_BayDoorFrame(Tube_OD=PML54Body_OD, Door_X=Batt_Door_X-10, HasSwitch=true, ShowDoor=false);
 //rotate([90,0,0]) Batt_Door54(Tube_OD=PML54Body_OD, HasSwitch=true);
 
-module Batt_Door(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, InnerTube_OD=PML38Body_OD, HasSwitch=false){
+module Batt_Door(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, InnerTube_OD=PML38Body_OD, HasSwitch=false, DoubleBatt=false){
+
+	ShowBattery=true;
 	Door_Y=HasSwitch? Batt_Door_Y+CK_RotSw_d:Batt_Door_Y;
 	//Door_X=Batt_Door_X;
 	Door_t=Batt_DoorThickness-0.7;
@@ -137,12 +143,18 @@ module Batt_Door(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, InnerTube_OD=PML38Bod
 	BoltBossInset=3;
 	Batt_Offset_Y=Door_Y/2-68;
 	
-	BattInset_Z=2.2; // was 1.5
+	BattInset_Z=get_inset(Tube_OD);
 	Batt_h=45;
 	BattConn_h=8;
 	Batt_X=27;
 	Batt_Y=17;
 	Switch_Y=-Door_Y/2+CK_RotSw_d/2+6;
+	
+	function get_inset(d) = lookup(d, [
+ 		[ 54, 3.6 ],
+ 		[ 98, 2.2 ],
+ 		[ 137, 1.4 ]
+ 	]);
 	
 	difference(){
 		union(){
@@ -159,7 +171,13 @@ module Batt_Door(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, InnerTube_OD=PML38Bod
 				union(){
 					//Battery holder
 					 translate([0, -Tube_OD/2+Door_t+Batt_Y/2+BattInset_Z, Door_Y/2-Batt_h-BattConn_h-10]) 
-						 SingleBatteryPocket();
+						if (DoubleBatt){
+							translate([0,(Batt_Y*2-Batt_X),0]) rotate([0,0,90]) 
+								DoubleBatteryPocket(Extra=5, ShowBattery=ShowBattery);
+						}else{
+							SingleBatteryPocket(Extra=5, ShowBattery=ShowBattery);
+						}
+						
 					
 					// Switch
 					if (HasSwitch)
@@ -181,8 +199,8 @@ module Batt_Door(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, InnerTube_OD=PML38Bod
 
 } // Batt_Door
 
-//rotate([90,0,0]) Batt_Door(Tube_OD=PML98Body_OD, InnerTube_OD=PML38Body_OD, HasSwitch=false);
-//Batt_Door(Tube_OD=PML98Body_OD, HasSwitch=true);
+//rotate([90,0,0]) Batt_Door(Tube_OD=BT75Body_OD, InnerTube_OD=0, HasSwitch=true, DoubleBatt=true);
+//Batt_Door(Tube_OD=BT137Body_OD, InnerTube_OD=0, HasSwitch=true);
 //Batt_Door(Tube_OD=BT54Body_OD, Door_X=40, InnerTube_OD=0, HasSwitch=true); // not good
 
 
@@ -239,7 +257,7 @@ module Batt_Door6xAAA(Tube_OD=BT137Body_OD, InnerTube_OD=BT54Body_OD, HasSwitch=
 
 //Batt_Door6xAAA(Tube_OD=BT137Body_OD, InnerTube_OD=BT54Body_OD, HasSwitch=true);
 
-module SingleBatteryPocket(ShowBattery=true){
+module SingleBatteryPocket(Extra=0, ShowBattery=true){
 	Batt_h=45;
 	BattConn_h=8;
 	Batt_X=27;
@@ -251,7 +269,7 @@ module SingleBatteryPocket(ShowBattery=true){
 	} // BatteryCase
 	
 	difference(){
-		RoundRect(X=Batt_X+5, Y=Batt_Y+5, Z=Batt_h+2, R=2);
+		translate([0,-Extra/2,0]) RoundRect(X=Batt_X+5, Y=Batt_Y+5+Extra, Z=Batt_h+2, R=2);
 			
 				
 		// Battery
@@ -271,6 +289,38 @@ module SingleBatteryPocket(ShowBattery=true){
 } // SingleBatteryPocket
 
 //SingleBatteryPocket();
+
+module DoubleBatteryPocket(Extra=0, ShowBattery=true){
+	Batt_h=45;
+	BattConn_h=8;
+	Batt_X=27;
+	Batt_Y=17;
+	Batt_r=3;
+	
+	module BatteryCase(){
+		color("Orange") RoundRect(Y=Batt_Y, X=Batt_X, Z=Batt_h+BattConn_h, R=Batt_r);
+	} // BatteryCase
+	
+	difference(){
+		translate([-Extra/2,0,0]) RoundRect(X=Batt_X+5+Extra, Y=Batt_Y*2+5, Z=Batt_h+2, R=2);
+			
+				
+		// Battery
+		translate([0,0,3]) RoundRect(X=Batt_X+IDXtra*4, Y=Batt_Y*2+IDXtra*4, Z=Batt_h, R=Batt_r);
+				
+		// Push holes
+		translate([0,-Batt_Y/2,-Overlap]) cylinder(d=12, h=4);
+		translate([0,Batt_Y/2,-Overlap]) cylinder(d=12, h=4);
+		
+	} // difference
+	if ($preview && ShowBattery){
+		translate([0,-Batt_Y/2,3]) BatteryCase();
+		translate([0,Batt_Y/2,3]) BatteryCase();
+		}
+	
+} // DoubleBatteryPocket
+
+//DoubleBatteryPocket();
 
 module BatteryPocket6xAAA(){
 	Batt_h=51;
