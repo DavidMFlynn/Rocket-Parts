@@ -3,7 +3,7 @@
 // Filename: TubeCutter.scad
 // by David M. Flynn
 // Created: 3/12/2023 
-// Revision: 0.9.0 3/12/2023
+// Revision: 0.9.1 12/10/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,6 +12,7 @@
 //
 //  ***** History *****
 //
+// 0.9.1 12/10/2023   Stiffer frame.
 // 0.9.0  3/12/2023   First code.
 //
 // ***********************************
@@ -84,7 +85,7 @@ module DremelRAHolderBoltPattern(){
 } // DremelRAHolderBoltPattern
 
 module DremelBase(){
-	BasePlate_t=8;
+	BasePlate_t=10;
 	LeftGuide_X=75;
 	Guide_X=20;
 	Guide_Y=120;
@@ -235,8 +236,18 @@ module RollerFrame(){
 			} // hull
 			
 			hull(){
+				translate([0,50,0]) cylinder(d=3, h=Frame_W);
+				translate([-8,0,0]) cylinder(d=3, h=Frame_W);
+			} // hull
+			
+			hull(){
 				translate([90,50,0]) cylinder(d=3, h=Frame_W);
 				translate([60,0,0]) cylinder(d=3, h=Frame_W);
+			} // hull
+			
+			hull(){
+				translate([90,50,0]) cylinder(d=3, h=Frame_W);
+				translate([98,0,0]) cylinder(d=3, h=Frame_W);
 			} // hull
 			
 			hull(){

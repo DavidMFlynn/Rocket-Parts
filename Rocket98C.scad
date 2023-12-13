@@ -132,6 +132,7 @@ use<BatteryHolderLib.scad>
 use<SpringThingBooster.scad> SpringThingBoosterRev();
 use<PetalDeploymentLib.scad>
 use<SpringThing2.scad>
+use<SpringEndsLib.scad>
 use<ThreadLib.scad>
 
 //also included
@@ -315,32 +316,7 @@ module R98_UpperSpringMiddle(){
 module R98_LowerSpringMiddle(){
 // costom version of ST_SpringMiddle()
 
-	ST_DSpring_OD=44.30;
-	ST_DSpring_ID=40.50;
-	Len=40;
-	nRopes=6;
-	OD=Coupler_OD;
-	
-	Tube(OD=ST_DSpring_OD+IDXtra*3+4.4, ID=ST_DSpring_OD+IDXtra*3, 
-			Len=Len, myfn=$preview? 90:360);
-			
-	Tube(OD=ST_DSpring_ID-0.5, ID=ST_DSpring_ID-0.5-4.4, 
-			Len=Len, myfn=$preview? 90:360);
-			
-	translate([0,0,Len/2-1.5]) Tube(OD=ST_DSpring_OD+1, ID=ST_DSpring_ID-5, 
-			Len=3, myfn=$preview? 90:360);
-			
-	Tube(OD=OD, ID=OD-4.4, 
-			Len=35, myfn=$preview? 90:360);
-	difference(){
-		cylinder(d1=OD-1, d2=ST_DSpring_OD+1, h=35);
-		
-		translate([0,0,-3]) cylinder(d1=92, d2=ST_DSpring_OD+1, h=35);
-		translate([0,0,-Overlap]) cylinder(d=ST_DSpring_OD+1, h=35+Overlap*2);
-		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) translate([0,OD/2-7,-Overlap])
-			cylinder(d=10,h=Len);
-	} // difference
-
+	SE_SlidingSpringMiddle(OD=Coupler_OD, nRopes=6);
 
 } // R98_LowerSpringMiddle
 

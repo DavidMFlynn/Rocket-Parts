@@ -17,7 +17,7 @@
 //  ***** Parts *****
 //
 // BlueTube 2.0 3" Body Tube by 8.5 inches (for dual deploy)
-// BlueTube 2.0 3" Body Tube by 18 to 24 inches
+// BlueTube 2.0 3" Body Tube by 18 to 24 inches (19.25" as built)
 // Blue Tube 2.1" Body Tube by 16 inches
 // 45" Parachute
 // 1/8" Paracord (3 feet)
@@ -98,13 +98,16 @@
 // PD_PetalHub(OD=Coupler_OD, nPetals=3, ShockCord_a=ShockCord_a);
 // rotate([-90,0,0]) PD_PetalSpringHolder(OD=Coupler_OD);
 // rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=150, nPetals=3, Wall_t=1.8, AntiClimber_h=3, HasLocks=false);
+// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=110, nPetals=3, Wall_t=1.8, AntiClimber_h=3, HasLocks=false);
 //
 // SpringEndTop(OD=Coupler_OD-IDXtra, Tube_ID=Coupler_OD-IDXtra-3.6, nRopeHoles=3);
+// SE_SlidingSpringMiddle(OD=Coupler_OD, nRopes=3);
 // SpringEndBottom(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=3); // required for 54/1706 (K185W)
 // SpringEndBottom(OD=MotorCoupler_OD, Tube_ID=MotorCoupler_OD-2.4, nRopeHoles=3); // slides into motor tube
-// SpringSpacer(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, Len=40); // optional
+// SE_SpringEndTypeB(Coupler_OD=Coupler_OD, MotorCoupler_OD=MotorCoupler_OD, nRopes=3); // Sits on top of motor tube
+// SE_SpringSpacer(OD=Coupler_OD, Tube_ID=Coupler_ID, Len=70); // optional
 //
-// UpperRailBtnMount();
+// UpperRailBtnMount75();
 //
 // *** Fin Can ***
 //
@@ -135,6 +138,7 @@ use<BatteryHolderLib.scad>
 use<SpringThingBooster.scad>
 use<PetalDeploymentLib.scad>
 use<ThreadLib.scad>
+use<SpringEndsLib.scad>
 
 //also included
  //include<CommonStuffSAEmm.scad>
@@ -363,12 +367,6 @@ module Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID, DualDeploy=false, ShowD
 
 // Electronics_Bay();
 
-module SpringSpacer(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, Len=40){
-	Tube(OD=OD, ID=Tube_ID, Len=Len, myfn=$preview? 36:360);
-} // SpringSpacer
-
-//SpringSpacer();
-
 module SpringEndTop(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=3){
 	ST_DSpring_OD=44.30;
 	Piston_h=15;
@@ -504,6 +502,31 @@ module UpperRailBtnMount(){
 } // UpperRailBtnMount
 
 //UpperRailBtnMount();
+
+module UpperRailBtnMount75(){
+	Len=20;
+	AlTube_d=12.7;
+	
+	difference(){
+		union(){
+			$fn=$preview? 90:360;
+			CenteringRing(OD=Body_ID, ID=MotorTubeHole_d, Thickness=Len, nHoles=0, Offset=0);
+			
+			// Tube stop
+			translate([0,0,Len-2]) 
+				CenteringRing(OD=Body_ID, ID=MotorTube_ID, Thickness=2, nHoles=0, Offset=0);
+		} // union
+		
+		// Shock cord mount
+		translate([0,0,AlTube_d/2+2]) rotate([0,90,0]) cylinder(d=AlTube_d+IDXtra, h=Body_OD, center=true);
+		
+		// Rail button bolt hole
+		translate([0,-Body_OD/2,Len-6]) rotate([90,0,0]) Bolt8Hole();
+		
+	} // difference
+} // UpperRailBtnMount75
+
+//UpperRailBtnMount75();
 
 module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 	Wall_t=1.2;

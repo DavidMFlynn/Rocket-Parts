@@ -3,12 +3,14 @@
 // Filename: SpringEndsLib.scad
 // by David M. Flynn
 // Created: 11/24/2023 
-// Revision: 1.0.0  11/24/2023
+// Revision: 1.0.1  12/13/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
+// This is a collection of spring ends used for non-pyro deployment.
 //
 //  ***** History *****
+// 1.0.1  12/13/2023  added SE_SlidingSpringMiddle,SE_SpringSpacer
 // 1.0.0  11/24/2023  Moved parts here from varius rockets
 //
 // ***********************************
@@ -17,6 +19,18 @@
 // SE_Tri_Spring_Slider(OD=BT137Coupler_OD, ID=BT137Coupler_ID);
 // SE_Tri_Spring_End(OD=BT137Body_ID-5, Rope_BC_r=BT137Coupler_ID/2-5);
 // SE_EBaySpringStop(OD=BT54Body_ID);
+//
+// SE_SpringEndTypeA(Coupler_OD=BT75Coupler_OD, Coupler_ID=BT75Coupler_ID, MotorCoupler_OD=BT54Coupler_OD, nRopes=3);
+//		An end for Spring_CS4323.
+// 		Sits in the top of the motor tube.
+// 		Requires a short piece of coupler tube.
+//
+// SE_SpringEndTypeB(Coupler_OD=BT75Coupler_OD, MotorCoupler_OD=BT54Coupler_OD, nRopes=3);
+//
+// SE_SlidingSpringMiddle(OD=BT98Coupler_OD, nRopes=6);
+// SE_SlidingSpringMiddle(OD=BT75Coupler_OD, nRopes=3);
+//
+// SE_SpringSpacer(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_ID, Len=70);
 //
 // ***********************************
 //  ***** Routines *****
@@ -136,16 +150,113 @@ module SE_EBaySpringStop(OD=BT54Body_ID){
 
 // SE_EBaySpringStop(OD=BT54Body_ID);
 
+module SE_SpringEndTypeA(Coupler_OD=BT75Coupler_OD, Coupler_ID=BT75Coupler_ID, MotorCoupler_OD=BT54Coupler_OD,
+				nRopes=3){
+// Sits in the top of the motor tube
+// Requires a short piece of coupler tube
+
+	Spring_OD=Spring_CS4323_OD;
+	
+	difference(){
+		union(){
+			cylinder(d=MotorCoupler_OD, h=10+Overlap);
+			
+			translate([0,0,10]) cylinder(d=Coupler_OD, h=2+Overlap);
+			translate([0,0,10]) cylinder(d=Coupler_ID-1, h=7+Overlap);
+			//translate([0,0,10]) Tube(OD=Coupler_ID-1, ID=Coupler_ID-6, Len=10, myfn=$preview? 36:360);
+		} // union
+		
+		translate([0,0,-Overlap]) cylinder(d1= MotorCoupler_OD-4.4, d2=Spring_OD, h=10);
+		cylinder(d= Spring_OD, h=13);
+		cylinder(d= Spring_OD-6, h=20);
+		
+		// Retention cord
+		if (nRopes>0) 
+			for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) 
+				translate([Coupler_ID/2-5,0,0]) cylinder(d=4, h=30);
+	} // difference
+} // SE_SpringEndTypeA
+
+//rotate([180,0,0]) SE_SpringEndTypeA();
+
+module SE_SpringEndTypeB(Coupler_OD=BT75Coupler_OD, MotorCoupler_OD=BT54Coupler_OD,
+				nRopes=3){
+				
+	Len=12;
+// Sits in the top of the motor tube
 
 
+	Spring_OD=Spring_CS4323_OD;
+	Spring_ID=Spring_CS4323_ID;
+	
+	difference(){
+		union(){
+			cylinder(d=MotorCoupler_OD, h=Len);
+			
+			cylinder(d=Coupler_OD, h=3);
+			cylinder(d=MotorCoupler_OD+6, h=7);
+			//translate([0,0,10]) cylinder(d=Coupler_ID-1, h=7+Overlap);
+			//translate([0,0,10]) Tube(OD=Coupler_ID-1, ID=Coupler_ID-6, Len=10, myfn=$preview? 36:360);
+		} // union
+		
+		translate([0,0,-Overlap]) cylinder(d1= MotorCoupler_OD-4.4, d2=Spring_OD, h=Len-6);
+		cylinder(d= Spring_OD, h=Len-2);
+		cylinder(d= Spring_ID, h=Len+1);
+		
+		// Retention cord
+		if (nRopes>0) 
+			for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) 
+				translate([Coupler_OD/2-6,0,-Overlap]) cylinder(d=4, h=Len);
+	} // difference
+} // SE_SpringEndTypeB
 
+//SE_SpringEndTypeB();
 
+module SE_SlidingSpringMiddle(OD=BT98Coupler_OD, nRopes=6){
+// costom version of ST_SpringMiddle()
 
+	Spring_OD=Spring_CS4323_OD;
+	Spring_ID=Spring_CS4323_ID;
+	Len=40;
+	
+	// Outside spring tube
+	Tube(OD=Spring_OD+IDXtra*3+4.4, ID=Spring_OD+IDXtra*3, 
+			Len=Len, myfn=$preview? 90:360);
+			
+	// Inside spring tube
+	Tube(OD=Spring_ID-0.5, ID=Spring_ID-0.5-4.4, 
+			Len=Len, myfn=$preview? 90:360);
+			
+	// Spring stop
+	translate([0,0,Len/2-1.5]) Tube(OD=Spring_OD+1, ID=Spring_ID-1, 
+			Len=3, myfn=$preview? 90:360);
+		
+	// Sliding tube
+	Tube(OD=OD, ID=OD-4.4, Len=35, myfn=$preview? 90:360);
+	
+	
+	ConeLen=OD/3;
+	difference(){
+		cylinder(d1=OD-1, d2=Spring_OD+1, h=ConeLen);
+		
+		translate([0,0,-3]) cylinder(d1=OD-1, d2=Spring_OD+1, h=ConeLen);
+		translate([0,0,-Overlap]) cylinder(d=Spring_OD+1, h=ConeLen+Overlap*2);
+		
+		if (nRopes>0)
+		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) translate([0,OD/2-7,-Overlap])
+			cylinder(d=10,h=Len);
+	} // difference
 
+} // SE_SlidingSpringMiddle
 
+//SE_SlidingSpringMiddle(OD=BT98Coupler_OD, nRopes=6);
+//SE_SlidingSpringMiddle(OD=BT75Coupler_OD, nRopes=3);
 
+module SE_SpringSpacer(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_ID, Len=70){
+	Tube(OD=OD, ID=Tube_ID, Len=Len, myfn=$preview? 36:360);
+} // SE_SpringSpacer
 
-
+//SE_SpringSpacer();
 
 
 
