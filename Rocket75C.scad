@@ -106,6 +106,7 @@
 // SpringEndBottom(OD=MotorCoupler_OD, Tube_ID=MotorCoupler_OD-2.4, nRopeHoles=3); // slides into motor tube
 // SE_SpringEndTypeB(Coupler_OD=Coupler_OD, MotorCoupler_OD=MotorCoupler_OD, nRopes=3); // Sits on top of motor tube
 // SE_SpringSpacer(OD=Coupler_OD, Tube_ID=Coupler_ID, Len=70); // optional
+// SE_SpringSpacer(OD=Coupler_OD, Tube_ID=Coupler_ID, Len=55); // optional
 //
 // UpperRailBtnMount75();
 //

@@ -3,7 +3,7 @@
 // Filename: Rocket98C.scad
 // by David M. Flynn
 // Created: 10/23/2023 
-// Revision: 1.0.2  10/30/2023 
+// Revision: 1.1.0  12/22/2023 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -48,6 +48,7 @@
 //
 //  ***** History *****
 //
+// 1.1.0  12/22/2023 Night Launch version parts added
 // 1.0.2  10/30/2023 Ready for first printing.
 // 1.0.1  10/29/2023 Added MotorTubeTopper(), removed obsolete routines
 // 1.0.0  10/23/2023 Copied from Rocket75C Rev 1.1.1
@@ -108,6 +109,10 @@ CouplerLenXtra=-10;
 // RocketFin();
 // MotorRetainer(Cone_Len=TailCone_Len);
 //
+// *** Night Flight Versions ***
+// rotate([180,0,0]) FinCan(LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=true);
+// NightLaunchFin();
+//
 // rotate([90,0,0]) BoltOnRailGuide(Length = 30, BoltSpace=12.7, RoundEnds=true);
 // rotate([-90,0,0]) RailGuideSpacer(OD=Body_OD, H=RailGuide_h, Length = 30, BoltSpace=12.7);
 //
@@ -146,6 +151,8 @@ Scale=1.46726; //BT98Coupler_OD/LOC65Body_OD
 echo("Scale on Rocket65 = ",Scale);
 
 nFins=5;
+/*
+// Standard
 Fin_Post_h=12;
 Fin_Root_L=160*Scale;
 Fin_Root_W=6*Scale;
@@ -154,6 +161,18 @@ Fin_Tip_L=70*Scale;
 Fin_Span=70*Scale;
 Fin_TipOffset=20*Scale;
 Fin_Chamfer_L=18*Scale;
+/**/
+//*
+// fatter for night flight
+Fin_Post_h=12;
+Fin_Root_L=160*Scale;
+Fin_Root_W=12; //6*Scale;
+Fin_Tip_W=3.0;
+Fin_Tip_L=70*Scale;
+Fin_Span=70*Scale;
+Fin_TipOffset=20*Scale;
+Fin_Chamfer_L=18*Scale;
+/**/
 
 Body_OD=BT98Body_OD;
 Body_ID=BT98Body_ID;
@@ -278,6 +297,175 @@ module ShowRocket(ShowInternals=false){
 
 //ShowRocket();
 //ShowRocket(ShowInternals=true);
+
+module NightLaunchFin(){
+	PCB_X=80+5;
+	PCB_Y=8+0.5;
+	PCB_Z=3;
+	
+	difference(){
+		RocketFin();
+		
+		cube([PCB_X,PCB_Y,PCB_Z*2],center=true);
+	} // difference
+} // NightLaunchFin
+
+// NightLaunchFin();
+
+module LampClamp(){
+	OD=54;
+	ID=38.5;
+	H=4;
+	BC=47;
+	nBolts=6;
+	
+	difference(){
+		cylinder(d=OD, h=H);
+		
+		translate([0,0,-Overlap]) cylinder(d=ID, h=H+Overlap*2);
+		
+		for (j=[0:nBolts]) rotate([0,0,360/nBolts*j])
+			translate([0,BC/2,H]) Bolt4ButtonHeadHole();
+	} // difference
+} // LampClamp
+
+//translate([0,0,30.2]) LampClamp();
+
+module LampHolder(){
+	H=30;
+	OD=54;
+	BC=47;
+	nBolts=6;
+	
+	difference(){
+		cylinder(d=OD, h=H);
+		
+		translate([0,0,H-1]) cylinder(d=43.5, h=5);
+		
+		translate([0,0,-Overlap]) cylinder(d=24, h=H+Overlap*2);
+		
+		translate([0,0,-Overlap]) cylinder(d1=45, d2=24, h=20);
+		
+		for (j=[0:nBolts]) rotate([0,0,360/nBolts*j])
+			translate([0,BC/2,H]) Bolt4Hole();
+		
+		for (j=[0:2]) rotate([0,0,120*j+30]) translate([0,OD/2-3,H])
+			cube([8,10,2],center=true);
+		
+		// Batteries
+		for (j=[0:3]) rotate([0,0,90*j+45]) translate([0,0,-Overlap]) hull(){
+			translate([-20,OD/2-2,0]) cube([40,10,15]);
+			translate([-20,OD/2,20]) cube([40,10,1]);
+		}
+	} // difference
+} // LampHolder
+
+//LampHolder();
+
+module R98_NightLaunchNC_Base(Tube_OD=Body_OD, Tube_ID=Body_ID, nRivets=3){
+
+
+	// Big Spring
+	Spring_CS4009_OD=2.328*25.4;
+	Spring_CS4009_ID=2.094*25.4;
+	Spring_CS4009_FL=18.5*25.4;
+	Spring_CS4009_CL=1.64*25.4;
+	// Small Spring
+	Spring_CS4323_OD=44.30;
+	Spring_CS4323_ID=40.50;
+	Spring_CS4323_CBL=22; // coil bound length
+	Spring_CS4323_FL=200; // free length
+
+	Plate_t=4;
+	nHoles=6;
+	Rivet_d=4;
+	Tube_d=12.7;
+	Tube_Z=30;
+	CR_z=-3;
+	Spring_OD=(Tube_OD>110)? Spring_CS4009_OD:Spring_CS4323_OD;
+	BodyTube_L=15;
+	SpringEnd_Z=10;
+	SpringSplice_OD=BT54Body_ID;
+	Extension=20;
+	nBatteries=4;
+
+	module LightAndBatteries(){
+		for (j=[0:nBatteries-1]) rotate([0,0,360/nBatteries*j+45])
+			translate([0,Tube_ID/2-15,0]) SingleBatteryPocket(ShowBattery=false);
+	} // LightAndBatteries
+	
+	module BattEjectHoles(){
+		for (j=[0:nBatteries-1]) rotate([0,0,360/nBatteries*j+45]){
+			translate([0,Tube_ID/2-15,-10]) cylinder(d=12, h=20);
+			translate([0,Tube_ID/2-15,0]) RoundRect(X=28,Y=18,Z=50,R=3);
+			}
+	} // BattEjectHoles
+	
+	translate([0,0,38]) LampHolder();
+	
+	difference(){
+		union(){
+			LightAndBatteries();
+			
+			//Skirt
+			translate([0,0,CR_z]) Tube(OD=54, ID=45, Len=25+Extension, myfn=$preview? 90:360);
+			
+			// Stop ring
+			translate([0,0,CR_z]) Tube(OD=Tube_OD, ID=Tube_ID-1, Len=3+Extension, myfn=$preview? 90:360);
+	
+			// Nosecone interface
+			translate([0,0,-1+Extension]) Tube(OD=Tube_ID-IDXtra*2, 
+									ID=Tube_ID-IDXtra*2-4.4, Len=NC_Base_L+1, myfn=$preview? 90:360);
+			// Body tube interface
+			translate([0,0,-BodyTube_L-3]) Tube(OD=Tube_ID, 
+									ID=Tube_ID-4.4, Len=BodyTube_L+1, myfn=$preview? 90:360);
+				
+			// Stiffener Plate
+			translate([0,0,-5])
+				cylinder(d=Tube_ID-1, h=6);
+				
+			// Tube holder
+			hull(){
+				translate([0,0,Tube_Z]) 
+					rotate([0,90,0]) cylinder(d=Tube_d+4.4, h=Tube_ID-4, center=true);
+				translate([0,0,CR_z+5]) cube([Tube_ID-4, Tube_d+12, 10],center=true);
+			} // hull
+			
+			// Spring Holder
+			cylinder(d1=SpringSplice_OD+8, d2=Spring_OD+6, h=SpringEnd_Z+4);
+		} // union
+		
+		//translate([-4,-34,4]) FW_GPS_SW_Hole(-9);
+		
+		// Nosecone rivets
+		for (j=[0:nRivets-1]) rotate([0,0,360/nRivets*j]) translate([0,-Tube_ID/2-1,NC_Base_L/2+Extension])
+			rotate([-90,0,0]){ cylinder(d=Rivet_d, h=10); 
+			translate([0,0,3.2]) cylinder(d=Rivet_d*2, h=6);}
+		
+		// Center hole
+		translate([0,0,-6]) cylinder(d=Spring_OD-6, h=Tube_Z+30);
+		
+		// Spring
+		translate([0,0,SpringEnd_Z]) rotate([180,0,0]) {
+			cylinder(d=Spring_OD, h=30);
+			translate([0,0,4]) cylinder(d1=Spring_OD, d2=Spring_OD+4, h=8);
+			translate([0,0,12-Overlap]) cylinder(d=Spring_OD+4, h=30);
+			}
+		
+		// Tube hole
+		translate([0,0,Tube_Z]) rotate([0,90,0]) cylinder(d=Tube_d, h=Tube_OD, center=true);
+		
+		// Retention cord
+		for (j=[0:nHoles-1]) rotate([0,0,360/nHoles*j]) translate([0,Tube_ID/2-8,-10]) cylinder(d=4, h=30);
+		
+		BattEjectHoles();
+		
+		//if ($preview) cube([50,50,50]);
+	} // difference
+	
+} // R98_NightLaunchNC_Base
+
+//R98_NightLaunchNC_Base();
 
 module R98_UpperSpringMiddle(){
 // costom version of ST_SpringMiddle()
@@ -711,7 +899,7 @@ module MotorTubeTopper(){
 
 // MotorTubeTopper();
 
-module FinCan(Cone_Len=35, LowerHalfOnly=false, UpperHalfOnly=false){
+module FinCan(Cone_Len=35, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false){
 	Wall_t=1.2;
 	FinBox_W=Fin_Root_W+Wall_t*2;
 	RailGuide_Z=25;
@@ -767,6 +955,14 @@ module FinCan(Cone_Len=35, LowerHalfOnly=false, UpperHalfOnly=false){
 			TrapFin2Slots(Tube_OD=Body_OD, nFins=nFins, Post_h=Fin_Post_h, 
 					Root_L=Fin_Root_L, Root_W=Fin_Root_W, Chamfer_L=Fin_Chamfer_L);
 		
+		// Wire holes for night launch fins w/ LEDs
+		if (HasWireHoles)
+			for (j=[0:nFins]) rotate([0,0,360/nFins*j]) 
+					translate([Body_OD/2-Fin_Post_h, 0, Can_Len/2-20]) hull(){
+						cylinder(d=4, h=Can_Len/2+30);
+						translate([-2,0,2]) cylinder(d=4, h=Can_Len/2+30);
+						}
+		
 		// Rail guide bolt holes
 		translate([-RailGuide_h,0,RailGuide_Z]) rotate([0,0,90]) RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
 		
@@ -778,7 +974,7 @@ module FinCan(Cone_Len=35, LowerHalfOnly=false, UpperHalfOnly=false){
 	} // difference
 } // FinCan
 
-//rotate([180,0,0]) FinCan(LowerHalfOnly=false, UpperHalfOnly=false);
+//rotate([180,0,0]) FinCan(LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=true);
 
 module RocketFin(){
 	
