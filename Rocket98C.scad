@@ -298,20 +298,6 @@ module ShowRocket(ShowInternals=false){
 //ShowRocket();
 //ShowRocket(ShowInternals=true);
 
-module NightLaunchFin(){
-	PCB_X=80+5;
-	PCB_Y=8+0.5;
-	PCB_Z=3;
-	
-	difference(){
-		RocketFin();
-		
-		cube([PCB_X,PCB_Y,PCB_Z*2],center=true);
-	} // difference
-} // NightLaunchFin
-
-// NightLaunchFin();
-
 module LampClamp(){
 	OD=54;
 	ID=38.5;
@@ -349,8 +335,15 @@ module LampHolder(){
 		for (j=[0:nBolts]) rotate([0,0,360/nBolts*j])
 			translate([0,BC/2,H]) Bolt4Hole();
 		
-		for (j=[0:2]) rotate([0,0,120*j+30]) translate([0,OD/2-3,H])
-			cube([8,10,2],center=true);
+		// Keying notches
+		rotate([0,0,30]) translate([0,OD/2-3,H])
+			cube([8.5,10,2],center=true);
+			
+		rotate([0,0,135+30]) translate([0,OD/2-3,H])
+			cube([7,10,2],center=true);
+			
+		rotate([0,0,-135+30]) translate([0,OD/2-3,H])
+			cube([7,10,2],center=true);
 		
 		// Batteries
 		for (j=[0:3]) rotate([0,0,90*j+45]) translate([0,0,-Overlap]) hull(){
@@ -994,6 +987,22 @@ module RocketFin(){
 } // RocketFin
 
 //RocketFin();
+
+module NightLaunchFin(){
+	PCB_X=80+5;
+	PCB_Y=8+0.5;
+	PCB_Z=3;
+	
+	
+	RocketFin();
+		
+	translate([0,0,0.6+PCB_Z/2]) cube([PCB_X,PCB_Y,PCB_Z],center=true);
+	
+} // NightLaunchFin
+
+// NightLaunchFin();
+
+
 NomonalThread_d=MotorTube_OD+8;
 
 module TailCone(Threaded=true, Cone_Len=35, Interface_OD=Body_ID){
