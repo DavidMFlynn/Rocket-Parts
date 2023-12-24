@@ -100,10 +100,10 @@
 // rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=150, nPetals=3, Wall_t=1.8, AntiClimber_h=3, HasLocks=false);
 // rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=110, nPetals=3, Wall_t=1.8, AntiClimber_h=3, HasLocks=false);
 //
-// SpringEndTop(OD=Coupler_OD-IDXtra, Tube_ID=Coupler_OD-IDXtra-3.6, nRopeHoles=3);
+// SE_SpringEndTop(OD=Coupler_OD-IDXtra, Tube_ID=BT75Coupler_OD-IDXtra-3.6, nRopeHoles=3);
 // SE_SlidingSpringMiddle(OD=Coupler_OD, nRopes=3);
-// SpringEndBottom(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=3); // required for 54/1706 (K185W)
-// SpringEndBottom(OD=MotorCoupler_OD, Tube_ID=MotorCoupler_OD-2.4, nRopeHoles=3); // slides into motor tube
+// SE_SpringEndBottom(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=3);// required for 54/1706 (K185W)
+// 
 // SE_SpringEndTypeB(Coupler_OD=Coupler_OD, MotorCoupler_OD=MotorCoupler_OD, nRopes=3); // Sits on top of motor tube
 // SE_SpringSpacer(OD=Coupler_OD, Tube_ID=Coupler_ID, Len=70); // optional
 // SE_SpringSpacer(OD=Coupler_OD, Tube_ID=Coupler_ID, Len=55); // optional
@@ -367,109 +367,6 @@ module Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID, DualDeploy=false, ShowD
 } // Electronics_Bay
 
 // Electronics_Bay();
-
-module SpringEndTop(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=3){
-	ST_DSpring_OD=44.30;
-	Piston_h=15;
-	Len=30;
-	Plate_t=3;
-	
-	//echo(OD=OD);
-	
-	module SCH(){
-		hull(){
-			translate([-6,0,-Overlap]) cylinder(d=3, h=Plate_t+Overlap*2);
-			translate([6,0,-Overlap]) cylinder(d=3, h=Plate_t+Overlap*2);
-		} // hull
-	} // SCH
-	
-	difference(){
-		union(){
-			Tube(OD=OD, ID=Tube_ID, Len=Len, myfn=$preview? 36:360);
-			
-			translate([0,0,Len-Piston_h]) cylinder(d=OD-1, h=Piston_h);
-			
-			// Spring
-			translate([0,0,8]) Tube(OD=ST_DSpring_OD+10, ID=ST_DSpring_OD, Len=12, myfn=$preview? 36:360);
-		} // union
-		
-		// Rope Holes
-		nRopes=3;
-		Rope_d=4;
-		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) translate([0,ST_DSpring_OD/2+Rope_d/2+6,0])
-			cylinder(d=Rope_d, h=Len);
-		
-		// Top dish
-		translate([0,0,Len-Piston_h+3+Plate_t]) 
-			cylinder(d1=Tube_ID-20, d2=Tube_ID-2, h=Piston_h-3-Plate_t+Overlap);
-	
-		// Spring
-		cylinder(d=ST_DSpring_OD, h=Len-Piston_h+3);
-		cylinder(d1=ST_DSpring_OD+5, d2=ST_DSpring_OD, h=Len-Piston_h);
-		
-		// Shock Cord
-		translate([0,0,Len-Piston_h+3]) SCH();
-		//translate([0,0,-Overlap]) cylinder(d=5, h=Len);
-		
-		// Air Vents
-		nVents=8;
-		Vent_d=9;
-		for (j=[0:nVents-1]) rotate([0,0,360/nVents*j]) translate([0,ST_DSpring_OD/2-Vent_d/2-2,0])
-			cylinder(d=Vent_d, h=Len);
-	} // difference
-	
-
-} // SpringEndTop
-
-//SpringEndTop();
-
-module SpringEndBottom(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=3){
-	ST_DSpring_OD=44.30;
-	Piston_h=15;
-	Len=30;
-	Plate_t=3;
-	
-	module SCH(){
-		hull(){
-			translate([-6,0,-Overlap]) cylinder(d=3, h=Plate_t+4);
-			translate([6,0,-Overlap]) cylinder(d=3, h=Plate_t+4);
-		} // hull
-	} // SCH
-	
-	difference(){
-		union(){
-			Tube(OD=OD, ID=Tube_ID, Len=Len, myfn=$preview? 36:360);
-			
-			cylinder(d=OD-1, h=Piston_h);
-		} // union
-		
-		// Rope Holes
-		nRopes=3;
-		Rope_d=4;
-		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) translate([0,ST_DSpring_OD/2+Rope_d/2+2,-Overlap])
-			cylinder(d=Rope_d, h=Len);
-		
-		// Top dish
-		translate([0,0,3+Plate_t]) 
-			cylinder(d1=Tube_ID-20, d2=Tube_ID, h=Piston_h-3-Plate_t+Overlap);
-	
-		// Spring
-		translate([0,0,-Overlap]) cylinder(d=ST_DSpring_OD, h=3);
-		
-		// Shock Cord
-		SCH();
-		//translate([0,0,-Overlap]) cylinder(d=5, h=10);
-		
-		// Air Vents
-		nVents=8;
-		Vent_d=9;
-		for (j=[0:nVents-1]) rotate([0,0,360/nVents*j]) translate([0,ST_DSpring_OD/2-Vent_d/2-2,0])
-			cylinder(d=Vent_d, h=Len);
-	} // difference
-	
-} // SpringEndBottom
-
-//SpringEndBottom();
 
 module UpperRailBtnMount(){
 	Len=15;

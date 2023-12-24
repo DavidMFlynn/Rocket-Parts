@@ -3,13 +3,14 @@
 // Filename: SpringEndsLib.scad
 // by David M. Flynn
 // Created: 11/24/2023 
-// Revision: 1.0.1  12/13/2023
+// Revision: 1.0.2  12/24/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 // This is a collection of spring ends used for non-pyro deployment.
 //
 //  ***** History *****
+// 1.0.2  12/24/2023  Added SE_SpringEndTop,SE_SpringEndBottom from Rocket75C
 // 1.0.1  12/13/2023  added SE_SlidingSpringMiddle,SE_SpringSpacer
 // 1.0.0  11/24/2023  Moved parts here from varius rockets
 //
@@ -31,6 +32,9 @@
 // SE_SlidingSpringMiddle(OD=BT75Coupler_OD, nRopes=3);
 //
 // SE_SpringSpacer(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_ID, Len=70);
+//
+// SE_SpringEndTop(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles=5);
+// SE_SpringEndBottom(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles=5);
 //
 // ***********************************
 //  ***** Routines *****
@@ -257,6 +261,108 @@ module SE_SpringSpacer(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_ID, Len=70){
 } // SE_SpringSpacer
 
 //SE_SpringSpacer();
+
+
+module SE_SpringEndTop(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles=3){
+	Spring_OD=Spring_CS4323_OD;
+	Piston_h=15;
+	Len=30;
+	Plate_t=3;
+	
+	//echo(OD=OD);
+	
+	module SCH(){
+		hull(){
+			translate([-6,0,-Overlap]) cylinder(d=3, h=Plate_t+Overlap*2);
+			translate([6,0,-Overlap]) cylinder(d=3, h=Plate_t+Overlap*2);
+		} // hull
+	} // SCH
+	
+	difference(){
+		union(){
+			Tube(OD=OD, ID=Tube_ID, Len=Len, myfn=$preview? 36:360);
+			
+			translate([0,0,Len-Piston_h]) cylinder(d=OD-1, h=Piston_h);
+			
+			// Spring
+			translate([0,0,8]) Tube(OD=Spring_OD+10, ID=Spring_OD, Len=12, myfn=$preview? 36:360);
+		} // union
+		
+		// Rope Holes
+		Rope_d=4;
+		for (j=[0:nRopeHoles-1]) rotate([0,0,360/nRopeHoles*j]) translate([0,Spring_OD/2+Rope_d/2+6,0])
+			cylinder(d=Rope_d, h=Len);
+		
+		// Top dish
+		translate([0,0,Len-Piston_h+3+Plate_t]) 
+			cylinder(d1=Tube_ID-20, d2=Tube_ID-2, h=Piston_h-3-Plate_t+Overlap);
+	
+		// Spring
+		cylinder(d=Spring_OD, h=Len-Piston_h+3);
+		cylinder(d1=Spring_OD+5, d2=Spring_OD, h=Len-Piston_h);
+		
+		// Shock Cord
+		translate([0,0,Len-Piston_h+3]) SCH();
+		//translate([0,0,-Overlap]) cylinder(d=5, h=Len);
+		
+		// Air Vents
+		nVents=8;
+		Vent_d=9;
+		for (j=[0:nVents-1]) rotate([0,0,360/nVents*j]) translate([0,Spring_OD/2-Vent_d/2-2,0])
+			cylinder(d=Vent_d, h=Len);
+	} // difference
+	
+
+} // SE_SpringEndTop
+
+//SE_SpringEndTop(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles=5);
+
+module SE_SpringEndBottom(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles=3){
+	Spring_OD=Spring_CS4323_OD;
+	Piston_h=15;
+	Len=30;
+	Plate_t=3;
+	
+	module SCH(){
+		hull(){
+			translate([-6,0,-Overlap]) cylinder(d=3, h=Plate_t+4);
+			translate([6,0,-Overlap]) cylinder(d=3, h=Plate_t+4);
+		} // hull
+	} // SCH
+	
+	difference(){
+		union(){
+			Tube(OD=OD, ID=Tube_ID, Len=Len, myfn=$preview? 36:360);
+			
+			cylinder(d=OD-1, h=Piston_h);
+		} // union
+		
+		// Rope Holes
+		Rope_d=4;
+		for (j=[0:nRopeHoles-1]) rotate([0,0,360/nRopeHoles*j]) translate([0,Spring_OD/2+Rope_d/2+2,-Overlap])
+			cylinder(d=Rope_d, h=Len);
+		
+		// Top dish
+		translate([0,0,3+Plate_t]) 
+			cylinder(d1=Tube_ID-20, d2=Tube_ID, h=Piston_h-3-Plate_t+Overlap);
+	
+		// Spring
+		translate([0,0,-Overlap]) cylinder(d=Spring_OD, h=3);
+		
+		// Shock Cord
+		SCH();
+		//translate([0,0,-Overlap]) cylinder(d=5, h=10);
+		
+		// Air Vents
+		nVents=8;
+		Vent_d=9;
+		for (j=[0:nVents-1]) rotate([0,0,360/nVents*j]) translate([0,Spring_OD/2-Vent_d/2-2,0])
+			cylinder(d=Vent_d, h=Len);
+	} // difference
+	
+} // SE_SpringEndBottom
+
+//SE_SpringEndBottom(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles=5);
 
 
 
