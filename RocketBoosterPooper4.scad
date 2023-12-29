@@ -467,7 +467,7 @@ module UpperElectronicsBay(Tube_OD=Body_OD+Vinyl_t, Tube_ID=Body_ID, ShowDoors=f
 			/**/
 		} // union
 		
-		/*
+		//*
 		// Altimeter
 		translate([0,0,Altimeter_Z]) rotate([0,0,Alt1_a]) 
 			Alt_BayFrameHole(Tube_OD=Tube_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, DeepHole_t=42);

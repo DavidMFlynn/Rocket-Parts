@@ -3,7 +3,7 @@
 // Filename: Rocket98C.scad
 // by David M. Flynn
 // Created: 10/23/2023 
-// Revision: 1.1.1  12/24/2023 
+// Revision: 1.2.0  12/28/2023 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -48,6 +48,7 @@
 //
 //  ***** History *****
 //
+// 1.2.0  12/28/2023 Added CableReleaseBB w/ Guide Point for night launch version
 // 1.1.1  12/24/2023 Moved FinCan() into FinCan2Lib.scad
 // 1.1.0  12/22/2023 Night Launch version parts added
 // 1.0.2  10/30/2023 Ready for first printing.
@@ -95,7 +96,7 @@ CouplerLenXtra=-10;
 //
 // *** petal deployer ***
 //
-// PD_PetalHub(Coupler_OD=Coupler_OD, nPetals=nPetals, ShockCord_a=PD_ShockCordAngle());
+// PD_PetalHub(OD=Coupler_OD, nPetals=nPetals, ShockCord_a=PD_ShockCordAngle());
 // rotate([-90,0,0]) PD_PetalSpringHolder(Coupler_OD=Coupler_OD);
 // rotate([180,0,0]) PD_Petals(Coupler_OD=Coupler_OD, Len=AftPetalLen, nPetals=nPetals, AntiClimber_h=3);
 //
@@ -119,9 +120,27 @@ FC2_MotorRetainer(Body_OD=Body_OD,
 					MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID,
 					Cone_Len=TailCone_Len);
 /**/
+// **************************************
 // *** Night Flight Versions ***
+// ExtensionRod(Len=90);
+// rotate([180,0,0]) LockingPin(LockPin_Len=40, GuidePoint=true);
+// rotate([180,0,0]) LockRing(GuidePoint=true);
+// rotate([180,0,0]) TopRetainer(LockRing_d=LockRingDiameter(), GuidePoint=true);
+// OuterBearingRetainer();
+// rotate([180,0,0]) InnerBearingRetainer();
+// rotate([180,0,0]) MagnetBracket();
+// rotate([180,0,0]) TriggerPost();
+
+// TopRetainerEBayEnd(Body_OD=Body_OD, Body_ID=Body_ID);
+//
+// PD_NC_PetalHub(OD=Coupler_OD-IDXtra, nPetals=nPetals, nRopes=6, ShockCord_a=60, HasThreadedCore=true);
+//
+// rotate([180,0,0]) MotorTubeTopperNL();
+// CenteringRing(OD=Coupler_ID, ID=MotorTube_OD+IDXtra*2, Thickness=5, nHoles=5, Offset=0);
+//
 /*
-rotate([180,0,0]) FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=Can_Len, 
+rotate([180,0,0]) 
+FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=Can_Len, 
 						MotorTube_OD=MotorTube_OD, RailGuide_h=RailGuide_h,
 						nFins=nFins,
 						Fin_Root_W=Fin_Root_W, Fin_Root_L=Fin_Root_L, 
@@ -130,6 +149,12 @@ rotate([180,0,0]) FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=Can_Len,
 						LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=true);
 /**/
 // NightLaunchFin();
+/*
+FC2_MotorRetainer(Body_OD=Body_OD, 
+					MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID,
+					Cone_Len=TailCone_Len);
+/**/
+// **************************************
 //
 // rotate([90,0,0]) BoltOnRailGuide(Length = 30, BoltSpace=12.7, RoundEnds=true);
 // rotate([-90,0,0]) RailGuideSpacer(OD=Body_OD, H=RailGuide_h, Length = 30, BoltSpace=12.7);
@@ -157,6 +182,7 @@ use<SpringThingBooster.scad> SpringThingBoosterRev();
 use<PetalDeploymentLib.scad>
 use<SpringThing2.scad>
 use<SpringEndsLib.scad>
+use<CableReleaseBB.scad> echo(CableReleaseBBRev());
 
 
 //also included
@@ -654,7 +680,8 @@ module R98C_BallRetainerTop(){
 								HasIntegratedCouplerTube=true, IntegratedCouplerLenXtra=CouplerLenXtra,
 								Body_ID=Body_ID-IDXtra, HasSecondServo=false, UsesBigServo=true);
 				
-			translate([0,0,35.5]) Tube(OD=Body_ID-IDXtra, ID=Body_ID-IDXtra-6, Len=5, myfn=$preview? 90:360);
+			translate([0,0,35.5]) 
+				Tube(OD=Body_ID-IDXtra, ID=Body_ID-IDXtra-6, Len=5, myfn=$preview? 90:360);
 			
 			// Shock cord retention
 			difference(){
@@ -774,11 +801,15 @@ module MotorTubeTopper(){
 
 	difference(){
 		union(){
-			translate([0,0,-20]) Tube(OD=MotorTube_ID, ID=MotorTube_ID-8, Len=21, myfn=$preview? 36:360);
-			translate([0,0,-20]) Tube(OD=MotorTube_OD+8, ID=MotorTube_OD+IDXtra*3, Len=21, myfn=$preview? 36:360);
-			translate([0,0,-20]) Tube(OD=Body_ID-IDXtra*2, ID=Body_ID-16, Len=21, myfn=$preview? 36:360);
+			translate([0,0,-20]) 
+				Tube(OD=MotorTube_ID, ID=MotorTube_ID-8, Len=21, myfn=$preview? 36:360);
+			translate([0,0,-20]) 
+				Tube(OD=MotorTube_OD+8, ID=MotorTube_OD+IDXtra*3, Len=21, myfn=$preview? 36:360);
+			translate([0,0,-20]) 
+				Tube(OD=Body_ID-IDXtra*2, ID=Body_ID-16, Len=21, myfn=$preview? 36:360);
 			CenteringRing(OD=Body_ID, ID=ST_DSpring_ID, Thickness=5, nHoles=0, Offset=0);
-			translate([0,0,4]) Tube(OD=ST_DSpring_OD+8, ID=ST_DSpring_OD, Len=8, myfn=$preview? 36:360);
+			translate([0,0,4]) 
+				Tube(OD=ST_DSpring_OD+8, ID=ST_DSpring_OD, Len=8, myfn=$preview? 36:360);
 		} // union
 	
 		//translate([0,0,-20]) Tube(OD=MotorTube_ID, ID=MotorTube_ID-6, Len=21, myfn=$preview? 36:360);
@@ -797,6 +828,38 @@ module MotorTubeTopper(){
 } // MotorTubeTopper
 
 // MotorTubeTopper();
+
+
+module MotorTubeTopperNL(){
+// Z zero is top of motor tube
+// Sits on top of motor tube
+// Has centering ring
+// Has shock cord attachment tube
+
+	Al_Tube_d=12.7;
+	Al_Tube_Z=-Al_Tube_d/2-5;
+	
+	difference(){
+		union(){
+			translate([0,0,-20]) 
+				Tube(OD=MotorTube_ID, ID=MotorTube_ID-8, Len=21, myfn=$preview? 36:360);
+			translate([0,0,-20]) 
+				Tube(OD=MotorTube_OD+8, ID=MotorTube_OD+IDXtra*3, Len=21, myfn=$preview? 36:360);
+			translate([0,0,-20]) 
+				Tube(OD=Coupler_ID-IDXtra*2, ID=Coupler_ID-13, Len=21, myfn=$preview? 36:360);
+			CenteringRing(OD=Coupler_ID, ID=MotorTube_ID-8, Thickness=5, nHoles=0, Offset=0);
+			
+		} // union
+		
+		translate([0,0,Al_Tube_Z]) rotate([90,0,0]) 
+			cylinder(d=Al_Tube_d+IDXtra, h=Body_OD, center=true);
+		
+	} // difference
+
+} // MotorTubeTopperNL
+
+// MotorTubeTopperNL();
+
 
 module RocketFin(){
 	

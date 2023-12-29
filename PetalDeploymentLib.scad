@@ -40,7 +40,7 @@ PD_PetalHub(OD=BT75Coupler_OD,
 						NC_Base=NC_Base, 
 						SkirtLen=10);
 /**/
-// PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, nRopes=3);
+// PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, nRopes=3, ShockCord_a=-1, HasThreadedCore=false);
 //
 // ***********************************
 //  ***** Routines *****
@@ -53,6 +53,7 @@ function PD_ShockCordAngle()=ShockCord_a;
 // ***********************************
 
 include<TubesLib.scad>
+use<ThreadLib.scad>
 include<CommonStuffSAEmm.scad>
 
 Overlap=0.05;
@@ -443,7 +444,7 @@ PD_PetalHub(OD=BT137Coupler_OD, Body_OD=BT137Body_OD,
 /**/
 
 
-module PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, nRopes=3){
+module PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, nRopes=3, ShockCord_a=-1, HasThreadedCore=false){
 	ST_DSpring_OD=44.30;
 	ST_DSpring_ID=40.50;
 	BodyTube_L=20;
@@ -452,14 +453,16 @@ module PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, nRopes=3){
 	
 	
 	// Body tube interface
-	translate([0,0,-BodyTube_L]) Tube(OD=OD, 
-									ID=OD-4.4, Len=BodyTube_L+1, myfn=$preview? 90:360);
+	translate([0,0,-BodyTube_L]) 
+		Tube(OD=OD, ID=OD-4.4, Len=BodyTube_L+1, myfn=$preview? 90:360);
+									
 	difference(){
 		union(){
-			PD_PetalHub(OD=OD, nPetals=nPetals, HasBolts=false, ShockCord_a=-1);
+			PD_PetalHub(OD=OD, nPetals=nPetals, HasBolts=false, ShockCord_a=ShockCord_a);
 			
-			translate([0,0,-BodyTube_L]) Tube(OD=ST_DSpring_ID-IDXtra*2, 
-									ID=ST_DSpring_ID-IDXtra*2-4.4, Len=BodyTube_L+1, myfn=$preview? 90:360);
+			translate([0,0,-BodyTube_L])
+				Tube(OD=ST_DSpring_ID-IDXtra*2, 
+						ID=ST_DSpring_ID-IDXtra*2-4.4, Len=BodyTube_L+1, myfn=$preview? 90:360);
 		} // union
 			
 		// Center Hole
@@ -474,10 +477,32 @@ module PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, nRopes=3){
 				translate([0,OD/2-6,5]) cylinder(d=8, h=30);
 			}
 	} // difference
+	
+	if (HasThreadedCore) translate([0,0,-BodyTube_L])
+		difference(){
+			union(){
+				cylinder(d=20, h=BodyTube_L);
+				
+				for (j=[0:2]) rotate([0,0,120*j]) hull(){
+					cylinder(d=4, h=BodyTube_L);
+					translate([0,CenterHole_d/2,0]) cylinder(d=4, h=BodyTube_L);
+				} // hull
+			} // union
+			
+			translate([0,0,-Overlap]) 
+			if ($preview){ 
+				cylinder(d=6.35, h=BodyTube_L+Overlap*2); }
+			else { 
+				ExternalThread(Pitch=25.4/20, Dia_Nominal=6.35+IDXtra*2, 
+							Length=BodyTube_L+Overlap*2, Step_a=2,TrimEnd=true,TrimRoot=true); }
+			
+		} // difference
+	
+	
 } // PD_NC_PetalHub
 
 //PD_NC_PetalHub();
-//PD_NC_PetalHub(OD=BT98Coupler_OD, nPetals=3, nRopes=6);
+//PD_NC_PetalHub(OD=BT98Coupler_OD, nPetals=3, nRopes=6, ShockCord_a=45, HasThreadedCore=true);
 
 
 
