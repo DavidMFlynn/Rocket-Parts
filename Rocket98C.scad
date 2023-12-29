@@ -122,16 +122,16 @@ FC2_MotorRetainer(Body_OD=Body_OD,
 /**/
 // **************************************
 // *** Night Flight Versions ***
-// ExtensionRod(Len=90);
-// rotate([180,0,0]) LockingPin(LockPin_Len=40, GuidePoint=true);
-// rotate([180,0,0]) LockRing(GuidePoint=true);
-// rotate([180,0,0]) TopRetainer(LockRing_d=LockRingDiameter(), GuidePoint=true);
-// OuterBearingRetainer();
-// rotate([180,0,0]) InnerBearingRetainer();
-// rotate([180,0,0]) MagnetBracket();
-// rotate([180,0,0]) TriggerPost();
+// CRBB_ExtensionRod(Len=90);
+// rotate([180,0,0]) CRBB_LockingPin(LockPin_Len=40, GuidePoint=true);
+// rotate([180,0,0]) CRBB_LockRing(GuidePoint=true);
+// rotate([180,0,0]) CRBB_TopRetainer(LockRing_d=LockRingDiameter(), GuidePoint=true);
+// CRBB_OuterBearingRetainer();
+// rotate([180,0,0]) CRBB_InnerBearingRetainer();
+// rotate([180,0,0]) CRBB_MagnetBracket();
+// rotate([180,0,0]) CRBB_TriggerPost();
 
-// TopRetainerEBayEnd(Body_OD=Body_OD, Body_ID=Body_ID);
+// CRBB_TopRetainerEBayEnd(Body_OD=Body_OD, Body_ID=Body_ID);
 //
 // PD_NC_PetalHub(OD=Coupler_OD-IDXtra, nPetals=nPetals, nRopes=6, ShockCord_a=60, HasThreadedCore=true);
 //

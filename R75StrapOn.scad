@@ -76,12 +76,12 @@ PD_PetalHub(OD=Coupler_OD,
 // *** CableReleaseBB ***
 //
 // R75SRB_LockingPin();
-// rotate([180,0,0]) LockRing();
+// rotate([180,0,0]) CRBB_LockRing();
 // rotate([180,0,0]) R75SRB_TopRetainer();
-// OuterBearingRetainer();
-// rotate([180,0,0]) InnerBearingRetainer();
-// rotate([180,0,0]) MagnetBracket();
-// rotate([180,0,0]) TriggerPost();
+// CRBB_OuterBearingRetainer();
+// rotate([180,0,0]) CRBB_InnerBearingRetainer();
+// rotate([180,0,0]) CRBB_MagnetBracket();
+// rotate([180,0,0]) CRBB_TriggerPost();
 //
 // *** Electronics Bay ***
 //
@@ -314,7 +314,7 @@ module SpringEndTop(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=3){
 module R75SRB_LockingPin(){
 	LockPin_Len=42;
 	
-	LockingPin(LockPin_Len=LockPin_Len);
+	CRBB_LockingPin(LockPin_Len=LockPin_Len);
 	
 } // R75SRB_LockingPin
 
@@ -338,10 +338,11 @@ module R75SRB_TopRetainer(){
 	
 	difference(){
 		
-		TopRetainer(LockRing_d=OD);
+		CRBB_TopRetainer(LockRing_d=OD);
 			
 		//Bolt holes
-		translate([0,0,15]) MountingBoltPattern(nTopBolts=5, LockRing_d=Coupler_OD) Bolt4HeadHole();
+		translate([0,0,15]) 
+			CRBB_MountingBoltPattern(nTopBolts=5, LockRing_d=Coupler_OD) Bolt4HeadHole();
 		
 		// Spring
 			translate([0,0,13]) 
