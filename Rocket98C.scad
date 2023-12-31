@@ -78,7 +78,7 @@ CouplerLenXtra=-10;
 // rotate([-90,0,0]) PD_PetalSpringHolder(Coupler_OD=Coupler_OD);
 // rotate([180,0,0]) PD_Petals(Coupler_OD=Coupler_OD, Len=ForwardPetalLen, nPetals=nPetals, AntiClimber_h=3);
 //
-// Electronics_BayDual(Tube_OD=Body_OD, Tube_ID=Body_ID,ShowDoors=false);
+// Electronics_BayDual(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoors=false, HasSecondBattDoor=true);
 //
 // *** Doors ***
 //
@@ -121,7 +121,7 @@ FC2_MotorRetainer(Body_OD=Body_OD,
 					Cone_Len=TailCone_Len);
 /**/
 // **************************************
-// *** Night Flight Versions ***
+// *** Night Flight Version Parts ***
 // CRBB_ExtensionRod(Len=90);
 // rotate([180,0,0]) CRBB_LockingPin(LockPin_Len=40, GuidePoint=true);
 // rotate([180,0,0]) CRBB_LockRing(GuidePoint=true);
@@ -132,6 +132,8 @@ FC2_MotorRetainer(Body_OD=Body_OD,
 // rotate([180,0,0]) CRBB_TriggerPost();
 
 // CRBB_TopRetainerEBayEnd(Body_OD=Body_OD, Body_ID=Body_ID);
+//
+// Electronics_BayDual(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoors=false, HasSecondBattDoor=false);
 //
 // PD_NC_PetalHub(OD=Coupler_OD-IDXtra, nPetals=nPetals, nRopes=6, ShockCord_a=60, HasThreadedCore=true);
 //
@@ -741,7 +743,7 @@ module EBay_ShockcordRingDual(){
 
 //translate([0,0,-15]) color("Green") EBay_ShockcordRingDual();
 
-module Electronics_BayDual(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoors=false){
+module Electronics_BayDual(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoors=false, HasSecondBattDoor=true){
 	// made NC coupler IDXtra smaller 6/22/23
 
 	Len=EBay_Len;
@@ -749,8 +751,8 @@ module Electronics_BayDual(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoors=false){
 	BattSwDoor_Z=Len/2;
 
 	Alt_a=0;
-	Batt1_a=90;
-	Batt2_a=180;
+	Batt1_a=HasSecondBattDoor? 90:120;
+	Batt2_a=HasSecondBattDoor? 180:240;
 	Batt3_a=270;
 	
 	difference(){
@@ -765,6 +767,8 @@ module Electronics_BayDual(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoors=false){
 			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=false);
 		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
 			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
+			
+		if (HasSecondBattDoor)
 		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt3_a]) 
 			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
 	} // difference
@@ -778,6 +782,8 @@ module Electronics_BayDual(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoors=false){
 		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=false, ShowDoor=ShowDoors);
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
 		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=true, ShowDoor=ShowDoors);
+		
+	if (HasSecondBattDoor)
 	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt3_a]) 
 		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=true, ShowDoor=ShowDoors);
 	

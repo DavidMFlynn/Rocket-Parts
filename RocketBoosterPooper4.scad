@@ -338,16 +338,13 @@ module NC_PetalHub(){
 
 //NC_PetalHub();
 
-
-
 module RBP4_BallRetainerTop(){
-	XtraLen=-4;
+	XtraLen=0;
 	Tube_d=12.7;
 	Tube_Z=XtraLen+13+31;
 	Tube_a=-30;
 	TubeSlot_w=Body_ID-50; //35;
 	TubeOffset_X=0; //22;
-	
 	
 	difference(){
 		union(){
@@ -366,7 +363,7 @@ module RBP4_BallRetainerTop(){
 				union(){
 					rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z]) 
 						rotate([90,0,0]) cylinder(d=Tube_d+6, h=Body_ID-2, center=true);
-					rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z+XtraLen-12.2])
+					rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z-18.5])
 						cube([Tube_d-3, Body_ID-2, XtraLen+13+21], center=true);
 				} // union
 				
@@ -379,7 +376,10 @@ module RBP4_BallRetainerTop(){
 			} // difference
 		} // union
 	
-		translate([TubeOffset_X,0,Tube_Z]) rotate([90,0,Tube_a]) cylinder(d=Tube_d, h=Body_OD, center=true);
+		translate([TubeOffset_X,0,Tube_Z]) rotate([90,0,Tube_a]) 
+			cylinder(d=Tube_d, h=Body_OD, center=true);
+			
+		//cube([100,100,100]);
 	} // difference
 } // RBP4_BallRetainerTop
 
@@ -1148,6 +1148,120 @@ module MotorRetainer(HasWrenchCuts=false, Cone_Len=TailConeLen, ExtraLen=0){
 } // MotorRetainer
 
 //translate([0,0,-0.2]) MotorRetainer(ExtraLen=0);
+
+BF_OD=250;
+BF_Body_Len=200;
+
+BigFairingWall_t=12;
+
+module BigFairing(){
+	
+	NC_Wall_t=BigFairingWall_t;
+	NC_Len=300;
+	NC_Base_L=15;
+	NC_Tip_R=40;
+	
+	BluntOgiveNoseCone(ID=BF_OD-NC_Wall_t*2, OD=BF_OD, L=NC_Len, Base_L=NC_Base_L, nRivets=0, Tip_R=NC_Tip_R, Wall_T=NC_Wall_t, Cut_Z=0, Transition_OD=PML98Body_OD, LowerPortion=false);
+
+	translate([0,0,NC_Base_L+75])
+		CenteringRing(OD=BF_OD-10-NC_Wall_t*2, ID=BT137Body_OD+IDXtra*3, Thickness=5, nHoles=6, Offset=0);
+		
+	translate([0,0,NC_Base_L+NC_Len-NC_Tip_R-20])
+	difference(){
+		sphere(r=NC_Tip_R-1);
+		
+		//translate([0,0,NC_Tip_R*0.5]) {
+			rotate([180,0,0]) cylinder(r=NC_Tip_R, h=NC_Tip_R+20);
+			//rotate([180,0,0]) Bolt250Hole();
+		
+			translate([0,0,-Overlap])
+			if ($preview){ 
+				cylinder(d=6.35, h=NC_Tip_R); }
+			else { 
+				ExternalThread(Pitch=25.4/20, Dia_Nominal=6.35+IDXtra*2, 
+							Length=NC_Tip_R, 
+							Step_a=2,TrimEnd=true,TrimRoot=true); }
+			//}
+	} // difference
+} // BigFairing
+
+//BigFairing();
+
+module BF_Tube(){
+	NC_Base_L=15;
+	NC_Wall_t=BigFairingWall_t;
+	
+	translate([0,0,NC_Base_L-5])
+		CenteringRing(OD=BF_OD-NC_Wall_t*2-1, ID=BT137Body_OD+IDXtra*3, Thickness=5, nHoles=6, Offset=0);
+		
+	translate([0,0,-Overlap])
+	Tube(OD=BF_OD-NC_Wall_t*2-IDXtra*2, ID=BF_OD-NC_Wall_t*4, Len=NC_Base_L, myfn=$preview? 90:360);
+	
+	translate([0,0,-5])
+	Tube(OD=BF_OD-1, ID=BF_OD-NC_Wall_t*4, Len=5, myfn=$preview? 90:360);
+	
+	translate([0,0,-BF_Body_Len])
+	Tube(OD=BF_OD, ID=BF_OD-NC_Wall_t*2, Len=BF_Body_Len, myfn=$preview? 90:360);
+} // BF_Tube
+
+// translate([0,0,-1]) BF_Tube();
+// rotate([180,0,0]) BF_Tube();
+
+module BF_Base(){
+	Tr_r=30;
+	NC_Wall_t=BigFairingWall_t;
+	Base_Len=40;
+	TubeWall_t=3;
+	
+	difference(){
+		union(){
+			translate([0,0,Tr_r+15])
+				CenteringRing(OD=BF_OD-NC_Wall_t*2-1, ID=BT137Body_OD+IDXtra*3, 
+								Thickness=5, nHoles=6, Offset=0);
+								
+			translate([0,0,Tr_r-Overlap])
+				Tube(OD=BF_OD-NC_Wall_t*2-IDXtra*2, ID=BF_OD-NC_Wall_t*2-TubeWall_t*2, 
+				Len=20, myfn=$preview? 90:360);
+				
+			Tube(OD=BF_OD, ID=BF_OD-NC_Wall_t*2-TubeWall_t*2, Len=Tr_r, myfn=$preview? 90:360);
+		} // union
+		
+		if ($preview) translate([0,0,-100]) cube([200,200,200]);
+	} // difference
+	
+	difference(){
+		
+		hull(){
+			rotate_extrude($fn=$preview? 90:360) translate([BF_OD/2-Tr_r,0,0]) circle(r=Tr_r);
+			translate([0,0,-Tr_r-Base_Len]) 
+				Tube(OD=BT137BallPerimeter_d+4.5, 
+						ID=BT137Body_ID+IDXtra*3, Len=1, myfn=$preview? 90:360);
+		} // hull
+			
+		translate([0,0,Overlap]) cylinder(d=BF_OD+1, h=Tr_r);
+		
+		// Body Tube
+		translate([0,0,-Tr_r-Base_Len-Overlap])
+			cylinder(d=BT137Body_ID+IDXtra*3, h=Tr_r*2+Base_Len+Overlap*2, $fn=$preview? 90:360);
+			
+		// Internal Cone
+		translate([0,0,-Tr_r-Base_Len+10]) 
+			cylinder(d1=BT137Body_ID+IDXtra*3, d2=BF_OD-NC_Wall_t*2-TubeWall_t*2, h=Base_Len+Tr_r-10+Overlap*2);
+			
+		if ($preview) translate([0,0,-100]) cube([200,200,200]);
+	} // difference
+} // BF_Base
+
+// translate([0,0,-201-31]) BF_Base();
+// rotate([180,0,0]) BF_Base();
+
+module BF_Base_TubeEnd(){
+	translate([0,0,20]) Tube(OD=BT137BallPerimeter_d+4.5, ID=BT137Body_OD+IDXtra*2, Len=10, myfn=$preview? 90:360);
+	
+	rotate([180,0,0]) STB_TubeEnd(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=25);
+} // BF_Base_TubeEnd
+
+// translate([0,0,-201-31-101]) BF_Base_TubeEnd();
 
 // ****************************************************************
 // old stuff

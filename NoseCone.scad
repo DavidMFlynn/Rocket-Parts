@@ -35,7 +35,7 @@ echo("NoseCone 0.9.11");
 // BluntConeNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=180, Base_L=21, nRivets=3, Tip_R=15, Wall_T=3);
 // OgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=170, Base_L=21, Wall_T=3);
 //
-// BluntOgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=280, Base_L=5, Tip_R=5, Wall_T=3, Cut_Z=130, Transition_OD=PML98Body_OD, LowerPortion=false);
+// BluntOgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=280, Base_L=5, nRivets=3, Tip_R=5, Wall_T=3, Cut_Z=130, Transition_OD=PML98Body_OD, LowerPortion=false);
 // 
 // Splice_BONC(OD=58, H=10, L=160, Base_L=5, Tip_R=5, Wall_T=2.2, Cut_Z=80);  // fix a failed print
 // Bulkplate_BONC(OD=58, T=10, L=160, Base_L=5, Tip_R=5, Wall_T=2.2, Cut_Z=80);
@@ -583,7 +583,7 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, Tip_R=5, Wa
 		if (Base_L>12 && nRivets>0) translate([0,0,Base_L/2])
 			RivetPattern(BT_Dia=OD, nRivets=nRivets, Dia=5/32*25.4);
 		
-		if ($preview==true) translate([0,-100,-1]) cube([100,100,L+2]);
+		if ($preview==true) translate([0,-100,-1]) cube([OD/2+10,OD/2+10,L+2]);
 			
 		if (Cut_Z!=0 && LowerPortion==false)
 			translate([0,0, -Overlap]) cylinder(d=OD+1, h=Cut_Z+Overlap, $fn=90);
