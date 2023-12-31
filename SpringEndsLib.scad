@@ -3,13 +3,14 @@
 // Filename: SpringEndsLib.scad
 // by David M. Flynn
 // Created: 11/24/2023 
-// Revision: 1.0.2  12/24/2023
+// Revision: 1.0.3  12/30/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 // This is a collection of spring ends used for non-pyro deployment.
 //
 //  ***** History *****
+// 1.0.3  12/30/2023  Added params to SE_SlidingSpringMiddle()
 // 1.0.2  12/24/2023  Added SE_SpringEndTop,SE_SpringEndBottom from Rocket75C
 // 1.0.1  12/13/2023  added SE_SlidingSpringMiddle,SE_SpringSpacer
 // 1.0.0  11/24/2023  Moved parts here from varius rockets
@@ -28,7 +29,7 @@
 //
 // SE_SpringEndTypeB(Coupler_OD=BT75Coupler_OD, MotorCoupler_OD=BT54Coupler_OD, nRopes=3);
 //
-// SE_SlidingSpringMiddle(OD=BT98Coupler_OD, nRopes=6);
+// SE_SlidingSpringMiddle(OD=BT98Coupler_OD, nRopes=6, SliderLen=40, SpLen=40, SpringStop_Z=20);
 // SE_SlidingSpringMiddle(OD=BT75Coupler_OD, nRopes=3);
 //
 // SE_SpringSpacer(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_ID, Len=70);
@@ -216,27 +217,26 @@ module SE_SpringEndTypeB(Coupler_OD=BT75Coupler_OD, MotorCoupler_OD=BT54Coupler_
 
 //SE_SpringEndTypeB();
 
-module SE_SlidingSpringMiddle(OD=BT98Coupler_OD, nRopes=6){
+module SE_SlidingSpringMiddle(OD=BT98Coupler_OD, nRopes=6, SliderLen=40, SpLen=40, SpringStop_Z=20){
 // costom version of ST_SpringMiddle()
 
 	Spring_OD=Spring_CS4323_OD;
 	Spring_ID=Spring_CS4323_ID;
-	Len=40;
 	
 	// Outside spring tube
 	Tube(OD=Spring_OD+IDXtra*3+4.4, ID=Spring_OD+IDXtra*3, 
-			Len=Len, myfn=$preview? 90:360);
+			Len=SpLen, myfn=$preview? 90:360);
 			
 	// Inside spring tube
 	Tube(OD=Spring_ID-0.5, ID=Spring_ID-0.5-4.4, 
-			Len=Len, myfn=$preview? 90:360);
+			Len=SpLen, myfn=$preview? 90:360);
 			
 	// Spring stop
-	translate([0,0,Len/2-1.5]) Tube(OD=Spring_OD+1, ID=Spring_ID-1, 
+	translate([0,0,SpringStop_Z-1.5]) Tube(OD=Spring_OD+1, ID=Spring_ID-1, 
 			Len=3, myfn=$preview? 90:360);
 		
 	// Sliding tube
-	Tube(OD=OD, ID=OD-4.4, Len=35, myfn=$preview? 90:360);
+	Tube(OD=OD, ID=OD-4.4, Len=SliderLen, myfn=$preview? 90:360);
 	
 	
 	ConeLen=OD/3;
@@ -248,12 +248,12 @@ module SE_SlidingSpringMiddle(OD=BT98Coupler_OD, nRopes=6){
 		
 		if (nRopes>0)
 		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) translate([0,OD/2-7,-Overlap])
-			cylinder(d=10,h=Len);
+			cylinder(d=10,h=SliderLen);
 	} // difference
 
 } // SE_SlidingSpringMiddle
 
-//SE_SlidingSpringMiddle(OD=BT98Coupler_OD, nRopes=6);
+//SE_SlidingSpringMiddle(OD=BT98Coupler_OD, nRopes=6, SliderLen=40, SpLen=40, SpringStop_Z=20);
 //SE_SlidingSpringMiddle(OD=BT75Coupler_OD, nRopes=3);
 
 module SE_SpringSpacer(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_ID, Len=70){

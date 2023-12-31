@@ -560,6 +560,7 @@ module R98_LowerSpringMiddle(){
 } // R98_LowerSpringMiddle
 
 //R98_LowerSpringMiddle();
+// SE_SlidingSpringMiddle(OD=Coupler_OD-IDXtra, nRopes=6, SliderLen=40, SpLen=35, SpringStop_Z=20);
 
 module R98_LowerSpringBottom(){
 // costom version of ST_SpringMiddle()
