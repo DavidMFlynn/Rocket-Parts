@@ -1249,7 +1249,7 @@ module BF_Base(){
 		
 		// Body Tube
 		translate([0,0,-Tr_r-Base_Len-Overlap])
-			cylinder(d=BT137Body_ID+IDXtra*3, h=Tr_r*2+Base_Len+Overlap*2, $fn=$preview? 90:360);
+			cylinder(d=BT137Body_OD+IDXtra*3, h=Tr_r*2+Base_Len+Overlap*2, $fn=$preview? 90:360);
 			
 		// Internal Cone
 		translate([0,0,-Tr_r-Base_Len+10]) 
