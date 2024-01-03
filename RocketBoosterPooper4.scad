@@ -3,7 +3,7 @@
 // Filename: RocketBoosterPooper4.scad
 // by David M. Flynn
 // Created: 9/15/2023 
-// Revision: 0.9.5  12/2/2023
+// Revision: 0.9.6  1/3/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -20,6 +20,7 @@
 //  Boosters are in R75StrapOn.scad
 //
 //  ***** History *****
+// 0.9.6  1/3/2024  Upper e-bay doors
 // 0.9.5  12/2/2023 Now using Motor Pod Lock for drogue deployment.
 // 0.9.4  11/7/2023 Working down from the nosecone
 // 0.9.3  9/25/2023 Independant electronics bay
@@ -47,6 +48,12 @@
 // STB_BallRetainerBottom(BallPerimeter_d=BT137BallPerimeter_d, Body_OD=Body_ID, nLockBalls=nBT137Balls, HasSpringGroove=false, Engagement_Len=25);
 // rotate([180,0,0]) STB_TubeEnd(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=25);
 //
+//  ***** Upper Electronics Bay *****
+//
+// UpperElectronicsBay(Tube_OD=Body_OD+Vinyl_t, Tube_ID=Body_ID, ShowDoors=false);
+// rotate([-90,0,0]) AltDoor54(Tube_OD=Body_OD, IsLoProfile=false, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowAlt=true);
+// rotate([-90,0,0]) Batt_Door(Tube_OD=Body_OD, Door_X=BattDoorX(), InnerTube_OD=0, HasSwitch=true, DoubleBatt=true);
+// rotate([-90,0,0]) CP_Door(Tube_OD=Body_OD, BoltBossInset=3, HasArmingSlot=true);
 //
 //  ***** Stager *****
 // Drogue_InnerRace();
@@ -101,7 +108,7 @@ use<Fins.scad>
 use<FinCan.scad>
 use<NoseCone.scad>
 use<AltBay.scad>
-use<BatteryHolderLib.scad>
+use<BatteryHolderLib.scad> echo(BatteryHolderLibRev());
 use<SpringThingBooster.scad>
 use<CableReleaseBB.scad>
 use<ThreadLib.scad>

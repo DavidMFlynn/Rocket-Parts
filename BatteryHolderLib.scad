@@ -3,7 +3,7 @@
 // Filename: BatteryHolderLib.scad
 // by David M. Flynn
 // Created: 9/30/2022 
-// Revision: 1.2.2  12/6/2023
+// Revision: 1.2.3  1/3/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,10 @@
 //
 //  ***** History *****
 //
-echo("BatteryHolderLib 1.2.2");
+function BatteryHolderLibRev()="BatteryHolderLib 1.2.2";
+echo(BatteryHolderLibRev());
 //
+// 1.2.3  1/3/2024    Added function BattDoorX()
 // 1.2.2  12/6/2023   Added DoubleBatteryPocket, Batt_Door(DoubleBatt=false)
 // 1.2.1  9/16/2023   Added DeepHole_t to Batt_BayFrameHole()
 // 1.2.0  4/29/2023   Now using DoorLib.scad.
@@ -29,7 +31,7 @@ echo("BatteryHolderLib 1.2.2");
 // ***********************************
 //  ***** for STL output *****
 //
-//  Batt_Door(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, InnerTube_OD=PML54Body_OD, HasSwitch=false, DoubleBatt=false);
+//  Batt_Door(Tube_OD=PML98Body_OD, Door_X=BattDoorX(), InnerTube_OD=PML54Body_OD, HasSwitch=false, DoubleBatt=false);
 //  Batt_Door6xAAA(Tube_OD=BT137Body_OD, InnerTube_OD=BT54Body_OD, HasSwitch=true);
 //  SingleBatteryPocket(ShowBattery=true);
 //
@@ -44,8 +46,8 @@ echo("BatteryHolderLib 1.2.2");
 //
 //	BattDoorHole(Tube_OD=PML98Body_OD, HasSwitch=false);
 //  Batt_DoorBoltPattern(Tube_OD=PML98Body_OD, HasSwitch=false);
-//  Batt_BayFrameHole(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, HasSwitch=false, DeepHole_t=0);
-//  Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X,  HasSwitch=false, ShowDoor=false);
+//  Batt_BayFrameHole(Tube_OD=PML98Body_OD, Door_X=BattDoorX(), HasSwitch=false, DeepHole_t=0);
+//  Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Door_X=BattDoorX(),  HasSwitch=false, ShowDoor=false);
 //
 //  SingleBatteryHolder(Tube_ID=PML75Body_ID);
 //  DoubleBatteryHolder(Tube_ID=PML75Body_ID);
@@ -70,6 +72,7 @@ $fn=$preview? 24:90;
 Bolt4Inset=4;
 Batt_Door_Y=74;
 Batt_Door_X=27+Bolt4Inset*4+10; //53
+function BattDoorX()=Batt_Door_X;
 Batt_DoorThickness=3.7;
 
 // CK Rotary Switch
