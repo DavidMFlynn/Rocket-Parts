@@ -356,6 +356,45 @@ module ShowRocket(ShowInternals=false){
 //ShowRocket();
 //ShowRocket(ShowInternals=true);
 
+module FinLightBattHolder(){
+	
+	Len=40;
+	Batt_t=16.5+IDXtra;
+	Batt_w=26+IDXtra;
+	Batt_Y=Coupler_OD/2-10.9;
+	
+	Batt_a=47;
+	
+	module Pocket(){
+		RoundRect(X=Batt_w+2.4, Y=Batt_t+2.4, Z=Len, R=2+1.2);
+	}
+	
+	difference(){
+		union(){
+			translate([-Coupler_OD/2+1,0,0]) cube([(Coupler_OD-MotorTube_OD)/2-2,4,Len]);
+			mirror([1,0,0])
+			translate([-Coupler_OD/2+1,0,0]) cube([(Coupler_OD-MotorTube_OD)/2-2,4,Len]);
+			for (j=[0:1]) rotate([0,0,Batt_a*j]) translate([0,Batt_Y,0]) Pocket();
+			Tube(OD=Coupler_OD, ID=Coupler_ID, Len=Len, myfn=$preview? 36:360);
+			Tube(OD=MotorTube_OD+IDXtra*3+2.4, ID=MotorTube_OD+IDXtra*3, Len=Len, myfn=$preview? 36:360);
+		} // union
+	
+		translate([-Coupler_OD/2-1,IDXtra*2,-Overlap]) mirror([0,1,0]) cube([Coupler_OD+2,Coupler_OD/2+1,Len+Overlap*2]);
+		
+		translate([-Coupler_OD/2+10,0,12]) rotate([90,0,0]) Bolt4Hole();
+		translate([-Coupler_OD/2+10,0,Len-12]) rotate([90,0,0]) Bolt4Hole();
+		translate([Coupler_OD/2-10,7,12]) rotate([-90,0,0]) Bolt4HeadHole(lHead=30);
+		translate([Coupler_OD/2-10,7,Len-12]) rotate([-90,0,0]) Bolt4HeadHole(lHead=30);
+		
+		for (j=[0:1]) rotate([0,0,Batt_a*j]){
+			translate([0,Batt_Y,-Overlap]) cylinder(d=10,h=3);
+			translate([0,Batt_Y,2]) RoundRect(X=Batt_w, Y=Batt_t, Z=Len, R=2);
+		}
+	} // difference
+} // FinLightBattHolder
+
+//FinLightBattHolder();
+
 module LampClamp(){
 	OD=54;
 	ID=38.5;
