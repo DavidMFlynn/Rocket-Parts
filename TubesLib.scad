@@ -36,7 +36,9 @@ echo(TubesLib_Rev());
 // ShockCordMount(OD=PML98Body_ID, ID=BT54Mtr_OD, AnchorRod_OD=12.7);
 // Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=300, myfn=$preview? 36:360);
 // CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0, Offset=0);
-// ClusterRing(OD=BT137Body_ID, Thickness=5, CenterMotor_OD=BT54Body_OD, ClusterMotor_OD=PML38Body_OD, nClusterMotors=3, Gap=7, Cant_a=2, Cant_Z=300)
+// ClusterRing(OD=BT137Body_ID, Thickness=5, CenterMotor_OD=BT54Body_OD, ClusterMotor_OD=PML38Body_OD, nClusterMotors=3, Gap=7, Cant_a=2, Cant_Z=300);
+//
+// SplitCenteringRing(OD=BT98Coupler_ID, ID=PML54Body_OD+IDXtra*2);
 //
 // BT_RivetFixture(BT_Dia=PML98Body_OD, nRivets=3, Dia=5/32*25.4, Offset=25);
 //
@@ -51,6 +53,8 @@ echo(TubesLib_Rev());
 // RivetPattern(BT_Dia=PML98Body_OD, nRivets=3, Dia=5/32*25.4);
 //
 // ***********************************
+
+include<CommonStuffSAEmm.scad>
 
 Overlap=0.05;
 IDXtra=0.2;
@@ -212,6 +216,32 @@ module ClusterRing(OD=BT137Body_ID, Thickness=5,
 } // ClusterRing
 
 //ClusterRing(OD=BT137Body_ID, Thickness=5, CenterMotor_OD=BT54Body_OD, ClusterMotor_OD=PML38Body_OD, nClusterMotors=3, Gap=7, Cant_a=2, Cant_Z=0);
+
+module SplitCenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0){
+	BoltHole_Z=Thickness+5;
+	
+	difference(){
+		union(){
+			CenteringRing(OD=OD, ID=ID, Thickness=Thickness, nHoles=nHoles, Offset=0);
+			
+			translate([-(ID+25)/2,0.5,0]) cube([ID+25,5,BoltHole_Z+6]);
+			
+			hull(){
+				cylinder(d=ID+20, h=Thickness);
+				cylinder(d=ID+5, h=Thickness+15);
+			} // hull
+		} // union
+		
+		translate([0,0,-Overlap]) cylinder(d=ID, h=Thickness+20);
+		
+		translate([ID/2+7.5,0,BoltHole_Z]) rotate([90,0,0]) Bolt6Hole();
+		rotate([0,0,180]) translate([ID/2+7.5,-9.07,BoltHole_Z]) rotate([90,0,0]) Bolt6HeadHole();
+		
+		rotate([0,0,180]) translate([-OD/2-1,-0.5,-Overlap]) cube([OD+2, OD/2+3, Thickness+20]);
+	} // difference
+} // SplitCenteringRing
+
+//SplitCenteringRing(OD=BT98Coupler_ID, ID=PML54Body_OD+IDXtra*2);
 
 module ShockCordMount(OD=PML98Body_ID, ID=BT54Mtr_OD, AnchorRod_OD=12.7){
 	H=20;

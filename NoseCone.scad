@@ -348,7 +348,7 @@ Spring_CS4323_FL=200; // free length
 	difference(){
 		union(){
 			// GPS mount
-			rotate([0,0,-40]) translate([-4,-Spring_OD/2-12,4]) FW_GPS_Mount();
+			rotate([0,0,-45]) translate([-4,-Spring_OD/2-16,4]) rotate([-10,0,8]) FW_GPS_Mount();
 			rotate([0,0,32]) translate([0,-Spring_OD/2-13,20]) FW_GPS_Batt_Mount();
 			
 			// Stop ring
@@ -503,9 +503,12 @@ module OgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Wall_T=3){
 //OgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=180, Base_L=21, Wall_T=3);
 
 /*
-module BluntSecantOgiveShape(L=150, D=50, Base_L=10, Tip_R=5){
+module BluntSecantOgiveShape(L=150, D=50, Base_L=10, Tip_R=5, Thickness=0){
 	
+	Xtra_p=D/10;
 	R=D/2;
+	p=(R*R+L*L)/(2*R)+Xtra_p;
+	X0 = L-sqrt((p-Tip_R)*(p-Tip_R)-(p-R)*(p-R));
 	
 	translate([0,Base_L,0])
 	difference(){
@@ -513,21 +516,25 @@ module BluntSecantOgiveShape(L=150, D=50, Base_L=10, Tip_R=5){
 			difference(){
 				intersection(){
 					square([R,L]);
-					circle(r=p, $fn=$preview? 90:720);
+					translate([-p+R, 0, 0]) circle(r=p-Thickness, $fn=$preview? 90:720);
 				} // intersection
-				//translate([0,L-X0]) square([50,50]);
+				
+				translate([0, L-X0, 0]) square([D, D]);
 			} // difference
-			//translate([0,L-X0, 0]) circle(r=Tip_R, $fn=$preview? 90:720);
+			
+			translate([0,L-X0, 0]) circle(r=Tip_R-Thickness, $fn=$preview? 90:720);
 		} // hull
 	
-		translate([-100,-Overlap,0]) square([100,L+Overlap*2]);
+		translate([-D, -Overlap, 0]) square([D, L+Overlap*2]);
 	} // difference
 	
-	square([R,Base_L+Overlap]);
+	if (Thickness==0)
+		square([R,Base_L+Overlap]);
 } // BluntSecantOgiveShape
 
-BluntSecantOgiveShape(L=190, D=137, Base_L=5, Tip_R=15);
+BluntSecantOgiveShape(L=190, D=BT98Body_OD, Base_L=15, Tip_R=8, Thickness=0);
 /**/
+
 module BluntOgiveShape(L=150, D=50, Base_L=10, Tip_R=5, Thickness=0){
 	// Spherically blunted tangent ogive
 	R=D/2;
@@ -583,7 +590,7 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, Tip_R=5, Wa
 		if (Base_L>12 && nRivets>0) translate([0,0,Base_L/2])
 			RivetPattern(BT_Dia=OD, nRivets=nRivets, Dia=5/32*25.4);
 		
-		if ($preview==true) translate([0,-100,-1]) cube([OD/2+10,OD/2+10,L+2]);
+		if ($preview==true) translate([0,-OD/2-1,-1]) cube([OD/2+1,OD/2+1,L+2]);
 			
 		if (Cut_Z!=0 && LowerPortion==false)
 			translate([0,0, -Overlap]) cylinder(d=OD+1, h=Cut_Z+Overlap, $fn=90);
@@ -625,7 +632,7 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, Tip_R=5, Wa
 			rotate_extrude($fn=$preview? 90:360) 
 				offset(-Wall_T-2.2-IDXtra*2) BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
 			
-			if ($preview==true) translate([0,-100,-1]) cube([100,100,L+2]);
+			if ($preview==true) translate([0,-OD/2-1,-1]) cube([OD/2+2,OD/2+2,L+2]);
 		} // difference
 	
 } // BluntOgiveNoseCone

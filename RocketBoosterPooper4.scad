@@ -1156,22 +1156,50 @@ module MotorRetainer(HasWrenchCuts=false, Cone_Len=TailConeLen, ExtraLen=0){
 
 //translate([0,0,-0.2]) MotorRetainer(ExtraLen=0);
 
+/* 
+// Too Big
 BF_OD=250;
+BF_NC_Len=300;
+BF_Body_Len=200;
+/**/
+
+BF_OD=190;
+BF_NC_Len=240;
 BF_Body_Len=200;
 
 BigFairingWall_t=12;
 
+module ShowBigFairing(){
+	BigFairing();
+	translate([0,0,-0.2]) BF_Tube();
+	translate([0,0,-BF_Body_Len-0.4-30]) BF_Base();
+	
+	translate([0,0,-BF_Body_Len-0.4-30-100])
+	Tube(OD=BT137Body_OD, ID=BT137Body_ID, Len=50, myfn=$preview? 90:360);
+} // ShowBigFairing
+
+//ShowBigFairing();
+
 module BigFairing(){
 	
 	NC_Wall_t=BigFairingWall_t;
-	NC_Len=300;
+	NC_Len=BF_NC_Len;
 	NC_Base_L=15;
-	NC_Tip_R=40;
+	NC_Tip_R=30;
 	
 	BluntOgiveNoseCone(ID=BF_OD-NC_Wall_t*2, OD=BF_OD, L=NC_Len, Base_L=NC_Base_L, nRivets=0, Tip_R=NC_Tip_R, Wall_T=NC_Wall_t, Cut_Z=0, Transition_OD=PML98Body_OD, LowerPortion=false);
 
-	translate([0,0,NC_Base_L+75])
-		CenteringRing(OD=BF_OD-10-NC_Wall_t*2, ID=BT137Body_OD+IDXtra*3, Thickness=5, nHoles=6, Offset=0);
+	translate([0,0,NC_Base_L+40]){
+		CenteringRing(OD=BF_OD-NC_Wall_t*2, ID=BT137Body_OD+IDXtra*3, Thickness=5, nHoles=0, Offset=0);
+		Trans_L=20;
+		difference(){
+			translate([0,0,-Trans_L+Overlap]) 
+				cylinder(d=BF_OD-NC_Wall_t*2, h=Trans_L);
+		
+			translate([0,0,-Trans_L]) 
+				cylinder(d1=BF_OD-NC_Wall_t*2, d2=BT137Body_OD+IDXtra*3, h=Trans_L+Overlap*3);
+		} // difference
+	}
 		
 	translate([0,0,NC_Base_L+NC_Len-NC_Tip_R-20])
 	difference(){
@@ -1197,34 +1225,61 @@ module BigFairing(){
 module BF_Tube(){
 	NC_Base_L=15;
 	NC_Wall_t=BigFairingWall_t;
+	CouplerWall_t=2.4;
 	
 	translate([0,0,NC_Base_L-5])
-		CenteringRing(OD=BF_OD-NC_Wall_t*2-1, ID=BT137Body_OD+IDXtra*3, Thickness=5, nHoles=6, Offset=0);
+		CenteringRing(OD=BF_OD-NC_Wall_t*2-1, ID=BT137Body_OD+IDXtra*3, Thickness=5, nHoles=0, Offset=0);
 		
+	// filet		
+	translate([0,0,NC_Base_L-30])
+	difference(){
+		union(){
+			cylinder(d=BF_OD-NC_Wall_t*2+1, h=15+Overlap);
+			translate([0,0,5]) cylinder(d=BF_OD-NC_Wall_t*2-1, h=20+Overlap);
+		} // union
+		
+		translate([0,0,-Overlap]) 
+			cylinder(d1=BF_OD-NC_Wall_t*2, d2=BT137Body_OD+IDXtra*3, h=25+Overlap*3);
+	} // difference
+			
 	translate([0,0,-Overlap])
-	Tube(OD=BF_OD-NC_Wall_t*2-IDXtra*2, ID=BF_OD-NC_Wall_t*4, Len=NC_Base_L, myfn=$preview? 90:360);
+	Tube(OD=BF_OD-NC_Wall_t*2-IDXtra*2, ID=BF_OD-NC_Wall_t*2-CouplerWall_t*2, Len=NC_Base_L, myfn=$preview? 90:360);
 	
-	translate([0,0,-5])
-	Tube(OD=BF_OD-1, ID=BF_OD-NC_Wall_t*4, Len=5, myfn=$preview? 90:360);
+	difference(){
+		translate([0,0,-5-CouplerWall_t]) cylinder(d=BF_OD-1, h=5+CouplerWall_t);
+		
+		translate([0,0,-5-CouplerWall_t-Overlap]) 
+			cylinder(d1=BF_OD-NC_Wall_t*2, d2=BF_OD-NC_Wall_t*2-CouplerWall_t*2, h=CouplerWall_t, $fn=$preview? 90:360);
+			
+		translate([0,0,-5-CouplerWall_t-Overlap]) 
+			cylinder(d=BF_OD-NC_Wall_t*2-CouplerWall_t*2, h=5+CouplerWall_t+Overlap*2, $fn=$preview? 90:360);
+	} // difference
 	
 	translate([0,0,-BF_Body_Len])
 	Tube(OD=BF_OD, ID=BF_OD-NC_Wall_t*2, Len=BF_Body_Len, myfn=$preview? 90:360);
 } // BF_Tube
 
 // translate([0,0,-1]) BF_Tube();
-// rotate([180,0,0]) BF_Tube();
 
 module BF_Base(){
 	Tr_r=30;
 	NC_Wall_t=BigFairingWall_t;
-	Base_Len=40;
+	Base_Len=20;
 	TubeWall_t=3;
 	
 	difference(){
 		union(){
 			translate([0,0,Tr_r+15])
 				CenteringRing(OD=BF_OD-NC_Wall_t*2-1, ID=BT137Body_OD+IDXtra*3, 
-								Thickness=5, nHoles=6, Offset=0);
+								Thickness=5, nHoles=0, Offset=0);
+			// filet				
+			difference(){
+				translate([0,0,Tr_r-10]) cylinder(d=BF_OD-NC_Wall_t*2-1, h=25+Overlap);
+				
+				translate([0,0,Tr_r-10-Overlap]) 
+					cylinder(d1=BF_OD-NC_Wall_t*2-1, d2=BT137Body_OD+IDXtra*3, h=25+Overlap*3);
+				
+			} // difference
 								
 			translate([0,0,Tr_r-Overlap])
 				Tube(OD=BF_OD-NC_Wall_t*2-IDXtra*2, ID=BF_OD-NC_Wall_t*2-TubeWall_t*2, 
