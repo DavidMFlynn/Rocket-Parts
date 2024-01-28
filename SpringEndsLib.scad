@@ -68,6 +68,30 @@ Spring_CS4323_ID=40.50;
 Spring_CS4323_CBL=22; // coil bound length
 Spring_CS4323_FL=200; // free length
 
+module SE_BigSpringReceiver(OD=BT137Coupler_ID, Len=75){
+	Wall_t=7;
+	Base_t=4;
+	nRopes=6;
+	Rope_d=4;
+	RopeInset=5;
+	
+	difference(){
+		union(){
+			cylinder(d=Spring_CS4009_OD+Wall_t*2, h=Len);
+			cylinder(d=OD, h=Base_t);
+		} // union
+		
+		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j])
+			translate([0,OD/2-RopeInset,-Overlap]) cylinder(d=Rope_d, h=Base_t+Overlap*2);
+			
+		translate([0,0,-Overlap]) cylinder(d=Spring_CS4009_ID-1, h=Base_t+Overlap*2);
+		translate([0,0,Base_t]) cylinder(d=Spring_CS4009_OD, h=10);
+		translate([0,0,Base_t+10-Overlap]) cylinder(d=Spring_CS4009_OD+1, h=Len);
+		translate([0,0,Len-20]) cylinder(d1=Spring_CS4009_OD+1, d2=Spring_CS4009_OD+4, h=21);
+	} // difference
+} // SE_BigSpringReceiver
+
+// SE_BigSpringReceiver(OD=BT137Coupler_ID, Len=110);
 
 module SE_Tri_Spring_Slider(OD=BT137Coupler_OD, ID=BT137Coupler_ID){
 	nRopes=6;
@@ -126,9 +150,8 @@ module SE_Tri_Spring_End(OD=BT137Body_ID-5, Rope_BC_r=BT137Coupler_ID/2-5){
 
 // SE_Tri_Spring_End();
 
-module SE_EBaySpringStop(OD=BT54Body_ID){
+module SE_EBaySpringStop(OD=BT54Body_ID, Al_Tube_Z=20){
 	Al_Tube_d=12.7;
-	Al_Tube_Z=20;
 	Len=40;
 	
 	difference(){
@@ -147,13 +170,14 @@ module SE_EBaySpringStop(OD=BT54Body_ID){
 		
 		translate([0,0,Al_Tube_Z+Al_Tube_d/2+4]) {
 			cylinder(d=SE_Spring_CS4323_OD(), h=5);
-			translate([0,0,4]) cylinder(d1=SE_Spring_CS4323_OD(), d2=SE_Spring_CS4323_OD()+4, h=6);
+			translate([0,0,4]) cylinder(d1=SE_Spring_CS4323_OD(), d2=SE_Spring_CS4323_OD()+2, h=6);
+			translate([0,0,4+6-Overlap]) cylinder(d=SE_Spring_CS4323_OD()+2,h=Len);
 			}
 	} // difference
 	
 } // SE_EBaySpringStop
 
-// SE_EBaySpringStop(OD=BT54Body_ID);
+// SE_EBaySpringStop(OD=BT54Body_ID, Al_Tube_Z=10);
 
 module SE_SpringEndTypeA(Coupler_OD=BT75Coupler_OD, Coupler_ID=BT75Coupler_ID, MotorCoupler_OD=BT54Coupler_OD,
 				nRopes=3){

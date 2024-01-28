@@ -1059,7 +1059,7 @@ module Stager_Saucer(Tube_OD=PML98Body_OD, nLocks=2, HasElectrical=false){
 	LR_Y=Stager_LockRod_Y;
 	LR_Z=Stager_LockRod_Z;
 	
-	Saucer_IDXtra=IDXtra*3;
+	Saucer_IDXtra=IDXtra*4; // was *3
 	
 	difference(){
 		translate([0,0,-Len]) cylinder(d=Tube_OD, h=Len, $fn=$preview? 90:360);

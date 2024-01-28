@@ -44,16 +44,23 @@
 //  ***** Ball Lock *****
 //
 // STB_LockDisk(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls);
+// STB_LockDisk(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls, HasLargeInnerBearing=true);
 // rotate([180,0,0]) RBP4_BallRetainerTop();
-// STB_BallRetainerBottom(BallPerimeter_d=BT137BallPerimeter_d, Body_OD=Body_ID, nLockBalls=nBT137Balls, HasSpringGroove=false, Engagement_Len=25);
+// STB_BallRetainerBottom(BallPerimeter_d=BT137BallPerimeter_d, Body_OD=Body_ID, nLockBalls=nBT137Balls, HasSpringGroove=false, Engagement_Len=25, HasLargeInnerBearing=true);
 // rotate([180,0,0]) STB_TubeEnd(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=25);
 //
 //  ***** Upper Electronics Bay *****
 //
-// UpperElectronicsBay(Tube_OD=Body_OD+Vinyl_t, Tube_ID=Body_ID, ShowDoors=false);
+// rotate([180,0,0]) UpperElectronicsBay(Tube_OD=Body_OD+Vinyl_t, Tube_ID=Body_ID, ShowDoors=false);
 // rotate([-90,0,0]) AltDoor54(Tube_OD=Body_OD, IsLoProfile=false, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowAlt=true);
 // rotate([-90,0,0]) Batt_Door(Tube_OD=Body_OD, Door_X=BattDoorX(), InnerTube_OD=0, HasSwitch=true, DoubleBatt=true);
 // rotate([-90,0,0]) CP_Door(Tube_OD=Body_OD, BoltBossInset=3, HasArmingSlot=true);
+//
+// SE_EBaySpringStop(OD=UpperEBayTube_ID, Al_Tube_Z=10);
+// CenteringRing(OD=DrogueBody_ID, ID=UpperEBayTube_OD+IDXtra*2, Thickness=10, nHoles=12, Offset=0);
+//
+// * Drogue PetalHub *
+// PD_NC_PetalHub(OD=DrogueInnerTube_OD, nPetals=3, nRopes=6, ShockCord_a=-1, HasThreadedCore=false);
 //
 //  ***** Stager *****
 // Drogue_InnerRace();
@@ -137,6 +144,8 @@ DrogueBody_OD=BT98Body_OD;
 DrogueBody_ID=BT98Body_ID;
 DrogueInnerTube_OD=BT98Coupler_OD;
 DrogueInnerTube_ID=BT98Coupler_ID;
+UpperEBayTube_OD=BT54Body_OD;
+UpperEBayTube_ID=BT54Body_ID;
 
 LockBall_d=1/2 * 25.4;
 nBT137Balls=7;
@@ -222,7 +231,7 @@ nPetals=3;
 FwdTube_L=300;
 Vinyl_t=0.5;
 UpperBay_Len=162;
-UpperEBayTube_OD=BT54Body_OD;
+
 
 
 
@@ -348,7 +357,7 @@ module NC_PetalHub(){
 module RBP4_BallRetainerTop(){
 	XtraLen=0;
 	Tube_d=12.7;
-	Tube_Z=XtraLen+13+31;
+	Tube_Z=XtraLen+13+30;
 	Tube_a=-30;
 	TubeSlot_w=Body_ID-50; //35;
 	TubeOffset_X=0; //22;
@@ -360,10 +369,10 @@ module RBP4_BallRetainerTop(){
 								HasIntegratedCouplerTube=true, 
 								IntegratedCouplerLenXtra=XtraLen,
 								Body_ID=Body_ID, HasSecondServo=true, UsesBigServo=true,
-								Engagement_Len=25);
+								Engagement_Len=25, HasLargeInnerBearing=true);
 				
 			translate([0,0,XtraLen+13+35.5]) 
-				Tube(OD=Body_ID, ID=Body_ID-6, Len=5, myfn=$preview? 90:360);
+				Tube(OD=Body_ID, ID=Body_ID-6, Len=4, myfn=$preview? 90:360);
 			
 			// Shock cord retention
 			difference(){
@@ -376,8 +385,8 @@ module RBP4_BallRetainerTop(){
 				
 				rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z]) 
 					rotate([90,0,0]) cylinder(d=Tube_d+7, h=TubeSlot_w, center=true);
-				rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z-12.2])
-					cube([Tube_d-1, TubeSlot_w,21.1], center=true);
+				rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z/2])
+					cube([Tube_d-1, TubeSlot_w,Tube_Z], center=true);
 					
 				Tube(OD=Body_OD+20, ID=Body_ID-1, Len=50, myfn=$preview? 90:360);
 			} // difference
@@ -408,44 +417,24 @@ module UpperElectronicsBay(Tube_OD=Body_OD+Vinyl_t, Tube_ID=Body_ID, ShowDoors=f
 	CP1_a=60;
 	CP2_a=180+60;
 	
-	module TubeHolder(){
-		Al_Tube_d=12.7;
-		Al_Tube_Len=UpperEBayTube_OD+30;
-		H=20;
-		
-		difference(){
-			union(){
-				rotate([90,0,0]) cylinder(d=Al_Tube_d+6, h=Al_Tube_Len, center=true);
-				
-				hull(){
-					rotate([90,0,0]) cylinder(d=Al_Tube_d, h=Al_Tube_Len, center=true);
-					
-					translate([0,0,-H]) cube([Al_Tube_d,Al_Tube_Len,Overlap],center=true);
-				} // hull
-			} // union
-			
-			rotate([90,0,0]) cylinder(d=Al_Tube_d, h=Al_Tube_Len+Overlap*2, center=true);
-			
-			translate([0,0,-H-Overlap]) cylinder(d=UpperEBayTube_OD+IDXtra*2, h=H+Al_Tube_d);
-		} // difference
-	} // TubeHolder
-	
-	//translate([0,0,UpperBay_Len-40]) rotate([180,0,0]) rotate([0,0,-60]) TubeHolder();
-	
 	//*
 	// Centering rings
 	difference(){
 		union(){
+			// Ejection Tube
 			translate([0,0,-Coupler_Len])
 				CenteringRing(OD=Body_ID-1, ID=BT98Body_OD+IDXtra*2, 
-								Thickness=8+Overlap, nHoles=0, Offset=0);
-			translate([0,0,-Coupler_Len+8])
+								Thickness=10+Overlap, nHoles=0, Offset=0);
+				
+			// Lower
+			translate([0,0,-Coupler_Len+10])
 				CenteringRing(OD=Body_ID-1, ID=UpperEBayTube_OD+IDXtra*2, 
 								Thickness=5, nHoles=0, Offset=0);
-								
+				
+			//Upper
 			translate([0,0,UpperBay_Len-22])
 				CenteringRing(OD=Body_ID+1, ID=UpperEBayTube_OD+IDXtra*2, 
-								Thickness=5, nHoles=0, Offset=0);
+								Thickness=5, nHoles=6, Offset=0);
 		} // union
 		
 		// cable paths
@@ -460,18 +449,19 @@ module UpperElectronicsBay(Tube_OD=Body_OD+Vinyl_t, Tube_ID=Body_ID, ShowDoors=f
 		union(){
 			Tube(OD=Tube_OD, ID=Tube_ID, Len=Len, myfn=$preview? 90:360);
 			
-			//*
 			// integrated coupler
 			translate([0,0,-Coupler_Len])
 				Tube(OD=Tube_ID-IDXtra, ID=Tube_ID-4, Len=Coupler_Len+Overlap, myfn=$preview? 90:360);
 			
-			
+			Taper_Len=10;
+			Taper_D=7;
+			// integrated coupler taper
 			difference(){
-				Tube(OD=Tube_OD-1, ID=Tube_ID-4, Len=5, myfn=$preview? 90:360);
+				Tube(OD=Tube_OD-1, ID=Tube_ID-Taper_D, Len=Taper_Len, myfn=$preview? 90:360);
 				translate([0,0,-Overlap]) 
-					cylinder(d2=Tube_ID+Overlap, d1=Tube_ID-4-Overlap, h=5+Overlap*2, $fn=$preview? 90:360);
+					cylinder(d2=Tube_ID+Overlap, d1=Tube_ID-Taper_D-Overlap, h=Taper_Len+Overlap*2, $fn=$preview? 90:360);
 			} // difference
-			/**/
+
 		} // union
 		
 		//*
@@ -539,6 +529,8 @@ MPL_UnlockedBC_d=MPL_InnerTube_OD+MPL_LockBall_d;
 MPL_Offset_Z=6;           // Bearing balls to lock balls
 MPL_LockBall_Z=MPL_Race_w/2+MPL_Offset_Z;
 MPL_Shelf_t=3;
+
+
 
 module Drogue_InnerRace(){
 	MPL_InnerRace(ShowLocked=false, Body_ID=MPL_Body_ID,
