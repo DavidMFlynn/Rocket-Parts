@@ -466,7 +466,7 @@ module STB_SpringMiddle(Tube_ID=BT54Coupler_OD){
 	} // difference
 } // STB_SpringMiddle
 
-//STB_SpringMiddle();
+// STB_SpringMiddle();
 
 module STB_SpringGuide(InnerTube_ID=BT54Body_ID){
 	// Sits on top of Aerotech 54mm motor w/ plugged threaded forward closure and eye bolt

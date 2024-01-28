@@ -3,13 +3,16 @@
 // Filename: SpringEndsLib.scad
 // by David M. Flynn
 // Created: 11/24/2023 
-// Revision: 1.0.3  12/30/2023
+// Revision: 1.0.4  1/28/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 // This is a collection of spring ends used for non-pyro deployment.
 //
 //  ***** History *****
+function SpringEndsLibRev()="SpringEndsLib Rev. 1.0.4";
+echo(SpringEndsLibRev());
+// 1.0.4  1/28/2024	  Added parameter Al_Tube_Z to SE_EBaySpringStop
 // 1.0.3  12/30/2023  Added params to SE_SlidingSpringMiddle()
 // 1.0.2  12/24/2023  Added SE_SpringEndTop,SE_SpringEndBottom from Rocket75C
 // 1.0.1  12/13/2023  added SE_SlidingSpringMiddle,SE_SpringSpacer
@@ -20,7 +23,7 @@
 //
 // SE_Tri_Spring_Slider(OD=BT137Coupler_OD, ID=BT137Coupler_ID);
 // SE_Tri_Spring_End(OD=BT137Body_ID-5, Rope_BC_r=BT137Coupler_ID/2-5);
-// SE_EBaySpringStop(OD=BT54Body_ID);
+// SE_EBaySpringStop(OD=BT54Body_ID, Al_Tube_Z=20);
 //
 // SE_SpringEndTypeA(Coupler_OD=BT75Coupler_OD, Coupler_ID=BT75Coupler_ID, MotorCoupler_OD=BT54Coupler_OD, nRopes=3);
 //		An end for Spring_CS4323.
