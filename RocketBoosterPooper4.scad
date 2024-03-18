@@ -62,6 +62,7 @@
 //
 // * Drogue PetalHub *
 // PD_NC_PetalHub(OD=DrogueInnerTube_OD, nPetals=3, nRopes=6, ShockCord_a=-1, HasThreadedCore=false);
+// rotate([180,0,0]) PD_Petals(OD=DrogueInnerTube_OD, Len=170, nPetals=3, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
 //
 //  ***** Stager *****
 // Drogue_InnerRace();
@@ -401,6 +402,28 @@ module RBP4_BallRetainerTop(){
 } // RBP4_BallRetainerTop
 
 // rotate([180,0,0]) RBP4_BallRetainerTop();
+
+module CableStop(){
+	D=9.7;
+	L=10;
+	Slot_W=1.8;
+	
+	difference(){
+		union(){
+			cylinder(d=D, h=L);
+			translate([0,1,0]) scale([1.2,1,1]) cylinder(d=D+2, h=2);
+		} // union
+		
+		translate([0,0,3]) cylinder(d=D-4, h=L);
+		
+		hull(){
+			translate([0,2,-Overlap]) cylinder(d=Slot_W, h=L+Overlap*2);
+			translate([0,-D,-Overlap]) cylinder(d=Slot_W, h=L+Overlap*2);
+		} // hull
+	} // difference
+} // CableStop
+
+// CableStop();
 
 module UpperElectronicsBay(Tube_OD=Body_OD+Vinyl_t, Tube_ID=Body_ID, ShowDoors=false){
 

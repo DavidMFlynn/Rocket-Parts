@@ -54,6 +54,7 @@ function PD_ShockCordAngle()=ShockCord_a;
 
 include<TubesLib.scad>
 use<ThreadLib.scad>
+use<SpringEndsLib.scad>
 include<CommonStuffSAEmm.scad>
 
 Overlap=0.05;
@@ -314,6 +315,26 @@ module PD_ShockCordHolePattern(OD=BT75Coupler_OD, ShockCord_a=ShockCord_a){
 
 // PD_ShockCordHolePattern(OD=BT75Coupler_OD, ShockCord_a=ShockCord_a);
 
+module PD_HubSpringExtension(Len=150){
+	SpringGuide_Len=20;
+	
+	difference(){
+		union(){
+			cylinder(d=SE_Spring_CS4323_OD(), h=Len);
+			translate([0,0,Len-Overlap]) cylinder(d=SE_Spring_CS4323_ID(), h=SpringGuide_Len);
+		} // union
+		
+		
+		translate([0,0,-Overlap]) cylinder(d=SE_Spring_CS4323_ID(), h=Len-3+Overlap); // PetalHub end
+		translate([0,0,Len-3-Overlap]) 
+			cylinder(d1=SE_Spring_CS4323_ID(), d2=SE_Spring_CS4323_ID()-4.4, h=3+Overlap*2);
+		translate([0,0,Len-Overlap]) cylinder(d=SE_Spring_CS4323_ID()-4.4, h=SpringGuide_Len+Overlap*2);
+	} // difference
+
+} // PD_HubSpringExtension
+
+// PD_HubSpringExtension(Len=122);
+
 module PD_PetalHub(OD=BT75Coupler_OD, 
 					nPetals=3, 
 					HasBolts=true,
@@ -445,8 +466,8 @@ PD_PetalHub(OD=BT137Coupler_OD, Body_OD=BT137Body_OD,
 
 
 module PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, nRopes=3, ShockCord_a=-1, HasThreadedCore=false){
-	ST_DSpring_OD=44.30;
-	ST_DSpring_ID=40.50;
+	ST_DSpring_OD=SE_Spring_CS4323_OD();
+	ST_DSpring_ID=SE_Spring_CS4323_ID();
 	BodyTube_L=20;
 	SpringHole_ID=ST_DSpring_ID-IDXtra*2-4.4;
 	CenterHole_d=OD>80? SpringHole_ID : 21;
