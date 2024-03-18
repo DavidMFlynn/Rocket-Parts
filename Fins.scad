@@ -124,7 +124,7 @@ module TrapFin2Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_
 // module BluntTip(){}??
 
 module TrapFin2Shape(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100, Chamfer_L=18,
-						TipOffset=0, HasBluntTip=false){
+						TipOffset=0, TipInset=0, HasBluntTip=false){
 	Edge_r=1;
 	Tip_Chamfer=Chamfer_L-(Root_W-Tip_W);
 	Tip_Chamfer_Z=HasBluntTip? 0:Tip_Chamfer;
@@ -143,12 +143,12 @@ module TrapFin2Shape(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span
 		translate([Root_L/2-Chamfer_L, 0, Post_h-Overlap]) cylinder(d=Root_W, h=Overlap);
 		translate([Root_L/2-Edge_r, 0, Post_h-Overlap]) cylinder(r=Edge_r, h=Overlap);
 		
-		translate([-Tip_L/2+Edge_r+TipOffset, 0, Post_h+Span-Tip_Chamfer_Z]) cylinder(r=Edge_r, h=Overlap);
-		translate([-Tip_L/2+Tip_Chamfer+TipOffset, 0, Post_h+Span-Tip_Chamfer_Z]) cylinder(d=Tip_W, h=Overlap);
+		translate([-Tip_L/2+Edge_r+TipOffset, 0, Post_h+Span-Tip_Chamfer_Z-TipInset]) cylinder(r=Edge_r, h=Overlap);
+		translate([-Tip_L/2+Tip_Chamfer+TipOffset, 0, Post_h+Span-Tip_Chamfer_Z-TipInset]) cylinder(d=Tip_W, h=Overlap);
 		translate([Tip_L/2-Tip_Chamfer+TipOffset, 0, Post_h+Span-Tip_Chamfer_Z]) cylinder(d=Tip_W, h=Overlap);
 		translate([Tip_L/2-Edge_r+TipOffset, 0, Post_h+Span-Tip_Chamfer_Z]) cylinder(r=Edge_r, h=Overlap);
 		
-		translate([-Tip_L/2+Edge_r+TipOffset, 0, Post_h+Span-Edge_r]) sphere(r=Edge_r);
+		translate([-Tip_L/2+Edge_r+TipOffset, 0, Post_h+Span-Edge_r-TipInset]) sphere(r=Edge_r);
 		translate([Tip_L/2-Edge_r+TipOffset, 0, Post_h+Span-Edge_r]) sphere(r=Edge_r);
 		} // hull
 } // TrapFin2Shape
@@ -197,7 +197,7 @@ module BisectFin(X_Offset=0, X1=100, Y=10, Z=100, KeepNegXHalf=false){
 //BisectFin(X_Offset=0, X1=100, Y=10, Z=100, KeepNegXHalf=true);
 
 module TrapFin2(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100, Chamfer_L=18,
-				TipOffset=0,
+				TipOffset=0, TipInset=0, HasBluntTip=false,
 				Bisect=false, Bisect_X=0,
 				HasSpar=false, Spar_d=8, Spar_L=100){
 					
@@ -213,7 +213,7 @@ module TrapFin2(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100,
 	difference(){
 		TrapFin2Shape(Post_h=Post_h, Root_L=Root_L, Tip_L=Tip_L, 
 						Root_W=Root_W, Tip_W=Tip_W, Span=Span, Chamfer_L=Chamfer_L,
-						TipOffset=TipOffset);
+						TipOffset=TipOffset, TipInset=TipInset);
 		
 		if (HasSpar){
 			// Hole for spar
@@ -265,6 +265,9 @@ module TrapFin2(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100,
 		//translate([-30,-20,81]) cube([100,100,200]);
 	} // difference
 } // TrapFin2
+
+// Goblin
+//TrapFin2(Post_h=10, Root_L=120, Tip_L=80, Root_W=12, Tip_W=8.0, Span=120, Chamfer_L=7, TipOffset=20, TipInset=-10, HasBluntTip=false);
 
 //TrapFin2(Post_h=10, Root_L=180, Tip_L=120, Root_W=10, Tip_W=5.0, Span=120, Chamfer_L=18);
 //TrapFin2(Post_h=10, Root_L=240, Tip_L=150, Root_W=14, Tip_W=8.0, Span=180, Chamfer_L=24, TipOffset=0, Bisect=false, Bisect_X=0);
