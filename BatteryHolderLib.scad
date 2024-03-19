@@ -121,7 +121,7 @@ module Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, HasSwitch=fal
 	Door_Y=HasSwitch? Batt_Door_Y+CK_RotSw_d:Batt_Door_Y;
 	Door_t=Batt_DoorThickness;
 	
-	DoorFrame(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t, Tube_OD=Tube_OD, HasSixBolts=false);
+	DoorFrame(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t, Tube_OD=Tube_OD, HasSixBolts=false, HasBoltBosses=true);
 	
 	if ($preview&&ShowDoor)  
 		Batt_Door(Tube_OD=Tube_OD, InnerTube_OD=0, HasSwitch=HasSwitch);

@@ -67,7 +67,6 @@ CouplerLenXtra=-10;
 // 
 // ST_SpringMiddle(Tube_ID=BT54Coupler_OD);
 //
-// PD_NC_PetalHub(OD=Coupler_OD, nPetals=nPetals, nRopes=6);
 // rotate([-90,0,0]) PD_PetalSpringHolder(Coupler_OD=Coupler_OD);
 // rotate([180,0,0]) PD_Petals(Coupler_OD=Coupler_OD, Len=ForwardPetalLen, nPetals=nPetals, AntiClimber_h=3);
 //
@@ -90,20 +89,19 @@ CouplerLenXtra=-10;
 // *** petal deployer ***
 //
 // PD_PetalHub(OD=Coupler_OD, nPetals=nPetals, ShockCord_a=PD_ShockCordAngle());
-// rotate([-90,0,0]) PD_PetalSpringHolder(Coupler_OD=Coupler_OD);
-// rotate([180,0,0]) PD_Petals(Coupler_OD=Coupler_OD, Len=AftPetalLen, nPetals=nPetals, AntiClimber_h=3);
+// rotate([-90,0,0]) PD_PetalSpringHolder(OD=Coupler_OD);
+// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=AftPetalLen, nPetals=nPetals, AntiClimber_h=3);
 //
 // rotate([180,0,0]) SpringTop();
 // ST_SpringMiddle(Tube_ID=BT54Coupler_OD);
 // MotorTubeTopper();
 //
 // *** Fin Can ***
+//FinCan(LowerHalfOnly=false, UpperHalfOnly=false);
 //
-FinCan(LowerHalfOnly=false, UpperHalfOnly=false);
-
 // RocketFin();
-
-
+//
+//
 // rotate([90,0,0]) BoltOnRailGuide(Length = 30, BoltSpace=12.7, RoundEnds=true);
 // rotate([-90,0,0]) RailGuideSpacer(OD=Body_OD, H=RailGuide_h, Length = 30, BoltSpace=12.7);
 //
@@ -145,12 +143,12 @@ nFins=4;
 Fin_Post_h=18;
 Fin_Root_L=160;
 Fin_Root_W=14;
-Fin_Tip_W=8;
+Fin_Tip_W=5;
 Fin_Tip_L=90;
 Fin_TipInset=-50;
 Fin_Span=178+Fin_TipInset;
 Fin_TipOffset=45;
-Fin_Chamfer_L=7;
+Fin_Chamfer_L=12;
 Fin_HasBluntTip=false;
 
 
@@ -375,7 +373,7 @@ module R98_BallRetainerBottom(){
 				nLockBalls=nLockBalls, HasSpringGroove=false);
 		
 		rotate([0,0,PD_ShockCordAngle()-ShockCord_a]) 
-			PD_PetalHubBoltPattern(Coupler_OD=Coupler_OD, nPetals=nPetals) Bolt4Hole();
+			PD_PetalHubBoltPattern(OD=Coupler_OD, nPetals=nPetals) Bolt4Hole();
 
 	} // difference
 } // R98_BallRetainerBottom
@@ -499,7 +497,7 @@ module Electronics_BayDual(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoors=false, Ha
 		// Altimeter
 		translate([0,0,Altimeter_Z]) rotate([0,0,Alt_a]) 
 			Alt_BayFrameHole(Tube_OD=Tube_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
-		
+			
 		// Battery and Switch door holes
 		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
 			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=false);
@@ -509,6 +507,7 @@ module Electronics_BayDual(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoors=false, Ha
 		if (HasSecondBattDoor)
 		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt3_a]) 
 			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
+			
 	} // difference
 	
 	// Altimeter
@@ -527,7 +526,7 @@ module Electronics_BayDual(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoors=false, Ha
 	
 } // Electronics_BayDual
 
-// Electronics_BayDual(ShowDoors=false);
+// Electronics_BayDual(ShowDoors=false, HasSecondBattDoor=false);
 
 module MotorTubeTopper(){
 // Z zero is top of motor tube
@@ -582,6 +581,8 @@ module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 	Retainer_d=63;
 	Retainer_L=30;
 	
+	//echo(nFins=nFins);
+	
 	difference(){
 		union(){
 			// Body Tube
@@ -611,7 +612,8 @@ module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 			
 			// Fin Boxes
 			difference(){
-				for (j=[0:nFins]) rotate([0,0,360/nFins*j]) 
+			
+				for (j=[0:nFins-1]) rotate([0,0,360/nFins*j]) 
 					translate([0,-FinBox_W/2,0]) cube([Body_OD/2,FinBox_W,Can_Len]);
 					
 				difference(){
@@ -656,9 +658,9 @@ module RocketFin(){
 				
 	if ($preview==false){
 		translate([-Fin_Root_L/2+4,0,0]) 
-			cylinder(d=12, h=0.9); // Neg
+			cylinder(d=Fin_Root_W+6, h=0.9); // Neg
 		translate([Fin_Root_L/2-4,0,0]) 
-			cylinder(d=12, h=0.9); // Pos
+			cylinder(d=Fin_Root_W+6, h=0.9); // Pos
 	}
 	
 } // RocketFin

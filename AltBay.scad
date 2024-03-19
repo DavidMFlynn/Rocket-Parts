@@ -166,14 +166,37 @@ module Alt_BayFrameHole(Tube_OD=PML98Body_OD, DoorXtra_X=0, DoorXtra_Y=0, DeepHo
 
 //Alt_BayFrameHole();
 
+//
+module TestCode1(){
+	Alt_DoorXtra_X=6;
+	Alt_DoorXtra_Y=4;
 
-module Alt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=PML98Body_ID, DoorXtra_X=0, DoorXtra_Y=0, ShowDoor=false){
+	difference(){
+		Tube(OD=BT98Body_OD, ID=BT98Body_ID, Len=162, myfn=$preview? 36:360);
+		
+		translate([0,0,81]) 
+			Alt_BayFrameHole(Tube_OD=BT98Body_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
+	}
+	
+	translate([0,0,81]) Alt_BayDoorFrame(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, DoorXtra_X=7.7, DoorXtra_Y=4, ShowDoor=false);
+	
+} // TestCode1
+
+//TestCode1();
+
+//DoorFrame(Door_X=44.2, Door_Y=109.5, Door_t=3.7,Tube_OD=BT98Body_OD, HasSixBolts=true, HasBoltBosses=false);
+					
+
+module Alt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=BT98Body_ID, DoorXtra_X=0, DoorXtra_Y=0, ShowDoor=false){
 	Tube_Len=Alt54Door_Y+DoorXtra_Y+7;
 	Door_Y=Alt54Door_Y+DoorXtra_Y;
 	Door_X=Alt54Door_X+DoorXtra_X;
 	Door_t=AltDoorThickness;
 	BoltBossInset=10.5+2;
 	AltOffset_Y=7;
+	
+	echo(Door_X=Door_X);
+	echo(Door_Y=Door_Y);
 	
 	difference(){
 		DoorFrame(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t, 

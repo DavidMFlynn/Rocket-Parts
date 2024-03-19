@@ -3,7 +3,7 @@
 // Filename: DoorLib.scad
 // by David M. Flynn
 // Created: 4/29/2023 
-// Revision: 1.0.2  7/4/2023
+// Revision: 1.0.3  3/19/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-echo("DoorLib 1.0.2");
+echo("DoorLib 1.0.3");
 //
+// 1.0.3  3/19/2024   Fixed a co-planer bug in DoorFrame()
 // 1.0.2  7/4/2023    Made door sill smaller 1.5mm vs 2mm
 // 1.0.1  6/21/2023   Changed door frame.
 // 1.0.0  5/7/2023    Tested doors made with this library.
@@ -149,6 +150,9 @@ module DoorFrameEdge(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, Borde
 
 } // DoorFrameEdge
 
+//DoorFrameEdge(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, BorderXtra=1);
+//DoorFrameEdge(Door_X=48, Door_Y=74, Door_t=1, Tube_OD=BT98Body_OD, BorderXtra=14);
+
 module DoorFrame(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBolts=true, HasBoltBosses=true){
 	DY=Door_Y;
 	DX=Door_X;
@@ -176,49 +180,26 @@ module DoorFrame(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBol
 		}
 	} // Flanges
 	
+	
 	difference(){
-		union(){
-			hull(){
-				difference(){
-					DoorFrameEdge(Door_X=DX, Door_Y=DY, Door_t=1, 
-									Tube_OD=Tube_OD, BorderXtra=14);
-					translate([0,-Tube_OD/2-1,-DY/2-10]) cube([Tube_OD,Tube_OD,DY+20]);		
-				} // difference
-				
-				DoorFrameEdge(Door_X=DX, Door_Y=DY, Door_t=Door_t+Sill_t, 
-								Tube_OD=Tube_OD, BorderXtra=8);
-			} // hull
-			
-			hull(){
-				difference(){
-					DoorFrameEdge(Door_X=DX, Door_Y=DY, Door_t=1, 
-									Tube_OD=Tube_OD, BorderXtra=14);
-					translate([0,-Tube_OD/2-1,-DY/2-10]) mirror([1,0,0]) cube([Tube_OD,Tube_OD,DY+20]);		
-				} // difference
-				
-				DoorFrameEdge(Door_X=DX, Door_Y=DY, Door_t=Door_t+Sill_t, 
-								Tube_OD=Tube_OD, BorderXtra=8);
-			} // hull
-		} // union
-		
-		// Shave Top
-		translate([0,0,DY/2+3]) cylinder(r1=Tube_OD/2-(Door_t+Sill_t),
-										r2=Tube_OD/2, h=5);
-		// Shave bottom
-		translate([0,0,-DY/2-3-5]) cylinder(r2=Tube_OD/2-(Door_t+Sill_t),
-										r1=Tube_OD/2, h=5);
+		hull(){
+			DoorFrameEdge(Door_X=DX, Door_Y=DY, Door_t=1, 
+								Tube_OD=Tube_OD-Overlap, BorderXtra=14);
+			DoorFrameEdge(Door_X=DX, Door_Y=DY, Door_t=Door_t+Sill_t, 
+							Tube_OD=Tube_OD-Overlap, BorderXtra=8);
+		} // hull
 		
 		// Inside
-		translate([0,0,-DY/2-6]) 
-			cylinder(d=Tube_OD-Door_t*2-Sill_t*2, h=DY+12, $fn=$preview? 90:360);
+		translate([0,0,-DY/2-10]) 
+			cylinder(d=Tube_OD-Door_t*2-Sill_t*2, h=DY+20, $fn=$preview? 90:360);
 			
-		// Outside
-		difference(){
-			translate([0,0,-DY/2-10]) 
-				cylinder(d=Tube_OD*3, h=DY+20);
-			translate([0,0,-DY/2-10-Overlap]) 
-				cylinder(d=Tube_OD-1, h=DY+20+Overlap*2, $fn=$preview? 90:360);
-		} // difference
+		// Shave Top
+		translate([0,0,DY/2+2]) 
+			cylinder(r1=Tube_OD/2-(Door_t+Sill_t)-1, r2=Tube_OD/2-1, h=5+Overlap, $fn=$preview? 90:360);
+				
+		// Shave bottom
+		translate([0,0,-DY/2-2-5-Overlap]) 
+			cylinder(r1=Tube_OD/2-1, r2=Tube_OD/2-(Door_t+Sill_t)-1, h=5, $fn=$preview? 90:360);
 		
 		// Door
 		DoorHole(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t, Tube_OD=Tube_OD);
@@ -226,6 +207,8 @@ module DoorFrame(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBol
 		// Sill
 		DoorHole(Door_X=Door_X-Sill_w*2, Door_Y=Door_Y-Sill_w*2, Door_t=Door_t+3, Tube_OD=Tube_OD);
 	} // difference
+	
+
 	
 	// Bolt flanges
 	if (HasBoltBosses)
@@ -243,11 +226,13 @@ module DoorFrame(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBol
 			Bolt4Hole();
 			
 		// Shave Top
-		translate([0,0,DY/2+3]) cylinder(r1=Tube_OD/2-(Door_t+Sill_t),
-										r2=Tube_OD/2, h=5);
+		translate([0,0,DY/2+2]) 
+			cylinder(r1=Tube_OD/2-(Door_t+Sill_t)-1, r2=Tube_OD/2-1, h=5+Overlap, $fn=$preview? 90:360);
+		
 		// Shave bottom
-		translate([0,0,-DY/2-3-5]) cylinder(r2=Tube_OD/2-(Door_t+Sill_t),
-										r1=Tube_OD/2, h=5);
+		translate([0,0,-DY/2-2-5-Overlap]) 
+			cylinder(r1=Tube_OD/2-1, r2=Tube_OD/2-(Door_t+Sill_t)-1, h=5, $fn=$preview? 90:360);
+			
 		// Outside
 		difference(){
 			translate([0,0,-DY/2-6]) 
@@ -260,6 +245,23 @@ module DoorFrame(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBol
 
 //DoorFrame();
 //DoorFrame(Door_X=53, Door_Y=74, Door_t=3, Tube_OD=LOC65Body_OD, HasSixBolts=false);
+//
+//
+module TestCode1(){
+	DX=44.2;
+	DY=109.5;
+	
+	difference(){
+		Tube(OD=BT98Body_OD, ID=BT98Body_ID, Len=162, myfn=$preview? 36:360);
+		translate([0,0,81]) DoorFrameHole(Door_X=DX, Door_Y=DY, Door_t=3, Tube_OD=PML98Body_OD);
+	}
+	translate([0,0,81]) DoorFrame(Door_X=DX, Door_Y=DY, Door_t=3, Tube_OD=BT98Body_OD, HasSixBolts=false, HasBoltBosses=true);
+	
+}
+//TestCode1();
+
+//DoorFrame(Door_X=44.2, Door_Y=74, Door_t=3.5, Tube_OD=BT98Body_OD, HasSixBolts=false, HasBoltBosses=true);
+//DoorFrame(Door_X=44.2, Door_Y=109.5, Door_t=3.7,Tube_OD=BT98Body_OD, HasSixBolts=true, HasBoltBosses=true);
 
 /*
 difference(){
