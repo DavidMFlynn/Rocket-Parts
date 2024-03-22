@@ -3,7 +3,7 @@
 // Filename: Rocket98Goblin.scad
 // by David M. Flynn
 // Created: 3/19/2024 
-// Revision: 1.3.1  3/20/2024 
+// Revision: 1.3.2  3/21/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -44,6 +44,7 @@
 //
 //  ***** History *****
 //
+// 1.3.2  3/21/2024  Little fixes.
 // 1.3.1  3/20/2024  Reworked ShowRocket(), updated parts list, removed unused parts.
 // 1.3.0  3/19/2024  Copied from Rocket98C
 // 1.2.0  12/28/2023 Added CableReleaseBB w/ Guide Point for night launch version
@@ -84,10 +85,10 @@ CouplerLenXtra=-10;
 //
 // PD_PetalHub(OD=Coupler_OD, nPetals=nPetals, ShockCord_a=PD_ShockCordAngle());
 // rotate([-90,0,0]) PD_PetalSpringHolder(OD=Coupler_OD);
-// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=AftPetalLen, nPetals=nPetals, AntiClimber_h=3);
+// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=PetalLen, nPetals=nPetals, AntiClimber_h=3);
 //
 // rotate([180,0,0]) SpringTop();
-// ST_SpringMiddle(Tube_ID=BT54Coupler_OD);
+// SpringMiddle();
 // MotorTubeTopper();
 //
 // *** Fin Can ***
@@ -130,7 +131,7 @@ use<CableReleaseBB.scad> echo(CableReleaseBBRev());
 
 Overlap=0.05;
 IDXtra=0.2;
-$fn=$preview? 24:90;
+$fn=$preview? 36:90;
 
 nFins=4;
 // Standard
@@ -162,12 +163,10 @@ NC_Tip_r=12;
 NC_Wall_t=1.8;
 NC_Base_L=15;
 
-ForwardPetalLen=180;
-ForwardTubeLen=10.5*25.4;
 EBay_Len=162;
-AftPetalLen=150;
+PetalLen=150;
 MotorTubeLen=12*25.4;
-BodyTubeLen=18*25.4; // Range 19-22
+BodyTubeLen=17*25.4;
 
 Alt_DoorXtra_X=6;
 Alt_DoorXtra_Y=4;
@@ -178,7 +177,6 @@ Bolt4Inset=4;
 nLockBalls=6;
 nPetals=3;
 ShockCord_a=17;// offset between PD_PetalHub and R65_BallRetainerBottom
-TailCone_Len=50;
 RailGuide_h=Body_OD/2+2;
 
 module ShowRocket(ShowInternals=false){
@@ -193,11 +191,11 @@ module ShowRocket(ShowInternals=false){
 	NoseCone_Z=EBay_Z+EBay_Len+3.4;
 	
 
-	translate([0,0,NoseCone_Z]) color("Black")
+	translate([0,0,NoseCone_Z]) color("Gray")
 		BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=NC_Len, Base_L=NC_Base_L, 
 							Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
 							
-	translate([0,0,NoseCone_Z-0.2]) rotate([0,0,90]) color("Black")
+	translate([0,0,NoseCone_Z-0.2]) rotate([0,0,90]) color("Gray")
 		NC_ShockcordRingDual(Tube_OD=Body_OD, Tube_ID=Body_ID, NC_Base_L=NC_Base_L, nRivets=3);
 	
 	
@@ -210,7 +208,7 @@ module ShowRocket(ShowInternals=false){
 		R98_BallRetainerBottom();
 	/**/
 	
-	if (ShowInternals==false) translate([0,0,AftTubeEnd_Z]) color("Yellow")
+	if (ShowInternals==false) translate([0,0,AftTubeEnd_Z]) color("Gray")
 		STB_TubeEnd(BallPerimeter_d=Body_OD, nLockBalls=nLockBalls, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=20);
 
 	
@@ -223,7 +221,8 @@ module ShowRocket(ShowInternals=false){
 	
 	if (ShowInternals) translate([0,0,MotorTubeLen+50]){
 		translate([0,0,35]) SpringTop();
-		ST_SpringMiddle(Tube_ID=BT54Coupler_OD);
+		translate([0,0,15]) rotate([180,0,0]) SpringMiddle();
+		//ST_SpringMiddle(Tube_ID=BT54Coupler_OD);
 	}
 	if (ShowInternals) translate([0,0,MotorTubeLen+12]) rotate([0,0,180]) color("Gray") MotorTubeTopper();
 	/**/
@@ -251,101 +250,6 @@ module ShowRocket(ShowInternals=false){
 
 //ShowRocket();
 //ShowRocket(ShowInternals=true);
-
-module R98_UpperSpringMiddle(){
-// costom version of ST_SpringMiddle()
-
-	ST_DSpring_OD=44.30;
-	ST_DSpring_ID=40.50;
-	Len=48;
-	nRopes=6;
-	OD=93;
-	
-	Tube(OD=ST_DSpring_OD+6, ID=ST_DSpring_OD+IDXtra*3, 
-			Len=Len, myfn=$preview? 90:360);
-			
-	translate([0,0,Len*0.4]) Tube(OD=ST_DSpring_ID-0.5, ID=ST_DSpring_ID-6, 
-			Len=Len*0.6, myfn=$preview? 90:360);
-			
-	translate([0,0,Len/2-1.5]) Tube(OD=ST_DSpring_OD+1, ID=ST_DSpring_ID-5, 
-			Len=3, myfn=$preview? 90:360);
-			
-	Tube(OD=OD, ID=89, 
-			Len=35, myfn=$preview? 90:360);
-	difference(){
-		cylinder(d1=92, d2=ST_DSpring_OD+1, h=35);
-		
-		translate([0,0,-3]) cylinder(d1=92, d2=ST_DSpring_OD+1, h=35);
-		translate([0,0,-Overlap]) cylinder(d=ST_DSpring_OD+1, h=35+Overlap*2);
-		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) translate([0,OD/2-7,-Overlap])
-			cylinder(d=10,h=Len);
-	} // difference
-
-
-} // R98_UpperSpringMiddle
-
-//R98_UpperSpringMiddle();
-
-module R98_LowerSpringMiddle(){
-// costom version of ST_SpringMiddle()
-
-	SE_SlidingSpringMiddle(OD=Coupler_OD, nRopes=6);
-
-} // R98_LowerSpringMiddle
-
-//R98_LowerSpringMiddle();
-// SE_SlidingSpringMiddle(OD=Coupler_OD-IDXtra, nRopes=6, SliderLen=40, SpLen=35, SpringStop_Z=20);
-
-module R98_LowerSpringBottom(){
-// costom version of ST_SpringMiddle()
-
-	ST_DSpring_OD=44.30;
-	ST_DSpring_ID=40.50;
-	Len=12;
-	nRopes=6;
-	OD=Coupler_OD;
-	
-	//Tube(OD=ST_DSpring_OD+IDXtra*3+4.4, ID=ST_DSpring_OD+IDXtra*3, 
-	//		Len=Len, myfn=$preview? 90:360);
-			
-	//Tube(OD=ST_DSpring_ID-0.5, ID=ST_DSpring_ID-0.5-4.4, 
-	//		Len=Len, myfn=$preview? 90:360);
-			
-	//translate([0,0,Len/2-1.5]) Tube(OD=ST_DSpring_OD+1, ID=ST_DSpring_ID-5, 
-	//		Len=3, myfn=$preview? 90:360);
-			
-	Tube(OD=OD, ID=OD-4.4, 
-			Len=Len, myfn=$preview? 90:360);
-			
-	difference(){
-		translate([0,0,Len-5]) cylinder(d=OD-1, h=5);
-		
-		translate([0,0,Len-3]) cylinder(d=ST_DSpring_OD, h=5);
-		translate([0,0,-Overlap]) cylinder(d=ST_DSpring_ID-1, h=35+Overlap*2);
-		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) translate([0,OD/2-7,-Overlap])
-			cylinder(d=4,h=Len+Overlap*2);
-	} // difference
-
-
-} // R98_LowerSpringBottom
-
-//rotate([180,0,0]) R98_LowerSpringBottom();
-
-
-module R98_BallRetainerBottom(){
-	difference(){
-		STB_BallRetainerBottom(BallPerimeter_d=Body_OD, Body_OD=Body_ID, 
-				nLockBalls=nLockBalls, HasSpringGroove=false);
-		
-		rotate([0,0,PD_ShockCordAngle()-ShockCord_a]) 
-			PD_PetalHubBoltPattern(OD=Coupler_OD, nPetals=nPetals) Bolt4Hole();
-
-	} // difference
-} // R98_BallRetainerBottom
-
-// translate([0,0,-9]) rotate([180,0,0]) R98_BallRetainerBottom();
-//rotate([0,0,152]) PD_PetalHub(Coupler_OD=Coupler_OD, nPetals=nPetals, ShockCord_a=PD_ShockCordAngle());
-
 
 module SpringTop(){
 	ST_DSpring_OD=44.30;
@@ -375,6 +279,29 @@ module SpringTop(){
 //rotate([180,0,0]) 
 //translate([0,0,50]) 
 //SpringTop();
+
+module SpringMiddle(){
+
+	SE_SlidingSpringMiddle(OD=Coupler_OD-IDXtra, nRopes=6, SliderLen=40, SpLen=35, SpringStop_Z=20);
+
+} // SpringMiddle
+
+//SpringMiddle();
+
+
+module R98_BallRetainerBottom(){
+	difference(){
+		STB_BallRetainerBottom(BallPerimeter_d=Body_OD, Body_OD=Body_ID, 
+				nLockBalls=nLockBalls, HasSpringGroove=false);
+		
+		rotate([0,0,PD_ShockCordAngle()-ShockCord_a]) 
+			PD_PetalHubBoltPattern(OD=Coupler_OD, nPetals=nPetals) Bolt4Hole();
+
+	} // difference
+} // R98_BallRetainerBottom
+
+// translate([0,0,-9]) rotate([180,0,0]) R98_BallRetainerBottom();
+//rotate([0,0,152]) PD_PetalHub(Coupler_OD=Coupler_OD, nPetals=nPetals, ShockCord_a=PD_ShockCordAngle());
 
 module R98C_BallRetainerTop(){
 	Tube_d=12.7;
@@ -478,6 +405,9 @@ module MotorTubeTopper(){
 	
 	ST_DSpring_OD=44.30;
 	ST_DSpring_ID=40.5;
+	
+	nRopes=6;
+	Rope_d=4;
 
 	difference(){
 		union(){
@@ -494,6 +424,9 @@ module MotorTubeTopper(){
 	
 		//translate([0,0,-20]) Tube(OD=MotorTube_ID, ID=MotorTube_ID-6, Len=21, myfn=$preview? 36:360);
 		
+		translate([0,0,-Overlap]) for (j=[0:nRopes]) rotate([0,0,360/nRopes*(j+0.5)])
+			translate([0,(Body_ID-16)/2-Rope_d/2-2]) cylinder(d=Rope_d+IDXtra, h=5+Overlap*2);
+			
 		translate([0,0,3]) cylinder(d=ST_DSpring_OD, h=4+Overlap);
 		translate([0,0,7]) cylinder(d1=ST_DSpring_OD, d2=ST_DSpring_OD+4, h=5+Overlap);
 		
@@ -562,7 +495,7 @@ module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 			} // difference
 			
 			translate([0,0,RailGuide_Z]) rotate([0,0,RailGuide_a]) 
-				RailGuidePost(OD=Body_OD, MtrTube_OD=MotorTubeHole_d, H=Body_OD/2+2, 
+				RailGuidePost(OD=Body_OD, MtrTube_OD=MotorTubeHole_d, H=RailGuide_h, 
 					TubeLen=50, Length = 30, BoltSpace=12.7);
 		} // union
 	
@@ -576,7 +509,7 @@ module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 			RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
 		
 		// Motor Retainer hole
-		translate([0,0,-Overlap]) cylinder(d=Retainer_d, h=Retainer_L);
+		translate([0,0,-Overlap]) cylinder(d=Retainer_d+IDXtra*2, h=Retainer_L);
 		
 		if (LowerHalfOnly) translate([0,0,Can_Len/2]) cylinder(d=Body_OD+1, h=Can_Len/2+50);
 		if (UpperHalfOnly) translate([0,0,Can_Len/2]) 
