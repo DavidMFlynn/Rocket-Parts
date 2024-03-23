@@ -3,7 +3,7 @@
 // Filename: Rocket98.scad
 // by David M. Flynn
 // Created: 10/4/2022 
-// Revision: 1.2.0  6/23/2023
+// Revision: 1.2.1  3/23/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -13,6 +13,7 @@
 //  This file includes a collection of electronics bays
 //
 //  ***** History *****
+// 1.2.1  3/23/2024  Petal locks
 // 1.2.0  6/23/2023  Added R98_Electronics_Bay5()
 // 1.1.1  5/7/2023   Updated.
 // 1.1.0  4/27/2023  Added Ball Lock for dual deploy option.
@@ -68,10 +69,10 @@ F54_FairingHalf(IsLeftHalf=false,
 // ----------------------
 //  *** Petal Deployment ***
 //
-//rotate([180,0,0]) PD_Petals(Coupler_OD=Coupler_OD, Len=110, nPetals=nLockBalls);
-//rotate([-90,0,0]) PD_PetalSpringHolder(Coupler_OD=Coupler_OD);
+//rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=180, nPetals=3, AntiClimber_h=4, HasLocks=true);
+//rotate([-90,0,0]) PD_PetalSpringHolder(OD=Coupler_OD);
 /*
-	PD_PetalHub(Coupler_OD=Coupler_OD, 
+	PD_PetalHub(OD=Coupler_OD, 
 					nPetals=nLockBalls, 
 					ShockCord_a=ShockCord_a);
 /**/
@@ -108,8 +109,7 @@ F54_FairingHalf(IsLeftHalf=false,
 // ***********************************
 //  ***** for Viewing *****
 //
-// 
-ShowRocket98();
+// ShowRocket98();
 //
 // ***********************************
 include<TubesLib.scad>

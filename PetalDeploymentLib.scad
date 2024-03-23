@@ -3,7 +3,7 @@
 // Filename: PetalDeploymentLib.scad
 // by David M. Flynn
 // Created: 10/22/2023 
-// Revision: 0.9.3  11/7/2023 
+// Revision: 0.9.4  3/23/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -18,6 +18,7 @@
 //
 //  ***** History *****
 //
+// 0.9.4  3/23/2024	  Worked on locks.
 // 0.9.3  11/7/2023   Added PD_GridPetals(), PD_PetalLocks()
 // 0.9.2  11/6/2023   Code cleanup.
 // 0.9.1  10/26/2023  Added AntiClimber_h to PD_Petals()
@@ -42,6 +43,10 @@ PD_PetalHub(OD=BT75Coupler_OD,
 /**/
 // PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, nRopes=3, ShockCord_a=-1, HasThreadedCore=false);
 //
+// *** Used to prevent drag separation ***
+// rotate([0,-90,0]) PD_PetalLockCatch(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, Len=23);
+// PD_CatchHolder(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, nPetals=3);
+//
 // ***********************************
 //  ***** Routines *****
 //
@@ -65,15 +70,101 @@ ShockCord_a=45;
 NC_Base=15;
 PetalWidth=15;
 
+module PD_PetalLockCatch(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, Len=23){
+	
+	W=10;
+	Lock_h=1.5;
+	
+	difference(){
+		intersection(){
+			cylinder(d=OD-Wall_t*2, h=Len, $fn=$preview? 90:360);
+			translate([-W/2,0,0]) cube([W,OD/2+1,Len]);
+		} // intersection
+		
+		// Inside
+		translate([0,0,-Overlap]) cylinder(d=ID-6, h=Len+Overlap*2, $fn=$preview? 90:360);
+		
+		
+		difference(){
+			translate([0,0,-Overlap]) cylinder(d=OD, h=Len/2);
+			translate([0,0,-Overlap*2]) cylinder(d=ID, h=Len/2+Overlap*4);
+		} // difference
+		
+		// Chamfer top
+		difference(){
+			translate([0,0,Len-3]) cylinder(d=OD+2, h=3+Overlap);
+			translate([0,0,Len-3-Overlap]) cylinder(d1=OD-Wall_t*2, d2=ID-Wall_t*2, h=3+Overlap*3, $fn=$preview? 90:360);
+		} // difference
+		
+		// Bolt Hole
+		translate([0,ID/2,4]) rotate([-90,0,0]) Bolt4ButtonHeadHole();
+		
+		// Lock
+		translate([0,0,Len-7])
+		difference(){
+			intersection(){
+				cylinder(d=OD, h=3);
+				translate([-W/2+2,0,0]) cube([W,OD/2+1,Len]);
+			} // intersection
+			
+			translate([0,0,-Overlap]) cylinder(d=OD-Wall_t*2-Lock_h*2, h=3+Overlap*2, $fn=$preview? 90:360);
+		} // difference
+	} // difference
+	
+} // PD_PetalLockCatch
+
+//PD_PetalLockCatch();
+
+module PD_CatchHolder(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, nPetals=3){
+	Len=15;
+	Lip=3;
+	W=10+IDXtra*2;
+	Core_d=ID-10;
+	
+	difference(){
+		union(){
+			translate([0,0,Len-Lip]) cylinder(d=OD, h=Lip, $fn=$preview? 90:360);
+			cylinder(d=ID, h=Len-Lip+Overlap, $fn=$preview? 90:360);
+		} // union
+		
+		// Inside
+		translate([0,0,-Overlap]) cylinder(d=Core_d, h=Len+Overlap*2, $fn=$preview? 90:360);
+		
+		// Chamfer top
+		translate([0,0,Len-5]) cylinder(d1=Core_d, d2=ID, h=5+Overlap, $fn=$preview? 90:360);
+		
+		translate([0,0,2]) for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]){
+		difference(){
+			intersection(){
+				cylinder(d=OD-Wall_t*2+IDXtra*4, h=Len, $fn=$preview? 90:360);
+				translate([-W/2,0,0]) cube([W,OD/2+1,Len]);
+			} // intersection
+			
+			// Inside
+			translate([0,0,-Overlap]) cylinder(d=ID-6, h=Len+Overlap*2, $fn=$preview? 90:360);
+		
+		} // difference
+		
+		// Bolt Hole
+		translate([0,ID/2,4]) rotate([-90,0,0]) Bolt4Hole();
+		}
+	} // difference
+} // PD_CatchHolder
+
+//translate([0,0,-2]) PD_CatchHolder();
+
 module PD_PetalLocks(OD=BT75Coupler_OD, Len=25, nPetals=3){
 	BaseOffset=11.2;
-	Lock_h=2.5;
-	Lock_d=5;
+	Lock_h=1.5;
+	Lock_d=3;
+	Lock_Span_a=10;
 	
 	translate([0,0,BaseOffset+Len-Lock_h])
-		for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]) hull(){
+		for (j=[0:nPetals-1]) for (k=[0:Lock_Span_a-1]) rotate([0,0,360/nPetals*j+k]) hull(){
 			translate([0,OD/2-Lock_d/2,0]) cylinder(d=Lock_d, h=Lock_h);
+			rotate([0,0,1]) translate([0,OD/2-Lock_d/2,0]) cylinder(d=Lock_d, h=Lock_h);
 			translate([0,OD/2-1,Lock_h/2]) cube([Lock_d, Overlap, Lock_h],center=true);
+			rotate([0,0,1]) translate([0,OD/2-1,Lock_h/2]) cube([Lock_d, Overlap, Lock_h],center=true);
 		}
 } // PD_PetalLocks
 
