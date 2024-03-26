@@ -12,6 +12,8 @@
 //
 //   Mission Control V3 / RocketServo
 //
+//  First built March 2024
+//
 //  ***** Parts *****
 //
 // BlueTube 2.0 4" Body Tube by 18 inches minimum Lower Body

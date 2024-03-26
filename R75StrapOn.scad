@@ -3,7 +3,7 @@
 // Filename: R75StrapOn.scad
 // by David M. Flynn
 // Created: 9/11/2023 
-// Revision: 0.9.5  9/25/2023 
+// Revision: 0.9.6  3/23/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -45,6 +45,7 @@
 //
 //  ***** History *****
 //
+// 0.9.6  3/23/2024  Added petal lock, adjusted height of LockingPin to 44mm
 // 0.9.5  9/25/2023  Fixed shock cord path
 // 0.9.4  9/16/2023  Ready to test print all
 // 0.9.2  9/15/2023  Embedded nuts, removed unused stuff
@@ -58,7 +59,7 @@
 //
 // BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=NC_Len, Base_L=NC_Base, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
 //
-// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=110, nPetals=nPetals);
+// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=111, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=3, HasLocks=true);
 // rotate([-90,0,0]) PD_PetalSpringHolder(OD=Coupler_OD);
 /*
 PD_PetalHub(OD=Coupler_OD, 
@@ -71,7 +72,7 @@ PD_PetalHub(OD=Coupler_OD,
 						SkirtLen=10);
 /**/
 //
-// SpringEndTop(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=3);
+// SpringEndTop(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=5);
 //
 // *** CableReleaseBB ***
 //
@@ -258,19 +259,6 @@ module SpringEndTop(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=3){
 		} // hull
 	} // SCH
 	
-	module PetalLock(){
-		intersection(){
-			translate([0,0,Len-10]) Tube(OD=OD-6, ID=OD-18, Len=16, myfn=$preview? 36:360);
-			//translate([0,0,Len-10]) cylinder(d=OD-6, h=16);
-			translate([-1.5,-OD/2,Len-10]) cube([10,10,16]);
-			union(){
-				translate([-1.5,-OD/2+3,Len-10]) cube([3,9,14]);
-				//translate([0,-OD/2+6,Len-10]) cube([9,3,14]);
-				translate([-1.5,-OD/2+3,Len+4]) cube([10.5,9,2]);
-				translate([0,0,Len-10]) Tube(OD=OD-13, ID=OD-18, Len=14, myfn=$preview? 36:360);
-			} // union
-		} // intersection
-	} // PetalLock
 	
 	difference(){
 		union(){
@@ -282,7 +270,7 @@ module SpringEndTop(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=3){
 		// Rope Holes
 		nRopes=nRopeHoles;
 		Rope_d=4;
-		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*(j+0.5)]) translate([0,OD/2-Rope_d/2-6,0])
+		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) translate([0,OD/2-Rope_d/2-6,0])
 			cylinder(d=Rope_d, h=Len+Overlap);
 		
 		// Top dish
@@ -295,24 +283,25 @@ module SpringEndTop(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=3){
 		// Bolt hole to LockingPin();
 		translate([0,0,-Overlap]) cylinder(d=6.5, h=Len);
 		
-		rotate([0,0,10]) translate([0,Coupler_OD/2-7,0]) SCH();
+		rotate([0,0,45]) translate([0,Coupler_OD/2-7,0]) SCH();
 		
 		// Air Vents
-		nVents=8;
+		nVents=7;
 		Vent_d=9;
 		for (j=[0:nVents-1]) rotate([0,0,360/nVents*j]) translate([0,ST_DSpring_OD/2-Vent_d/2-2,0])
 			cylinder(d=Vent_d, h=Len);
 	} // difference
 	
 	// Petal locks
-	for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j+15]) PetalLock();
+	for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j-22.5]) translate([0,0,16.05])
+		PD_PetalLockCatch(OD=Coupler_OD, ID=Coupler_ID, Wall_t=1.8, Len=21);
 
 } // SpringEndTop
 
 // SpringEndTop();
 
 module R75SRB_LockingPin(){
-	LockPin_Len=42;
+	LockPin_Len=44;
 	
 	CRBB_LockingPin(LockPin_Len=LockPin_Len);
 	
