@@ -60,6 +60,12 @@ Overlap=0.05;
 IDXtra=0.2;
 $fn=$preview? 24:90;
 
+// Bigger Spring
+Spring_CS11890_OD=70.5;
+Spring_CS11890_ID=64.7;
+Spring_CS11890_FL=225;
+Spring_CS11890_CL=33;
+
 // Big Spring
 Spring_CS4009_OD=2.328*25.4;
 Spring_CS4009_ID=2.094*25.4;
@@ -243,6 +249,51 @@ module SE_SpringEndTypeB(Coupler_OD=BT75Coupler_OD, MotorCoupler_OD=BT54Coupler_
 } // SE_SpringEndTypeB
 
 //SE_SpringEndTypeB();
+
+module SE_SlidingBigSpringMiddle(OD=BT137Coupler_OD, SliderLen=75, Extension=20){
+	Wall_t=1.8;
+	Spring_OD=Spring_CS11890_OD;
+	Hub_OD=Spring_OD+8;
+	nRibs=6;
+	SpringSocket_H=15;
+	SpringSocketFlange_H=2;
+	
+	// Outside tube
+	Tube(OD=OD, ID=OD-Wall_t*2, 
+			Len=SliderLen, myfn=$preview? 90:360);
+			
+	// Outside spring tube
+	Tube(OD=Hub_OD, ID=Hub_OD-Wall_t*2, 
+			Len=SliderLen+Extension, myfn=$preview? 90:360);
+			
+	// Ribs
+	for (j=[0:nRibs-1]) rotate([0,0,360/nRibs*j]) hull(){
+		translate([-Wall_t/2, Hub_OD/2-Wall_t+Overlap, 0]) cube([Wall_t,Overlap,SliderLen]);
+		translate([-Wall_t/2, OD/2-Wall_t/2, 0]) cube([Wall_t,Overlap,SliderLen]);
+	} // hull
+	
+	module SpringSocket(){
+		Flange_d=8;
+		difference(){
+			cylinder(d=Hub_OD, h=SpringSocket_H+SpringSocketFlange_H+Flange_d);
+		
+			translate([0,0,SpringSocket_H+SpringSocketFlange_H-Overlap])
+				cylinder(d1=Spring_OD-Flange_d, d2=Hub_OD-Wall_t*2, h=Flange_d+Overlap*2);
+				
+			translate([0,0,-Overlap]) 
+				cylinder(d=Spring_OD-Flange_d, h=SpringSocket_H+SpringSocketFlange_H+Overlap*2);
+				
+			translate([0,0,-Overlap]) cylinder(d=Spring_OD, h=SpringSocket_H);
+			translate([0,0,-Overlap]) cylinder(d1=Hub_OD-Wall_t*2, d2=Spring_OD, h=SpringSocket_H-6);
+		} // difference
+	} // SpringSocket
+	
+	SpringSocket();
+	translate([0,0,SliderLen+Extension]) rotate([180,0,0]) SpringSocket();
+} // SE_SlidingBigSpringMiddle
+
+// SE_SlidingBigSpringMiddle();
+
 
 module SE_SlidingSpringMiddle(OD=BT98Coupler_OD, nRopes=6, SliderLen=40, SpLen=40, SpringStop_Z=20){
 // costom version of ST_SpringMiddle()

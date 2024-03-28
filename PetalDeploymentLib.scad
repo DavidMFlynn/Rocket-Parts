@@ -27,7 +27,7 @@
 // ***********************************
 //  ***** for STL output *****
 //
-// rotate([180,0,0]) PD_Petals(OD=BT75Coupler_OD, Len=110, nPetals=3, Wall_t=1.8, AntiClimber_h=0, HasLocks=false);
+// rotate([180,0,0]) PD_Petals(OD=BT75Coupler_OD, Len=110, nPetals=3, Wall_t=1.8, AntiClimber_h=0, HasLocks=false, Lock_Span_a=0);
 // rotate([180,0,0]) PD_GridPetals(OD=BT137Coupler_OD, Len=150, nPetals=3, Wall_t=1.2, HasLocks=false);
 // rotate([-90,0,0]) PD_PetalSpringHolder(OD=BT75Coupler_OD);
 /*
@@ -165,14 +165,17 @@ module PD_CatchHolder(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, nPetals=
 
 //translate([0,0,-2]) PD_CatchHolder();
 
-module PD_PetalLocks(OD=BT75Coupler_OD, Len=25, nPetals=3){
+module PD_PetalLocks(OD=BT75Coupler_OD, Len=25, nPetals=3, Lock_Span_a=0){
+// Lock_Span_a 0=full, else 10 to 360/nPetals
+
 	BaseOffset=11.2;
 	Lock_h=1.5;
 	Lock_d=3;
-	Lock_Span_a=10;
+	
+	Span_a=(Lock_Span_a==0)? 360/nPetals:Lock_Span_a;
 	
 	translate([0,0,BaseOffset+Len-Lock_h])
-		for (j=[0:nPetals-1]) for (k=[0:Lock_Span_a-1]) rotate([0,0,360/nPetals*j+k]) hull(){
+		for (j=[0:nPetals-1]) for (k=[0:Span_a-1]) rotate([0,0,360/nPetals*j+k]) hull(){
 			translate([0,OD/2-Lock_d/2,0]) cylinder(d=Lock_d, h=Lock_h);
 			rotate([0,0,1]) translate([0,OD/2-Lock_d/2,0]) cylinder(d=Lock_d, h=Lock_h);
 			translate([0,OD/2-1,Lock_h/2]) cube([Lock_d, Overlap, Lock_h],center=true);
@@ -182,7 +185,8 @@ module PD_PetalLocks(OD=BT75Coupler_OD, Len=25, nPetals=3){
 
 // PD_PetalLocks(OD=BT75Coupler_OD, Len=110, nPetals=3);
 
-module PD_Petals(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_h=0, HasLocks=false){
+module PD_Petals(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_h=0,
+				HasLocks=false, Lock_Span_a=0){
 	Bolt1_Z=11.75;
 	Thickness=3;
 	BaseOffset=11.2;
@@ -198,7 +202,7 @@ module PD_Petals(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_h
 		} // hull
 	} // AntiClimber
 	
-	if (HasLocks) PD_PetalLocks(OD=OD, Len=Len, nPetals=nPetals);
+	if (HasLocks) PD_PetalLocks(OD=OD, Len=Len, nPetals=nPetals, Lock_Span_a=Lock_Span_a);
 	
 	difference(){
 		union(){
@@ -246,7 +250,7 @@ module PD_Petals(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_h
 	} // difference
 } // PD_Petals
 
-//rotate([180,0,0]) PD_Petals(OD=BT75Coupler_OD, Len=110, nPetals=3, AntiClimber_h=3, HasLocks=true);
+//rotate([180,0,0]) PD_Petals(OD=BT75Coupler_OD, Len=110, nPetals=3, AntiClimber_h=3, HasLocks=true, Lock_Span_a=0);
 //PD_Petals(OD=BT137Coupler_OD, Len=110, nPetals=3, Wall_t=2.4, AntiClimber_h=5);
 
 

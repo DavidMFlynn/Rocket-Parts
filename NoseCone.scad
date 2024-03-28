@@ -227,7 +227,12 @@ module NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_Base_L=
 	// Has spring end and resess for spring into nosecone
 	// Mount for Featherweight GPS tracker
 
-	
+// Bigger Spring
+Spring_CS11890_OD=70.5;
+Spring_CS11890_ID=64.7;
+Spring_CS11890_FL=225;
+Spring_CS11890_CL=33;
+
 // Big Spring
 Spring_CS4009_OD=2.328*25.4;
 Spring_CS4009_ID=2.094*25.4;
@@ -246,10 +251,10 @@ Spring_CS4323_FL=200; // free length
 	Tube_d=12.7;
 	Tube_Z=30;
 	CR_z=-3;
-	Spring_OD=(Tube_OD>110)? Spring_CS4009_OD:Spring_CS4323_OD;
+	Spring_OD=(Tube_OD>110)? Spring_CS11890_OD:Spring_CS4323_OD;
 	BodyTube_L=15;
 	SpringEnd_Z=Tube_Z-Tube_d/2-3;
-	SpringSplice_OD=BT54Body_ID;
+	SpringSplice_OD=Spring_OD+10;
 	
 		
 	module FW_GPS_SW_Hole(a=0){
@@ -348,7 +353,7 @@ Spring_CS4323_FL=200; // free length
 	difference(){
 		union(){
 			// GPS mount
-			rotate([0,0,-45]) translate([-4,-Spring_OD/2-16,4]) rotate([-10,0,8]) FW_GPS_Mount();
+			rotate([0,0,-45]) translate([-4,-Spring_OD/2-16,6]) rotate([-10,0,8]) FW_GPS_Mount();
 			rotate([0,0,32]) translate([0,-Spring_OD/2-13,20]) FW_GPS_Batt_Mount();
 			
 			// Stop ring
@@ -368,7 +373,7 @@ Spring_CS4323_FL=200; // free length
 			// Tube holder
 			hull(){
 				translate([0,0,Tube_Z]) 
-					rotate([0,90,0]) cylinder(d=Tube_d+4.4, h=Tube_ID-8, center=true);
+					rotate([0,90,0]) cylinder(d=Tube_d+4.4, h=Tube_ID-5, center=true);
 				translate([0,0,CR_z+5]) cube([Tube_ID-4, Tube_d+12, 10],center=true);
 			} // hull
 			
@@ -400,6 +405,8 @@ Spring_CS4323_FL=200; // free length
 		for (j=[0:nHoles-1]) rotate([0,0,360/nHoles*j]) translate([0,Tube_ID/2-8,-10]) cylinder(d=4, h=30);
 		
 		//if ($preview) cube([50,50,50]);
+		
+		//cube([100,100,100]);
 	} // difference
 	
 } // NC_ShockcordRingDual
