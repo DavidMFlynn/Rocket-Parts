@@ -3,7 +3,7 @@
 // Filename: SpringEndsLib.scad
 // by David M. Flynn
 // Created: 11/24/2023 
-// Revision: 1.0.4  1/28/2024
+// Revision: 1.0.5  3/28/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,6 +12,7 @@
 //  ***** History *****
 function SpringEndsLibRev()="SpringEndsLib Rev. 1.0.4";
 echo(SpringEndsLibRev());
+// 1.0.5  3/28/2024   Added SE_SlidingBigSpringMiddle()
 // 1.0.4  1/28/2024	  Added parameter Al_Tube_Z to SE_EBaySpringStop
 // 1.0.3  12/30/2023  Added params to SE_SlidingSpringMiddle()
 // 1.0.2  12/24/2023  Added SE_SpringEndTop,SE_SpringEndBottom from Rocket75C
@@ -32,6 +33,7 @@ echo(SpringEndsLibRev());
 //
 // SE_SpringEndTypeB(Coupler_OD=BT75Coupler_OD, MotorCoupler_OD=BT54Coupler_OD, nRopes=3);
 //
+// SE_SlidingBigSpringMiddle(OD=BT137Coupler_OD, SliderLen=75, Extension=20);
 // SE_SlidingSpringMiddle(OD=BT98Coupler_OD, nRopes=6, SliderLen=40, SpLen=40, SpringStop_Z=20);
 // SE_SlidingSpringMiddle(OD=BT75Coupler_OD, nRopes=3);
 //
