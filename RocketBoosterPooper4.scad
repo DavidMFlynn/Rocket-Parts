@@ -3,7 +3,7 @@
 // Filename: RocketBoosterPooper4.scad
 // by David M. Flynn
 // Created: 9/15/2023 
-// Revision: 0.9.7  1/28/2024
+// Revision: 0.9.8  3/28/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -20,6 +20,7 @@
 //  Boosters are in R75StrapOn.scad
 //
 //  ***** History *****
+// 0.9.8  3/28/2024 New spring for nosecone CS11890
 // 0.9.7  1/28/2024 Shock cord pass thru in STB at top to e bay.
 // 0.9.6  1/3/2024  Upper e-bay doors
 // 0.9.5  12/2/2023 Now using Motor Pod Lock for drogue deployment.
@@ -35,8 +36,8 @@
 // BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD, L=NC_Len, Base_L=NC_Base_L, nRivets=6, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
 //
 // NC_ShockcordRingDual(Tube_OD=Body_OD+Vinyl_t, Tube_ID=Body_ID, NC_Base_L=NC_Base_L, nRivets=6);
-// SE_Tri_Spring_End(OD=Body_ID-5, Rope_BC_r=Coupler_ID/2-5);
-// SE_Tri_Spring_Slider(OD=Coupler_OD, ID=Coupler_ID);
+// SE_SlidingBigSpringMiddle(OD=BT137Coupler_OD, SliderLen=75, Extension=20);
+//
 // NC_PetalHub();
 //
 // rotate([-90,0,0]) PD_PetalSpringHolder(OD=Coupler_OD);
