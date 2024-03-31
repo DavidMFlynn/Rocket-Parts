@@ -79,30 +79,35 @@ Spring_CS4323_ID=40.50;
 Spring_CS4323_CBL=22; // coil bound length
 Spring_CS4323_FL=200; // free length
 
-module SE_BigSpringReceiver(OD=BT137Coupler_ID, Len=75){
-	Wall_t=7;
+module SE_BigSpringReceiver(OD=BT137Coupler_ID, Len=75, Spring_Z=10){
+	Wall_t=4;
 	Base_t=4;
 	nRopes=6;
 	Rope_d=4;
 	RopeInset=5;
+	Sping_OD=Spring_CS11890_OD;
+	Sping_ID=Spring_CS11890_ID;
 	
 	difference(){
 		union(){
-			cylinder(d=Spring_CS4009_OD+Wall_t*2, h=Len);
+			cylinder(d=Sping_OD+Wall_t*2, h=Len);
 			cylinder(d=OD, h=Base_t);
 		} // union
 		
+		// Rope holes
 		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j])
 			translate([0,OD/2-RopeInset,-Overlap]) cylinder(d=Rope_d, h=Base_t+Overlap*2);
 			
-		translate([0,0,-Overlap]) cylinder(d=Spring_CS4009_ID-1, h=Base_t+Overlap*2);
-		translate([0,0,Base_t]) cylinder(d=Spring_CS4009_OD, h=10);
-		translate([0,0,Base_t+10-Overlap]) cylinder(d=Spring_CS4009_OD+1, h=Len);
-		translate([0,0,Len-20]) cylinder(d1=Spring_CS4009_OD+1, d2=Spring_CS4009_OD+4, h=21);
+		//Pass Thru
+		translate([0,0,-Overlap]) cylinder(d=Sping_ID-1, h=Len+Overlap*2);
+		
+		translate([0,0,Spring_Z]) cylinder(d=Sping_OD, h=10);
+		translate([0,0,Spring_Z+4-Overlap]) cylinder(d=Sping_OD+1, h=Len);
+		translate([0,0,Len-10]) cylinder(d1=Sping_OD+1, d2=Sping_OD+4, h=10+Overlap);
 	} // difference
 } // SE_BigSpringReceiver
 
-// SE_BigSpringReceiver(OD=BT137Coupler_ID, Len=110);
+// SE_BigSpringReceiver(OD=BT137Coupler_ID, Len=40, Spring_Z=20);
 
 module SE_Tri_Spring_Slider(OD=BT137Coupler_OD, ID=BT137Coupler_ID){
 	nRopes=6;

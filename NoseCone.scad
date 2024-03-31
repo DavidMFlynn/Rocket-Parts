@@ -3,7 +3,7 @@
 // Filename: NoseCone.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.11  12/3/2023
+// Revision: 0.9.12  3/31/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,7 +12,8 @@
 //
 //  ***** History *****
 //
-echo("NoseCone 0.9.11");
+echo("NoseCone 0.9.12");
+// 0.9.12  3/31/2024 Added skirt bolt holes (nBolts) to NC_ShockcordRingDual()
 // 0.9.11 12/3/2023  Added NC_ShockcordRing75
 // 0.9.10 11/20/2023 Added nRivets=3 parameter
 // 0.9.9  10/22/2023 fixed BluntOgiveNoseCone skirt
@@ -29,8 +30,8 @@ echo("NoseCone 0.9.11");
 // ***********************************
 //  ***** for STL output *****
 // NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13);
-// NC_ShockcordRingDual(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, NC_Base_L=25, nRivets=6);
-// NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_Base_L=15, nRivets=3);
+// NC_ShockcordRingDual(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, NC_Base_L=25, nRivets=6, nBolts=0);
+// NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_Base_L=15, nRivets=3, nBolts=0);
 //
 // BluntConeNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=180, Base_L=21, nRivets=3, Tip_R=15, Wall_T=3);
 // OgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=170, Base_L=21, Wall_T=3);
@@ -221,7 +222,7 @@ module NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13
 
 //NC_ShockcordRing75();
 
-module NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_Base_L=20, nRivets=3){
+module NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_Base_L=20, nRivets=3, nBolts=0){
 	// Connects nosecone to deployment tube
 	// Has aluminum tube shock cord mount
 	// Has spring end and resess for spring into nosecone
@@ -381,6 +382,11 @@ Spring_CS4323_FL=200; // free length
 			cylinder(d1=SpringSplice_OD+10, d2=Spring_OD+6, h=SpringEnd_Z+4);
 		} // union
 		
+		if (nBolts>0){
+			for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j])
+				translate([0,-Tube_ID/2-1,-3-BodyTube_L/2]) rotate([90,0,0]) Bolt4Hole();
+		}
+		
 		//translate([-4,-34,4]) FW_GPS_SW_Hole(-9);
 		
 		// Nosecone rivets
@@ -412,7 +418,8 @@ Spring_CS4323_FL=200; // free length
 } // NC_ShockcordRingDual
 
 //NC_ShockcordRingDual(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, NC_Base_L=25, nRivets=6);
-//NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_Base_L=15, nRivets=3);
+//
+NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_Base_L=15, nRivets=3, nBolts=3);
 //NC_ShockcordRingDual(Tube_OD=Body_OD+Vinyl_t, Tube_ID=Body_ID, NC_Base_L=NC_Base_L);
 
 module BluntConeShape(L=100, D=50, Base_L=2, Tip_R=5){

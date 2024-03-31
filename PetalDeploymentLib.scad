@@ -70,7 +70,7 @@ ShockCord_a=45;
 NC_Base=15;
 PetalWidth=15;
 
-module PD_PetalLockCatch(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, Len=23){
+module PD_PetalLockCatch(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, Len=23, LockStop=true){
 	
 	W=10;
 	Lock_h=1.7;
@@ -100,11 +100,12 @@ module PD_PetalLockCatch(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, Len=2
 		translate([0,ID/2,4]) rotate([-90,0,0]) Bolt4ButtonHeadHole();
 		
 		// Lock
+		Lock_W=LockStop? 2:0;
 		translate([0,0,Len-7])
 		difference(){
 			intersection(){
 				cylinder(d=OD, h=3);
-				translate([-W/2+2,0,0]) cube([W,OD/2+1,Len]);
+				translate([-W/2+Lock_W-Overlap,0,0]) cube([W+Overlap*2,OD/2+1,Len]);
 			} // intersection
 			
 			translate([0,0,-Overlap]) cylinder(d=OD-Wall_t*2-Lock_h*2, h=3+Overlap*2, $fn=$preview? 90:360);
@@ -115,8 +116,10 @@ module PD_PetalLockCatch(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, Len=2
 
 //PD_PetalLockCatch();
 
+//PD_PetalLockCatch(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, Len=30, LockStop=false);
+
 module PD_CatchHolder(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, nPetals=3){
-	Len=15;
+	Len=22;
 	Lip=3;
 	W=10+IDXtra*2;
 	Core_d=ID-10;
@@ -125,8 +128,6 @@ module PD_CatchHolder(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, nPetals=
 		union(){
 			translate([0,0,Len-Lip]) cylinder(d=OD, h=Lip, $fn=$preview? 90:360);
 			cylinder(d=ID, h=Len-Lip+Overlap, $fn=$preview? 90:360);
-			
-			
 		} // union
 		
 		// Inside
@@ -143,8 +144,8 @@ module PD_CatchHolder(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, nPetals=
 			} // intersection
 			
 			// Inside
-			translate([0,0,-Overlap]) cylinder(d=ID-6, h=Len+Overlap*2, $fn=$preview? 90:360);
-		
+			translate([0,0,-Overlap]) cylinder(d=ID-6, h=Len-12+Overlap*2, $fn=$preview? 90:360);
+			translate([0,0,10]) cylinder(d1=ID-6, d2=ID-10, h=Len-10+Overlap*2, $fn=$preview? 90:360);
 		} // difference
 		
 		// Bolt Hole

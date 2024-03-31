@@ -3,7 +3,7 @@
 // Filename: Rocket98Goblin.scad
 // by David M. Flynn
 // Created: 3/19/2024 
-// Revision: 1.3.2  3/21/2024 
+// Revision: 1.3.3  3/31/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -46,6 +46,7 @@
 //
 //  ***** History *****
 //
+// 1.3.3  3/31/2024  Added bolt holes to electronics bay.
 // 1.3.2  3/21/2024  Little fixes.
 // 1.3.1  3/20/2024  Reworked ShowRocket(), updated parts list, removed unused parts.
 // 1.3.0  3/19/2024  Copied from Rocket98C
@@ -65,7 +66,7 @@
 //
 CouplerLenXtra=-10;
 //
-// NC_ShockcordRingDual(Tube_OD=Body_OD, Tube_ID=Body_ID, NC_Base_L=NC_Base_L, nRivets=3);
+// NC_ShockcordRingDual(Tube_OD=Body_OD, Tube_ID=Body_ID, NC_Base_L=NC_Base_L, nRivets=3, nBolts=3);
 //
 // Electronics_BayDual(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoors=false, HasSecondBattDoor=false);
 //
@@ -311,12 +312,16 @@ module R98C_BallRetainerTop(){
 	Tube_a=-6;
 	TubeSlot_w=35;
 	TubeOffset_X=22;
+	Engagement_Len=20;
+	nBolts=3;
+	BoltInset=7.5;
+	Skirt_H=24;
 	
 	difference(){
 		union(){
 			STB_BallRetainerTop(BallPerimeter_d=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls,
 								HasIntegratedCouplerTube=true, IntegratedCouplerLenXtra=CouplerLenXtra,
-								Body_ID=Body_ID-IDXtra, HasSecondServo=false, UsesBigServo=true);
+								Body_ID=Body_ID-IDXtra, HasSecondServo=false, UsesBigServo=true, Engagement_Len=Engagement_Len);
 				
 			translate([0,0,35.5]) 
 				Tube(OD=Body_ID-IDXtra, ID=Body_ID-IDXtra-6, Len=5, myfn=$preview? 90:360);
@@ -340,6 +345,11 @@ module R98C_BallRetainerTop(){
 		} // union
 	
 		translate([TubeOffset_X,0,Tube_Z]) rotate([90,0,Tube_a]) cylinder(d=Tube_d, h=Body_OD, center=true);
+		
+		//Bolt holes for nosecone and ball lock
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]){
+			translate([0,-Body_OD/2-1,Engagement_Len/2+Skirt_H+CouplerLenXtra+BoltInset]) rotate([90,0,0]) Bolt4Hole();
+		} // for
 	} // difference
 } // R98C_BallRetainerTop
 
@@ -356,6 +366,8 @@ module Electronics_BayDual(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoors=false, Ha
 	Batt1_a=HasSecondBattDoor? 90:120;
 	Batt2_a=HasSecondBattDoor? 180:240;
 	Batt3_a=270;
+	nBolts=3;
+	BoltInset=7.5;
 	
 	difference(){
 		Tube(OD=Tube_OD, ID=Tube_ID, Len=Len, myfn=$preview? 36:360);
@@ -374,6 +386,12 @@ module Electronics_BayDual(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoors=false, Ha
 		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt3_a]) 
 			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
 			
+		//Bolt holes for nosecone and ball lock
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]){
+			translate([0,-Tube_OD/2-1,BoltInset]) rotate([90,0,0]) Bolt4Hole();
+			translate([0,-Tube_OD/2-1,Len-BoltInset]) rotate([90,0,0]) Bolt4Hole();
+		} // for
+	
 	} // difference
 	
 	// Altimeter

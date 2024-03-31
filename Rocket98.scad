@@ -77,6 +77,9 @@ F54_FairingHalf(IsLeftHalf=false,
 					ShockCord_a=ShockCord_a);
 /**/
 //
+// rotate([0,90,0]) PD_PetalLockCatch(OD=Coupler_OD, ID=Coupler_ID, Wall_t=1.8, Len=30, LockStop=false);
+// PD_CatchHolder(OD=Coupler_OD, ID=Coupler_ID, Wall_t=1.8, nPetals=3);
+//
 // ----------------------
 //  *** Cable Puller ***
 // ThroughOut();
