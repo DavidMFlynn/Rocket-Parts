@@ -78,7 +78,7 @@ CouplerLenXtra=-10;
 // rotate([-90,0,0]) PD_PetalSpringHolder(Coupler_OD=Coupler_OD);
 // rotate([180,0,0]) PD_Petals(Coupler_OD=Coupler_OD, Len=ForwardPetalLen, nPetals=nPetals, AntiClimber_h=3);
 //
-// Electronics_BayDual(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoors=false, HasSecondBattDoor=true);
+// EB_Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=EBay_Len, nBolts=3, BoltInset=7.5, ShowDoors=false, HasSecondBattDoor=true);
 //
 // *** Doors ***
 //
@@ -178,6 +178,7 @@ use<AT-RMS-Lib.scad>
 use<RailGuide.scad>
 use<Fins.scad>
 use<NoseCone.scad>
+use<ElectronicsBayLib.scad>
 use<AltBay.scad>
 use<BatteryHolderLib.scad>
 use<SpringThingBooster.scad> SpringThingBoosterRev();
@@ -292,7 +293,7 @@ module ShowRocket(ShowInternals=false){
 	translate([0,0,FwdBallLock_Z]) rotate([180,0,0]) color("White") 
 		R98C_BallRetainerTop();
 	translate([0,0,EBay_Z]) color("White") 
-		Electronics_BayDual(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoors=(ShowInternals==false));
+		EB_Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=EBay_Len, nBolts=3, BoltInset=7.5, ShowDoors=false, HasSecondBattDoor=true);
 	translate([0,0,AftBallLock_Z]) color("White") 
 		R98C_BallRetainerTop();
 	if (ShowInternals) translate([0,0,AftBallLock_Z-0.2]) 
@@ -782,54 +783,6 @@ module EBay_ShockcordRingDual(){
 } // EBay_ShockcordRingDual
 
 //translate([0,0,-15]) color("Green") EBay_ShockcordRingDual();
-
-module Electronics_BayDual(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoors=false, HasSecondBattDoor=true){
-	// made NC coupler IDXtra smaller 6/22/23
-
-	Len=EBay_Len;
-	Altimeter_Z=Len/2;
-	BattSwDoor_Z=Len/2;
-
-	Alt_a=0;
-	Batt1_a=HasSecondBattDoor? 90:120;
-	Batt2_a=HasSecondBattDoor? 180:240;
-	Batt3_a=270;
-	
-	difference(){
-		Tube(OD=Tube_OD, ID=Tube_ID, Len=Len, myfn=$preview? 36:360);
-		
-		// Altimeter
-		translate([0,0,Altimeter_Z]) rotate([0,0,Alt_a]) 
-			Alt_BayFrameHole(Tube_OD=Tube_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
-		
-		// Battery and Switch door holes
-		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
-			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=false);
-		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
-			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
-			
-		if (HasSecondBattDoor)
-		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt3_a]) 
-			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
-	} // difference
-	
-	// Altimeter
-	translate([0,0,Altimeter_Z]) rotate([0,0,Alt_a])
-		Alt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=ShowDoors);
-	
-	// Battery and Switch doors
-	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
-		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=false, ShowDoor=ShowDoors);
-	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
-		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=true, ShowDoor=ShowDoors);
-		
-	if (HasSecondBattDoor)
-	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt3_a]) 
-		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=true, ShowDoor=ShowDoors);
-	
-} // Electronics_BayDual
-
-// Electronics_BayDual(ShowDoors=false);
 
 module MotorTubeTopper(){
 // Z zero is top of motor tube

@@ -3,15 +3,16 @@
 // Filename: SpringEndsLib.scad
 // by David M. Flynn
 // Created: 11/24/2023 
-// Revision: 1.0.5  3/28/2024
+// Revision: 1.0.6  3/31/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 // This is a collection of spring ends used for non-pyro deployment.
 //
 //  ***** History *****
-function SpringEndsLibRev()="SpringEndsLib Rev. 1.0.4";
+function SpringEndsLibRev()="SpringEndsLib Rev. 1.0.6";
 echo(SpringEndsLibRev());
+// 1.0.6  3/31/2024   Added SE_SpringTop()
 // 1.0.5  3/28/2024   Added SE_SlidingBigSpringMiddle()
 // 1.0.4  1/28/2024	  Added parameter Al_Tube_Z to SE_EBaySpringStop
 // 1.0.3  12/30/2023  Added params to SE_SlidingSpringMiddle()
@@ -39,6 +40,7 @@ echo(SpringEndsLibRev());
 //
 // SE_SpringSpacer(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_ID, Len=70);
 //
+// SE_SpringTop(OD=BT98Coupler_OD, Piston_Len=50, nRopes=6);
 // SE_SpringEndTop(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles=5);
 // SE_SpringEndBottom(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles=5);
 //
@@ -49,6 +51,8 @@ function SE_Spring_CS4009_OD()=Spring_CS4009_OD;
 function SE_Spring_CS4009_ID()=Spring_CS4009_ID;
 function SE_Spring_CS4323_OD()=Spring_CS4323_OD;
 function SE_Spring_CS4323_ID()=Spring_CS4323_ID;
+function SE_Spring_CS11890_OD()=Spring_CS11890_OD;
+function SE_Spring_CS11890_ID()=Spring_CS11890_ID;
 //
 // ***********************************
 //  ***** for Viewing *****
@@ -78,6 +82,29 @@ Spring_CS4323_OD=44.30;
 Spring_CS4323_ID=40.50;
 Spring_CS4323_CBL=22; // coil bound length
 Spring_CS4323_FL=200; // free length
+
+
+
+module SE_SpringTop(OD=BT98Coupler_OD, Piston_Len=50, nRopes=6){
+	ST_DSpring_OD=Spring_CS4323_OD;
+
+	translate([0,0,-10]) Tube(OD=OD, ID=OD-4.4, Len=Piston_Len, myfn=$preview? 90:360);
+	
+	difference(){
+		union(){
+			cylinder(d=ST_DSpring_OD+10, h=10+Overlap);
+			translate([0,0,10]) cylinder(d=OD, h=5+Overlap);
+		} // union
+		
+		translate([0,0,-Overlap]) cylinder(d1= ST_DSpring_OD+5, d2=ST_DSpring_OD, h=10);
+		cylinder(d= ST_DSpring_OD, h=13);
+		cylinder(d= ST_DSpring_OD-6, h=20);
+		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) translate([0,OD/2-7,-Overlap])
+			cylinder(d=4,h=Piston_Len+Overlap*2);
+	} // difference
+} // SE_SpringTop
+
+SE_SpringTop();
 
 module SE_BigSpringReceiver(OD=BT137Coupler_ID, Len=75, Spring_Z=10){
 	Wall_t=4;

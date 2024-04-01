@@ -158,8 +158,7 @@ F54_FairingHalf(IsLeftHalf=false,
 // ***********************************
 //  ***** for Viewing *****
 //
-// 
-ShowUpperBays();
+// ShowUpperBays();
 //
 // ***********************************
 use<Fairing54.scad>

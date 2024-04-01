@@ -50,7 +50,10 @@ PD_PetalHub(OD=BT75Coupler_OD,
 // ***********************************
 //  ***** Routines *****
 //
+// PD_LockSocket(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Len=22, Wall_t=1.8, nPetals=3);
+//
 function PD_ShockCordAngle()=ShockCord_a;
+//
 // PD_PetalLocks(OD=BT75Coupler_OD, Len=25, nPetals=3);
 // PD_PetalHubBoltPattern(OD=BT75Coupler_OD, nPetals=3) Bolt4Hole();
 // PD_ShockCordHolePattern(OD=BT75Coupler_OD, ShockCord_a=ShockCordAngle()) cylinder(d=4, h=15);
@@ -118,6 +121,32 @@ module PD_PetalLockCatch(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, Len=2
 
 //PD_PetalLockCatch(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, Len=30, LockStop=false);
 
+module PD_LockSocket(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Len=22, Wall_t=1.8, nPetals=3){
+	W=10+IDXtra*2;
+	
+	for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]){
+		difference(){
+			intersection(){
+				cylinder(d=OD-Wall_t*2+IDXtra*4, h=Len, $fn=$preview? 90:360);
+				translate([-W/2,0,0]) cube([W,OD/2+1,Len]);
+			} // intersection
+			
+			// Inside
+			translate([0,0,-Overlap]) cylinder(d=ID-6, h=Len-12+Overlap*2, $fn=$preview? 90:360);
+			translate([0,0,10]) cylinder(d1=ID-6, d2=ID-10, h=Len-10+Overlap*2, $fn=$preview? 90:360);
+		} // difference
+		
+		// Bolt Hole
+		translate([0,ID/2,4]) {
+			rotate([-90,0,0]) Bolt4Hole();
+			
+			translate([0,-2,0]) rotate([-90,0,0]) cylinder(d=10, h=10);
+		}
+	} // for
+} // PD_LockSocket
+
+//PD_LockSocket();
+
 module PD_CatchHolder(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, nPetals=3){
 	Len=22;
 	Lip=3;
@@ -136,21 +165,11 @@ module PD_CatchHolder(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, nPetals=
 		// Chamfer top
 		translate([0,0,Len-5]) cylinder(d1=Core_d, d2=ID, h=5+Overlap, $fn=$preview? 90:360);
 		
-		translate([0,0,2]) for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]){
-		difference(){
-			intersection(){
-				cylinder(d=OD-Wall_t*2+IDXtra*4, h=Len, $fn=$preview? 90:360);
-				translate([-W/2,0,0]) cube([W,OD/2+1,Len]);
-			} // intersection
-			
-			// Inside
-			translate([0,0,-Overlap]) cylinder(d=ID-6, h=Len-12+Overlap*2, $fn=$preview? 90:360);
-			translate([0,0,10]) cylinder(d1=ID-6, d2=ID-10, h=Len-10+Overlap*2, $fn=$preview? 90:360);
-		} // difference
+		translate([0,0,2]) PD_LockSocket(OD=OD, ID=ID, Len=Len, Wall_t=Wall_t, nPetals=nPetals);
 		
-		// Bolt Hole
-		translate([0,ID/2,4]) rotate([-90,0,0]) Bolt4Hole();
-		}
+		
+		
+		
 	} // difference
 	
 	difference(){

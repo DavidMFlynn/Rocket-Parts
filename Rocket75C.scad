@@ -3,7 +3,7 @@
 // Filename: Rocket75C.scad
 // by David M. Flynn
 // Created: 8/6/2023 
-// Revision: 1.2.0  12/3/2023 
+// Revision: 1.2.1  3/31/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -51,6 +51,7 @@
 //
 //  ***** History *****
 //
+// 1.2.1  3/31/2024  Now uses ElectronicsBayLib.scad
 // 1.2.0  12/3/2023  Updated ebay and deployment parts, removed obsolete parts
 // 1.1.1  10/22/2023  Now uses PetalDeploymentLib.scad
 // 1.1.0  8/9/2023   Got Dual Deploy?
@@ -72,7 +73,7 @@
 //
 // *** Electronics Bay ***
 //
-// Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID, DualDeploy=false);
+// EB_Electronics_Bay3(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=EBay_Len, DualDeploy=false, ShowDoors=false);
 //
 // *** Dual Deploy Electronics Bay ***
 //
@@ -134,6 +135,7 @@ include<TubesLib.scad>
 use<RailGuide.scad>
 use<Fins.scad>
 use<NoseCone.scad>
+use<ElectronicsBayLib.scad>
 use<AltBay.scad>
 use<BatteryHolderLib.scad>
 use<SpringThingBooster.scad>
@@ -184,7 +186,7 @@ BodyTubeLen=16*25.4;
 MotorTubeLen=16*25.4;
 
 Alt_DoorXtra_X=6;
-Alt_DoorXtra_Y=2;
+Alt_DoorXtra_Y=4;
 
 FinInset_Len=5*Scale;
 Can_Len=Fin_Root_L+FinInset_Len*2;
@@ -323,50 +325,6 @@ module R75_BallRetainerTop(){
 } // R75_BallRetainerTop
 
 //R75_BallRetainerTop();
-
-module Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID, DualDeploy=false, ShowDoors=false){
-	// One/two Battery Door w/ Switch and One Altimeter
-	Len=EBay_Len;
-	Altimeter_Z=Len/2;
-	BattSwDoor_Z=Len/2;
-
-	Alt_a=0;
-	Batt1_a=DualDeploy? 120:180;
-	Batt2_a=240;
-	
-	difference(){
-		
-		Tube(OD=Tube_OD, ID=Tube_ID, Len=Len, myfn=$preview? 36:360);
-				
-		// Altimeter
-		translate([0,0,Altimeter_Z]) rotate([0,0,Alt_a]) 
-			Alt_BayFrameHole(Tube_OD=Tube_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
-		
-		// Battery and Switch door holes
-		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
-			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
-			
-		if (DualDeploy)
-			translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
-				Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
-		
-	} // difference
-	
-	// Altimeter
-	translate([0,0,Altimeter_Z]) rotate([0,0,Alt_a])
-		Alt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=ShowDoors);
-	
-	// Battery and Switch door2
-	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
-		Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=true, ShowDoor=ShowDoors);
-		
-	if (DualDeploy)
-		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
-			Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=true, ShowDoor=ShowDoors);
-	
-} // Electronics_Bay
-
-// Electronics_Bay();
 
 module UpperRailBtnMount(){
 	Len=15;

@@ -20,11 +20,28 @@ echo(FinCan2LibRev());
 // ***********************************
 //  ***** for STL output *****
 // 
-
+/*
+  FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
+				MotorTube_OD=BT54Body_OD, RailGuide_h=BT98Body_OD/2+2,
+				nFins=5,
+				Fin_Root_W=14, Fin_Root_L=130, Fin_Post_h=14, Fin_Chamfer_L=32,
+				Cone_Len=65, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
+/**/
+/*
+  FC2_MotorRetainer(Body_OD=BT98Body_OD,
+						MotorTube_OD=BT54Body_OD, MotorTube_ID=BT54Body_ID,
+						HasWrenchCuts=false, Cone_Len=65, ExtraLen=0);
+/**/
 //
 // ***********************************
 //  ***** Routines *****
-
+//
+/*
+FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
+				nFins=5,
+				Fin_Root_W=12, Fin_Root_L=100, Fin_Post_h=10, Fin_Chamfer_L=22,
+				Threaded=true, Cone_Len=65, Interface_OD=Body_ID);
+/**/
 // ***********************************
 
 include<TubesLib.scad>
@@ -38,11 +55,11 @@ IDXtra=0.2;
 $fn=$preview? 24:90;
 
 
-module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=200,
+module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 				MotorTube_OD=BT54Body_OD, RailGuide_h=BT98Body_OD/2+2,
 				nFins=5,
-				Fin_Root_W=12, Fin_Root_L=100, Fin_Post_h=10, Fin_Chamfer_L=22,
-				Cone_Len=35, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false){
+				Fin_Root_W=14, Fin_Root_L=130, Fin_Post_h=14, Fin_Chamfer_L=32,
+				Cone_Len=65, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false){
 				
 	Wall_t=1.2;
 	FinBox_W=Fin_Root_W+Wall_t*2;
@@ -120,17 +137,18 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=200,
 		if (UpperHalfOnly) translate([0,0,Can_Len/2]) 
 			rotate([180,0,0]) cylinder(d=Body_OD+10, h=Can_Len/2+50);
 			
-		if ($preview) cube([50,50,300]);
+		if ($preview) cube([Body_OD/2+1,Body_OD/2+1,Can_Len+20]);
 	} // difference
-} // FinCan
+} // FC2_FinCan
 
-//rotate([180,0,0]) FinCan(LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=true);
+//rotate([180,0,0]) 
+FC2_FinCan(LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
 
 
 module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 				nFins=5,
 				Fin_Root_W=12, Fin_Root_L=100, Fin_Post_h=10, Fin_Chamfer_L=22,
-				Threaded=true, Cone_Len=35, Interface_OD=Body_ID){
+				Threaded=true, Cone_Len=65, Interface_OD=Body_ID){
 				
 	FinInset_Len=5;
 	FinAlignment_Len=0;
@@ -182,13 +200,13 @@ module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 		translate([0,0,-Cone_Len-Overlap]) 
 			cylinder(d=MotorTubeHole_d, h=Cone_Len+FinInset_Len+FinAlignment_Len+Overlap*2);
 	}
-} // TailCone
+} // FC2_TailCone
 
-//rotate([180,0,0]) TailCone(Interface_OD=Body_OD-1);
+//rotate([180,0,0]) FC2_TailCone(Interface_OD=BT98Body_ID);
 
 module FC2_MotorRetainer(Body_OD=BT98Body_OD,
 						MotorTube_OD=BT54Body_OD, MotorTube_ID=BT54Body_ID,
-						HasWrenchCuts=false, Cone_Len=35, ExtraLen=0){
+						HasWrenchCuts=false, Cone_Len=65, ExtraLen=0){
 	
 	
 	AftClosure_h=10;
@@ -240,9 +258,9 @@ module FC2_MotorRetainer(Body_OD=BT98Body_OD,
 		
 		if ($preview) translate([0,0,-Cone_Len-ExtraLen-1]) cube([50,50,100]);
 	} // difference
-} // MotorRetainer
+} // FC2_MotorRetainer
 
-//translate([0,0,-0.2]) MotorRetainer(ExtraLen=4);
+//translate([0,0,-0.2]) FC2_MotorRetainer(ExtraLen=0);
 
 /*
 difference(){

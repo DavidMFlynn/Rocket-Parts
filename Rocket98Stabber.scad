@@ -1,9 +1,9 @@
 // ***********************************
 // Project: 3D Printed Rocket
-// Filename: Rocket98Goblin.scad
+// Filename: Rocket98Stabber.scad
 // by David M. Flynn
-// Created: 3/19/2024 
-// Revision: 1.3.3  3/31/2024 
+// Created: 3/31/2024 
+// Revision: 1.0.0  3/31/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,7 @@
 //
 //   Mission Control V3 / RocketServo
 //
-//  First built March 2024
-//  Use aluminum tape on bottom of rocket to prevent scorching.
+//  First built April 2024
 //
 //  ***** Parts *****
 //
@@ -47,16 +46,7 @@
 //
 //  ***** History *****
 //
-// 1.3.3  3/31/2024  Added bolt holes to electronics bay.
-// 1.3.2  3/21/2024  Little fixes.
-// 1.3.1  3/20/2024  Reworked ShowRocket(), updated parts list, removed unused parts.
-// 1.3.0  3/19/2024  Copied from Rocket98C
-// 1.2.0  12/28/2023 Added CableReleaseBB w/ Guide Point for night launch version
-// 1.1.1  12/24/2023 Moved FinCan() into FinCan2Lib.scad
-// 1.1.0  12/22/2023 Night Launch version parts added
-// 1.0.2  10/30/2023 Ready for first printing.
-// 1.0.1  10/29/2023 Added MotorTubeTopper(), removed obsolete routines
-// 1.0.0  10/23/2023 Copied from Rocket75C Rev 1.1.1
+// 1.0.0  3/31/2024  Coppied from Rocket98Goblin 1.3.3
 //
 // ***********************************
 //  ***** for STL output *****
@@ -96,7 +86,18 @@ CouplerLenXtra=-10;
 // MotorTubeTopper();
 //
 // *** Fin Can ***
-// FinCan(LowerHalfOnly=false, UpperHalfOnly=false);
+/*
+  FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=Can_Len,
+				MotorTube_OD=MotorTube_OD, RailGuide_h=RailGuide_h,
+				nFins=nFins,
+				Fin_Root_W=Fin_Root_W, Fin_Root_L=Fin_Root_L, Fin_Post_h=Fin_Post_h, Fin_Chamfer_L=Fin_Chamfer_L,
+				Cone_Len=Cone_Len, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
+/**/
+/*
+  FC2_MotorRetainer(Body_OD=Body_OD,
+						MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID,
+						HasWrenchCuts=false, Cone_Len=Cone_Len, ExtraLen=0);
+/**/
 //
 // RocketFin();
 //
@@ -136,17 +137,17 @@ Overlap=0.05;
 IDXtra=0.2;
 $fn=$preview? 36:90;
 
-nFins=4;
+nFins=5;
 // Standard
 Fin_Post_h=18;
-Fin_Root_L=160;
+Fin_Root_L=180;
 Fin_Root_W=14;
 Fin_Tip_W=5;
 Fin_Tip_L=90;
-Fin_TipInset=-50;
-Fin_Span=178+Fin_TipInset;
-Fin_TipOffset=45;
-Fin_Chamfer_L=12;
+Fin_TipInset=0;
+Fin_Span=125+Fin_TipInset;
+Fin_TipOffset=30;
+Fin_Chamfer_L=26;
 Fin_HasBluntTip=false;
 
 
@@ -161,21 +162,22 @@ MotorTube_ID=BT54Body_ID;
 MotorCoupler_OD=BT54Coupler_OD;
 MotorTubeHole_d=MotorTube_OD+IDXtra*3;
 
-NC_Len=270;
-NC_Tip_r=12;
+NC_Len=280;
+NC_Tip_r=10;
 NC_Wall_t=1.8;
 NC_Base_L=15;
 
 EBay_Len=162;
-PetalLen=150;
-MotorTubeLen=12*25.4;
-BodyTubeLen=17*25.4;
+PetalLen=180;
+MotorTubeLen=16*25.4;
+BodyTubeLen=22*25.4;
 
 Alt_DoorXtra_X=6;
 Alt_DoorXtra_Y=4;
 
 FinInset_Len=5;
 Can_Len=Fin_Root_L+FinInset_Len*2;
+Cone_Len=65;
 Bolt4Inset=4;
 nLockBalls=6;
 nPetals=3;
@@ -189,25 +191,27 @@ module ShowRocket(ShowInternals=false){
 	AftTubeEnd_Z=BodyTube_Z+BodyTubeLen+10;
 	AftBallLock_Z=BodyTube_Z+BodyTubeLen+9;
 	EBay_Z=AftBallLock_Z+24.5;
-	
+	NC_Color="Green";
+	BodyColor="LightGreen";
+	FinColor="Green";
 	
 	NoseCone_Z=EBay_Z+EBay_Len+3.4;
 	
 
-	translate([0,0,NoseCone_Z]) color("Gray")
+	translate([0,0,NoseCone_Z]) color(NC_Color)
 		BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=NC_Len, Base_L=NC_Base_L, 
 							Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
 							
-	translate([0,0,NoseCone_Z-0.2]) rotate([0,0,90]) color("Gray")
+	translate([0,0,NoseCone_Z-0.2]) rotate([0,0,90]) color(NC_Color)
 		NC_ShockcordRingDual(Tube_OD=Body_OD, Tube_ID=Body_ID, NC_Base_L=NC_Base_L, nRivets=3);
 	
 	
 	//*
-	translate([0,0,EBay_Z]) color("Yellow") 
+	translate([0,0,EBay_Z]) color(BodyColor) 
 		EB_Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=EBay_Len, 
 				nBolts=3, BoltInset=7.5, ShowDoors=(ShowInternals==false), HasSecondBattDoor=false);
 
-	translate([0,0,AftBallLock_Z]) color("Yellow") 
+	translate([0,0,AftBallLock_Z]) color(BodyColor) 
 		R98C_BallRetainerTop();
 	if (ShowInternals) translate([0,0,AftBallLock_Z-0.2]) 
 		R98_BallRetainerBottom();
@@ -222,7 +226,7 @@ module ShowRocket(ShowInternals=false){
 			PD_PetalHub(OD=Body_ID, nPetals=3, ShockCord_a=PD_ShockCordAngle());
 			
 	if (ShowInternals) translate([0,0,AftBallLock_Z-17]) rotate([0,0,200]) rotate([180,0,0]) 
-		PD_Petals(OD=Coupler_OD, Len=150, nPetals=nPetals, AntiClimber_h=3);	
+		PD_Petals(OD=Coupler_OD, Len=PetalLen, nPetals=nPetals, AntiClimber_h=3);	
 	
 	if (ShowInternals) translate([0,0,MotorTubeLen+50]){
 		translate([0,0,35]) SE_SpringTop(OD=Coupler_OD, Piston_Len=50, nRopes=6);
@@ -237,12 +241,22 @@ module ShowRocket(ShowInternals=false){
 	translate([0,0,BodyTube_Z]) color("Yellow") Tube(OD=Body_OD, ID=Body_ID, 
 			Len=BodyTubeLen-Overlap*2, myfn=$preview? 90:360);
 	
-	translate([0,0,FinCan_Z]) color("Yellow") FinCan(LowerHalfOnly=false, UpperHalfOnly=false);
+	translate([0,0,FinCan_Z]) color(BodyColor)  
+		FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=Can_Len,
+				MotorTube_OD=MotorTube_OD, RailGuide_h=RailGuide_h,
+				nFins=nFins,
+				Fin_Root_W=Fin_Root_W, Fin_Root_L=Fin_Root_L, Fin_Post_h=Fin_Post_h, Fin_Chamfer_L=Fin_Chamfer_L,
+				Cone_Len=Cone_Len, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
+
+	translate([0,0,FinCan_Z-0.2]) color(BodyColor)
+		FC2_MotorRetainer(Body_OD=Body_OD,
+						MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID,
+						HasWrenchCuts=false, Cone_Len=Cone_Len, ExtraLen=0);
 
 	//*
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j])
 		translate([Body_OD/2-Fin_Post_h, 0, Fin_Z]) 
-			rotate([0,90,0]) color("Yellow") RocketFin();
+			rotate([0,90,0]) color(FinColor) RocketFin();
 	/**/
 	
 	if (ShowInternals) translate([0,0,12]) color("Blue") 
@@ -328,7 +342,6 @@ module R98C_BallRetainerTop(){
 
 // rotate([180,0,0]) R98C_BallRetainerTop();
 
-
 module MotorTubeTopper(){
 // Z zero is top of motor tube
 // Sits on top of motor tube
@@ -378,86 +391,6 @@ module MotorTubeTopper(){
 } // MotorTubeTopper
 
 // MotorTubeTopper();
-
-
-module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
-	Wall_t=1.2;
-	FinBox_W=Fin_Root_W+Wall_t*2;
-	RailGuide_a=180/nFins;
-	RailGuide_Z=35;
-	Retainer_d=63;
-	Retainer_L=30;
-	
-	//echo(nFins=nFins);
-	
-	difference(){
-		union(){
-			// Body Tube
-			Tube(OD=Body_OD, ID=Body_OD-Wall_t*2, Len=Can_Len, myfn=$preview? 36:360);
-			// Motor Tube Sleeve
-			Tube(OD=MotorTubeHole_d+Wall_t*2, ID=MotorTubeHole_d, Len=Can_Len, myfn=$preview? 36:360);
-			// Motor Retainer Sleeve
-			Tube(OD=Retainer_d+Wall_t*2, ID=MotorTubeHole_d, Len=Retainer_L+10, myfn=$preview? 36:360);
-			
-			// integrated coupler
-			translate([0,0,Can_Len-Overlap])
-				Tube(OD=Body_ID-IDXtra, ID=Body_ID-4, Len=10, myfn=$preview? 36:360);
-			difference(){
-				translate([0,0,Can_Len-5])
-					Tube(OD=Body_OD-1, ID=Body_ID-4, Len=5, myfn=$preview? 36:360);
-				translate([0,0,Can_Len-5-Overlap]) cylinder(d1=Body_OD-Wall_t*2, d2=Body_ID-5, h=5);
-			} // difference
-			
-				
-			// Middle Centering Rings
-			translate([0,0,Can_Len/2-3])
-				rotate([0,0,180/nFins])
-					CenteringRing(OD=Body_OD-1, ID=MotorTubeHole_d, Thickness=6, nHoles=nFins, Offset=0);
-			
-			// Base Centering Rings
-			CenteringRing(OD=Body_OD-1, ID=MotorTubeHole_d, Thickness=6, nHoles=0, Offset=0);
-			
-			// Fin Boxes
-			difference(){
-			
-				for (j=[0:nFins-1]) rotate([0,0,360/nFins*j]) 
-					translate([0,-FinBox_W/2,0]) cube([Body_OD/2,FinBox_W,Can_Len]);
-					
-				difference(){
-					translate([0,0,-Overlap]) cylinder(d=Body_OD+10, h=Can_Len+Overlap*2);
-					translate([0,0,-Overlap*2]) cylinder(d=Body_OD-1, h=Can_Len+Overlap*4);
-				} // difference
-				
-				translate([0,0,-Overlap]) cylinder(d=MotorTubeHole_d, h=Can_Len+Overlap*2);
-			} // difference
-			
-			translate([0,0,RailGuide_Z]) rotate([0,0,RailGuide_a]) 
-				RailGuidePost(OD=Body_OD, MtrTube_OD=MotorTubeHole_d, H=RailGuide_h, 
-					TubeLen=50, Length = 30, BoltSpace=12.7);
-		} // union
-	
-		// Fin Sockets
-		translate([0,0,Fin_Root_L/2+FinInset_Len])
-			TrapFin2Slots(Tube_OD=Body_OD, nFins=nFins, Post_h=Fin_Post_h, 
-					Root_L=Fin_Root_L, Root_W=Fin_Root_W, Chamfer_L=Fin_Chamfer_L);
-		
-		// Rail guide bolt holes
-		translate([0,0,RailGuide_Z]) rotate([0,0,RailGuide_a]) translate([0,Body_OD/2,0]) 
-			RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
-		
-		// Motor Retainer hole
-		translate([0,0,-Overlap]) cylinder(d=Retainer_d+IDXtra*2, h=Retainer_L);
-		
-		if (LowerHalfOnly) translate([0,0,Can_Len/2]) cylinder(d=Body_OD+1, h=Can_Len/2+50);
-		if (UpperHalfOnly) translate([0,0,Can_Len/2]) 
-			rotate([180,0,0]) cylinder(d=Body_OD+1, h=Can_Len/2+50);
-			
-		//if ($preview) translate([0,0,-1]) cube([Body_OD/2+10,Body_OD/2+10,Can_Len+50]);
-	} // difference
-} // FinCan
-
-//FinCan(LowerHalfOnly=false, UpperHalfOnly=false);
-
 
 module RocketFin(){
 	
