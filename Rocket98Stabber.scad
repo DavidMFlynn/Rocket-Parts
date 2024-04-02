@@ -3,7 +3,7 @@
 // Filename: Rocket98Stabber.scad
 // by David M. Flynn
 // Created: 3/31/2024 
-// Revision: 1.0.0  3/31/2024 
+// Revision: 1.0.1  4/1/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -46,6 +46,7 @@
 //
 //  ***** History *****
 //
+// 1.0.1  4/1/2024   Modified MotorTubeTopper(), used SE_SpringEndBottom()
 // 1.0.0  3/31/2024  Coppied from Rocket98Goblin 1.3.3
 //
 // ***********************************
@@ -83,7 +84,8 @@ CouplerLenXtra=-10;
 //
 // rotate([180,0,0]) SE_SpringTop(OD=Coupler_OD, Piston_Len=50, nRopes=6);
 // SpringMiddle();
-// MotorTubeTopper();
+// SE_SpringEndBottom(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=6);
+// rotate([180,0,0]) MotorTubeTopper(OD=Body_ID-IDXtra, HasSpringCup=false);
 //
 // *** Fin Can ***
 /*
@@ -342,7 +344,7 @@ module R98C_BallRetainerTop(){
 
 // rotate([180,0,0]) R98C_BallRetainerTop();
 
-module MotorTubeTopper(){
+module MotorTubeTopper(OD=Coupler_OD, HasSpringCup=false){
 // Z zero is top of motor tube
 // Sits on top of motor tube
 // Has Rail Guide bolt holes
@@ -361,15 +363,21 @@ module MotorTubeTopper(){
 
 	difference(){
 		union(){
+			// inside tube
 			translate([0,0,-20]) 
 				Tube(OD=MotorTube_ID, ID=MotorTube_ID-8, Len=21, myfn=$preview? 36:360);
+			// outside of motor tube
 			translate([0,0,-20]) 
 				Tube(OD=MotorTube_OD+8, ID=MotorTube_OD+IDXtra*3, Len=21, myfn=$preview? 36:360);
+			
 			translate([0,0,-20]) 
-				Tube(OD=Body_ID-IDXtra*2, ID=Body_ID-16, Len=21, myfn=$preview? 36:360);
-			CenteringRing(OD=Body_ID, ID=ST_DSpring_ID, Thickness=5, nHoles=0, Offset=0);
-			translate([0,0,4]) 
-				Tube(OD=ST_DSpring_OD+8, ID=ST_DSpring_OD, Len=8, myfn=$preview? 36:360);
+				Tube(OD=OD, ID=Body_ID-16, Len=21, myfn=$preview? 36:360);
+				
+			CenteringRing(OD=OD, ID=ST_DSpring_ID, Thickness=5, nHoles=0, Offset=0);
+			
+			if (HasSpringCup)
+				translate([0,0,4]) 
+					Tube(OD=ST_DSpring_OD+8, ID=ST_DSpring_OD, Len=8, myfn=$preview? 36:360);
 		} // union
 	
 		//translate([0,0,-20]) Tube(OD=MotorTube_ID, ID=MotorTube_ID-6, Len=21, myfn=$preview? 36:360);
@@ -377,8 +385,10 @@ module MotorTubeTopper(){
 		translate([0,0,-Overlap]) for (j=[0:nRopes]) rotate([0,0,360/nRopes*(j+0.5)])
 			translate([0,(Body_ID-16)/2-Rope_d/2-2]) cylinder(d=Rope_d+IDXtra, h=5+Overlap*2);
 			
-		translate([0,0,3]) cylinder(d=ST_DSpring_OD, h=4+Overlap);
-		translate([0,0,7]) cylinder(d1=ST_DSpring_OD, d2=ST_DSpring_OD+4, h=5+Overlap);
+		if (HasSpringCup){
+			translate([0,0,3]) cylinder(d=ST_DSpring_OD, h=4+Overlap);
+			translate([0,0,7]) cylinder(d1=ST_DSpring_OD, d2=ST_DSpring_OD+4, h=5+Overlap);
+			}
 		
 		translate([0,0,Al_Tube_Z]) rotate([90,0,0]) cylinder(d=Al_Tube_d+IDXtra, h=Body_OD, center=true);
 		

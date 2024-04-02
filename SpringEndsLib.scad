@@ -104,7 +104,7 @@ module SE_SpringTop(OD=BT98Coupler_OD, Piston_Len=50, nRopes=6){
 	} // difference
 } // SE_SpringTop
 
-SE_SpringTop();
+// SE_SpringTop();
 
 module SE_BigSpringReceiver(OD=BT137Coupler_ID, Len=75, Spring_Z=10){
 	Wall_t=4;
