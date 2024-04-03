@@ -28,7 +28,7 @@
 // #4-40 x 3/8" Button Head Cap Screw (10 req) Doors
 // #4-40 x 3/8" Socket Head Cap Screw (3 req) PetalHub
 // #4-40 x 1/4" Button Head Cap Screw (4 req) Altimeter
-// #4-40 x 1/4" Button Head Cap Screw (6 req) Petals
+// #4-40 x 1/4" Button Head Cap Screw (12 req) Petals,EBay
 // #4-40 x 3/8" Button Socket Head Cap Screw (4 req) Servos
 // 1/2" x 0.035" wall Aluminum tubing, 2ea 80mm Shock cord mounts
 // MR84-2RS Bearing (8 req) Ball Lock
@@ -89,6 +89,7 @@ CouplerLenXtra=-10;
 //
 // *** Fin Can ***
 /*
+  rotate([180,0,0])
   FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=Can_Len,
 				MotorTube_OD=MotorTube_OD, RailGuide_h=RailGuide_h,
 				nFins=nFins,

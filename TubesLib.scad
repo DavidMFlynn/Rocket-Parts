@@ -3,7 +3,7 @@
 // Filename: TubesLib.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.13  11/28/2023
+// Revision: 0.9.14  4/2/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,22 +12,23 @@
 //
 //  ***** History *****
 //
-function TubesLib_Rev()="TubesLib 0.9.12";
+function TubesLib_Rev()="TubesLib 0.9.14";
 echo(TubesLib_Rev());
+// 0.9.14  4/2/2024   Added ULine75Body
 // 0.9.13  11/28/2023 Added BT190...
-// 0.9.12  9/13/2023 Changed BT75Coupler, smaller, to measured values.
-// 0.9.11  6/16/2023 Added PML29 and LOD65
-// 0.9.10  2/23/2023 Added MotorRetainer();
-// 0.9.9  1/18/2023  Added Offset to CenteringRing()
-// 0.9.8  12/29/2022 Added ShockCordMount()
-// 0.9.7  12/2/2022  Added BT38Body tube
-// 0.9.6  11/20/2022 Added ClusterRing
-// 0.9.5  11/12/2022 Added Blue Tube 2.0  5.5" body & coupler. 
-// 0.9.4  10/16/2022 Added Blue Tube 2.0 54mm body & coupler. 
-// 0.9.3  10/10/2022 Added 6" PML tubing
-// 0.9.2  10/3/2022 Added TubeStop()
-// 0.9.1  6/24/2022 Moved rivet stuff here.
-// 0.9.0  6/13/2022 First code.
+// 0.9.12  9/13/2023  Changed BT75Coupler, smaller, to measured values.
+// 0.9.11  6/16/2023  Added PML29 and LOD65
+// 0.9.10  2/23/2023  Added MotorRetainer();
+// 0.9.9  1/18/2023   Added Offset to CenteringRing()
+// 0.9.8  12/29/2022  Added ShockCordMount()
+// 0.9.7  12/2/2022   Added BT38Body tube
+// 0.9.6  11/20/2022  Added ClusterRing
+// 0.9.5  11/12/2022  Added Blue Tube 2.0  5.5" body & coupler. 
+// 0.9.4  10/16/2022  Added Blue Tube 2.0 54mm body & coupler. 
+// 0.9.3  10/10/2022  Added 6" PML tubing
+// 0.9.2  10/3/2022   Added TubeStop()
+// 0.9.1  6/24/2022   Moved rivet stuff here.
+// 0.9.0  6/13/2022   First code.
 //
 // ***********************************
 //  ***** for STL output *****
@@ -45,6 +46,7 @@ echo(TubesLib_Rev());
 // ***********************************
 //  ***** Routines *****
 //
+// TubeTest(OD=ULine75Body_OD, ID=ULine75Body_ID); // for test fitting tubes
 // Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=300, myfn=$preview? 36:360);
 // TubeStop(InnerTubeID=PML54Coupler_ID, OuterTubeOD=PML54Body_OD, myfn=$preview? 36:360);
 // CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0);
@@ -79,6 +81,8 @@ echo(PML98Coupler_OD=PML98Coupler_OD);
 echo(PML98Coupler_ID=PML98Coupler_ID);
 /**/
 
+ULine75Body_OD=80.30;
+ULine75Body_ID=76.60;
 
 PML75Body_OD=79.6; // 8/4/2022 Adjusted +0.2 to match QT better
 PML75Body_ID=3.002*25.4;
@@ -121,7 +125,8 @@ BT75Body_ID=3.000*25.4; // 76.2
 BT75Body_OD=BT75Body_ID+0.062*2*25.4;
 BT75Coupler_OD=75.7; // Measured
 BT75Coupler_ID=BT75Coupler_OD-1.40*2; // Measured wall
-//echo(BT75Coupler_OD=BT75Coupler_OD);
+// echo(BT75Body_OD=BT75Body_OD);
+// echo(BT75Coupler_OD=BT75Coupler_OD);
 
 BT54Mtr_OD=57.20;
 BT54Mtr_ID=54.40;
@@ -151,7 +156,12 @@ LOC65Coupler_ID=63.3;
 LOC29Body_OD=30.9;
 LOC29Body_ID=29;
 
+module TubeTest(OD=ULine75Body_OD, ID=ULine75Body_ID){
+	Tube(OD=OD, ID=ID-1, Len=5, myfn=$preview? 36:360);
+	Tube(OD=ID, ID=ID-4.4, Len=10, myfn=$preview? 36:360);
+} // TubeTest
 
+//TubeTest();
 
 module MotorRetainer(Tube_OD=BT54Mtr_OD, Tube_ID=BT54Mtr_ID, Mtr_OD=54, MtrAC_OD=58){
 	OAH=33;
