@@ -122,17 +122,17 @@ module PD_PetalLockCatch(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, Len=2
 //PD_PetalLockCatch(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, Len=30, LockStop=false);
 
 module PD_LockSocket(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Len=22, Wall_t=1.8, nPetals=3){
-	W=10+IDXtra*2;
+	W=10+IDXtra*4;
 	
 	for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]){
 		difference(){
 			intersection(){
-				cylinder(d=OD-Wall_t*2+IDXtra*4, h=Len, $fn=$preview? 90:360);
-				translate([-W/2,0,0]) cube([W,OD/2+1,Len]);
+				translate([0,0,-1]) cylinder(d=OD-Wall_t*2+IDXtra*8, h=Len, $fn=$preview? 90:360);
+				translate([-W/2,0,-1]) cube([W,OD/2+1,Len]);
 			} // intersection
 			
 			// Inside
-			translate([0,0,-Overlap]) cylinder(d=ID-6, h=Len-12+Overlap*2, $fn=$preview? 90:360);
+			translate([0,0,-1-Overlap]) cylinder(d=ID-6, h=Len-11+Overlap*2, $fn=$preview? 90:360);
 			translate([0,0,10]) cylinder(d1=ID-6, d2=ID-10, h=Len-10+Overlap*2, $fn=$preview? 90:360);
 		} // difference
 		

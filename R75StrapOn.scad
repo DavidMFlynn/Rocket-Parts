@@ -73,6 +73,7 @@ PD_PetalHub(OD=Coupler_OD,
 /**/
 //
 // SpringEndTop(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=5);
+// rotate([0,90,0]) PD_PetalLockCatch(OD=Coupler_OD, ID=Coupler_ID, Wall_t=1.8, Len=28, LockStop=false);
 //
 // *** CableReleaseBB ***
 //
@@ -271,7 +272,7 @@ module SpringEndTop(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=5){
 		// Rope Holes
 		nRopes=nRopeHoles;
 		Rope_d=4;
-		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) translate([0,OD/2-Rope_d/2-6,-Overlap])
+		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) translate([0,OD/2-Rope_d/2-8,-Overlap])
 			cylinder(d=Rope_d, h=Len+Overlap);
 		
 		// Top dish
@@ -299,6 +300,7 @@ module SpringEndTop(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=5){
 } // SpringEndTop
 
 // SpringEndTop();
+// translate([0,0,10]) rotate([0,0,-10]) PD_PetalLockCatch(OD=Coupler_OD, ID=Coupler_ID, Wall_t=1.8, Len=28, LockStop=false);
 
 module R75SRB_LockingPin(){
 	LockPin_Len=44;

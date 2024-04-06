@@ -84,7 +84,7 @@ CouplerLenXtra=-10;
 //
 // rotate([180,0,0]) SE_SpringTop(OD=Coupler_OD, Piston_Len=50, nRopes=6);
 // SpringMiddle();
-// SE_SpringEndBottom(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=6);
+// SE_SpringEndBottom(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=6, CutOutCenter=true);
 // rotate([180,0,0]) MotorTubeTopper(OD=Body_ID-IDXtra, HasSpringCup=false);
 //
 // *** Fin Can ***
