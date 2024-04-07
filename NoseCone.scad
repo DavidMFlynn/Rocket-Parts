@@ -418,8 +418,7 @@ Spring_CS4323_FL=200; // free length
 } // NC_ShockcordRingDual
 
 //NC_ShockcordRingDual(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, NC_Base_L=25, nRivets=6);
-//
-NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_Base_L=15, nRivets=3, nBolts=3);
+//NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_Base_L=15, nRivets=3, nBolts=3);
 //NC_ShockcordRingDual(Tube_OD=Body_OD+Vinyl_t, Tube_ID=Body_ID, NC_Base_L=NC_Base_L);
 
 module BluntConeShape(L=100, D=50, Base_L=2, Tip_R=5){
