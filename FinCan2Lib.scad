@@ -105,6 +105,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 				translate([0,0,-Overlap]) cylinder(d=MotorTubeHole_d, h=Can_Len+Overlap*2);
 			} // difference
 			
+			if (Cone_Len>0)
 			FC2_TailCone(Body_OD=Body_OD, MotorTube_OD=MotorTube_OD, 
 						nFins=nFins,
 						Fin_Root_W=Fin_Root_W, Fin_Root_L=Fin_Root_L, 
@@ -112,6 +113,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 						Threaded=true, Cone_Len=Cone_Len, Interface_OD=Body_OD-1);
 			
 			// Rail guide bolt boss
+			if (RailGuide_h>0)
 			translate([0,0,RailGuide_Z]) rotate([0,0,90]) 
 				RailGuidePost(OD=Body_OD, MtrTube_OD=MotorTubeHole_d, H=RailGuide_h, 
 					TubeLen=50, Length = 30, BoltSpace=12.7);
@@ -131,7 +133,9 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 						}
 		
 		// Rail guide bolt holes
-		translate([-RailGuide_h,0,RailGuide_Z]) rotate([0,0,90]) RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
+		if (RailGuide_h>0)
+			translate([-RailGuide_h,0,RailGuide_Z]) rotate([0,0,90]) 
+				RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
 		
 		if (LowerHalfOnly) translate([0,0,Can_Len/2]) cylinder(d=Body_OD+1, h=Can_Len/2+50);
 		if (UpperHalfOnly) translate([0,0,Can_Len/2]) 

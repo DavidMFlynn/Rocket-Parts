@@ -45,7 +45,7 @@
 //
 //  ***** History *****
 //
-// 0.9.0  4/6/2024  Coppied from Rocket98Goblin 1.3.3
+// 0.9.0  4/6/2024  First code
 //
 // ***********************************
 //  ***** for STL output *****
@@ -114,8 +114,27 @@ nPetals=3;
 ShockCord_a=17;// offset between PD_PetalHub and R65_BallRetainerBottom
 RailGuide_h=Body_OD/2+2;
 
+PodBody_OD=ULine75Body_OD;
+PodBody_ID=ULine75Body_ID;
 
-module DrillHead(OD=ULine75Body_OD, Tube_ID=ULine75Body_ID, Base_L=15, Len=120){
+module ShowPod(){
+	FinCan1_Z=0;
+	AftRadiator_Z=FinCan1_Z+140;
+	FinCan2_Z=AftRadiator_Z+100;
+	FwrdRadiator_Z=FinCan2_Z+50;
+	DrillHead_Z=FwrdRadiator_Z+50;
+	
+	translate([0,0,DrillHead_Z]) DrillHead();
+	translate([0,0,FwrdRadiator_Z]) PodRadiator(Len=50);
+	
+	translate([0,0,AftRadiator_Z]) PodRadiator(Len=100);
+	
+	//PodBase();
+} // ShowPod
+
+ShowPod();
+
+module DrillHead(OD=PodBody_OD, Tube_ID=PodBody_ID, Base_L=15, Len=120){
 	Tip_fn=7;
 	nRivets=3;
 	
@@ -138,14 +157,14 @@ module DrillHead(OD=ULine75Body_OD, Tube_ID=ULine75Body_ID, Base_L=15, Len=120){
 			RivetPattern(BT_Dia=OD, nRivets=nRivets, Dia=5/32*25.4);
 			
 		translate([0,0,-Overlap]) ConeShape(Thickness=1.8);
-		if ($preview) translate([0,0,-Overlap]) cube([OD,OD,Len+10]);
+		//if ($preview) translate([0,0,-Overlap]) cube([OD,OD,Len+10]);
 	} // difference
 	
 } // DrillHead
 
 //DrillHead(Len=120);
 
-module PodRadiator(OD=ULine75Body_OD, ID=ULine75Body_ID, InnerID=BT38Body_OD, Len=50, nFins=11){
+module PodRadiator(OD=PodBody_OD, ID=PodBody_ID, InnerID=BT38Body_OD, Len=50, nFins=11){
 	Wall_t=1.8;
 	Root_W=4;
 	Tip_W=2;
@@ -174,6 +193,43 @@ module PodRadiator(OD=ULine75Body_OD, ID=ULine75Body_ID, InnerID=BT38Body_OD, Le
 } // PodRadiator
 
 // PodRadiator();
+
+PodFin1_Root_L=100;
+PodCan1_Len=PodFin1_Root_L+25;
+PodMotorTube_OD=BT38Body_OD+IDXtra*3;
+PodFin1_Root_W=14;
+PodFin1_Post_h=10;
+PodFin1_Chamfer_L=24;
+
+
+ 
+  FC2_FinCan(Body_OD=PodBody_OD, Body_ID=PodBody_ID, Can_Len=PodCan1_Len,
+				MotorTube_OD=PodMotorTube_OD, RailGuide_h=0,
+				nFins=1,
+				Fin_Root_W=PodFin1_Root_W, Fin_Root_L=PodFin1_Root_L, Fin_Post_h=PodFin1_Post_h,
+				Fin_Chamfer_L=PodFin1_Chamfer_L,
+				Cone_Len=0, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
+
+
+module PodBase(OD=PodBody_OD, ID=PodBody_ID){
+	Wall_t=2.2;
+	
+	difference(){
+		translate([0,0,-4]) Tube(OD=ID, ID=ID-4.4, Len=10+4, myfn=$preview? 36:360);
+		translate([0,0,-4-Overlap]) cylinder(d1=ID, d2=ID-4.4, h=4+Overlap*2);
+		//if ($preview) translate([0,0,-3-Overlap]) cube([OD/2+1,OD/2+1,20]);
+	} // difference
+	
+	difference(){
+		sphere(d=OD, $fn=$preview? 36:360);
+		
+		cylinder(d=OD+Overlap, h=OD/2+Overlap);
+		sphere(d=OD-Wall_t*2, $fn=$preview? 36:360);
+		//if ($preview) translate([0,0,-OD/2]) cube([OD/2+1,OD/2+1,OD]);
+	} // difference
+} // PodBase
+
+//PodBase();
 
 
 
