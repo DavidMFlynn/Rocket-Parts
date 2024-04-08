@@ -124,9 +124,9 @@ module TrapFin2Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_
 // module BluntTip(){}??
 
 module TrapFin2Shape(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100, Chamfer_L=18,
-						TipOffset=0, TipInset=0, HasBluntTip=false){
+						TipOffset=0, TipInset=0, TipPost_h=0, HasBluntTip=false){
 	Edge_r=1;
-	Tip_Chamfer=Chamfer_L-(Root_W-Tip_W);
+	Tip_Chamfer=HasBluntTip? Chamfer_L:Chamfer_L-(Root_W-Tip_W);
 	Tip_Chamfer_Z=HasBluntTip? 0:Tip_Chamfer;
 	
 	// Post, embeds into fin can
@@ -135,6 +135,15 @@ module TrapFin2Shape(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span
 		translate([-Root_L/2+Chamfer_L,0,0]) cylinder(d=Root_W, h=Post_h);
 		translate([Root_L/2-Chamfer_L,0,0]) cylinder(d=Root_W, h=Post_h);
 		translate([Root_L/2-Edge_r,0,0]) cylinder(r=Edge_r, h=Post_h);
+	} // hull
+	
+	// Tip Post, embeds into pod fin can
+	if (HasBluntTip && TipPost_h>0) translate([TipOffset,0,Post_h+Span-Overlap])
+	hull(){
+		translate([-Tip_L/2+Edge_r,0,0]) cylinder(r=Edge_r, h=TipPost_h);
+		translate([-Tip_L/2+Tip_Chamfer,0,0]) cylinder(d=Tip_W, h=TipPost_h);
+		translate([Tip_L/2-Tip_Chamfer,0,0]) cylinder(d=Tip_W, h=TipPost_h);
+		translate([Tip_L/2-Edge_r,0,0]) cylinder(r=Edge_r, h=TipPost_h);
 	} // hull
 	
 	hull(){
@@ -197,7 +206,7 @@ module BisectFin(X_Offset=0, X1=100, Y=10, Z=100, KeepNegXHalf=false){
 //BisectFin(X_Offset=0, X1=100, Y=10, Z=100, KeepNegXHalf=true);
 
 module TrapFin2(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100, Chamfer_L=18,
-				TipOffset=0, TipInset=0, HasBluntTip=false,
+				TipOffset=0, TipInset=0, HasBluntTip=false, TipPost_h=0,
 				Bisect=false, Bisect_X=0,
 				HasSpar=false, Spar_d=8, Spar_L=100){
 					
@@ -212,8 +221,8 @@ module TrapFin2(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100,
 					
 	difference(){
 		TrapFin2Shape(Post_h=Post_h, Root_L=Root_L, Tip_L=Tip_L, 
-						Root_W=Root_W, Tip_W=Tip_W, Span=Span, Chamfer_L=Chamfer_L,
-						TipOffset=TipOffset, TipInset=TipInset);
+						Root_W=Root_W, Tip_W=Tip_W, TipPost_h=TipPost_h, Span=Span, Chamfer_L=Chamfer_L,
+						TipOffset=TipOffset, TipInset=TipInset, HasBluntTip=HasBluntTip);
 		
 		if (HasSpar){
 			// Hole for spar

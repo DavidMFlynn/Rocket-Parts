@@ -50,6 +50,23 @@
 // ***********************************
 //  ***** for STL output *****
 //
+//  *** Pod ***
+// DrillHead(OD=PodBody_OD, Tube_ID=PodBody_ID, InnerID=BT38Body_OD, Base_L=DrillHeadBase_L, Len=DrillHeadLen);
+// PodRadiator(OD=PodBody_OD, ID=PodBody_ID, InnerID=BT38Body_OD, Len=PodRadiator2Len, nFins=11, HasCoupler=true);
+// PodFwdFinCan();
+// PodRadiator(OD=PodBody_OD, ID=PodBody_ID, InnerID=BT38Body_OD, Len=PodRadiator1Len, nFins=11, HasCoupler=false);
+// PodAftFinCan();
+// rotate([180,0,0]) PodBase(OD=PodBody_OD, ID=PodBody_ID);
+//
+// PodRadiator(OD=Body_OD, ID=Body_ID, InnerID=MotorTube_OD, Len=100, nFins=15, HasCoupler=true);
+// FinCan2();
+// PodRadiator(OD=Body_OD, ID=Body_ID, InnerID=MotorTube_OD, Len=100, nFins=15, HasCoupler=false);
+// rotate([180,0,0]) FinCan1();
+// MotorRetainer();
+// PodAftOuterFin();
+//
+// PodFwdFin();
+// PodAftFin();
 //
 // ***********************************
 //  ***** Routines *****
@@ -58,6 +75,7 @@
 // ***********************************
 //  ***** for Viewing *****
 //
+// ShowPod(); // pod only
 // ShowRocket();
 // ShowRocket(ShowInternals=true);
 //
@@ -88,11 +106,15 @@ Body_OD=BT98Body_OD;
 Body_ID=BT98Body_ID;
 Coupler_OD=BT98Coupler_OD;
 Coupler_ID=BT98Coupler_ID;
+MotorTube_OD=BT54Body_OD;
+MotorTube_ID=BT54Body_ID;
 
 Alt_DoorXtra_X=6;
 Alt_DoorXtra_Y=4;
 
 nFins=3;
+
+/*
 // Standard
 Fin_Post_h=18;
 Fin_Root_L=180;
@@ -104,52 +126,180 @@ Fin_Span=125+Fin_TipInset;
 Fin_TipOffset=30;
 Fin_Chamfer_L=26;
 Fin_HasBluntTip=false;
+/**/
 
 FinInset_Len=5;
-Can_Len=Fin_Root_L+FinInset_Len*2;
 Cone_Len=65;
 Bolt4Inset=4;
 nLockBalls=6;
 nPetals=3;
 ShockCord_a=17;// offset between PD_PetalHub and R65_BallRetainerBottom
-RailGuide_h=Body_OD/2+2;
+RailGuide_h=Body_OD/2+8;
+RailGuideLen=35;
 
 PodBody_OD=ULine75Body_OD;
 PodBody_ID=ULine75Body_ID;
 
+DrillHeadLen=110;
+DrillHeadBase_L=11;
+PodMotorTube_OD=BT38Body_OD+IDXtra*3;
+
+PodFin1_Root_L=140;
+PodCan1_Len=PodFin1_Root_L+FinInset_Len*2;
+PodFin1_Root_W=16;
+PodFin1_Post_h=19;
+PodFin1_TipPost_h=17;
+PodFin1_Chamfer_L=24;
+PodFin1_Span=100;
+PodFin1_TipOffset=30;
+PodFin1_Tip_W=12;
+
+PodRadiator1Len=100;
+
+PodFin2_Root_L=100;
+PodCan2_Len=PodFin2_Root_L+FinInset_Len*2;
+PodFin2_Root_W=14;
+PodFin2_Post_h=19;
+PodFin2_TipPost_h=17;
+PodFin2_Chamfer_L=24;
+PodFin2_Span=100;
+PodFin2_TipOffset=30;
+PodFin2_Tip_W=12;
+
+PodRadiator2Len=50;
+
+Can1_Len=PodFin1_Root_L+FinInset_Len*2;
+Can2_Len=PodFin2_Root_L+FinInset_Len*2;
+
+
 module ShowPod(){
 	FinCan1_Z=0;
-	AftRadiator_Z=FinCan1_Z+140;
-	FinCan2_Z=AftRadiator_Z+100;
-	FwrdRadiator_Z=FinCan2_Z+50;
-	DrillHead_Z=FwrdRadiator_Z+50;
+	AftRadiator_Z=FinCan1_Z+PodCan1_Len;
+	FinCan2_Z=AftRadiator_Z+PodRadiator1Len;
+	FwrdRadiator_Z=FinCan2_Z+PodCan2_Len;
+	DrillHead_Z=FwrdRadiator_Z+PodRadiator2Len+DrillHeadBase_L;
 	
 	translate([0,0,DrillHead_Z]) DrillHead();
-	translate([0,0,FwrdRadiator_Z]) PodRadiator(Len=50);
+	translate([0,0,FwrdRadiator_Z+PodRadiator2Len]) rotate([180,0,0])
+		PodRadiator(OD=PodBody_OD, ID=PodBody_ID, InnerID=BT38Body_OD, Len=PodRadiator2Len, nFins=11, HasCoupler=true);
 	
-	translate([0,0,AftRadiator_Z]) PodRadiator(Len=100);
+	translate([0,0,FinCan2_Z]) PodFwdFinCan();
 	
-	//PodBase();
+	translate([0,0,AftRadiator_Z]) 
+		PodRadiator(OD=PodBody_OD, ID=PodBody_ID, InnerID=BT38Body_OD, Len=PodRadiator1Len, nFins=11, HasCoupler=false);
+	
+	translate([0,0,FinCan1_Z]) PodAftFinCan();
+	
+	PodBase(OD=PodBody_OD, ID=PodBody_ID);
 } // ShowPod
 
-ShowPod();
+// ShowPod();
 
-module DrillHead(OD=PodBody_OD, Tube_ID=PodBody_ID, Base_L=15, Len=120){
+
+module ShowRocket(){
+	FinCan1_Z=0;
+	Fin1_Z=FinCan1_Z+PodCan1_Len/2;
+	Spacer_Z=FinCan1_Z+Can1_Len;
+	FinCan2_Z=Spacer_Z+PodRadiator1Len;
+	Fin2_Z=FinCan2_Z+PodCan2_Len/2;
+	
+	for (j=[0:nFins-1]) rotate([0,0,360/nFins*j]) {
+		translate([Body_OD/2+PodFin1_Span+PodBody_OD/2,0,-PodFin1_TipOffset]) rotate([0,0,180]) ShowPod();
+		translate([Body_OD/2-PodFin1_Post_h,0,Fin1_Z]) rotate([0,90,0]) PodAftFin();
+		translate([Body_OD/2+PodFin1_Span+PodBody_OD-PodFin1_TipPost_h,0,Fin1_Z-PodFin1_TipOffset]) rotate([0,90,0]) PodAftOuterFin();
+		translate([Body_OD/2-PodFin1_Post_h,0,Fin2_Z]) rotate([0,90,0]) PodFwdFin();
+	}
+	
+	translate([0,0,FinCan1_Z]){
+		FinCan1();
+		MotorRetainer();}
+		
+	translate([0,0,FinCan1_Z+Can1_Len]) rotate([0,0,-90/15]) 
+		PodRadiator(OD=Body_OD, ID=Body_ID, InnerID=MotorTube_OD, Len=100, nFins=15, HasCoupler=false);
+		
+	translate([0,0,FinCan2_Z+Can2_Len]) rotate([180,0,0]) FinCan2();
+	translate([0,0,FinCan2_Z+Can2_Len+100]) rotate([0,0,90/15]) rotate([180,0,0])
+		PodRadiator(OD=Body_OD, ID=Body_ID, InnerID=MotorTube_OD, Len=100, nFins=15, HasCoupler=true);
+} // ShowRocket
+
+//ShowRocket();
+
+
+module PodFwdFin(){
+	TrapFin2(Post_h=PodFin2_Post_h, Root_L=PodFin2_Root_L, Tip_L=PodFin2_Root_L, 
+				Root_W=PodFin2_Root_W, Tip_W=PodFin2_Tip_W, Span=PodFin2_Span, Chamfer_L=PodFin2_Chamfer_L,
+				TipOffset=PodFin2_TipOffset, TipInset=0, HasBluntTip=true, TipPost_h=PodFin2_TipPost_h,
+				Bisect=false, Bisect_X=0,
+				HasSpar=false, Spar_d=8, Spar_L=100);
+				
+	if ($preview==false){
+	translate([PodFin2_Root_L/2-5,0,0]) cylinder(d=15, h=0.9);
+	translate([-PodFin2_Root_L/2+5,0,0]) cylinder(d=15, h=0.9);}
+} // PodFwdFin
+
+// PodFwdFin();
+
+module PodAftFin(){
+	TrapFin2(Post_h=PodFin1_Post_h, Root_L=PodFin1_Root_L, Tip_L=PodFin1_Root_L, 
+				Root_W=PodFin1_Root_W, Tip_W=PodFin1_Tip_W, Span=PodFin1_Span, Chamfer_L=PodFin1_Chamfer_L,
+				TipOffset=PodFin1_TipOffset, TipInset=0, HasBluntTip=true, TipPost_h=PodFin1_TipPost_h,
+				Bisect=false, Bisect_X=0,
+				HasSpar=false, Spar_d=8, Spar_L=100);
+				
+	if ($preview==false){
+	translate([PodFin1_Root_L/2-5,0,0]) cylinder(d=15, h=0.9);
+	translate([-PodFin1_Root_L/2+5,0,0]) cylinder(d=15, h=0.9);}
+} // PodAftFin
+		
+// PodAftFin();
+
+module PodAftOuterFin(){
+	TrapFin2(Post_h=PodFin1_TipPost_h, Root_L=PodFin1_Root_L, Tip_L=PodFin1_Root_L/2, 
+				Root_W=PodFin1_Tip_W, Tip_W=5, Span=PodFin1_Root_L/2, Chamfer_L=PodFin1_Chamfer_L,
+				TipOffset=0, TipInset=0, HasBluntTip=false, TipPost_h=0,
+				Bisect=false, Bisect_X=0,
+				HasSpar=false, Spar_d=8, Spar_L=100);
+				
+	if ($preview==false){
+	translate([PodFin1_Root_L/2-5,0,0]) cylinder(d=15, h=0.9);
+	translate([-PodFin1_Root_L/2+5,0,0]) cylinder(d=15, h=0.9);}
+} // PodAftOuterFin
+		
+// PodAftOuterFin();
+		
+module DrillHead(OD=PodBody_OD, Tube_ID=PodBody_ID, InnerID=BT38Body_OD, Base_L=DrillHeadBase_L, Len=DrillHeadLen){
 	Tip_fn=7;
 	nRivets=3;
 	
 	module ConeShape(Thickness=0){
 		translate([0,0,-Base_L]) cylinder(d=OD-Thickness*2, h=Base_L+Overlap, $fn=$preview? 36:360);
 		hull(){
-			rotate_extrude($fn=$preview? 90:360) translate([OD/2-7.5-Thickness,0,0]) circle(d=15);
+			difference(){
+				rotate_extrude($fn=$preview? 90:360) translate([OD/2-7.5,0,0]) circle(d=15-Thickness*2, $fn=90);
+				translate([0,0,-7.5-Overlap]) cylinder(d=OD+1, h=7.5);
+			}
 		
-			for (j=[0:Tip_fn-1]) rotate([0,0,360/Tip_fn*j]) translate([0,OD/6-Thickness,Len-OD/3]) cylinder(d=3, h=Overlap);
+			for (j=[0:Tip_fn-1]) rotate([0,0,360/Tip_fn*j]) translate([0,OD/3-Thickness,Len-OD/1.4]) cylinder(d=6, h=Overlap);
 		
+			// Tip
 			translate([0,0,Len]) sphere(d=6-Thickness*2);
 		} // hull
 	} // ConeShape
 	
-	
+	/*
+	translate([0,0,-Base_L-10]) {
+		CenteringRing(OD=Tube_ID-1, ID=InnerID+IDXtra*2, Thickness=4, nHoles=0);
+		Tube(OD=Tube_ID-IDXtra*2, ID=Tube_ID-IDXtra*2-4.4, Len=11, myfn=$preview? 36:360);
+		}
+		
+	translate([0,0,-Base_L])
+	difference(){
+		Tube(OD=OD-IDXtra, ID=Tube_ID-IDXtra*2-4.4, Len=4, myfn=$preview? 36:360);
+		
+		translate([0,0,1]) cylinder(d1=Tube_ID-IDXtra*2-4.4, d2=Tube_ID, h=3+Overlap);
+	} // difference
+	/**/
+	//*
 	difference(){
 		ConeShape();
 		
@@ -157,26 +307,31 @@ module DrillHead(OD=PodBody_OD, Tube_ID=PodBody_ID, Base_L=15, Len=120){
 			RivetPattern(BT_Dia=OD, nRivets=nRivets, Dia=5/32*25.4);
 			
 		translate([0,0,-Overlap]) ConeShape(Thickness=1.8);
+		
+		translate([0,0,-Base_L-Overlap]) cylinder(d=Tube_ID, h=Base_L+Overlap*2, $fn=$preview? 90:360);
 		//if ($preview) translate([0,0,-Overlap]) cube([OD,OD,Len+10]);
 	} // difference
-	
+	/**/
 } // DrillHead
 
-//DrillHead(Len=120);
+//DrillHead(Len=DrillHeadLen);
 
-module PodRadiator(OD=PodBody_OD, ID=PodBody_ID, InnerID=BT38Body_OD, Len=50, nFins=11){
+module PodRadiator(OD=PodBody_OD, ID=PodBody_ID, InnerID=BT38Body_OD, Len=50, nFins=11, HasCoupler=false){
 	Wall_t=1.8;
 	Root_W=4;
 	Tip_W=2;
 	Span=OD/7;
 	
 	Tube(OD=OD, ID=ID, Len=Len, myfn=$preview? 36:360);
+	
+	if (HasCoupler)
 	difference(){
 		Tube(OD=OD-IDXtra, ID=ID-IDXtra*2-4.4, Len=4, myfn=$preview? 36:360);
 		
 		translate([0,0,1]) cylinder(d1=ID-IDXtra*2-4.4, d2=ID, h=3+Overlap);
 	} // difference
 	
+	if (HasCoupler)
 	translate([0,0,-10]) {
 		CenteringRing(OD=ID-1, ID=InnerID+IDXtra*2, Thickness=4, nHoles=0);
 		Tube(OD=ID-IDXtra*2, ID=ID-IDXtra*2-4.4, Len=11, myfn=$preview? 36:360);
@@ -194,32 +349,38 @@ module PodRadiator(OD=PodBody_OD, ID=PodBody_ID, InnerID=BT38Body_OD, Len=50, nF
 
 // PodRadiator();
 
-PodFin1_Root_L=100;
-PodCan1_Len=PodFin1_Root_L+25;
-PodMotorTube_OD=BT38Body_OD+IDXtra*3;
-PodFin1_Root_W=14;
-PodFin1_Post_h=10;
-PodFin1_Chamfer_L=24;
+module PodFwdFinCan(){
+ 
+  FC2_FinCan(Body_OD=PodBody_OD, Body_ID=PodBody_ID, Can_Len=PodCan2_Len,
+				MotorTube_OD=PodMotorTube_OD, RailGuide_h=0,
+				nFins=1, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=true,
+				Fin_Root_W=PodFin2_Tip_W, Fin_Root_L=PodFin2_Root_L, Fin_Post_h=PodFin2_TipPost_h,
+				Fin_Chamfer_L=PodFin2_Chamfer_L,
+				Cone_Len=0, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
 
+} // PodFwdFinCan
 
+// PodFwdFinCan();
+
+module PodAftFinCan(){
  
   FC2_FinCan(Body_OD=PodBody_OD, Body_ID=PodBody_ID, Can_Len=PodCan1_Len,
 				MotorTube_OD=PodMotorTube_OD, RailGuide_h=0,
-				nFins=1,
-				Fin_Root_W=PodFin1_Root_W, Fin_Root_L=PodFin1_Root_L, Fin_Post_h=PodFin1_Post_h,
+				nFins=2, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=true,
+				Fin_Root_W=PodFin1_Tip_W, Fin_Root_L=PodFin1_Root_L, Fin_Post_h=PodFin1_TipPost_h,
 				Fin_Chamfer_L=PodFin1_Chamfer_L,
 				Cone_Len=0, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
 
+} // PodAftFinCan
+
+// PodAftFinCan();
 
 module PodBase(OD=PodBody_OD, ID=PodBody_ID){
-	Wall_t=2.2;
+	Wall_t=2.6;
 	
-	difference(){
-		translate([0,0,-4]) Tube(OD=ID, ID=ID-4.4, Len=10+4, myfn=$preview? 36:360);
-		translate([0,0,-4-Overlap]) cylinder(d1=ID, d2=ID-4.4, h=4+Overlap*2);
-		//if ($preview) translate([0,0,-3-Overlap]) cube([OD/2+1,OD/2+1,20]);
-	} // difference
-	
+	translate([0,0,-10-Overlap]) Tube(OD=OD, ID=ID, Len=10+Overlap, myfn=$preview? 36:360);
+		
+	translate([0,0,-10])
 	difference(){
 		sphere(d=OD, $fn=$preview? 36:360);
 		
@@ -231,12 +392,35 @@ module PodBase(OD=PodBody_OD, ID=PodBody_ID){
 
 //PodBase();
 
+module MotorRetainer(){
+	FC2_MotorRetainer(Body_OD=Body_OD,
+						MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID,
+						HasWrenchCuts=false, Cone_Len=Cone_Len, ExtraLen=0);
+} // MotorRetainer
 
+//MotorRetainer();
 
+module FinCan1(){
+	FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=Can1_Len,
+				MotorTube_OD=MotorTube_OD, RailGuide_h=RailGuide_h,
+				nFins=nFins, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
+				Fin_Root_W=PodFin1_Root_W, Fin_Root_L=PodFin1_Root_L, Fin_Post_h=PodFin1_Post_h, Fin_Chamfer_L=PodFin1_Chamfer_L,
+				Cone_Len=Cone_Len, RailGuideLen=RailGuideLen,
+				LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
+} // FinCan1
 
+// FinCan1();
 
+module FinCan2(){
+	FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=Can2_Len,
+				MotorTube_OD=MotorTube_OD, RailGuide_h=RailGuide_h,
+				nFins=nFins, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=true,
+				Fin_Root_W=PodFin2_Root_W, Fin_Root_L=PodFin2_Root_L, Fin_Post_h=PodFin2_Post_h, Fin_Chamfer_L=PodFin2_Chamfer_L,
+				Cone_Len=0, RailGuideLen=RailGuideLen,
+				LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
+} // FinCan2
 
-
+// FinCan2();
 
 
 
