@@ -27,7 +27,7 @@ echo("RailGuide 1.0.5");
 //
 // RailButton();
 //
-// rotate([90,0,0]) BoltOnRailGuide(Length = 40, BoltSpace=12.7, RoundEnds=true);
+// rotate([90,0,0]) BoltOnRailGuide(Length = 40, BoltSpace=12.7, RoundEnds=true, ExtraBack=0);
 // RialGuide(TubeOD = 98, Length = 40, Offset = 3);
 //
 // rotate([-90,0,0]) RailGuideSpacer(OD=PML98Body_OD, H=PML98Body_OD/2+2, Length = 30, BoltSpace=12.7);

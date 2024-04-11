@@ -50,8 +50,33 @@
 // ***********************************
 //  ***** for STL output *****
 //
+// DrillHead(OD=Body_OD, Tube_ID=Body_ID, InnerID=0, Base_L=NC_Base_L, Len=NC_Len);
+// NC_ShockcordRingDual(Tube_OD=Body_OD, Tube_ID=Body_ID, NC_Base_L=NC_Base_L, nRivets=3, nBolts=3);
+//
+// EB_Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=162, nBolts=3, BoltInset=NC_Base_L/2, ShowDoors=false, HasSecondBattDoor=false);
+// rotate([-90,0,0]) Batt_Door(Tube_OD=Body_OD, Door_X=BattDoorX(), InnerTube_OD=0, HasSwitch=false, DoubleBatt=false);
+// rotate([-90,0,0]) Batt_Door(Tube_OD=Body_OD, Door_X=BattDoorX(), InnerTube_OD=0, HasSwitch=true, DoubleBatt=false);
+// rotate([-90,0,0]) AltDoor54(Tube_OD=Body_OD, IsLoProfile=false, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowAlt=true);
+//
+// *** Ball Lock ***
+//
+// STB_LockDisk(BallPerimeter_d=Body_OD, nLockBalls=nLockBalls);
+// rotate([180,0,0]) R98C_BallRetainerTop();
+// R98_BallRetainerBottom();
+// rotate([180,0,0]) STB_TubeEnd(BallPerimeter_d=Body_OD, nLockBalls=nLockBalls, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=20);
+//
+// *** petal deployer ***
+//
+// PD_PetalHub(OD=Coupler_OD, nPetals=nPetals, ShockCord_a=PD_ShockCordAngle());
+// rotate([-90,0,0]) PD_PetalSpringHolder(OD=Coupler_OD);
+// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=PetalLen, nPetals=nPetals, AntiClimber_h=3);
+//
+// rotate([180,0,0]) SE_SpringTop(OD=Coupler_OD, Piston_Len=50, nRopes=6);
+// SE_SlidingSpringMiddle(OD=Coupler_OD-IDXtra, nRopes=6, SliderLen=40, SpLen=35, SpringStop_Z=20);
+// SE_SpringEndBottom(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=6, CutOutCenter=true);
+//
 //  *** Pod ***
-// DrillHead(OD=PodBody_OD, Tube_ID=PodBody_ID, InnerID=BT38Body_OD, Base_L=DrillHeadBase_L, Len=DrillHeadLen);
+// DrillHead(OD=PodBody_OD, Tube_ID=PodBody_ID, InnerID=0, Base_L=DrillHeadBase_L, Len=DrillHeadLen);
 // PodRadiator(OD=PodBody_OD, ID=PodBody_ID, InnerID=BT38Body_OD, Len=PodRadiator2Len, nFins=11, HasCoupler=true);
 // PodFwdFinCan();
 // PodRadiator(OD=PodBody_OD, ID=PodBody_ID, InnerID=BT38Body_OD, Len=PodRadiator1Len, nFins=11, HasCoupler=false);
@@ -67,6 +92,10 @@
 //
 // PodFwdFin();
 // PodAftFin();
+//
+// CenteringRing(OD=Body_ID, ID=MotorTube_OD, Thickness=5, nHoles=5, Offset=0);
+//
+// rotate([90,0,0]) BoltOnRailGuide(Length = RailGuideLen, BoltSpace=12.7, RoundEnds=true, ExtraBack=0);
 //
 // ***********************************
 //  ***** Routines *****
@@ -101,6 +130,9 @@ Overlap=0.05;
 IDXtra=0.2;
 $fn=$preview? 36:90;
 
+NC_Base_L=15;
+NC_Len=175;
+PetalLen=180;
 
 Body_OD=BT98Body_OD;
 Body_ID=BT98Body_ID;
@@ -128,6 +160,7 @@ Fin_Chamfer_L=26;
 Fin_HasBluntTip=false;
 /**/
 
+CouplerLenXtra=-10;
 FinInset_Len=5;
 Cone_Len=65;
 Bolt4Inset=4;
@@ -224,6 +257,69 @@ module ShowRocket(){
 
 //ShowRocket();
 
+module R98_BallRetainerBottom(){
+	difference(){
+		STB_BallRetainerBottom(BallPerimeter_d=Body_OD, Body_OD=Body_ID, 
+				nLockBalls=nLockBalls, HasSpringGroove=false);
+		
+		rotate([0,0,PD_ShockCordAngle()-ShockCord_a]) 
+			PD_PetalHubBoltPattern(OD=Coupler_OD, nPetals=nPetals) Bolt4Hole();
+
+	} // difference
+} // R98_BallRetainerBottom
+
+// translate([0,0,-9]) rotate([180,0,0]) R98_BallRetainerBottom();
+//rotate([0,0,152]) PD_PetalHub(Coupler_OD=Coupler_OD, nPetals=nPetals, ShockCord_a=PD_ShockCordAngle());
+
+
+module R98C_BallRetainerTop(){
+	Tube_d=12.7;
+	Tube_Z=31;
+	Tube_a=-6;
+	TubeSlot_w=35;
+	TubeOffset_X=22;
+	Engagement_Len=20;
+	nBolts=3;
+	BoltInset=7.5;
+	Skirt_H=24;
+	
+	difference(){
+		union(){
+			STB_BallRetainerTop(BallPerimeter_d=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls,
+								HasIntegratedCouplerTube=true, IntegratedCouplerLenXtra=CouplerLenXtra,
+								Body_ID=Body_ID-IDXtra, HasSecondServo=false, UsesBigServo=true, Engagement_Len=Engagement_Len);
+				
+			translate([0,0,35.5]) 
+				Tube(OD=Body_ID-IDXtra, ID=Body_ID-IDXtra-6, Len=5, myfn=$preview? 90:360);
+			
+			// Shock cord retention
+			difference(){
+				union(){
+					rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z]) 
+						rotate([90,0,0]) cylinder(d=Tube_d+6, h=Body_ID-2, center=true);
+					rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z-12.2])
+						cube([Tube_d-3, Body_ID-2, 21], center=true);
+				} // union
+				
+				rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z]) 
+					rotate([90,0,0]) cylinder(d=Tube_d+7, h=TubeSlot_w, center=true);
+				rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z-12.2])
+					cube([Tube_d-1, TubeSlot_w,21.1], center=true);
+					
+				Tube(OD=Body_OD+20, ID=Body_ID-1, Len=50, myfn=$preview? 90:360);
+			} // difference
+		} // union
+	
+		translate([TubeOffset_X,0,Tube_Z]) rotate([90,0,Tube_a]) cylinder(d=Tube_d, h=Body_OD, center=true);
+		
+		//Bolt holes for nosecone and ball lock
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]){
+			translate([0,-Body_OD/2-1,Engagement_Len/2+Skirt_H+CouplerLenXtra+BoltInset]) rotate([90,0,0]) Bolt4Hole();
+		} // for
+	} // difference
+} // R98C_BallRetainerTop
+
+// rotate([180,0,0]) R98C_BallRetainerTop();
 
 module PodFwdFin(){
 	TrapFin2(Post_h=PodFin2_Post_h, Root_L=PodFin2_Root_L, Tip_L=PodFin2_Root_L, 
@@ -267,9 +363,11 @@ module PodAftOuterFin(){
 		
 // PodAftOuterFin();
 		
-module DrillHead(OD=PodBody_OD, Tube_ID=PodBody_ID, InnerID=BT38Body_OD, Base_L=DrillHeadBase_L, Len=DrillHeadLen){
+module DrillHead(OD=PodBody_OD, Tube_ID=PodBody_ID, InnerID=0, Base_L=DrillHeadBase_L, Len=DrillHeadLen){
 	Tip_fn=7;
+	Tip_d=(OD>80)? 8:6;
 	nRivets=3;
+	Wall_t=(OD>80)? 2.2:1.8;
 	
 	module ConeShape(Thickness=0){
 		translate([0,0,-Base_L]) cylinder(d=OD-Thickness*2, h=Base_L+Overlap, $fn=$preview? 36:360);
@@ -279,39 +377,43 @@ module DrillHead(OD=PodBody_OD, Tube_ID=PodBody_ID, InnerID=BT38Body_OD, Base_L=
 				translate([0,0,-7.5-Overlap]) cylinder(d=OD+1, h=7.5);
 			}
 		
-			for (j=[0:Tip_fn-1]) rotate([0,0,360/Tip_fn*j]) translate([0,OD/3-Thickness,Len-OD/1.4]) cylinder(d=6, h=Overlap);
+			for (j=[0:Tip_fn-1]) rotate([0,0,360/Tip_fn*j]) 
+				translate([0,OD/3-Thickness,Len-OD/1.4]) cylinder(d=Tip_d, h=Overlap);
 		
 			// Tip
-			translate([0,0,Len]) sphere(d=6-Thickness*2);
+			translate([0,0,Len]) sphere(d=Tip_d-Thickness*2);
 		} // hull
 	} // ConeShape
 	
-	/*
-	translate([0,0,-Base_L-10]) {
-		CenteringRing(OD=Tube_ID-1, ID=InnerID+IDXtra*2, Thickness=4, nHoles=0);
-		Tube(OD=Tube_ID-IDXtra*2, ID=Tube_ID-IDXtra*2-4.4, Len=11, myfn=$preview? 36:360);
+	if (InnerID>0){
+		translate([0,0,-Base_L-10]) {
+			CenteringRing(OD=Tube_ID-1, ID=InnerID+IDXtra*2, Thickness=4, nHoles=0);
+			Tube(OD=Tube_ID-IDXtra*2, ID=Tube_ID-IDXtra*2-4.4, Len=11, myfn=$preview? 36:360);
+			}
+			
+		translate([0,0,-Base_L])
+		difference(){
+			Tube(OD=OD-IDXtra, ID=Tube_ID-IDXtra*2-4.4, Len=4, myfn=$preview? 36:360);
+			
+			translate([0,0,1]) cylinder(d1=Tube_ID-IDXtra*2-4.4, d2=Tube_ID, h=3+Overlap);
+		} // difference
 		}
-		
-	translate([0,0,-Base_L])
-	difference(){
-		Tube(OD=OD-IDXtra, ID=Tube_ID-IDXtra*2-4.4, Len=4, myfn=$preview? 36:360);
-		
-		translate([0,0,1]) cylinder(d1=Tube_ID-IDXtra*2-4.4, d2=Tube_ID, h=3+Overlap);
-	} // difference
-	/**/
-	//*
+	
 	difference(){
 		ConeShape();
 		
+		// Rivet holes
 		if (Base_L>12 && nRivets>0) translate([0,0,-Base_L/2])
 			RivetPattern(BT_Dia=OD, nRivets=nRivets, Dia=5/32*25.4);
 			
-		translate([0,0,-Overlap]) ConeShape(Thickness=1.8);
+		// Make hollow
+		translate([0,0,-Overlap]) ConeShape(Thickness=Wall_t);
 		
 		translate([0,0,-Base_L-Overlap]) cylinder(d=Tube_ID, h=Base_L+Overlap*2, $fn=$preview? 90:360);
+		cylinder(d1=Tube_ID, d2=Tube_ID-3, h=3, $fn=$preview? 90:360);
 		//if ($preview) translate([0,0,-Overlap]) cube([OD,OD,Len+10]);
 	} // difference
-	/**/
+	
 } // DrillHead
 
 //DrillHead(Len=DrillHeadLen);

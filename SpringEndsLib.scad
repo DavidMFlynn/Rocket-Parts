@@ -42,7 +42,8 @@ echo(SpringEndsLibRev());
 //
 // SE_SpringTop(OD=BT98Coupler_OD, Piston_Len=50, nRopes=6);
 // SE_SpringEndTop(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles=5);
-// SE_SpringEndBottom(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles=5, CutOutCenter=false);
+// 
+SE_SpringEndBottom(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles=5, CutOutCenter=false);
 //
 // ***********************************
 //  ***** Routines *****
@@ -435,6 +436,7 @@ module SE_SpringEndBottom(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHo
 	Piston_h=15;
 	Len=30;
 	Plate_t=3;
+	Rope_d=4;
 	Rope_Y=CutOutCenter? OD/2-7:Spring_OD/2+Rope_d/2+2;
 	
 	module SCH(){
@@ -454,7 +456,7 @@ module SE_SpringEndBottom(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHo
 		if (CutOutCenter) cylinder(d=Spring_ID, h=Len);
 		
 		// Rope Holes
-		Rope_d=4;
+		
 		for (j=[0:nRopeHoles-1]) rotate([0,0,360/nRopeHoles*j]) translate([0,Rope_Y,-Overlap])
 			cylinder(d=Rope_d, h=Len);
 		
