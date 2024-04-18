@@ -93,7 +93,7 @@
 // PodFwdFin();
 // PodAftFin();
 //
-// CenteringRing(OD=Body_ID, ID=MotorTube_OD, Thickness=5, nHoles=5, Offset=0);
+// CenteringRing(OD=Body_ID, ID=MotorTube_OD+IDXtra*2, Thickness=5, nHoles=5, Offset=0);
 //
 // rotate([90,0,0]) BoltOnRailGuide(Length = RailGuideLen, BoltSpace=12.7, RoundEnds=true, ExtraBack=0);
 //
@@ -203,6 +203,33 @@ PodRadiator2Len=50;
 
 Can1_Len=PodFin1_Root_L+FinInset_Len*2;
 Can2_Len=PodFin2_Root_L+FinInset_Len*2;
+
+module CradleTool(){
+	H=3;
+	
+	translate([0,0,10]) cube([ULine75Body_OD,5,20],center=true);
+	
+	difference(){
+		hull(){
+			translate([0,0,H/2]) cube([ULine75Body_OD/2,Overlap,H],center=true);
+			translate([0,75+ULine75Body_OD/2,0]) cylinder(d=ULine75Body_OD/2, h=H);
+		} // hull
+		
+		translate([0,75+ULine75Body_OD/2,-Overlap]) cylinder(d=ULine75Body_OD, h=H+Overlap*2);
+	} // difference
+	
+	translate([0,75+ULine75Body_OD/2,0])
+	difference(){
+		cylinder(d=ULine75Body_OD+10, h=H);
+		
+		translate([0,0,-Overlap]){
+			cylinder(d=ULine75Body_OD, h=H+Overlap*2);
+			translate([-(ULine75Body_OD+11)/2,0,0]) cube([ULine75Body_OD+11,ULine75Body_OD,H+Overlap*2]);
+		}
+	} // difference
+} // CradleTool
+
+// CradleTool();
 
 
 module ShowPod(){

@@ -42,8 +42,8 @@ echo(SpringEndsLibRev());
 //
 // SE_SpringTop(OD=BT98Coupler_OD, Piston_Len=50, nRopes=6);
 // SE_SpringEndTop(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles=5);
-// 
-SE_SpringEndBottom(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles=5, CutOutCenter=false);
+// SE_SpringEndBottom(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles=5, CutOutCenter=false);
+// SE_SpringEndBottom(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles=5, CutOutCenter=true);
 //
 // ***********************************
 //  ***** Routines *****
@@ -376,8 +376,9 @@ module SE_SpringSpacer(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_ID, Len=70){
 //SE_SpringSpacer();
 
 
-module SE_SpringEndTop(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles=3){
+module SE_SpringEndTop(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles=3, CutOutCenter=false){
 	Spring_OD=Spring_CS4323_OD;
+	Spring_ID=Spring_CS4323_ID;
 	Piston_h=15;
 	Len=30;
 	Plate_t=3;
@@ -400,6 +401,8 @@ module SE_SpringEndTop(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles
 			// Spring
 			translate([0,0,8]) Tube(OD=Spring_OD+10, ID=Spring_OD, Len=12, myfn=$preview? 36:360);
 		} // union
+		
+		if (CutOutCenter) cylinder(d=Spring_ID, h=Len);
 		
 		// Rope Holes
 		Rope_d=4;
@@ -428,7 +431,7 @@ module SE_SpringEndTop(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles
 
 } // SE_SpringEndTop
 
-//SE_SpringEndTop(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles=5);
+//SE_SpringEndTop(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles=5, CutOutCenter=true);
 
 module SE_SpringEndBottom(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles=3, CutOutCenter=false){
 	Spring_OD=Spring_CS4323_OD;

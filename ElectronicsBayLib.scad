@@ -4,7 +4,7 @@
 // Filename: ElectronicsBayLib.scad
 // by David M. Flynn
 // Created: 3/31/2024 
-// Revision: 1.0.0  3/31/2024 
+// Revision: 1.0.1  4/18/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -13,17 +13,19 @@
 //
 //  ***** History *****
 //
+// 1.0.1  4/18/2024  Added nBolts=3, BoltInset=7.5 to EB_Electronics_Bay3
 // 1.0.0  3/31/2024  First code, moved stuff here
 //
 // ***********************************
 //  ***** for STL output *****
 //
-//  *** Standard single altimeter bay w/ 1 or 2 battery doors ***
-// EB_Electronics_Bay3(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=162, DualDeploy=false, ShowDoors=false);
+//  *** Standard single altimeter bay w/ 1 or 2 battery doors w/ switch ***
+// EB_Electronics_Bay3(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=162, nBolts=3, BoltInset=7.5, DualDeploy=false, ShowDoors=false);
+// EB_Electronics_Bay3(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=162, nBolts=3, BoltInset=7.5, DualDeploy=true, ShowDoors=false);
 //
 //  *** Standard single altimeter bay w/ 2 or 3 battery doors ***
 // EB_Electronics_Bay(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, Len=162, nBolts=3, BoltInset=7.5, ShowDoors=false, HasSecondBattDoor=true);
-//
+// EB_Electronics_Bay(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=162, nBolts=3, BoltInset=7.5, ShowDoors=false, HasSecondBattDoor=false);
 //
 // ***********************************
 //  ***** Routines *****
@@ -49,7 +51,7 @@ Alt_DoorXtra_X=6;
 Alt_DoorXtra_Y=4;
 	
 
-module EB_Electronics_Bay3(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=162, DualDeploy=false, ShowDoors=false){
+module EB_Electronics_Bay3(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=162, nBolts=3, BoltInset=7.5, DualDeploy=false, ShowDoors=false){
 	// One/two Battery Door w/ Switch and One Altimeter
 	Altimeter_Z=Len/2;
 	BattSwDoor_Z=Len/2;
@@ -72,6 +74,13 @@ module EB_Electronics_Bay3(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=162, Du
 		if (DualDeploy)
 			translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt2_a]) 
 				Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
+		
+		//Bolt holes for nosecone and ball lock
+		if (nBolts>0)
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]){
+			translate([0,-Tube_OD/2-1,BoltInset]) rotate([90,0,0]) Bolt4Hole();
+			translate([0,-Tube_OD/2-1,Len-BoltInset]) rotate([90,0,0]) Bolt4Hole();
+		} // for
 		
 	} // difference
 	

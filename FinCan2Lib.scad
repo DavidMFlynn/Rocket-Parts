@@ -3,7 +3,7 @@
 // Filename: FinCan2Lib.scad
 // by David M. Flynn
 // Created: 12/24/2023 
-// Revision: 0.9.1  4/7/2024
+// Revision: 0.9.2  4/18/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,9 +12,10 @@
 //
 //  ***** History *****
 //
-function FinCan2LibRev()="FinCan2Lib 0.9.1";
+function FinCan2LibRev()="FinCan2Lib 0.9.2";
 echo(FinCan2LibRev());
 //
+// 0.9.2  4/18/2024   Fixed a tail cone problem.
 // 0.9.1  4/7/2024	  Added options.
 // 0.9.0  12/24/2023  First code. Copied from Rocket98C.
 //
@@ -27,6 +28,13 @@ FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 				nFins=5, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 				Fin_Root_W=14, Fin_Root_L=130, Fin_Post_h=14, Fin_Chamfer_L=32,
 				Cone_Len=65, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
+/**/
+/*
+FC2_FinCan(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, Can_Len=160,
+				MotorTube_OD=BT54Body_OD, RailGuide_h=BT75Body_OD/2+2,
+				nFins=5, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
+				Fin_Root_W=12, Fin_Root_L=130, Fin_Post_h=10, Fin_Chamfer_L=32,
+				Cone_Len=35, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
 /**/
 /*
   FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
@@ -153,10 +161,14 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 						Threaded=true, Cone_Len=Cone_Len, Interface_OD=Body_OD-1);
 			
 			// Rail guide bolt boss
-			if (RailGuide_h>0)
+			if (RailGuide_h>5)
 			translate([0,0,RailGuide_Z]) rotate([0,0,90]) 
 				RailGuidePost(OD=Body_OD, MtrTube_OD=MotorTubeHole_d, H=RailGuide_h, 
 					TubeLen=RailGuideTube_Len, Length = RailGuideLen, BoltSpace=12.7);
+					
+			// Rail button bolt boss
+			if (RailGuide_h==1)
+			translate([-Body_OD/2,0,10]) rotate([0,90,0]) cylinder(d=10, h=(Body_OD-MotorTubeHole_d)/2);
 		} // union
 	
 		// Fin Sockets
@@ -173,9 +185,13 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 						}
 		
 		// Rail guide bolt holes
-		if (RailGuide_h>0)
+		if (RailGuide_h>5)
 			translate([-RailGuide_h,0,RailGuide_Z]) rotate([0,0,90]) 
 				RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
+				
+		// Rail button bolt hole
+		if (RailGuide_h==1)
+		translate([-Body_OD/2,0,10]) rotate([0,-90,0]) Bolt8Hole();
 		
 		if (LowerHalfOnly) translate([0,0,Can_Len/2]) cylinder(d=Body_OD+1, h=Can_Len/2+50);
 		if (UpperHalfOnly) translate([0,0,Can_Len/2]) 
@@ -185,8 +201,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 	} // difference
 } // FC2_FinCan
 
-//rotate([180,0,0]) 
-FC2_FinCan(LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
+//rotate([180,0,0]) FC2_FinCan(LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
 
 
 module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
@@ -199,7 +214,7 @@ module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 	AftClosure_h=10;
 	Retainer_h=2;
 	Nut_Len=Retainer_h+AftClosure_h+10;
-	Tail_r=20;
+	Tail_r=Body_OD/4; // was 20
 	Base_d=MotorTube_OD+4.4;
 	NomonalThread_d=MotorTube_OD+8;
 	MotorTubeHole_d=MotorTube_OD+IDXtra*3;
@@ -256,7 +271,7 @@ module FC2_MotorRetainer(Body_OD=BT98Body_OD,
 	AftClosure_h=10;
 	Retainer_h=2;
 	Nut_Len=Retainer_h+AftClosure_h+10;
-	Tail_r=20;
+	Tail_r=Body_OD/4;
 	Base_d=MotorTube_OD+4.4;
 	NomonalThread_d=MotorTube_OD+8;
 	
