@@ -3,7 +3,7 @@
 // Filename: Rocket75C.scad
 // by David M. Flynn
 // Created: 8/6/2023 
-// Revision: 1.2.2  4/18/2024 
+// Revision: 1.2.3  4/21/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -51,6 +51,7 @@
 //
 //  ***** History *****
 //
+// 1.2.3  4/21/2024  Added screw holes to R75_BallRetainerTop()
 // 1.2.2  4/18/2024  Standardized some parts
 // 1.2.1  3/31/2024  Now uses ElectronicsBayLib.scad
 // 1.2.0  12/3/2023  Updated ebay and deployment parts, removed obsolete parts
@@ -104,8 +105,10 @@
 //
 // SE_SpringEndTop(OD=Coupler_OD-IDXtra, Tube_ID=BT75Coupler_OD-IDXtra-3.6, nRopeHoles=3, CutOutCenter=true);
 // SE_SlidingSpringMiddle(OD=Coupler_OD, nRopes=3);
-// SE_SpringEndBottom(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=3);// required for 54/1706 (K185W)
-// 
+//
+//  *** bottom of spring options
+// SE_SpringEndBottom(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=3);// optional may be required for 54/1706 (K185W)
+// rotate([180,0,0]) SE_SpringEndTypeA(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, nRopes=3); // preferred option
 // SE_SpringEndTypeB(Coupler_OD=Coupler_OD, MotorCoupler_OD=MotorCoupler_OD, nRopes=3); // Sits on top of motor tube
 // SE_SpringSpacer(OD=Coupler_OD, Tube_ID=Coupler_ID, Len=70); // optional
 // SE_SpringSpacer(OD=Coupler_OD, Tube_ID=Coupler_ID, Len=55); // optional
@@ -122,7 +125,7 @@
 				Cone_Len=TailCone_Len, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
 /**/
 /*
-  rotate([180,0,0]) FC2_MotorRetainer(Body_OD=Body_OD,
+  FC2_MotorRetainer(Body_OD=Body_OD,
 						MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID,
 						HasWrenchCuts=false, Cone_Len=35, ExtraLen=0);
 /**/
@@ -297,6 +300,9 @@ module R75_BallRetainerTop(){
 	Tube_Z=25;
 	CR_z=8;
 	Wall_t=3;
+	nBolts=3;
+	BoltInset=NC_Base_L/2;
+	Engagement_Len=20;
 	
 	difference(){
 		union(){
@@ -304,7 +310,7 @@ module R75_BallRetainerTop(){
 						nLockBalls=3, 
 						HasIntegratedCouplerTube=true, 
 							IntegratedCouplerLenXtra=CouplerLenXtra, 
-							Body_ID=Body_ID-IDXtra, HasSecondServo=false, UsesBigServo=false);
+							Body_ID=Body_ID-IDXtra, HasSecondServo=false, UsesBigServo=false, Engagement_Len=Engagement_Len);
 			
 			translate([0,0,Tube_Z]) 
 				Tube(OD=Body_ID-IDXtra, ID=Body_ID-IDXtra-Wall_t*2, 
@@ -326,6 +332,10 @@ module R75_BallRetainerTop(){
 		// Center hole
 		//translate([0,0,-6]) cylinder(d=ST_DSpring_OD-6, h=30);
 		
+		//Bolt holes for electronics bay
+		if (nBolts>0)
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+22.5])
+			translate([0,-Body_OD/2-1,Engagement_Len/2+CouplerLenXtra+13+BoltInset]) rotate([90,0,0]) Bolt4Hole();
 		
 		// Tube hole
 		translate([0,0,Tube_Z]) rotate([0,0,Tube_a]) 

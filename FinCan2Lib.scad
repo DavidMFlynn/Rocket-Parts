@@ -3,7 +3,7 @@
 // Filename: FinCan2Lib.scad
 // by David M. Flynn
 // Created: 12/24/2023 
-// Revision: 0.9.2  4/18/2024
+// Revision: 0.9.3  4/21/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,9 +12,10 @@
 //
 //  ***** History *****
 //
-function FinCan2LibRev()="FinCan2Lib 0.9.2";
+function FinCan2LibRev()="FinCan2Lib 0.9.3";
 echo(FinCan2LibRev());
 //
+// 0.9.3  4/21/2024   Looser nut, global parameters added
 // 0.9.2  4/18/2024   Fixed a tail cone problem.
 // 0.9.1  4/7/2024	  Added options.
 // 0.9.0  12/24/2023  First code. Copied from Rocket98C.
@@ -70,6 +71,10 @@ Overlap=0.05;
 IDXtra=0.2;
 $fn=$preview? 24:90;
 
+MotorTubeHoleIDXtra=IDXtra*3;
+InternalThreadIDXtra=IDXtra*5;
+ThreadPitch=2.5;
+NominalThreadWall_t=ThreadPitch+1.5; // added to motor tube radius
 
 module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 				MotorTube_OD=BT54Body_OD, RailGuide_h=BT98Body_OD/2+2,
@@ -82,7 +87,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 	FinBox_W=Fin_Root_W+Wall_t*2;
 	RailGuideTube_Len=(RailGuideLen-5)*2;
 	RailGuide_Z=RailGuideTube_Len/2;
-	MotorTubeHole_d=MotorTube_OD+IDXtra*3;
+	MotorTubeHole_d=MotorTube_OD+MotorTubeHoleIDXtra;
 	FinInset_Len=(Can_Len-Fin_Root_L)/2;
 	
 	difference(){
@@ -216,8 +221,8 @@ module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 	Nut_Len=Retainer_h+AftClosure_h+10;
 	Tail_r=Body_OD/4; // was 20
 	Base_d=MotorTube_OD+4.4;
-	NomonalThread_d=MotorTube_OD+8;
-	MotorTubeHole_d=MotorTube_OD+IDXtra*3;
+	NomonalThread_d=MotorTube_OD+NominalThreadWall_t*2;
+	MotorTubeHole_d=MotorTube_OD+MotorTubeHoleIDXtra;
 	
 	difference(){
 		union(){
@@ -252,7 +257,7 @@ module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 	
 	if (Threaded) difference(){
 		translate([0,0,-Cone_Len+Nut_Len-10]) 
-			ExternalThread(Pitch=2.5, Dia_Nominal=NomonalThread_d, 
+			ExternalThread(Pitch=ThreadPitch, Dia_Nominal=NomonalThread_d, 
 							Length=10+Overlap, Step_a=$preview? 10:2, TrimEnd=true, TrimRoot=false);
 			
 		// Motor tube
@@ -273,7 +278,7 @@ module FC2_MotorRetainer(Body_OD=BT98Body_OD,
 	Nut_Len=Retainer_h+AftClosure_h+10;
 	Tail_r=Body_OD/4;
 	Base_d=MotorTube_OD+4.4;
-	NomonalThread_d=MotorTube_OD+8;
+	NomonalThread_d=MotorTube_OD+NominalThreadWall_t*2;
 	
 	difference(){
 		hull(){
@@ -303,7 +308,7 @@ module FC2_MotorRetainer(Body_OD=BT98Body_OD,
 			cylinder(d=MotorTube_OD+IDXtra*3, h=Cone_Len);
 	
 		translate([0,0,-Cone_Len+Nut_Len-12+Overlap])
-			ExternalThread(Pitch=2.5, Dia_Nominal=NomonalThread_d+IDXtra*4, 
+			ExternalThread(Pitch=ThreadPitch, Dia_Nominal=NomonalThread_d+InternalThreadIDXtra, 
 							Length=15, Step_a=$preview? 10:2, TrimEnd=true, TrimRoot=false);
 		
 		// Spanner Wrench

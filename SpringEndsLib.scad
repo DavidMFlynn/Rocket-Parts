@@ -3,15 +3,16 @@
 // Filename: SpringEndsLib.scad
 // by David M. Flynn
 // Created: 11/24/2023 
-// Revision: 1.0.6  3/31/2024
+// Revision: 1.0.7  4/21/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 // This is a collection of spring ends used for non-pyro deployment.
 //
 //  ***** History *****
-function SpringEndsLibRev()="SpringEndsLib Rev. 1.0.6";
+function SpringEndsLibRev()="SpringEndsLib Rev. 1.0.7";
 echo(SpringEndsLibRev());
+// 1.0.7  4/21/2024   Removed MotorCoupler_OD param from SE_SpringEndTypeA
 // 1.0.6  3/31/2024   Added SE_SpringTop()
 // 1.0.5  3/28/2024   Added SE_SlidingBigSpringMiddle()
 // 1.0.4  1/28/2024	  Added parameter Al_Tube_Z to SE_EBaySpringStop
@@ -27,9 +28,8 @@ echo(SpringEndsLibRev());
 // SE_Tri_Spring_End(OD=BT137Body_ID-5, Rope_BC_r=BT137Coupler_ID/2-5);
 // SE_EBaySpringStop(OD=BT54Body_ID, Al_Tube_Z=20);
 //
-// SE_SpringEndTypeA(Coupler_OD=BT75Coupler_OD, Coupler_ID=BT75Coupler_ID, MotorCoupler_OD=BT54Coupler_OD, nRopes=3);
+// SE_SpringEndTypeA(Coupler_OD=BT75Coupler_OD, Coupler_ID=BT75Coupler_ID, nRopes=3);
 //		An end for Spring_CS4323.
-// 		Sits in the top of the motor tube.
 // 		Requires a short piece of coupler tube.
 //
 // SE_SpringEndTypeB(Coupler_OD=BT75Coupler_OD, MotorCoupler_OD=BT54Coupler_OD, nRopes=3);
@@ -223,23 +223,22 @@ module SE_EBaySpringStop(OD=BT54Body_ID, Al_Tube_Z=20){
 
 // SE_EBaySpringStop(OD=BT54Body_ID, Al_Tube_Z=10);
 
-module SE_SpringEndTypeA(Coupler_OD=BT75Coupler_OD, Coupler_ID=BT75Coupler_ID, MotorCoupler_OD=BT54Coupler_OD,
-				nRopes=3){
-// Sits in the top of the motor tube
+module SE_SpringEndTypeA(Coupler_OD=BT75Coupler_OD, Coupler_ID=BT75Coupler_ID, nRopes=3){
+// Glues to a short section of coupler tube
 // Requires a short piece of coupler tube
 
 	Spring_OD=Spring_CS4323_OD;
 	
 	difference(){
 		union(){
-			cylinder(d=MotorCoupler_OD, h=10+Overlap);
+			cylinder(d=Spring_OD+8, h=10+Overlap);
 			
 			translate([0,0,10]) cylinder(d=Coupler_OD, h=2+Overlap);
 			translate([0,0,10]) cylinder(d=Coupler_ID-1, h=7+Overlap);
 			//translate([0,0,10]) Tube(OD=Coupler_ID-1, ID=Coupler_ID-6, Len=10, myfn=$preview? 36:360);
 		} // union
 		
-		translate([0,0,-Overlap]) cylinder(d1= MotorCoupler_OD-4.4, d2=Spring_OD, h=10);
+		translate([0,0,-Overlap]) cylinder(d1= Spring_OD+4, d2=Spring_OD, h=10);
 		cylinder(d= Spring_OD, h=13);
 		cylinder(d= Spring_OD-6, h=20);
 		
