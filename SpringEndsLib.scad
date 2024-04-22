@@ -234,8 +234,7 @@ module SE_SpringEndTypeA(Coupler_OD=BT75Coupler_OD, Coupler_ID=BT75Coupler_ID, n
 			cylinder(d=Spring_OD+8, h=10+Overlap);
 			
 			translate([0,0,10]) cylinder(d=Coupler_OD, h=2+Overlap);
-			translate([0,0,10]) cylinder(d=Coupler_ID-1, h=7+Overlap);
-			//translate([0,0,10]) Tube(OD=Coupler_ID-1, ID=Coupler_ID-6, Len=10, myfn=$preview? 36:360);
+			translate([0,0,10]) cylinder(d=Coupler_ID, h=7+Overlap, $fn=$preview? 90:360);
 		} // union
 		
 		translate([0,0,-Overlap]) cylinder(d1= Spring_OD+4, d2=Spring_OD, h=10);

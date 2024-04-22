@@ -3,7 +3,7 @@
 // Filename: PetalDeploymentLib.scad
 // by David M. Flynn
 // Created: 10/22/2023 
-// Revision: 0.9.4  3/23/2024
+// Revision: 0.9.5  4/21/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -13,11 +13,12 @@
 //  ***** Hardware *****
 //
 // #4-40 x 3/8" Socket Head Cap Screw (3 req) PetalHub
-// #4-40 x 1/4" Button Head Cap Screw (6 req) Petals
-// 0.3" Dia x 1.25" spring CS3715
+// #4-40 x 1/4" Button Head Cap Screw (2 per petal req) Petals
+// 0.3" Dia x 1.25" spring CS3715 (1 per petal req)
 //
 //  ***** History *****
 //
+// 0.9.5  4/21/2024   Petal connections are shorter by 2mm
 // 0.9.4  3/23/2024	  Worked on locks.
 // 0.9.3  11/7/2023   Added PD_GridPetals(), PD_PetalLocks()
 // 0.9.2  11/6/2023   Code cleanup.
@@ -188,7 +189,7 @@ module PD_CatchHolder(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, nPetals=
 module PD_PetalLocks(OD=BT75Coupler_OD, Len=25, nPetals=3, Lock_Span_a=0){
 // Lock_Span_a 0=full, else 10 to 360/nPetals
 
-	BaseOffset=11.2;
+	BaseOffset=8.2;
 	Lock_h=1.5;
 	Lock_d=3;
 	
@@ -207,9 +208,9 @@ module PD_PetalLocks(OD=BT75Coupler_OD, Len=25, nPetals=3, Lock_Span_a=0){
 
 module PD_Petals(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_h=0,
 				HasLocks=false, Lock_Span_a=0){
-	Bolt1_Z=11.75;
+	Bolt1_Z=9.25; // was 11.75
 	Thickness=3;
-	BaseOffset=11.2;
+	BaseOffset=8.2; // was 11.2
 	AntiClimber_w=2;
 	AntiClimber_L=AntiClimber_h*4;
 	
@@ -231,7 +232,7 @@ module PD_Petals(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_h
 			
 			for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]) difference(){
 				intersection(){
-					cylinder(d=OD-IDXtra*2, h=16+BaseOffset, $fn=$preview? 90:360);
+					cylinder(d=OD, h=16+BaseOffset, $fn=$preview? 90:360);
 						
 					translate([-PetalWidth/2,OD/2-Thickness,0]) 
 						cube([PetalWidth, OD, 16+BaseOffset]);
@@ -270,7 +271,7 @@ module PD_Petals(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_h
 	} // difference
 } // PD_Petals
 
-//rotate([180,0,0]) PD_Petals(OD=BT75Coupler_OD, Len=110, nPetals=3, AntiClimber_h=3, HasLocks=true, Lock_Span_a=0);
+//rotate([180,0,0]) PD_Petals(OD=BT75Coupler_OD, Len=110, nPetals=3, AntiClimber_h=3, HasLocks=true, Lock_Span_a=20);
 //PD_Petals(OD=BT137Coupler_OD, Len=110, nPetals=3, Wall_t=2.4, AntiClimber_h=5);
 
 
