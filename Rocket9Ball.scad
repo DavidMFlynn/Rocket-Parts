@@ -101,6 +101,7 @@ use<SpringThing2.scad>
 use<ThreadLib.scad>
 use<TransitionLib.scad>
 use<MotorPodLockLib.scad>
+use<SpringEndsLib.scad>
 
 //also included
  //include<CommonStuffSAEmm.scad>
@@ -360,8 +361,8 @@ module NC_PetalHub(){
 // NC_PetalHub();
 
 module Aft_PetalHub(){
-	Spring_OD=Spring_CS4009_OD;
-	Spring_ID=Spring_CS4009_ID;
+	Spring_OD=SE_Spring_CS11890_OD();
+	Spring_ID=SE_Spring_CS11890_ID();
 	BodyTube_L=20;
 	nHoles=6;
 	CenterHole_d=44;
@@ -373,33 +374,61 @@ module Aft_PetalHub(){
 		union(){
 			PD_PetalHub(OD=Body_ID-IDXtra*2, nPetals=nPetals, HasBolts=false, ShockCord_a=-1);
 			
-			translate([0,0,-BodyTube_L]) Tube(OD=Spring_ID-IDXtra*2, 
-									ID=Spring_ID-IDXtra*2-4.4, Len=BodyTube_L+1, myfn=$preview? 90:360);
+			translate([0,0,-BodyTube_L]) Tube(OD=Spring_ID-IDXtra*3, 
+									ID=Spring_ID-IDXtra*3-4.4, Len=BodyTube_L+1, myfn=$preview? 90:360);
 		} // union
 			
 		// Center Hole
-		hull(){
 		translate([0,0,-Overlap]) cylinder(d=CenterHole_d, h=7, $fn=$preview? 90:360);
-		translate([0,0,-Overlap]) cylinder(d=Spring_ID-IDXtra*2-4.4, h=1, $fn=$preview? 90:360);
-		}
 		
 		// Retention cord
 		for (j=[0:nHoles-1]) rotate([0,0,360/nHoles*(j+0.5)]) {
-				translate([0,Coupler_ID/2-5,-10]) cylinder(d=4, h=30);
-				translate([0,Coupler_ID/2-5,5]) cylinder(d=8, h=30);
+				translate([0,CenterHole_d/2+5,-10]) cylinder(d=4, h=30);
+				//translate([0,CenterHole_d/2+5,5]) cylinder(d=8, h=30);
 			}
 	} // difference
 } // Aft_PetalHub
 
 // Aft_PetalHub();
 
+module Aft_SpringSlider(){
+	Spring_OD=SE_Spring_CS11890_OD();
+	Spring_ID=SE_Spring_CS11890_ID();
+	
+	Slider_OD=LowerEBayTube_ID-IDXtra*4; // loose fit
+	CenterHole_d=Slider_OD-30;
+	Slider_Len=40;
+	
+	nHoles=6;
+	
+	Tube(OD=Slider_OD, ID=Slider_OD-4.4, Len=Slider_Len, myfn=$preview? 90:360);
+	
+	Tube(OD=Spring_ID-IDXtra*4, ID=Spring_ID-IDXtra*4-4.4, Len=Slider_Len/2+5, myfn=$preview? 90:360);
+	
+	translate([0,0,Slider_Len/2-10])
+	difference(){
+		cylinder(d=Slider_OD, h=5);
+		
+		translate([0,0,-Overlap]) cylinder(d=CenterHole_d, h=5+Overlap*2);
+		
+		// Retention cord
+		for (j=[0:nHoles-1]) rotate([0,0,360/nHoles*j]) 
+				translate([0,CenterHole_d/2+5,-10]) cylinder(d=6, h=50);
+	} // difference
+	
+} // Aft_SpringSlider
+
+//Aft_SpringSlider();
+
+Spring_CS11890_CL=33;
+
 module Aft_SpringEnd(){
-	Spring_OD=Spring_CS4009_OD;
-	Spring_ID=Spring_CS4009_ID;
-	BodyTube_L=Spring_CS4009_CL-5;
+	Spring_OD=SE_Spring_CS11890_OD();
+	Spring_ID=SE_Spring_CS11890_ID();
+	BodyTube_L=SE_Spring_CS11890_CL()-5;
 	Tube_ID=LowerEBayTube_ID;
 	nHoles=6;
-	CenterHole_d=Spring_ID-IDXtra*2-4.4;
+	CenterHole_d=Tube_ID-30;
 	Al_Tube_d=12.7;
 	Al_Tube_Z=Al_Tube_d/2+2.5;
 	
@@ -413,8 +442,6 @@ module Aft_SpringEnd(){
 					
 			CenteringRing(OD=Tube_ID-IDXtra*2, ID=CenterHole_d, Thickness=5, nHoles=0, Offset=0);
 			
-			translate([0,0,-BodyTube_L]) Tube(OD=Spring_ID-IDXtra*2, 
-									ID=Spring_ID-IDXtra*2-4.4, Len=BodyTube_L+1, myfn=$preview? 90:360);
 			translate([0,0,Al_Tube_Z]) 
 				rotate([0,90,0]) cylinder(d=Al_Tube_d+5, h=Tube_ID-2.6, center=true);
 		} // union
@@ -427,7 +454,7 @@ module Aft_SpringEnd(){
 		
 		// Retention cord
 		for (j=[0:nHoles-1]) rotate([0,0,360/nHoles*j]) 
-				translate([0,Tube_ID/2-5,-10]) cylinder(d=4, h=50);
+				translate([0,CenterHole_d/2+5,-10]) cylinder(d=4, h=50);
 			
 	} // difference
 } // Aft_SpringEnd
