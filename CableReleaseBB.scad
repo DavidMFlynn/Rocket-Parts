@@ -3,7 +3,7 @@
 // Filename: CableReleaseBB.scad
 // by David M. Flynn
 // Created: 8/27/2022 
-// Revision: 1.1.1  12/29/2023
+// Revision: 1.1.2  5/2/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -30,8 +30,9 @@
 //
 //  ***** History *****
 //
-function CableReleaseBBRev()="CableReleaseBB Rev. 1.1.1";
+function CableReleaseBBRev()="CableReleaseBB Rev. 1.1.2";
 echo(CableReleaseBBRev());
+// 1.1.2  5/2/2024    Worked on CRBB_TopRetainerEBayEnd
 // 1.1.1  12/29/2023  Fixed dowel holes. Code cleanup. Added CRBB_ prefix
 // 1.1.0  12/28/2023  Added optional GuidePoint for easier assemble.
 // 1.0.2  12/27/2023  Added ExtensionRod()
@@ -52,7 +53,10 @@ echo(CableReleaseBBRev());
 // rotate([180,0,0]) CRBB_MagnetBracket();
 // rotate([180,0,0]) CRBB_TriggerPost();
 //
-// CRBB_TopRetainerEBayEnd(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID);
+/*
+ CRBB_TopRetainerEBayEnd(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_OD=BT98Coupler_OD, 
+			HasSpring=true, CT_Len=30, StopRing_Len=5, nBolts=3);
+/**/
 // CRBB_LockingPin(LockPin_Len=40);
 //
 // ***********************************
@@ -127,6 +131,8 @@ function CRBB_LockRingDiameter()=LockRing_d;
 
 module ShowCableReleaseBB(GuidePoint=false){
 	Point_Len=GuidePoint? GuidePoint_Len:0;
+	CT_Len=20;
+	StopRing_Len=45;
 	
 	translate([0,0,15.5]) color("LightBlue") CRBB_ExtensionRod(Len=50);
 	 
@@ -145,7 +151,8 @@ module ShowCableReleaseBB(GuidePoint=false){
 		rotate([0,0,20]) translate([0,-50,-50]) cube([50,50,100]);
 	} // difference
 	
-	translate([0,0,-48.2]) rotate([0,0,5]) color("Orange") CRBB_TopRetainerEBayEnd();
+	translate([0,0,-CT_Len-StopRing_Len+5]) color("Orange") 
+		CRBB_TopRetainerEBayEnd(Coupler_OD=BT98Coupler_OD, HasSpring=false, CT_Len=CT_Len, StopRing_Len=StopRing_Len, nBolts=3);
 } // ShowCableReleaseBB
 
 // ShowCableReleaseBB();
@@ -437,13 +444,13 @@ module CRBB_TopRetainer(LockRing_d=LockRing_d, HasMountingBolts=true, GuidePoint
 	
 } // CRBB_TopRetainer
 
-// CRBB_TopRetainer(HasMountingBolts=false, GuidePoint=true);
+// CRBB_TopRetainer(LockRing_d=LockRing_d, HasMountingBolts=false, GuidePoint=true);
 // CRBB_LockingPin();
 
-module CRBB_TopRetainerEBayEnd(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID){
-	CT_Len=50;
+module CRBB_TopRetainerEBayEnd(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_OD=BT98Coupler_OD, HasSpring=true, CT_Len=30, StopRing_Len=5, nBolts=3){
+	
 	ET_Len=15;
-	OAL=ET_Len+5+CT_Len;
+	OAL=ET_Len+StopRing_Len+CT_Len;
 	Plate_t=5;
 	TROffset_Z=OAL-Plate_t-15;
 	
@@ -456,22 +463,39 @@ module CRBB_TopRetainerEBayEnd(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID){
 	difference(){
 		union(){
 			// Body
-			Tube(OD=BT98Body_ID-IDXtra, ID=Body_ID-IDXtra-6, Len=OAL, myfn=$preview? 90:360);
+			if (HasSpring){
+				Tube(OD=BT98Body_ID-IDXtra, ID=Body_ID-IDXtra-6, Len=OAL, myfn=$preview? 90:360);
+			}else{
+				Tube(OD=BT98Body_ID-IDXtra, ID=Body_ID-IDXtra-6, Len=ET_Len+Overlap, myfn=$preview? 90:360);
+				translate([0,0,ET_Len]) Tube(OD=Coupler_OD, ID=Body_ID-6, Len=OAL-ET_Len, myfn=$preview? 90:360);
+			}
+			
 			// Stop ring
 			translate([0,0,ET_Len]) 
-				Tube(OD=Body_OD, ID=Body_ID-IDXtra-6, Len=5, myfn=$preview? 90:360);
+				Tube(OD=Body_OD, ID=Body_ID-IDXtra-6, Len=StopRing_Len, myfn=$preview? 90:360);
 			// Shield
 			Tube(OD=LockRing_d+10, ID=LockRing_d+5, Len=OAL, myfn=$preview? 90:360);
 		} // union
-		if ($preview) rotate([0,0,-90]) translate([0,0,-10]) cube([100,100,100]);
+		
+		// Bolt holes
+		if (nBolts>0) for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j])
+			translate([0,Body_OD/2,ET_Len/2]) rotate([-90,0,0]) Bolt4Hole();
+			
+		if ($preview) rotate([0,0,-90]) translate([0,0,-10]) cube([100,100,OAL+20]);
 	} // difference
 	
 	
 	translate([0,0,OAL-Plate_t])
 	difference(){
-		translate([0,0,Plate_t+10]) rotate([180,0,0])
-			SE_SpringEndTypeA(Coupler_OD=Body_ID-1, Coupler_ID=Body_ID-4, 
-				MotorCoupler_OD=BT54Coupler_OD+4, nRopes=6);
+		if (HasSpring){
+			translate([0,0,Plate_t+10]) rotate([180,0,0])
+				SE_SpringEndTypeA(Coupler_OD=Body_ID-1, Coupler_ID=Body_ID-4, nRopes=6);
+		}else{
+			difference(){
+				cylinder(d=Coupler_OD-1, h=Plate_t);
+				translate([0,0,-Overlap]) cylinder(d=36, h=Plate_t+Overlap*2);
+			} // difference
+		}
 		
 		translate([0,0,Plate_t-1.4]) CRBB_MountingBoltPattern() Bolt4ButtonHeadHole();
 		
@@ -486,7 +510,8 @@ module CRBB_TopRetainerEBayEnd(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID){
 	
 } // CRBB_TopRetainerEBayEnd
 
-//translate([0,0,-48.2]) rotate([0,0,5]) CRBB_TopRetainerEBayEnd();
+//translate([0,0,-20]) CRBB_TopRetainerEBayEnd(HasSpring=false, CT_Len=20);
+//CRBB_TopRetainer(LockRing_d=LockRing_d, HasMountingBolts=true, GuidePoint=true);
 
 module CRBB_InnerBearingRetainer(){
 	// Changed screw depth by -0.5

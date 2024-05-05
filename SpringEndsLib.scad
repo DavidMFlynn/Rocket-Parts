@@ -3,15 +3,16 @@
 // Filename: SpringEndsLib.scad
 // by David M. Flynn
 // Created: 11/24/2023 
-// Revision: 1.0.7  4/21/2024
+// Revision: 1.0.8  4/30/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 // This is a collection of spring ends used for non-pyro deployment.
 //
 //  ***** History *****
-function SpringEndsLibRev()="SpringEndsLib Rev. 1.0.7";
+function SpringEndsLibRev()="SpringEndsLib Rev. 1.0.8";
 echo(SpringEndsLibRev());
+// 1.0.8  4/30/2024   Added Spring_OD parameter to SE_SpringEndTypeA()
 // 1.0.7  4/21/2024   Removed MotorCoupler_OD param from SE_SpringEndTypeA
 // 1.0.6  3/31/2024   Added SE_SpringTop()
 // 1.0.5  3/28/2024   Added SE_SlidingBigSpringMiddle()
@@ -28,7 +29,7 @@ echo(SpringEndsLibRev());
 // SE_Tri_Spring_End(OD=BT137Body_ID-5, Rope_BC_r=BT137Coupler_ID/2-5);
 // SE_EBaySpringStop(OD=BT54Body_ID, Al_Tube_Z=20);
 //
-// SE_SpringEndTypeA(Coupler_OD=BT75Coupler_OD, Coupler_ID=BT75Coupler_ID, nRopes=3);
+// SE_SpringEndTypeA(Coupler_OD=BT75Coupler_OD, Coupler_ID=BT75Coupler_ID, nRopes=3, Spring_OD=Spring_CS4323_OD);
 //		An end for Spring_CS4323.
 // 		Requires a short piece of coupler tube.
 //
@@ -224,17 +225,15 @@ module SE_EBaySpringStop(OD=BT54Body_ID, Al_Tube_Z=20){
 
 // SE_EBaySpringStop(OD=BT54Body_ID, Al_Tube_Z=10);
 
-module SE_SpringEndTypeA(Coupler_OD=BT75Coupler_OD, Coupler_ID=BT75Coupler_ID, nRopes=3){
+module SE_SpringEndTypeA(Coupler_OD=BT75Coupler_OD, Coupler_ID=BT75Coupler_ID, nRopes=3, Spring_OD=Spring_CS4323_OD){
 // Glues to a short section of coupler tube
 // Requires a short piece of coupler tube
-
-	Spring_OD=Spring_CS4323_OD;
 	
 	difference(){
 		union(){
 			cylinder(d=Spring_OD+8, h=10+Overlap);
 			
-			translate([0,0,10]) cylinder(d=Coupler_OD, h=2+Overlap);
+			translate([0,0,10]) cylinder(d=Coupler_OD, h=2+Overlap, $fn=$preview? 90:360);
 			translate([0,0,10]) cylinder(d=Coupler_ID, h=7+Overlap, $fn=$preview? 90:360);
 		} // union
 		

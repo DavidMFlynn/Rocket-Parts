@@ -43,6 +43,10 @@
 // rotate([-90,0,0]) PD_PetalSpringHolder(OD=Coupler_OD);
 // rotate([180,0,0]) PD_GridPetals(OD=Coupler_OD, Len=180, nPetals=nPetals, Wall_t=1.2);
 //
+// SE_SpringEndTypeA(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, nRopes=6, Spring_OD=SE_Spring_CS11890_OD());
+//		An end for Spring_CS4323.
+// 		Requires a short piece of coupler tube.
+
 //  ***** Ball Lock *****
 //
 // STB_LockDisk(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls);

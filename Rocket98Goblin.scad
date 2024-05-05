@@ -179,7 +179,7 @@ Can_Len=Fin_Root_L+FinInset_Len*2;
 Bolt4Inset=4;
 nLockBalls=6;
 nPetals=3;
-ShockCord_a=17;// offset between PD_PetalHub and R65_BallRetainerBottom
+ShockCord_a=17;// offset between PD_PetalHub and R98_BallRetainerBottom
 RailGuide_h=Body_OD/2+2;
 
 module ShowRocket(ShowInternals=false){
@@ -265,7 +265,7 @@ module SpringMiddle(){
 //SpringMiddle();
 
 
-module R98_BallRetainerBottom(){
+module R98_BallRetainerBottom(ShockCord_a=ShockCord_a){
 	difference(){
 		STB_BallRetainerBottom(BallPerimeter_d=Body_OD, Body_OD=Body_ID, 
 				nLockBalls=nLockBalls, HasSpringGroove=false);
