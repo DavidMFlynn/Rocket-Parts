@@ -3,7 +3,7 @@
 // Filename: Rocket98IceProbe.scad
 // by David M. Flynn
 // Created: 4/6/2024 
-// Revision: 0.9.0  4/6/2024 
+// Revision: 0.9.1  5/5/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -45,6 +45,7 @@
 //
 //  ***** History *****
 //
+// 0.9.1  5/5/2024  Moved common R98_ to R98Lib.scad
 // 0.9.0  4/6/2024  First code
 //
 // ***********************************
@@ -110,6 +111,7 @@
 //
 // ***********************************
 include<TubesLib.scad>
+use<R98Lib.scad>
 use<FinCan2Lib.scad> echo(FinCan2LibRev());
 use<AT-RMS-Lib.scad>
 use<RailGuide.scad>
@@ -284,69 +286,6 @@ module ShowRocket(){
 
 //ShowRocket();
 
-module R98_BallRetainerBottom(){
-	difference(){
-		STB_BallRetainerBottom(BallPerimeter_d=Body_OD, Body_OD=Body_ID, 
-				nLockBalls=nLockBalls, HasSpringGroove=false);
-		
-		rotate([0,0,PD_ShockCordAngle()-ShockCord_a]) 
-			PD_PetalHubBoltPattern(OD=Coupler_OD, nPetals=nPetals) Bolt4Hole();
-
-	} // difference
-} // R98_BallRetainerBottom
-
-// translate([0,0,-9]) rotate([180,0,0]) R98_BallRetainerBottom();
-//rotate([0,0,152]) PD_PetalHub(Coupler_OD=Coupler_OD, nPetals=nPetals, ShockCord_a=PD_ShockCordAngle());
-
-
-module R98C_BallRetainerTop(){
-	Tube_d=12.7;
-	Tube_Z=31;
-	Tube_a=-6;
-	TubeSlot_w=35;
-	TubeOffset_X=22;
-	Engagement_Len=20;
-	nBolts=3;
-	BoltInset=7.5;
-	Skirt_H=24;
-	
-	difference(){
-		union(){
-			STB_BallRetainerTop(BallPerimeter_d=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls,
-								HasIntegratedCouplerTube=true, IntegratedCouplerLenXtra=CouplerLenXtra,
-								Body_ID=Body_ID-IDXtra, HasSecondServo=false, UsesBigServo=true, Engagement_Len=Engagement_Len);
-				
-			translate([0,0,35.5]) 
-				Tube(OD=Body_ID-IDXtra, ID=Body_ID-IDXtra-6, Len=5, myfn=$preview? 90:360);
-			
-			// Shock cord retention
-			difference(){
-				union(){
-					rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z]) 
-						rotate([90,0,0]) cylinder(d=Tube_d+6, h=Body_ID-2, center=true);
-					rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z-12.2])
-						cube([Tube_d-3, Body_ID-2, 21], center=true);
-				} // union
-				
-				rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z]) 
-					rotate([90,0,0]) cylinder(d=Tube_d+7, h=TubeSlot_w, center=true);
-				rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z-12.2])
-					cube([Tube_d-1, TubeSlot_w,21.1], center=true);
-					
-				Tube(OD=Body_OD+20, ID=Body_ID-1, Len=50, myfn=$preview? 90:360);
-			} // difference
-		} // union
-	
-		translate([TubeOffset_X,0,Tube_Z]) rotate([90,0,Tube_a]) cylinder(d=Tube_d, h=Body_OD, center=true);
-		
-		//Bolt holes for nosecone and ball lock
-		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]){
-			translate([0,-Body_OD/2-1,Engagement_Len/2+Skirt_H+CouplerLenXtra+BoltInset]) rotate([90,0,0]) Bolt4Hole();
-		} // for
-	} // difference
-} // R98C_BallRetainerTop
-
-// rotate([180,0,0]) R98C_BallRetainerTop();
 
 module PodFwdFin(){
 	TrapFin2(Post_h=PodFin2_Post_h, Root_L=PodFin2_Root_L, Tip_L=PodFin2_Root_L, 

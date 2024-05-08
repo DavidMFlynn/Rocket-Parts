@@ -3,7 +3,7 @@
 // Filename: Rocket9852.scad
 // by David M. Flynn
 // Created: 5/13/2023 
-// Revision: 0.9.14  8/26/2023
+// Revision: 0.9.15  5/5/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -51,6 +51,7 @@
 // Booster Lower Fin Can
 //
 //  ***** History *****
+// 0.9.15  5/5/2024   Updated booster for J800T, 8.5" tube, petal deployment, dome and more
 // 0.9.14  8/26/2023  Added 2mm to alt door X, Added big spring ends
 // 0.9.13  5/31/2023  Added shock cord mount to Booster_Stager_CableRedirect().
 // 0.9.12  5/28/2023  New dual deploy using 2 ball locks.
@@ -72,11 +73,15 @@
 // rotate([-90,0,0]) PD_PetalSpringHolder(OD=Coupler_OD);
 // rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=110, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=false, Lock_Span_a=0);
 //
+// SE_SpringSpacer(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, Len=150);
+//
+// rotate([0,-90,0]) TubeBoltedRailGuide(TubeOD=Body_OD, Length = 35, Offset = 5);
+//
 // -----------------------------
 //  *** Electronics Bay ***
 //
 // R98_Electronics_Bay4();
-// FairingBaseBulkPlate(Tube_ID=Body_ID, Fairing_ID=Fairing_ID, ShockCord_a=-1);
+// 
 // rotate([-90,0,0]) AltDoor54(Tube_OD=Body_OD, IsLoProfile=false, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
 // rotate([-90,0,0]) CP_Door(Tube_OD=Body_OD, BoltBossInset=3, HasArmingSlot=true);
 // BoltInServoMount();
@@ -105,6 +110,7 @@
 // ------------
 //
 // rotate([180,0,0]) Lower_Electronics_Bay();
+// rotate([-90,0,0]) AltDoor54(Tube_OD=Body_OD, IsLoProfile=true, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
 //
 // UpperFinCan();
 // Rocket9852Fin();
@@ -115,7 +121,7 @@
 //
 // --------------
 //  ** Stager Parts, top of booster **
-// rotate([180,0,0]) SustainerCup(); // old Stager_Cup(Tube_OD=Body_OD, ID=78, nLocks=2, BoltsOn=true, Collar_h=29);
+// rotate([180,0,0]) SustainerCup(Offset_a=12);
 // rotate([-90,0,0]) Stager_LockRod(Adj=-0.5); // too tight
 // rotate([-90,0,0]) Stager_LockRod(Adj=0.0);
 // rotate([-90,0,0]) Stager_LockRod(Adj=1.0); // print 4
@@ -146,9 +152,9 @@
 //
 // STB_LockDisk(BallPerimeter_d=PML98Body_OD, nLockBalls=nLockBalls);
 
-// rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=PML98Body_OD, Body_OD=PML98Body_ID, nLockBalls=nLockBalls, HasIntegratedCouplerTube=true, IntegratedCouplerLenXtra=-15, Body_ID=PML98Body_ID, HasSecondServo=true, UsesBigServo=true, Engagement_Len=20);
-// R98_BallRetainerBottom();
-//STB_BallRetainerBottom(BallPerimeter_d=PML98Body_OD, Body_OD=PML98Body_ID, nLockBalls=nLockBalls, HasSpringGroove=false, Engagement_Len=20);
+// rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls, HasIntegratedCouplerTube=true, IntegratedCouplerLenXtra=-15, Body_ID=Body_ID, HasSecondServo=true, UsesBigServo=true, Engagement_Len=20);
+// R98C_BallRetainerBottom();
+// STB_BallRetainerBottom(BallPerimeter_d=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls, HasSpringGroove=false, Engagement_Len=20);
 // rotate([180,0,0]) STB_TubeEnd(BallPerimeter_d=PML98Body_OD, nLockBalls=nLockBalls, Body_OD=PML98Body_OD, Body_ID=PML98Body_ID, Skirt_Len=20);
 //
 // -------------
@@ -165,8 +171,8 @@ PD_PetalHub(OD=Coupler_OD,
 						SkirtLen=10);
 /**/
 // -------------
-// STB_SpringEnd(Tube_ID=Body_ID, CouplerTube_ID=BT98Coupler_ID, SleeveLen=0);
-// rotate([180,0,0]) STB_SpringCupTOMT(Tube_ID=Body_ID-8-IDXtra*3); // Top Of Motor Tube Spring Holder
+// rotate([180,0,0]) SE_SpringCupTOMT(Tube_ID=BT98Coupler_OD, nRopeHoles=6);
+// rotate([180,0,0]) SE_SpringCupTOMT(OD=Coupler_OD); // Top Of Motor Tube Spring Holder
 // -------------
 // *** Motor Tube: Blue Tube 2.0, 54mm Body Tube, 272-274mm Long ***
 // *** Body Tube: PML 3.9" QT, 140mm Long ***
@@ -192,6 +198,7 @@ PD_PetalHub(OD=Coupler_OD,
 //
 // ***********************************
 use<NoseCone.scad>
+use<R98Lib.scad>
 use<SpringEndsLib.scad>
 use<PetalDeploymentLib.scad>
 include<TubesLib.scad>
@@ -257,7 +264,7 @@ Booster_Body_Len=R9852Booster_Fin_Root_L+60+116.5+90+170; // I229T
 //echo(Booster_Body_Len=Booster_Body_Len);
 
 // Fairing Overrides
-Fairing_OD=PML98Body_OD;
+Fairing_OD=Body_OD;
 FairingWall_T=2.2;
 Fairing_ID=Fairing_OD-FairingWall_T*2;
 Fairing_Len=160; // Body of the fairing.
@@ -831,11 +838,13 @@ module Rocket9852Fin(){
 
 // Rocket9852Fin();
 
-module SustainerCup(){
+module SustainerCup(Offset_a=7.5){
+	
 	difference(){
-		Stager_Cup(Tube_OD=Body_OD, ID=78, nLocks=2, BoltsOn=true, Collar_h=29);
+		Stager_Cup(Tube_OD=Body_OD, ID=78, nLocks=2, BoltsOn=true, Collar_h=29, Offset_a=Offset_a);
 		
 		ID=94;
+		// Hollow out inside
 		difference(){
 			union(){
 				cylinder(d1=78, d2=ID, h=10+Overlap);
@@ -843,7 +852,7 @@ module SustainerCup(){
 				translate([0,0,20-Overlap]) cylinder(d2=78, d1=ID, h=10);
 			} // union
 			
-			for (j=[0:1]) rotate([0,0,180*j]) translate([0,ID/2,15]) cube([9.5,20,40], center=true);
+			for (j=[0:1]) rotate([0,0,180*j+Offset_a]) translate([0,ID/2,15]) cube([9.5,20,40], center=true);
 		} // difference
 	} // difference
 } // SustainerCup
@@ -864,19 +873,56 @@ module Booster_Stager_CableRedirect(){
 
 	echo(Body_ID=Body_ID-8-IDXtra*3);
 	
+	Sphere_r=Body_ID/2;
+	Sphere_z=10;
+	Sphere_t=4;
+	Crop_d=57;
+	
+	
+	
 	difference(){
-		Stager_CableRedirect(Tube_OD=Body_OD, Skirt_ID=Body_ID, 
-			Tube_ID=Body_ID, InnerTube_OD=BT54Body_OD, HasRaceway=false, Raceway_a=270, Height=14);
+		union(){
+			Stager_CableRedirect(Tube_OD=Body_OD, Skirt_ID=Body_ID, 
+				Tube_ID=Body_ID, InnerTube_OD=BT54Body_OD, HasRaceway=false, Raceway_a=270, Height=14);
+			
+			// The Dome
+			difference(){
+				translate([0,0,-Sphere_r+Sphere_z]) sphere(r=Sphere_r, $fn=$preview? 90:360);
+				
+				translate([0,0,-Sphere_r+Sphere_z]) sphere(r=Sphere_r-Sphere_t, $fn=$preview? 90:360);
+				translate([0,0,-3]) rotate([180,0,0]) cylinder(r=Sphere_r+1, h=Sphere_r*2);
+			
+				translate([0,0,-6])
+				difference(){
+					cylinder(d=Crop_d+20, h=5);
+					
+					translate([0,0,-Overlap]) cylinder(d=Crop_d+1, h=6+Overlap*2, $fn=$preview? 90:360);
+				} // difference
+				
+				translate([0,0,-Overlap])
+				difference(){
+					cylinder(d=Crop_d+10, h=5);
+					
+					translate([0,0,-Overlap]) cylinder(d=Crop_d, h=5+Overlap*2, $fn=$preview? 90:360);
+				} // difference
+			} // difference
+			
+			translate([0,0,Sphere_z+1]) rotate([90,0,0]) difference(){
+				cylinder(d=10, h=5, center=true);
+				cylinder(d=5, h=6, center=true);
+				}
+		} // union
 			
 		translate([0,0,-Height-Overlap])
 		difference(){
 			cylinder(d=Body_OD+1, h=Height+Overlap*2);
 			
-			translate([0,0,-Overlap]) cylinder(d=Body_ID-8-IDXtra*3, h=Height+Overlap*4);
+			translate([0,0,-Overlap]) cylinder(d=Body_ID-8-IDXtra*3, h=Height+Overlap*4, $fn=$preview? 90:360);
 		} // difference
 		
+		// Shock cord attachment tube hole
 		translate([0,0,-Height/2])
-		rotate([0,90,0]) cylinder(d=Tube_d, h=Body_OD, center=true);
+			rotate([0,90,0]) cylinder(d=Tube_d, h=Body_OD, center=true);
 	} // difference
 } // Booster_Stager_CableRedirect
 
@@ -959,19 +1005,7 @@ translate([0,0,R9852Booster_Fin_Root_L+75+48+32])
 STB_BallRetainerTop(BallPerimeter_d=PML98Body_OD, Body_OD=PML98Body_ID, nLockBalls=nLockBalls, HasIntegratedCouplerTube=true, IntegratedCouplerLenXtra=-15, Body_ID=PML98Body_ID, HasSecondServo=true, UsesBigServo=true, Engagement_Len=20);
 /**/
 
-module R98_BallRetainerBottom(){
-	difference(){
-		STB_BallRetainerBottom(BallPerimeter_d=Body_OD, Body_OD=Body_ID, 
-				nLockBalls=nLockBalls, HasSpringGroove=false);
-		
-		rotate([0,0,PD_ShockCordAngle()-ShockCord_a]) 
-			PD_PetalHubBoltPattern(OD=Coupler_OD, nPetals=nPetals) Bolt4Hole();
 
-	} // difference
-} // R98_BallRetainerBottom
-
-// translate([0,0,-9]) rotate([180,0,0]) R98_BallRetainerBottom();
-//rotate([0,0,152]) PD_PetalHub(Coupler_OD=Coupler_OD, nPetals=nPetals, ShockCord_a=PD_ShockCordAngle());
 
 module BoosterUpperFinCan(){
 	// Upper Half of Fin Can

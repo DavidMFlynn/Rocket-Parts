@@ -35,9 +35,13 @@
 //
 // rotate([180,0,0]) CRBB_TopRetainerEBayEnd(Body_OD=Body_OD, Body_ID=Body_ID, Coupler_OD=Coupler_OD, HasSpring=false, CT_Len=20, StopRing_Len=45, nBolts=3);
 //
+// R98C_BallRetainerTop(); // One servo w/ shock cord attachment.
+// R98_BallRetainerBottom(); // w/ 3 bolt holes for PetalHub.
+//
 //
 // ***********************************
 include<TubesLib.scad>
+use<R98Lib.scad>
 use<FinCan2Lib.scad> echo(FinCan2LibRev());
 use<AT-RMS-Lib.scad>
 use<RailGuide.scad>

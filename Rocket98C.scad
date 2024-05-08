@@ -3,7 +3,7 @@
 // Filename: Rocket98C.scad
 // by David M. Flynn
 // Created: 10/23/2023 
-// Revision: 1.2.0  12/28/2023 
+// Revision: 1.2.2  5/7/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -48,6 +48,8 @@
 //
 //  ***** History *****
 //
+// 1.2.2  5/7/2024	 Added rope holes to MotorTubeTopper
+// 1.2.1  5/5/2024   Now using R98Lib.scad
 // 1.2.0  12/28/2023 Added CableReleaseBB w/ Guide Point for night launch version
 // 1.1.1  12/24/2023 Moved FinCan() into FinCan2Lib.scad
 // 1.1.0  12/22/2023 Night Launch version parts added
@@ -61,22 +63,18 @@
 // *** Nosecode ***
 //
 // BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=NC_Len, Base_L=NC_Base_L, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
-
-// BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=NC_Len, Base_L=NC_Base_L, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=120, LowerPortion=false);
-
-// BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=NC_Len, Base_L=NC_Base_L, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=120, Transition_OD=BT75Body_OD-18, LowerPortion=true);
+// NC_ShockcordRingDual(Tube_OD=Body_OD, Tube_ID=Body_ID, NC_Base_L=NC_Base_L, nRivets=3);
 //
 CouplerLenXtra=-10;
 //
 // *** Dual Deploy Electronics Bay ***
 //
-// NC_ShockcordRingDual(Tube_OD=Body_OD, Tube_ID=Body_ID, NC_Base_L=NC_Base_L, nRivets=3);
 // 
-// ST_SpringMiddle(Tube_ID=BT54Coupler_OD);
+// SE_SlidingSpringMiddle(OD=Coupler_OD, nRopes=6, SliderLen=30, SpLen=40, SpringStop_Z=20);
 //
 // PD_NC_PetalHub(OD=Coupler_OD, nPetals=nPetals, nRopes=6);
 // rotate([-90,0,0]) PD_PetalSpringHolder(Coupler_OD=Coupler_OD);
-// rotate([180,0,0]) PD_Petals(Coupler_OD=Coupler_OD, Len=ForwardPetalLen, nPetals=nPetals, AntiClimber_h=3);
+// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=ForwardPetalLen, nPetals=nPetals, AntiClimber_h=4);
 //
 // EB_Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=EBay_Len, nBolts=3, BoltInset=7.5, ShowDoors=false, HasSecondBattDoor=true);
 //
@@ -101,8 +99,8 @@ CouplerLenXtra=-10;
 // rotate([180,0,0]) PD_Petals(Coupler_OD=Coupler_OD, Len=AftPetalLen, nPetals=nPetals, AntiClimber_h=3);
 //
 // rotate([180,0,0]) SpringTop();
-// ST_SpringMiddle(Tube_ID=BT54Coupler_OD);
-// MotorTubeTopper();
+//
+// R98C_MotorTubeTopper();
 //
 // *** Fin Can ***
 /*
@@ -137,7 +135,7 @@ FC2_MotorRetainer(Body_OD=Body_OD,
 //
 // PD_NC_PetalHub(OD=Coupler_OD-IDXtra, nPetals=nPetals, nRopes=6, ShockCord_a=60, HasThreadedCore=true);
 //
-// rotate([180,0,0]) MotorTubeTopperNL();
+// rotate([180,0,0]) R98C_MotorTubeTopperNL();
 // CenteringRing(OD=Coupler_ID, ID=MotorTube_OD+IDXtra*2, Thickness=5, nHoles=5, Offset=0);
 //
 /*
@@ -173,6 +171,7 @@ FC2_MotorRetainer(Body_OD=Body_OD,
 //
 // ***********************************
 include<TubesLib.scad>
+use<R98Lib.scad>
 use<FinCan2Lib.scad> echo(FinCan2LibRev());
 use<AT-RMS-Lib.scad>
 use<RailGuide.scad>
@@ -238,7 +237,7 @@ NC_Tip_r=5*Scale;
 NC_Wall_t=1.8;
 NC_Base_L=15;
 
-ForwardPetalLen=180;
+ForwardPetalLen=160; // 180 is 12mm too much
 ForwardTubeLen=10.5*25.4;
 EBay_Len=162;
 AftPetalLen=150;
@@ -558,40 +557,6 @@ module R98_NightLaunchNC_Base(Tube_OD=Body_OD, Tube_ID=Body_ID, nRivets=3){
 
 //R98_NightLaunchNC_Base();
 
-module R98_UpperSpringMiddle(){
-// costom version of ST_SpringMiddle()
-
-	ST_DSpring_OD=44.30;
-	ST_DSpring_ID=40.50;
-	Len=48;
-	nRopes=6;
-	OD=93;
-	
-	Tube(OD=ST_DSpring_OD+6, ID=ST_DSpring_OD+IDXtra*3, 
-			Len=Len, myfn=$preview? 90:360);
-			
-	translate([0,0,Len*0.4]) Tube(OD=ST_DSpring_ID-0.5, ID=ST_DSpring_ID-6, 
-			Len=Len*0.6, myfn=$preview? 90:360);
-			
-	translate([0,0,Len/2-1.5]) Tube(OD=ST_DSpring_OD+1, ID=ST_DSpring_ID-5, 
-			Len=3, myfn=$preview? 90:360);
-			
-	Tube(OD=OD, ID=89, 
-			Len=35, myfn=$preview? 90:360);
-	difference(){
-		cylinder(d1=92, d2=ST_DSpring_OD+1, h=35);
-		
-		translate([0,0,-3]) cylinder(d1=92, d2=ST_DSpring_OD+1, h=35);
-		translate([0,0,-Overlap]) cylinder(d=ST_DSpring_OD+1, h=35+Overlap*2);
-		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) translate([0,OD/2-7,-Overlap])
-			cylinder(d=10,h=Len);
-	} // difference
-
-
-} // R98_UpperSpringMiddle
-
-//R98_UpperSpringMiddle();
-
 module R98_LowerSpringMiddle(){
 // costom version of ST_SpringMiddle()
 
@@ -636,22 +601,6 @@ module R98_LowerSpringBottom(){
 } // R98_LowerSpringBottom
 
 //rotate([180,0,0]) R98_LowerSpringBottom();
-
-
-module R98_BallRetainerBottom(){
-	difference(){
-		STB_BallRetainerBottom(BallPerimeter_d=Body_OD, Body_OD=Body_ID, 
-				nLockBalls=nLockBalls, HasSpringGroove=false);
-		
-		rotate([0,0,PD_ShockCordAngle()-ShockCord_a]) 
-			PD_PetalHubBoltPattern(Coupler_OD=Coupler_OD, nPetals=nPetals) Bolt4Hole();
-
-	} // difference
-} // R98_BallRetainerBottom
-
-// translate([0,0,-9]) rotate([180,0,0]) R98_BallRetainerBottom();
-//rotate([0,0,152]) PD_PetalHub(Coupler_OD=Coupler_OD, nPetals=nPetals, ShockCord_a=PD_ShockCordAngle());
-
 
 module NC_ShockcordRing(){
 	Plate_t=4;
@@ -710,46 +659,6 @@ module SpringTop(){
 //translate([0,0,50]) 
 //SpringTop();
 
-module R98C_BallRetainerTop(){
-	Tube_d=12.7;
-	Tube_Z=31;
-	Tube_a=-6;
-	TubeSlot_w=35;
-	TubeOffset_X=22;
-	
-	difference(){
-		union(){
-			STB_BallRetainerTop(BallPerimeter_d=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls,
-								HasIntegratedCouplerTube=true, IntegratedCouplerLenXtra=CouplerLenXtra,
-								Body_ID=Body_ID-IDXtra, HasSecondServo=false, UsesBigServo=true);
-				
-			translate([0,0,35.5]) 
-				Tube(OD=Body_ID-IDXtra, ID=Body_ID-IDXtra-6, Len=5, myfn=$preview? 90:360);
-			
-			// Shock cord retention
-			difference(){
-				union(){
-					rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z]) 
-						rotate([90,0,0]) cylinder(d=Tube_d+6, h=Body_ID-2, center=true);
-					rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z-12.2])
-						cube([Tube_d-3, Body_ID-2, 21], center=true);
-				} // union
-				
-				rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z]) 
-					rotate([90,0,0]) cylinder(d=Tube_d+7, h=TubeSlot_w, center=true);
-				rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z-12.2])
-					cube([Tube_d-1, TubeSlot_w,21.1], center=true);
-					
-				Tube(OD=Body_OD+20, ID=Body_ID-1, Len=50, myfn=$preview? 90:360);
-			} // difference
-		} // union
-	
-		translate([TubeOffset_X,0,Tube_Z]) rotate([90,0,Tube_a]) cylinder(d=Tube_d, h=Body_OD, center=true);
-	} // difference
-} // R98C_BallRetainerTop
-
-// rotate([180,0,0]) R98C_BallRetainerTop();
-
 module EBay_ShockcordRingDual(){
 // obsolete part
 	Plate_t=4;
@@ -783,82 +692,6 @@ module EBay_ShockcordRingDual(){
 } // EBay_ShockcordRingDual
 
 //translate([0,0,-15]) color("Green") EBay_ShockcordRingDual();
-
-module MotorTubeTopper(){
-// Z zero is top of motor tube
-// Sits on top of motor tube
-// Has Rail Guide bolt holes
-// Has centering ring
-// Has shock cord attachment tube
-// Has spring holder
-
-	Al_Tube_d=12.7;
-	Al_Tube_Z=-Al_Tube_d/2-5;
-	
-	ST_DSpring_OD=44.30;
-	ST_DSpring_ID=40.5;
-
-	difference(){
-		union(){
-			translate([0,0,-20]) 
-				Tube(OD=MotorTube_ID, ID=MotorTube_ID-8, Len=21, myfn=$preview? 36:360);
-			translate([0,0,-20]) 
-				Tube(OD=MotorTube_OD+8, ID=MotorTube_OD+IDXtra*3, Len=21, myfn=$preview? 36:360);
-			translate([0,0,-20]) 
-				Tube(OD=Body_ID-IDXtra*2, ID=Body_ID-16, Len=21, myfn=$preview? 36:360);
-			CenteringRing(OD=Body_ID, ID=ST_DSpring_ID, Thickness=5, nHoles=0, Offset=0);
-			translate([0,0,4]) 
-				Tube(OD=ST_DSpring_OD+8, ID=ST_DSpring_OD, Len=8, myfn=$preview? 36:360);
-		} // union
-	
-		//translate([0,0,-20]) Tube(OD=MotorTube_ID, ID=MotorTube_ID-6, Len=21, myfn=$preview? 36:360);
-		
-		translate([0,0,3]) cylinder(d=ST_DSpring_OD, h=4+Overlap);
-		translate([0,0,7]) cylinder(d1=ST_DSpring_OD, d2=ST_DSpring_OD+4, h=5+Overlap);
-		
-		translate([0,0,Al_Tube_Z]) rotate([90,0,0]) cylinder(d=Al_Tube_d+IDXtra, h=Body_OD, center=true);
-		
-		translate([Body_OD/2, 0, -9]) {
-			translate([0,0,6.35]) rotate([0,90,0]) Bolt6Hole();
-			translate([0,0,-6.35]) rotate([0,90,0]) Bolt6Hole();
-		}
-	} // difference
-
-} // MotorTubeTopper
-
-// MotorTubeTopper();
-
-
-module MotorTubeTopperNL(){
-// Z zero is top of motor tube
-// Sits on top of motor tube
-// Has centering ring
-// Has shock cord attachment tube
-
-	Al_Tube_d=12.7;
-	Al_Tube_Z=-Al_Tube_d/2-5;
-	
-	difference(){
-		union(){
-			translate([0,0,-20]) 
-				Tube(OD=MotorTube_ID, ID=MotorTube_ID-8, Len=21, myfn=$preview? 36:360);
-			translate([0,0,-20]) 
-				Tube(OD=MotorTube_OD+8, ID=MotorTube_OD+IDXtra*3, Len=21, myfn=$preview? 36:360);
-			translate([0,0,-20]) 
-				Tube(OD=Coupler_ID-IDXtra*2, ID=Coupler_ID-13, Len=21, myfn=$preview? 36:360);
-			CenteringRing(OD=Coupler_ID, ID=MotorTube_ID-8, Thickness=5, nHoles=0, Offset=0);
-			
-		} // union
-		
-		translate([0,0,Al_Tube_Z]) rotate([90,0,0]) 
-			cylinder(d=Al_Tube_d+IDXtra, h=Body_OD, center=true);
-		
-	} // difference
-
-} // MotorTubeTopperNL
-
-// MotorTubeTopperNL();
-
 
 module RocketFin(){
 	

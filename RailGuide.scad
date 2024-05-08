@@ -307,13 +307,14 @@ module RialGuide(TubeOD = 98, Length = 40, Offset = 3){
 module TubeBoltedRailGuide(TubeOD=PML98Body_OD, Length = 30, Offset = 2){
 	Size_Z=50;
 	Size_Y=30;
+	BoltSpace=12.7;
 	
 	function CalcChord_a(Dia=10, Dist=1)=Dist/(Dia*PI)*360;
 	
 	Bolt_a=CalcChord_a(TubeOD,Size_Y/2-6);
 	
 	rotate([0,0,-90]) translate([0,TubeOD/2+Offset-3,0])
-		BoltOnRailGuide(Length = Length, BoltSpace=12.7, RoundEnds=true, ExtraBack=Offset-4);
+		BoltOnRailGuide(Length = Length, BoltSpace=BoltSpace, RoundEnds=true, ExtraBack=Offset-4);
 		
 	difference(){
 		intersection(){
@@ -335,12 +336,12 @@ module TubeBoltedRailGuide(TubeOD=PML98Body_OD, Length = 30, Offset = 2){
 				rotate([0,90,0]) Bolt6ClearHole();
 		}
 		
-		
+		rotate([0,0,-90]) translate([0,TubeOD/2+Offset,0]) RailGuideBoltPattern(BoltSpace=BoltSpace) Bolt6ClearHole(depth=10+Offset);
 	} // difference
 	
 } // TubeBoltedRailGuide
 
-// rotate([0,-90,0]) TubeBoltedRailGuide(TubeOD=PML98Body_OD, Length = 35,  Offset = 5.5);
+// rotate([0,-90,0]) TubeBoltedRailGuide(TubeOD=PML98Body_OD, Length = 35,  Offset = 5.0);
 
 
 

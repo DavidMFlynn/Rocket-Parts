@@ -804,7 +804,7 @@ module Stager_LockRod(Adj=0){
 
 //Stager_LockRod(Adj=-0.5);
 
-module Stager_CupHoles(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true){
+module Stager_CupHoles(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true, Offset_a=0){
 	Collar_h=18;
 	nBolts=8;
 	
@@ -813,7 +813,7 @@ module Stager_CupHoles(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true){
 		translate([0,0,-Overlap*2]) cylinder(d=ID-IDXtra*2, h=Collar_h+Overlap*4, $fn=$preview? 90:360); 
 	} // difference
 	
-	translate([0,0,-12]) Stager_LockRod_Holes(Tube_OD=Tube_OD, nLocks=nLocks);
+	translate([0,0,-12]) rotate([0,0,Offset_a]) Stager_LockRod_Holes(Tube_OD=Tube_OD, nLocks=nLocks);
 	
 	// BoltHoles
 	if (BoltsOn)
@@ -824,7 +824,7 @@ module Stager_CupHoles(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true){
 
 //Stager_CupHoles();
 
-module Stager_Cup(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true, Collar_h=18, HasElectrical=false){
+module Stager_Cup(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true, Collar_h=18, HasElectrical=false, Offset_a=0){
 	Len=3;
 	LR_X=Stager_LockRod_X;
 	LR_Y=Stager_LockRod_Y;
@@ -855,21 +855,21 @@ module Stager_Cup(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true, Collar_h=
 					rotate([180,0,0]) Bolt4HeadHole(depth=8,lHead=Collar_h);
 		
 		if (nLocks>0)
-		Stager_LockRod_Holes(Tube_OD=Tube_OD, nLocks=nLocks);
+		Stager_LockRod_Holes(Tube_OD=Tube_OD, nLocks=nLocks, Offset_a=Offset_a);
 		
 		if (nLocks>0)
-		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j]) 
+		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j+Offset_a]) 
 			translate([0,Tube_OD/2-StagerLockInset_Y,-16])
 				Stager_LockRodBoltPattern() Bolt6Hole(depth=StagerLockInset_Y);
 		
-		if (HasElectrical) rotate([0,0,-180/nLocks]){
+		if (HasElectrical) rotate([0,0,-180/nLocks+Offset_a]){
 			translate([0,Saucer_ID(Tube_OD=Tube_OD)/2+EConnInset,-2]) cube([10,10,22], center=true);
 			translate([0,Saucer_ID(Tube_OD=Tube_OD)/2+EConnInset,8]) RoundRect(X=12, Y=12, Z=Collar_h, R=0.2);
 			//translate([0,0,-2]) SaucerEConnBoltPattern() Bolt4ButtonHeadHole();
 		}
 	} // difference
 	
-	E_a=(nLocks>0)? -180/nLocks:0;
+	E_a=(nLocks>0)? -180/nLocks+Offset_a:0;
 	if (HasElectrical) rotate([0,0,E_a])
 			difference(){
 				intersection(){
@@ -883,7 +883,7 @@ module Stager_Cup(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true, Collar_h=
 			} // difference
 			
 	if ($preview && (nLocks>0))
-		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j]) translate([0, Tube_OD/2-StagerLockInset_Y,-16])
+		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j+Offset_a]) translate([0, Tube_OD/2-StagerLockInset_Y,-16])
 				color("Orange") Stager_LockRod();
 } // Stager_Cup
 
@@ -991,14 +991,14 @@ module Stager_SaucerBoltPattern(Tube_OD=PML98Body_OD, nLocks=2){
 
 //Stager_SaucerBoltPattern() Bolt4ButtonHeadHole();
 
-module Stager_LockRod_Holes(Tube_OD=PML98Body_OD, nLocks=2){
+module Stager_LockRod_Holes(Tube_OD=PML98Body_OD, nLocks=2, Offset_a=0){
 	LR_X=Stager_LockRod_X;
 	LR_Y=Stager_LockRod_Y;
 	LR_Z=Stager_LockRod_Z;
 	
 	Saucer_H=Saucer_Len;
 	
-	for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j]) 
+	for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j+Offset_a]) 
 		translate([0,Tube_OD/2-StagerLockInset_Y, -Saucer_H-12-Overlap]){
 		
 			// BC_LockRod
