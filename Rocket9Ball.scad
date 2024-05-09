@@ -135,10 +135,18 @@ LowerEBayTube_ID=BT75Body_ID;
 LowerDeploymentBayTube_OD=BT98Body_OD;
 LowerDeploymentBayTube_ID=BT98Body_ID;
 
+/*
 // *** 54mm Motor Tube ***
 MotorTube_OD=BT54Body_OD;
 MotorTube_ID=BT54Body_ID;
 MotorCoupler_OD=BT54Coupler_OD;
+/**/
+
+// *** 75mm Motor Tube ***
+MotorTube_OD=BT75Body_OD;
+MotorTube_ID=BT75Body_ID;
+MotorCoupler_OD=BT75Coupler_OD;
+
 
 MotorTubeHole_d=MotorTube_OD+IDXtra*3;
 /*
@@ -810,13 +818,14 @@ module UpperTailCone(){ // part of fincan
 
 //translate([0,0,-75]) UpperTailCone();
 
-module LowerTailCone(){
+module LowerTailCone(UseRMS75mm=false){
 	Tail_r=20;
+	Base_d=BT54Body_OD+12; // keep the same cone for either motor od
 	
 	difference(){
 		
 		hull(){
-			cylinder(d=MotorTube_OD+12, h=Overlap, $fn=$preview? 90:360);
+			cylinder(d=Base_d, h=Overlap, $fn=$preview? 90:360);
 			
 			translate([0,0,75])
 			difference(){
@@ -831,13 +840,21 @@ module LowerTailCone(){
 		
 		// Motor tube
 		cylinder(d=MotorTubeHole_d, h=100);
+		
 		// Aluminum motor retainer
-		translate([0,0,-Overlap]) cylinder(d=63, h=15);
+		if (UseRMS75mm){
+			translate([0,0,-Overlap]) cylinder(d=84, h=30); // <<<<<<< fix fit
+			cylinder(d=100, h=17);
+		}else{
+			translate([0,0,-Overlap]) cylinder(d=63, h=15);
+		}
 		
 	} // difference
 } // LowerTailCone
 
 //translate([0,0,-75-0.2]) LowerTailCone();
+//
+LowerTailCone(UseRMS75mm=true);
 	
 module RocketFin(){
 	
