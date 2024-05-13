@@ -46,7 +46,7 @@ echo(TubesLib_Rev());
 // ***********************************
 //  ***** Routines *****
 //
-// TubeTest(OD=ULine75Body_OD, ID=ULine75Body_ID); // for test fitting tubes
+// TubeTest(OD=BT137Body_OD, ID=BT137Body_ID); // for test fitting tubes
 // Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=300, myfn=$preview? 36:360);
 // TubeStop(InnerTubeID=PML54Coupler_ID, OuterTubeOD=PML54Body_OD, myfn=$preview? 36:360);
 // CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0);

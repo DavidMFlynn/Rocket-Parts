@@ -73,7 +73,10 @@
 
 // rotate([180,0,0]) MPL_LockRing(OD=BT98Coupler_OD, ID=BT98Coupler_ID);
 // CenteringRing(OD=BT98Coupler_ID, ID=BT54Body_OD+IDXtra*2, Thickness=3, nHoles=0);
-// rotate([180,0,0]) LowerTailCone();
+// CenteringRing(OD=BT98Coupler_ID, ID=BT75Body_OD+IDXtra*2, Thickness=12, nHoles=0);
+// CenteringRing(OD=BT98Coupler_ID, ID=BT75Body_OD+IDXtra*2, Thickness=6, nHoles=0);
+//
+//rotate([180,0,0]) LowerTailCone(UseRMS75mm=true);
 //
 // rotate([90,0,0]) BoltOnRailGuide(Length = 30, BoltSpace=12.7, RoundEnds=true);
 //
@@ -843,7 +846,7 @@ module LowerTailCone(UseRMS75mm=false){
 		
 		// Aluminum motor retainer
 		if (UseRMS75mm){
-			translate([0,0,-Overlap]) cylinder(d=84, h=30); // <<<<<<< fix fit
+			translate([0,0,-2]) cylinder(d=84.5, h=32);
 			cylinder(d=100, h=17);
 		}else{
 			translate([0,0,-Overlap]) cylinder(d=63, h=15);
@@ -853,8 +856,7 @@ module LowerTailCone(UseRMS75mm=false){
 } // LowerTailCone
 
 //translate([0,0,-75-0.2]) LowerTailCone();
-//
-LowerTailCone(UseRMS75mm=true);
+// LowerTailCone(UseRMS75mm=true);
 	
 module RocketFin(){
 	
