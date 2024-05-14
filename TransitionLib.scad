@@ -20,7 +20,7 @@ TransitionLib_Rev();
 //
 // ***********************************
 //  ***** for STL output *****
-//*
+/*
 Vinyl_t=0.5;
 Transition(
 				Ratio=3.5, 				// Angle of transition
@@ -35,6 +35,21 @@ Transition(
 								);
 /**/
 //
+/*
+Vinyl_t=0.5;
+Transition(
+				Ratio=3.5, 				// Angle of transition
+				OD1=BT137Body_OD+Vinyl_t, 		// Lower Body OD, Must be large end
+				OD2=BT98Body_OD+Vinyl_t, 		// Upper Body OD
+				C1_OD=BT137Body_ID-IDXtra*2, 	// Lower Coupler OD
+				C1_ID=BT137Body_ID-IDXtra*2-4.4, 	// Lower Coupler ID and Center Hole (can be 0, solid)
+				C1_Len=15, 				// Lower Coupler Length (can be 0)
+				C2_OD=BT98Body_ID-IDXtra*2,	// Upper Coupler OD
+				C2_ID=BT98Body_ID-IDXtra*2-4.4, 	// Upper Coupler ID and Center Hole (can be 0, solid)
+				C2_Len=15				// Upper Coupler Length (can be 0)
+								);
+/**/
+
 // ***********************************
 include<TubesLib.scad>
 
@@ -64,6 +79,7 @@ module Transition(
 	// Top Shoulder
 	difference(){
 		union(){
+			if (C2_Len>0)
 			translate([0,0,Len+Shoulder_Len-Overlap]) cylinder(d=C2_OD, h=C2_Len, $fn=$preview? 90:360);
 			translate([0,0,Len]) cylinder(d=OD2, h=Shoulder_Len, $fn=$preview? 90:360);
 		} // union
@@ -77,6 +93,7 @@ module Transition(
 	
 		translate([0,0,Len]) rotate_extrude($fn=$preview? 90:360) 
 			translate([OD2/2+R,0,0]) circle(r=R, $fn=$preview? 90:360);
+			
 		translate([0,0,Len-X_Offset-Overlap]) 
 			cylinder(d=C2_ID, h=X_Offset+C2_Len+Shoulder_Len+Overlap*2, $fn=$preview? 90:360);
 	} // difference
@@ -102,7 +119,8 @@ module Transition(
 	difference(){
 		union(){
 			translate([0,0,-Shoulder_Len]) cylinder(d=OD1, h=Shoulder_Len, $fn=$preview? 90:360);
-			translate([0,0,-Shoulder_Len-C1_Len]) cylinder(d=C1_OD, h=C1_Len, $fn=$preview? 90:360);
+			if (C1_Len>0)
+				translate([0,0,-Shoulder_Len-C1_Len]) cylinder(d=C1_OD, h=C1_Len, $fn=$preview? 90:360);
 		} // union
 		
 		translate([0,0,-Shoulder_Len-C1_Len-Overlap]) 

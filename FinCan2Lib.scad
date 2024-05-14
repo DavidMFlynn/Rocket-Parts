@@ -28,21 +28,21 @@ FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 				MotorTube_OD=BT54Body_OD, RailGuide_h=BT98Body_OD/2+2,
 				nFins=5, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 				Fin_Root_W=14, Fin_Root_L=130, Fin_Post_h=14, Fin_Chamfer_L=32,
-				Cone_Len=65, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
+				Cone_Len=65, ThreadedTC=true, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
 /**/
 /*
 FC2_FinCan(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, Can_Len=160,
 				MotorTube_OD=BT54Body_OD, RailGuide_h=BT75Body_OD/2+2,
 				nFins=5, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 				Fin_Root_W=12, Fin_Root_L=130, Fin_Post_h=10, Fin_Chamfer_L=32,
-				Cone_Len=35, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
+				Cone_Len=35, ThreadedTC=true, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
 /**/
 /*
   FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 				MotorTube_OD=BT54Body_OD, RailGuide_h=BT98Body_OD/2+2,
 				nFins=5,
 				Fin_Root_W=14, Fin_Root_L=130, Fin_Post_h=14, Fin_Chamfer_L=32,
-				Cone_Len=65, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
+				Cone_Len=65, ThreadedTC=true, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
 /**/
 /*
   FC2_MotorRetainer(Body_OD=BT98Body_OD,
@@ -80,7 +80,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 				MotorTube_OD=BT54Body_OD, RailGuide_h=BT98Body_OD/2+2,
 				nFins=5, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 				Fin_Root_W=14, Fin_Root_L=130, Fin_Post_h=14, Fin_Chamfer_L=32,
-				Cone_Len=65, RailGuideLen=30,
+				Cone_Len=65, ThreadedTC=true, RailGuideLen=30,
 				LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false){
 				
 	Wall_t=1.2;
@@ -163,7 +163,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 						nFins=nFins,
 						Fin_Root_W=Fin_Root_W, Fin_Root_L=Fin_Root_L, 
 						Fin_Post_h=Fin_Post_h, Fin_Chamfer_L=Fin_Chamfer_L,
-						Threaded=true, Cone_Len=Cone_Len, Interface_OD=Body_OD-1);
+						Threaded=ThreadedTC, Cone_Len=Cone_Len, Interface_OD=Body_OD-1);
 			
 			// Rail guide bolt boss
 			if (RailGuide_h>5)
@@ -200,7 +200,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 		
 		if (LowerHalfOnly) translate([0,0,Can_Len/2]) cylinder(d=Body_OD+1, h=Can_Len/2+50);
 		if (UpperHalfOnly) translate([0,0,Can_Len/2]) 
-			rotate([180,0,0]) cylinder(d=Body_OD+10, h=Can_Len/2+50);
+			rotate([180,0,0]) cylinder(d=Body_OD+10, h=Can_Len/2+Cone_Len+1);
 			
 		if ($preview) translate([0,0,-Cone_Len-Overlap]) cube([Body_OD/2+1,Body_OD/2+1,Cone_Len+Can_Len+20]);
 	} // difference

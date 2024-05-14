@@ -421,7 +421,7 @@ module SE_SpringEndTypeB(Coupler_OD=BT75Coupler_OD, MotorCoupler_OD=BT54Coupler_
 
 //SE_SpringEndTypeB();
 
-module SE_SlidingBigSpringMiddle(OD=BT137Coupler_OD, SliderLen=75, Extension=20){
+module SE_SlidingBigSpringMiddle(OD=BT137Coupler_OD, SliderLen=50, Extension=0){
 	Wall_t=1.8;
 	Spring_OD=Spring_CS11890_OD;
 	Hub_OD=Spring_OD+8;

@@ -3,13 +3,14 @@
 // Filename: AT-RMS-Lib.scad
 // by David M. Flynn
 // Created: 9/13/2023 
-// Revision: 0.9.0  9/13/2023 
+// Revision: 0.9.1  5/13/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 //
 //  ***** History *****
 //
+// 0.9.1  5/13/2024   Added ATRMS_75_2560_Motor
 // 0.9.0  9/13/2023   First code, 54mm only
 //
 // ***********************************
@@ -30,11 +31,11 @@ function ATRMS_54_Aft_d()=kATRMS_Aft54_d;
 // ATRMS_54_1706_Case();
 // ATRMS_54_2560_Case();
 //
+//
 // ***********************************
 //  ***** for Viewing *****
 //
-// 
-ShowAll54();
+// ShowAll54();
 //
 // ATRMS_54_427_Motor(HasEyeBolt=true); // I115W, I229T
 // ATRMS_54_852_Motor(Extended=false, HasEyeBolt=true); // J275W, J460T, J615ST
@@ -44,6 +45,8 @@ ShowAll54();
 // ATRMS_54_1706_Motor(Extended=false, HasEyeBolt=true); // K550W
 // ATRMS_54_1706_Motor(Extended=true, HasEyeBolt=true); // K185W
 // ATRMS_54_2560_Motor(Extended=false, HasEyeBolt=true);
+//
+// ATRMS_75_2560_Motor(Extended=false, HasEyeBolt=true);
 //
 // ***********************************
 //
@@ -72,6 +75,25 @@ kATRMS_For54_d5=23;
 kATRMS_For54_h5=31;
 kATRMS_For54_oal=kATRMS_For54_h5;
 
+kATRMS_ExtFor75_h2=20;
+kATRMS_For75_d1=75.4;
+kATRMS_For75_h1=4.7;
+kATRMS_For75_d2=48;
+kATRMS_For75_h2=31;
+kATRMS_For75_d3=57.3;
+kATRMS_For75_h3=16;
+kATRMS_For75_d4=25.4;
+kATRMS_For75_h4=52;
+
+kATRMS_Aft75_d=79.4;
+kATRMS_Aft75_h=12.85;
+
+
+kATRMS_75_Case_d=75.4;
+kATRMS_75_2560_Case_h=332.5;
+
+kATRMS_For75_oal=kATRMS_For75_h4;
+
 module ShowAll54(){
 	ATRMS_54_427_Motor(HasEyeBolt=true); // I115W, I229T
 	translate([60,0,0]) ATRMS_54_852_Motor(Extended=false, HasEyeBolt=true); // J275W, J460T, J615ST
@@ -96,6 +118,17 @@ module Eye_Bolt1(){
 } // Eye_Bolt1
 
 // Eye_Bolt1();
+
+module Eye_Bolt2(){
+	cylinder(d=21, h=3); // hard washer
+	
+	translate([0,0,3]){
+		cylinder(d=16.5, h=9.5);
+		translate([0,0,29]) rotate([90,0,0]) rotate_extrude() translate([20,0,0]) circle(d=10);
+		}
+} // Eye_Bolt2
+
+// Eye_Bolt2();
 
 module ATRMS_54_427_Motor(HasEyeBolt=true){
 	// I115W, I229T
@@ -202,10 +235,52 @@ module ATRMS_AftClosure54(){
 
 
 
+module ATRMS_75_2560_Motor(Extended=false, HasEyeBolt=true){
 
+	Extra=Extended? kATRMS_ExtFor75_h2:0;
+	
+	color("Gray") translate([0,0,kATRMS_75_2560_Case_h+kATRMS_For75_oal+Extra]) Eye_Bolt2();
+	color("Silver") translate([0,0,kATRMS_75_2560_Case_h]) ATRMS_ForClosure75(Extended=Extended);
+	color("LightBlue") ATRMS_75_2560_Case();
+	color("Silver") ATRMS_AftClosure75();
+} // ATRMS_75_2560_Motor
 
+ATRMS_75_2560_Motor(Extended=false, HasEyeBolt=true);
 
+module ATRMS_ForClosure75(Extended=false){
+	// Standard plugged threaded forward closure
+	Etra=Extended? kATRMS_ExtFor75_h2:0;
+	
+	cylinder(d=kATRMS_For75_d1, h=kATRMS_For75_h1);
+	cylinder(d=kATRMS_For75_d2, h=kATRMS_For75_h2+Etra);
+	
+	translate([0,0,kATRMS_For75_h2+Etra-kATRMS_For75_h3/2-1.5]) hull(){
+		cylinder(d=kATRMS_For75_d3, h=kATRMS_For75_h3, center=true);
+		cylinder(d=kATRMS_For75_d2, h=kATRMS_For75_h3+3, center=true);
+	}
+	
+	cylinder(d=kATRMS_For75_d4, h=kATRMS_For75_h4+Etra);
+	
+} // ATRMS_ForClosure75
 
+// ATRMS_ForClosure75(Extended=false);
+
+module ATRMS_75_2560_Case(){
+	cylinder(d=kATRMS_75_Case_d, h=kATRMS_75_2560_Case_h);
+} // ATRMS_75_2560_Case
+
+// ATRMS_75_2560_Case();
+
+module ATRMS_AftClosure75(){
+	
+	translate([0,0,-kATRMS_Aft75_h/2]) hull(){
+		cylinder(d=kATRMS_Aft75_d-2, h=kATRMS_Aft75_h, center=true);
+		cylinder(d=kATRMS_Aft75_d, h=kATRMS_Aft75_h-2, center=true);
+	}
+	
+} // ATRMS_AftClosure75
+
+// ATRMS_AftClosure75();
 
 
 

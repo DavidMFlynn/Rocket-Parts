@@ -45,7 +45,7 @@ PD_PetalHub(OD=BT75Coupler_OD,
 // PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, nRopes=3, ShockCord_a=-1, HasThreadedCore=false);
 //
 // *** Used to prevent drag separation ***
-// rotate([0,-90,0]) PD_PetalLockCatch(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, Len=25);
+// rotate([0,-90,0]) PD_PetalLockCatch(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, Len=27, LockStop=false);
 // PD_CatchHolder(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, nPetals=3);
 //
 // ***********************************
@@ -186,6 +186,16 @@ module PD_CatchHolder(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, nPetals=
 
 //translate([0,0,-2]) PD_CatchHolder();
 
+module PD_ShowCatchAssy(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, nPetals=3){
+	PD_CatchHolder(OD=OD, ID=ID, Wall_t=Wall_t, nPetals=nPetals);
+	
+	translate([0,0,2]) for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j])
+		PD_PetalLockCatch(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, Len=27, LockStop=false);
+} // PD_ShowCatchAssy
+
+//PD_ShowCatchAssy();
+
+
 module PD_PetalLocks(OD=BT75Coupler_OD, Len=25, nPetals=3, Lock_Span_a=0){
 // Lock_Span_a 0=full, else 10 to 360/nPetals
 
@@ -213,6 +223,7 @@ module PD_Petals(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_h
 	BaseOffset=8.2; // was 11.2
 	AntiClimber_w=2;
 	AntiClimber_L=AntiClimber_h*4;
+	AntiClimber_LockComp=HasLocks? 10:0;
 	
 	module AntiClimber(){
 		translate([0.6, -OD/2+1, 0])
@@ -247,7 +258,7 @@ module PD_Petals(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_h
 			if (AntiClimber_h>0)
 				for (j=[0:nPetals-1]) 
 					rotate([0,0,360/nPetals*j]) {
-						translate([0,0,BaseOffset+Len-AntiClimber_L]){
+						translate([0,0,BaseOffset+Len-AntiClimber_L-AntiClimber_LockComp]){
 							AntiClimber();
 							mirror([1,0,0]) AntiClimber();
 						}
@@ -273,7 +284,7 @@ module PD_Petals(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_h
 
 //rotate([180,0,0]) PD_Petals(OD=BT75Coupler_OD, Len=110, nPetals=3, AntiClimber_h=3, HasLocks=true, Lock_Span_a=20);
 //PD_Petals(OD=BT137Coupler_OD, Len=110, nPetals=3, Wall_t=2.4, AntiClimber_h=5);
-
+//rotate([180,0,0]) PD_Petals(OD=BT98Coupler_OD, Len=55, nPetals=3, Wall_t=1.8, AntiClimber_h=4, HasLocks=true, Lock_Span_a=120);
 
 module WallGrigBox(X=10, Y=15, Z=15, R=1.5, A=0){
 	myfn=24;
@@ -585,11 +596,11 @@ module PD_PetalHub(OD=BT75Coupler_OD,
 //PD_PetalHub(OD=BT75Coupler_OD, HasNCSkirt=true, SkirtLen=10, nPetals=3, ShockCord_a=ShockCord_a);
 /*
 PD_PetalHub(OD=BT137Coupler_OD, Body_OD=BT137Body_OD,
-						 nPetals=3, HasBolts=true, ShockCord_a=ShockCord_a,
-						HasNCSkirt=true,
+						 nPetals=3, HasBolts=true, ShockCord_a=-1,
+						HasNCSkirt=false,
 							Body_ID=BT137Body_ID,
 							NC_Base=25, 
-							SkirtLen=10, );
+							SkirtLen=10);
 /**/
 
 
