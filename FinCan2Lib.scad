@@ -89,6 +89,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 	RailGuide_Z=RailGuideTube_Len/2;
 	MotorTubeHole_d=MotorTube_OD+MotorTubeHoleIDXtra;
 	FinInset_Len=(Can_Len-Fin_Root_L)/2;
+	FB_Xtra_Fwd=HasIntegratedCoupler? 10:0;
 	
 	difference(){
 		union(){
@@ -102,9 +103,9 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 			// integrated coupler
 			if (HasIntegratedCoupler){
 				translate([0,0,Can_Len-Overlap]){
-					Tube(OD=Body_ID-IDXtra, ID=Body_ID-4, Len=10, myfn=$preview? 36:360);
+					Tube(OD=Body_ID-IDXtra, ID=Body_ID-4, Len=10+Overlap, myfn=$preview? 36:360);
 					if (HasMotorSleeve)
-						Tube(OD=MotorTubeHole_d+Wall_t*2, ID=MotorTubeHole_d, Len=10, myfn=$preview? 36:360);
+						Tube(OD=MotorTubeHole_d+Wall_t*2, ID=MotorTubeHole_d, Len=10+Overlap, myfn=$preview? 36:360);
 				}
 				difference(){
 					translate([0,0,Can_Len-5])
@@ -146,16 +147,19 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 					CenteringRing(OD=Body_OD-1, ID=MotorTubeHole_d, Thickness=6, nHoles=nFins, Offset=0);
 			
 			// Fin Boxes
+			
 			difference(){
 				for (j=[0:nFins]) rotate([0,0,360/nFins*j]) 
-					translate([0,-FinBox_W/2,0]) cube([Body_OD/2,FinBox_W,Can_Len]);
+					translate([0,-FinBox_W/2,0]) cube([Body_OD/2,FinBox_W,Can_Len+FB_Xtra_Fwd]);
 					
 				difference(){
-					translate([0,0,-Overlap]) cylinder(d=Body_OD+10, h=Can_Len+Overlap*2);
-					translate([0,0,-Overlap*2]) cylinder(d=Body_OD-1, h=Can_Len+Overlap*4);
+					translate([0,0,-Overlap]) cylinder(d=Body_OD+10, h=FB_Xtra_Fwd+Can_Len+Overlap*2);
+					translate([0,0,-Overlap*2]) cylinder(d=Body_OD-1, h=FB_Xtra_Fwd+Can_Len+Overlap*4);
 				} // difference
 				
-				translate([0,0,-Overlap]) cylinder(d=MotorTubeHole_d, h=Can_Len+Overlap*2);
+				translate([0,0,-Overlap]) cylinder(d=MotorTubeHole_d, h=FB_Xtra_Fwd+Can_Len+Overlap*2);
+				if (FB_Xtra_Fwd>0)
+					translate([0,0,Can_Len]) Tube(OD=Body_OD+1, ID=Body_ID-1, Len=15, myfn=$preview? 36:360);
 			} // difference
 			
 			if (Cone_Len>0)

@@ -95,8 +95,8 @@ CouplerLenXtra=-10;
 // *** petal deployer ***
 //
 // PD_PetalHub(OD=Coupler_OD, nPetals=nPetals, ShockCord_a=PD_ShockCordAngle());
-// rotate([-90,0,0]) PD_PetalSpringHolder(Coupler_OD=Coupler_OD);
-// rotate([180,0,0]) PD_Petals(Coupler_OD=Coupler_OD, Len=AftPetalLen, nPetals=nPetals, AntiClimber_h=3);
+// rotate([-90,0,0]) PD_PetalSpringHolder(OD=Coupler_OD);
+// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=AftPetalLen, nPetals=nPetals, AntiClimber_h=3);
 //
 // rotate([180,0,0]) SpringTop();
 //

@@ -3,7 +3,7 @@
 // Filename: SpringThingBooster.scad
 // by David M. Flynn
 // Created: 2/26/2023
-// Revision: 1.3.1   5/7/2024
+// Revision: 1.3.2   5/14/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -39,9 +39,10 @@
 //
 //  ***** History *****
 module SpringThingBoosterRev(){
-	echo("SpringThingBooster Rev. 1.3.0");
+	echo("SpringThingBooster Rev. 1.3.2");
 } // SpringThingBoosterRev
 SpringThingBoosterRev();
+// 1.3.2   5/14/2024  Added Outer_OD parameter to STB_BallRetainerTop() to stop using BallPerimeter_d as OD.
 // 1.3.1   5/7/2024   Moved to "SE_" STB_SpringEnd, STB_SpringSeat, STB_SpringMiddle, SE_SpringCupTOMT, SE_SpringGuide,
 //						Deleted STB_SpringPlate
 // 1.3.0   1/25/2024  Hole in one version added.
@@ -99,7 +100,7 @@ SpringThingBoosterRev();
 // 
 // STB_LockDisk(BallPerimeter_d=BT137Body_ID, nLockBalls=nBT137Balls, HasLargeInnerBearing=true);
 // rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=BT137BallPerimeter_d, Body_OD=BT137Body_ID, nLockBalls=nBT137Balls, IntegratedCouplerLenXtra=-19, HasIntegratedCouplerTube=true, Body_ID=BT137Body_ID, HasSecondServo=true, UsesBigServo=true, Engagement_Len=25, HasLargeInnerBearing=true);
-// STB_BallRetainerBottom(BallPerimeter_d=BT137BallPerimeter_d, Body_OD=BT137Body_ID, nLockBalls=nBT137Balls, HasSpringGroove=false, Engagement_Len=25, HasLargeInnerBearing=true);
+// STB_BallRetainerBottom(BallPerimeter_d=BT137BallPerimeter_d, Outer_OD=BT137Body_OD, Body_OD=BT137Body_ID, nLockBalls=nBT137Balls, HasSpringGroove=false, Engagement_Len=25, HasLargeInnerBearing=true);
 // rotate([180,0,0]) STB_TubeEnd(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls, Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, Skirt_Len=25);
 //
 // ---------------
@@ -779,10 +780,11 @@ STB_BallRetainerTop(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID, nLock
 			Body_ID=PML54Body_ID);
 /**/
 
-module STB_BallRetainerTop(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID, nLockBalls=nLockBalls,
+module STB_BallRetainerTop(BallPerimeter_d=PML54Body_ID, Outer_OD=PML54Body_OD, Body_OD=PML54Coupler_ID, nLockBalls=nLockBalls,
 			HasIntegratedCouplerTube=false,
 			IntegratedCouplerLenXtra=0,
-			Body_ID=PML54Body_ID,
+				
+				Body_ID=PML54Body_ID,
 			HasSecondServo=false,
 			UsesBigServo=false,
 			Engagement_Len=20, HasLargeInnerBearing=false){
@@ -799,6 +801,7 @@ module STB_BallRetainerTop(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID
 	IntCouplerLen=UsesBigServo? IntegratedCouplerLenXtra+24:IntegratedCouplerLenXtra+13;
 	
 	Bearing_ID=Bearing6808_ID;
+	OuterRing_OD=(Outer_OD==0)? BallPerimeter_d:Outer_OD;
 	
 	module ServoPosition(SecondServo=false){
 		SecondServo_a=SecondServo? 360/nLockBalls*2:0;
@@ -852,7 +855,7 @@ module STB_BallRetainerTop(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID
 				union(){
 					Tube(OD=Body_OD-IDXtra*2, ID=Body_OD-IDXtra*2-4.4, Len=CT_Len, myfn=$preview? 90:360);
 					translate([0,0,Engagement_Len/2]) 
-						cylinder(d=BallPerimeter_d-IDXtra*2, h=2, $fn=$preview? 90:360);
+						cylinder(d=OuterRing_OD-IDXtra*2, h=2, $fn=$preview? 90:360);
 					
 				} // union
 				translate([0,0,Engagement_Len/2-Overlap]) 
@@ -862,11 +865,12 @@ module STB_BallRetainerTop(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID
 			if (HasIntegratedCouplerTube){
 				translate([0,0,Engagement_Len/2]) 
 					Tube(OD=Body_ID, ID=Body_ID-6, Len=IntCouplerLen+13, myfn=$preview? 90:360);
+					
 				// gap filler
 				translate([0,0,Engagement_Len/2-5]) 
 					Tube(OD=Body_ID-1, ID=Body_ID-6, Len=6, myfn=$preview? 90:360);
 				translate([0,0,Engagement_Len/2]) 
-					Tube(OD=BallPerimeter_d, ID=Body_ID-4.4, Len=IntCouplerLen, myfn=$preview? 90:360);
+					Tube(OD=OuterRing_OD, ID=Body_ID-4.4, Len=IntCouplerLen, myfn=$preview? 90:360);
 				}
 				
 			// Servo Mount
@@ -970,9 +974,10 @@ module STB_BallRetainerTop(BallPerimeter_d=PML54Body_ID, Body_OD=PML54Coupler_ID
 } // STB_BallRetainerTop
 
 /*
-STB_BallRetainerTop(BallPerimeter_d=BT98Body_OD, Body_OD=BT98Body_ID, nLockBalls=6,
+STB_BallRetainerTop(BallPerimeter_d=BT98Body_OD+2, Body_OD=BT98Body_ID, nLockBalls=6,
 HasIntegratedCouplerTube=true,
 			IntegratedCouplerLenXtra=10,
+			Outer_OD=BT98Body_OD,
 			Body_ID=BT98Body_ID,
 			HasSecondServo=false,
 			UsesBigServo=true,

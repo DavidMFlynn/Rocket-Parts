@@ -121,6 +121,7 @@ echo("StagerLib 1.0.2");
 // Stager_CupHoles(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true);
 // Stager_Cup(Tube_OD=PML98Body_OD, ID=78, nLocks=2);
 // Stager_SaucerBoltPattern(Tube_OD=PML98Body_OD, nLocks=2);
+// Stager_ArmDisarmAccess(Tube_OD=PML98Body_OD, KeyOffset_a=0, Len=PML98Body_OD);
 //
 // ***********************************
 //  ***** for Viewing *****
@@ -1262,8 +1263,7 @@ module Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_
 			cylinder(d=Tube_OD-4.0, h=Tube_Len+Overlap*2, $fn=$preview? 90:360);
 		
 		// Arm / Trigger access hole
-		rotate([0,0,-Cable_Offset_a+KeyOffset_a-66]) translate([0,BearingBallCircle_d(Tube_OD=Tube_OD)/2-2,Race_Z-Race_W-3])
-			rotate([0,90,0]) cylinder(d=3, h=Tube_OD, center=true);
+		Stager_ArmDisarmAccess(Tube_OD=Tube_OD, KeyOffset_a=KeyOffset_a, Len=Tube_OD);
 
 		if (HasRaceway) rotate([0,0,90+Raceway_a]){
 			translate([0,0,Raceway_Z+Raceway_Len/2]) 
@@ -1292,9 +1292,15 @@ module Stager_Mech(Tube_OD=PML98Body_OD, nLocks=2, Skirt_ID=PML98Body_ID, Skirt_
 
 //Stager_Mech(Tube_OD=PML150Body_OD, nLocks=3, Skirt_ID=PML150Body_ID, Skirt_Len=30, HasRaceway=true, Raceway_a=300);
 
+module Stager_ArmDisarmAccess(Tube_OD=PML98Body_OD, KeyOffset_a=0, Len=PML98Body_OD){
+	CablePath_Y=BoltCircle_d(Tube_OD=Tube_OD)/2;
+	Cable_Offset_a=15*round((-60+Calc_a(12,CablePath_Y)+Calc_a(26,CablePath_Y) )/15);
+	
+	rotate([0,0,-Cable_Offset_a+KeyOffset_a-66]) translate([0,BearingBallCircle_d(Tube_OD=Tube_OD)/2-2,Race_Z-Race_W-3])
+			rotate([0,90,0]) cylinder(d=3, h=Len, center=true);
+} // Stager_ArmDisarmAccess
 
-
-
+//Stager_ArmDisarmAccess();
 
 
 

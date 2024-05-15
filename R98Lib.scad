@@ -20,8 +20,8 @@
 //
 // R98C_MotorTubeTopper(); // Glues to top of motor tube, spring holder and rope holes.
 // R98C_MotorTubeTopperNL(); // Glues to top of motor tube, w/o spring holder and rope holes.
-// R98C_BallRetainerTop(); // One servo w/ shock cord attachment.
-// R98_BallRetainerBottom(); // w/ 3 bolt holes for PetalHub.
+// R98C_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID); // One servo w/ shock cord attachment.
+// R98_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID); // w/ 3 bolt holes for PetalHub.
 //
 // ***********************************
 include<TubesLib.scad>
@@ -134,7 +134,7 @@ module R98C_MotorTubeTopperNL(){
 // R98C_MotorTubeTopperNL();
 
 
-module R98C_BallRetainerTop(){
+module R98C_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID){
 	Tube_d=12.7;
 	Tube_Z=31;
 	Tube_a=-3;
@@ -149,6 +149,7 @@ module R98C_BallRetainerTop(){
 		union(){
 			STB_BallRetainerTop(BallPerimeter_d=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls,
 								HasIntegratedCouplerTube=true, IntegratedCouplerLenXtra=CouplerLenXtra,
+								Outer_OD=Body_OD,
 								Body_ID=Body_ID-IDXtra, HasSecondServo=false, UsesBigServo=true, Engagement_Len=Engagement_Len);
 				
 			translate([0,0,35.5]) 
@@ -183,7 +184,7 @@ module R98C_BallRetainerTop(){
 
 // rotate([180,0,0]) R98C_BallRetainerTop();
 
-module R98_BallRetainerBottom(){
+module R98_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID){
 	difference(){
 		STB_BallRetainerBottom(BallPerimeter_d=Body_OD, Body_OD=Body_ID, 
 				nLockBalls=nLockBalls, HasSpringGroove=false);
