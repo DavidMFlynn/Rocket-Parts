@@ -8,8 +8,8 @@
 // ***********************************
 //  ***** Notes *****
 //
-//  137mm (5.5 inch) Body 5 Fin Booster
-//  98mm (4 inch) Body 5 Fin Sustainer
+//  137mm (5.5 inch) Body 3 to 5 Fin Booster
+//  98mm (4 inch) Body 3 to 5 Fin Sustainer
 //  Two Stage Rocket.
 //
 //  Sustainer Motor K270W-P RMS 54/2560
@@ -36,7 +36,7 @@ B_CouplerLenXtra=0;
 // SE_SlidingSpringMiddle(OD=S_Coupler_OD, nRopes=6, SliderLen=30, SpLen=40, SpringStop_Z=20);
 //
 // PD_NC_PetalHub(OD=S_Coupler_OD, nPetals=nPetals, nRopes=6);
-// rotate([-90,0,0]) PD_PetalSpringHolder(Coupler_OD=S_Coupler_OD); // print 6
+// rotate([-90,0,0]) PD_PetalSpringHolder(OD=S_Coupler_OD); // print 6
 // rotate([180,0,0]) PD_Petals(OD=S_Coupler_OD, Len=ForwardPetalLen, nPetals=nPetals, AntiClimber_h=4);
 //
 // EB_Electronics_Bay(Tube_OD=S_Body_OD, Tube_ID=S_Body_ID, Len=EBay_Len, nBolts=3, BoltInset=7.5, ShowDoors=false, HasSecondBattDoor=true);
@@ -68,6 +68,7 @@ B_CouplerLenXtra=0;
 // rotate([180,0,0]) EB_LowerElectronics_Bay(Tube_OD=S_Body_OD, Tube_ID=S_Body_ID, Len=EBay_Len, nBolts=5, BoltInset=7.5, ShowDoors=false);
 //
 // rotate([180,0,0]) SustainerFinCan();
+// Rocket_SustainerFin();
 //
 //
 // rotate([180,0,0]) SustainerCup(Offset_a=7.5);
@@ -177,7 +178,7 @@ EBay_Len=162;
 Alt_DoorXtra_X=6;
 Alt_DoorXtra_Y=4;
 
-nFins=5;
+nFins=3;
 nPetals=3;
 
 B_Body_OD=BT137Body_OD;
@@ -206,7 +207,7 @@ B_Fin_Tip_W=5;
 B_Fin_Tip_L=140;
 B_Fin_Span=240;
 B_Fin_TipOffset=75;
-B_Fin_Chamfer_L=42;
+B_Fin_Chamfer_L=70;
 
 BoosterFinCanLength=B_Fin_Root_L+20;
 B_Cone_Len=65;
@@ -218,13 +219,13 @@ S_Fin_Scale=S_Body_OD/B_Body_OD;
 
 // Sustainer Fin
 S_Fin_Post_h=14;
-S_Fin_Root_L=400*S_Fin_Scale;
-S_Fin_Root_W=18*S_Fin_Scale;
-S_Fin_Tip_W=5*S_Fin_Scale;
-S_Fin_Tip_L=140*S_Fin_Scale;
-S_Fin_Span=240*S_Fin_Scale;
-S_Fin_TipOffset=75*S_Fin_Scale;
-S_Fin_Chamfer_L=42*S_Fin_Scale;
+S_Fin_Root_L=B_Fin_Root_L*S_Fin_Scale;
+S_Fin_Root_W=B_Fin_Root_W*S_Fin_Scale;
+S_Fin_Tip_W=B_Fin_Tip_W*S_Fin_Scale;
+S_Fin_Tip_L=B_Fin_Tip_L*S_Fin_Scale;
+S_Fin_Span=B_Fin_Span*S_Fin_Scale;
+S_Fin_TipOffset=B_Fin_TipOffset*S_Fin_Scale;
+S_Fin_Chamfer_L=B_Fin_Chamfer_L*S_Fin_Scale;
 
 SustainerFinCanLength=S_Fin_Root_L+20;
 S_TailCone_Len=65;
