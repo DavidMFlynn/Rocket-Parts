@@ -36,6 +36,7 @@ echo("RailGuide 1.0.5");
 //
 // BoltOnRailButtonPost(OD=PML98Body_OD, H=5.5*25.4/2);
 // rotate([0,-90,0]) BoltOnRailButtonPost(OD=PML38Body_OD, H=PML38Body_OD/2+15);
+// rotate([0,-90,0]) BoltOnRailButtonPost(OD=PML54Body_OD, H=PML54Body_OD/2+15);
 //
 // ***********************************
 //  ***** Routines *****
@@ -374,7 +375,10 @@ module RailButtonPost(OD=PML98Body_OD, MtrTube_OD=PML54Body_OD, H=5.5*25.4/2, Le
 
 module BoltOnRailButtonPost(OD=PML98Body_OD, H=5.5*25.4/2){
 	Size_Z=50;
-	Bolt_a=(OD<54)? 25:10;
+	
+	function GetBoltAngle(d) = lookup(d, [ [38,25],[98,10]]);
+	Bolt_a=GetBoltAngle(OD);
+	echo(Bolt_a=Bolt_a);
 	
 	difference(){
 		union(){

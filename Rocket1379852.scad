@@ -3,7 +3,7 @@
 // Filename: Rocket1379852.scad
 // by David M. Flynn
 // Created: 5/13/2024
-// Revision: 0.9.1  5/14/2024
+// Revision: 0.9.3  5/22/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -17,6 +17,8 @@
 //
 //  ***** History *****
 //
+// 0.9.3  5/22/2024 Replaced centering ring and spring end with MotorTubeTopper() in booster.
+// 0.9.2  5/16/2024 Changed to 3 fins, added bolt holes to trasition and booster e-bay.
 // 0.9.1  5/14/2024 Ready to begin printing.
 // 0.9.0  5/13/2024 First code, copied some stuff from Rocket13732.scad
 //
@@ -78,7 +80,9 @@ B_CouplerLenXtra=0;
 //  *** Booster ***
 //
 // Stager_Saucer(Tube_OD=S_Body_OD, nLocks=3, HasElectrical=false); // Bolts on
+//
 // InterStageTransition();
+//
 // Stager_LockRing(Tube_OD=S_Body_OD, nLocks=3, FlexComp_d=0.8); 
 // Stager_InnerRace(Tube_OD=S_Body_OD);
 // Stager_BallSpacer(Tube_OD=S_Body_OD);
@@ -88,6 +92,7 @@ B_CouplerLenXtra=0;
 // Stager_CableEndAndStop(Tube_OD=S_Body_OD, Xtra3=false);
 // Stager_Detent(Tube_OD=S_Body_OD);
 //
+// CenteringRing(OD=B_Body_ID-IDXtra*2, ID=BT54Body_OD+IDXtra*2, Thickness=5, nHoles=4); // top of e-bay
 // Booster_Electronics_Bay(ShowDoors=false);
 //
 // *** Doors ***
@@ -119,11 +124,7 @@ B_CouplerLenXtra=0;
 // *** Ball Lock Unit ***
 //
 // STB_LockDisk(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls, HasLargeInnerBearing=true);
-/*
-	rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=BT137BallPerimeter_d, Outer_OD=B_Body_OD, Body_OD=B_Body_ID, nLockBalls=nBT137Balls, 
-							IntegratedCouplerLenXtra=B_CouplerLenXtra, HasIntegratedCouplerTube=true, Body_ID=B_Body_ID, 
-							HasSecondServo=true, UsesBigServo=true, Engagement_Len=25, HasLargeInnerBearing=true);
-/**/
+// rotate([180,0,0]) BoosterBallRetainerTop();
 // Booster_BallRetainerBottom();
 // rotate([180,0,0]) STB_TubeEnd(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls, Body_OD=B_Body_OD, Body_ID=B_Body_ID, Skirt_Len=25);
 //
@@ -133,8 +134,9 @@ B_CouplerLenXtra=0;
 // rotate([-90,0,0]) PD_PetalSpringHolder(OD=B_Coupler_OD);
 // rotate([180,0,0]) PD_GridPetals(OD=B_Coupler_OD, Len=150, nPetals=3, Wall_t=1.2, HasLocks=false);
 //
+// *** choose one ***
 // rotate([180,0,0]) SE_SpringEndTypeA(Coupler_OD=B_Coupler_OD, Coupler_ID=B_Coupler_ID, nRopes=6, Spring_OD=SE_Spring_CS11890_OD());
-
+// MotorTubeTopper(MotorTube_OD=B_MotorTube_OD, MotorTube_ID=B_MotorTube_ID, Body_ID=B_Body_ID);
 //
 // Rocket_BoosterFin();
 
@@ -147,6 +149,7 @@ B_CouplerLenXtra=0;
 // ShowRocket(ShowInternals=false);
 // ShowSustainer(ShowInternals=false)
 // ShowBooster(ShowInternals=false);
+// ShowBooster(ShowInternals=true);
 //
 // ***********************************
 
@@ -175,6 +178,7 @@ $fn=$preview? 36:90;
 
 
 EBay_Len=162;
+Booster_EBay_Len=170;
 Alt_DoorXtra_X=6;
 Alt_DoorXtra_Y=4;
 
@@ -210,9 +214,9 @@ B_Fin_TipOffset=75;
 B_Fin_Chamfer_L=70;
 
 BoosterFinCanLength=B_Fin_Root_L+20;
-B_Cone_Len=65;
-BoosterTube_Len=450;
-BoosterMotorTube_Len=580;
+B_Cone_Len=90;
+BoosterTube_Len=440;
+BoosterMotorTube_Len=610;
 RailGuide_h=B_Body_OD/2+2;
 
 S_Fin_Scale=S_Body_OD/B_Body_OD;
@@ -236,14 +240,14 @@ NC_Tip_r=6;
 NC_Wall_t=1.8;
 NC_Base_L=15;
 
-ForwardPetalLen=130;
+ForwardPetalLen=180;
 S_UpperTubeLen=ForwardPetalLen+110;
 AftPetalLen=180;
 S_LowerTubeLen=AftPetalLen+270;
 S_nLockBalls=6;
 
 module ShowRocket(ShowInternals=false){
-	Sustainer_Z=1204;
+	Sustainer_Z=1207;
 	
 	translate([0,0,Sustainer_Z]) ShowSustainer(ShowInternals=ShowInternals);
 	ShowBooster(ShowInternals=ShowInternals);
@@ -355,7 +359,8 @@ module ShowBooster(ShowInternals=false){
 	BallLock_Z=BoosterBody_Z+BoosterTube_Len;
 	Booster_PetalHub_Z=BallLock_Z-10;
 	EBay_Z=BallLock_Z+37.2;
-	Interstage_Z=EBay_Z+EBay_Len+10.2;
+	Interstage_Z=EBay_Z+Booster_EBay_Len+10.2;
+	MotorTube_Z=-B_Cone_Len+13;
 	Top_Z=Interstage_Z+83;
 	
 	translate([0,0,Top_Z]) color("Blue") Stager_Saucer(Tube_OD=S_Body_OD, nLocks=3, HasElectrical=false);
@@ -380,9 +385,7 @@ module ShowBooster(ShowInternals=false){
 	translate([0,0,EBay_Z]) color("LightGreen") Booster_Electronics_Bay(ShowDoors=(ShowInternals==false));
 	
 	translate([0,0,BallLock_Z]){
-		STB_BallRetainerTop(BallPerimeter_d=BT137BallPerimeter_d, Outer_OD=B_Body_OD, Body_OD=B_Body_ID, nLockBalls=nBT137Balls, 
-					IntegratedCouplerLenXtra=B_CouplerLenXtra, HasIntegratedCouplerTube=true, Body_ID=B_Body_ID, 
-					HasSecondServo=true, UsesBigServo=true, Engagement_Len=25, HasLargeInnerBearing=true);
+		BoosterBallRetainerTop();
 		if (ShowInternals) Booster_BallRetainerBottom();
 		if (ShowInternals==false) color("Gray")
 			STB_TubeEnd(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls, Body_OD=B_Body_OD, Body_ID=B_Body_ID, Skirt_Len=25);
@@ -401,12 +404,15 @@ module ShowBooster(ShowInternals=false){
 		
 		translate([0,0,-70]) SE_SlidingBigSpringMiddle(OD=BT137Coupler_OD, SliderLen=50, Extension=0);
 		
-		translate([0,0,-12.5-70]) rotate([180,0,0])
-			SE_SpringEndTypeA(Coupler_OD=B_Coupler_OD, Coupler_ID=B_Coupler_ID, nRopes=6, Spring_OD=SE_Spring_CS11890_OD());
+		//translate([0,0,-12.5-70]) rotate([180,0,0])
+		//	SE_SpringEndTypeA(Coupler_OD=B_Coupler_OD, Coupler_ID=B_Coupler_ID, nRopes=6, Spring_OD=SE_Spring_CS11890_OD());
 	}
 	
-	if (ShowInternals) translate([0,0,BoosterBody_Z+100])
-		CenteringRing(OD=B_Body_ID, ID=B_MotorTube_OD, Thickness=6, nHoles=6);
+	//if (ShowInternals) translate([0,0,BoosterBody_Z+100])
+	//	CenteringRing(OD=B_Body_ID, ID=B_MotorTube_OD, Thickness=6, nHoles=6);
+	
+	if (ShowInternals) translate([0,0,MotorTube_Z+BoosterMotorTube_Len]) rotate([0,0,180])
+		MotorTubeTopper(MotorTube_OD=B_MotorTube_OD, MotorTube_ID=B_MotorTube_ID, Body_ID=B_Body_ID);
 	
 	if (ShowInternals==false)
 	translate([0,0,BoosterBody_Z]) color("Tan") Tube(OD=B_Body_OD, ID=B_Body_ID, Len=BoosterTube_Len, myfn=$preview? 36:360);
@@ -419,12 +425,15 @@ module ShowBooster(ShowInternals=false){
 			rotate([0,90,0]) color("Orange") Rocket_BoosterFin();
 	/**/
 	
-	if (ShowInternals) translate([0,0,-50])
-	color("LightBlue") Tube(OD=B_MotorTube_OD, ID=B_MotorTube_ID, Len=BoosterMotorTube_Len, myfn=$preview? 36:360);
+	if (ShowInternals) translate([0,0,MotorTube_Z]) color("LightBlue") difference(){
+		Tube(OD=B_MotorTube_OD, ID=B_MotorTube_ID, Len=BoosterMotorTube_Len, myfn=$preview? 36:360);
+		
+		translate([3,3,-Overlap]) cube([B_MotorTube_OD/2,B_MotorTube_OD/2,BoosterMotorTube_Len+Overlap*2]);
+	} // difference
 	
-	/*
+	//*
 	if (ShowInternals) 
-	 translate([0,0,-B_Cone_Len+15]) ATRMS_75_2560_Motor(Extended=false, HasEyeBolt=true);
+	 translate([0,0,MotorTube_Z-2]) ATRMS_75_2560_Motor(Extended=false, HasEyeBolt=true);
 	 /**/
 } // ShowBooster
 
@@ -593,6 +602,7 @@ module Booster_PetalHub(){
 		
 module InterStageTransition(){
 	Stager_Z=82.85;
+	nBolts=6;
 	
 	//*
 	difference(){
@@ -609,6 +619,10 @@ module InterStageTransition(){
 								);
 								
 		translate([0,0,Stager_Z]) Stager_ArmDisarmAccess(Tube_OD=S_Body_OD, KeyOffset_a=0, Len=B_Body_OD);
+		
+		// Bolt holes
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) translate([0, B_Body_ID/2, -10-7.5])
+			rotate([-90,0,0]) Bolt4Hole();
 	} // difference
 	/**/
 
@@ -626,9 +640,99 @@ translate([0,0,10]) Booster_Stager_CableRedirect();
 translate([0,0,-25]) color("Blue") Tube(OD=S_Coupler_OD, ID=S_Coupler_ID, Len=35, myfn=$preview? 36:360);
 /**/
 
+module MotorTubeTopper(MotorTube_OD=BT75Body_OD, MotorTube_ID=BT75Body_ID, Body_ID=BT137Body_ID){
+// Z zero is top of motor tube
+// Sits on top of motor tube
+// Has Rail Guide bolt holes
+// Has centering ring
+// Has shock cord attachment tube
+// Has spring holder
+
+	Skirt_Len=25;
+	
+	Al_Tube_d=12.7;
+	Al_Tube_Z=-Skirt_Len/2;
+	
+	ST_DSpring_OD=SE_Spring_CS11890_OD();
+	ST_DSpring_ID=SE_Spring_CS11890_ID();
+	
+	nRopes=6;
+	Rope_d=4;
+	RopeHoleBC_r=(Body_ID-16)/2-Rope_d/2-2;
+	
+	OuterRing_t=4;
+	
+	nRibs=12;
+	Rib_w=3;
+	
+	difference(){
+		union(){
+			// inner ring
+			translate([0,0,-Skirt_Len]) 
+				Tube(OD=MotorTube_ID, ID=MotorTube_ID-8, Len=Skirt_Len+Overlap, myfn=$preview? 90:360);
+				
+			// motor tube outer ring
+			translate([0,0,-Skirt_Len]) 
+				Tube(OD=MotorTube_OD+8, ID=MotorTube_OD+IDXtra*3, Len=Skirt_Len+Overlap, myfn=$preview? 90:360);
+				
+			// Outer ring
+			translate([0,0,-Skirt_Len]) 
+				Tube(OD=Body_ID, ID=Body_ID-OuterRing_t*2, Len=Skirt_Len+Overlap, myfn=$preview? 90:360);
+				
+			CenteringRing(OD=Body_ID, ID=ST_DSpring_ID, Thickness=5, nHoles=0, Offset=0, myfn=$preview? 90:360);
+			
+			// taper to eliminate support material
+			translate([0,0,-3]) cylinder(d=MotorTube_ID-1, h=3+Overlap);
+			
+			// Spring collar
+			translate([0,0,4]) 
+				Tube(OD=ST_DSpring_OD+8, ID=ST_DSpring_OD, Len=8, myfn=$preview? 36:360);
+				
+			// Bolt boss
+			translate([Body_ID/2-OuterRing_t,0,-Skirt_Len/2+Overlap]) hull(){
+				cube([Overlap,20,Skirt_Len+Overlap*2], center=true);
+				translate([-5,0,0]) cube([Overlap,15,Skirt_Len+Overlap*2], center=true);
+			}
+		} // union
+	
+		// taper to eliminate support material
+		translate([0,0,-3-Overlap]) cylinder(d1=MotorTube_ID-8, d2=ST_DSpring_ID, h=3+Overlap*3);
+		
+		//translate([0,0,-Skirt_Len]) Tube(OD=MotorTube_ID, ID=MotorTube_ID-6, Len=21, myfn=$preview? 36:360);
+		
+		// Spring seat
+		translate([0,0,3]) cylinder(d=ST_DSpring_OD, h=4+Overlap);
+		translate([0,0,7]) cylinder(d1=ST_DSpring_OD, d2=ST_DSpring_OD+4, h=5+Overlap);
+		
+		// Shock cord tube
+		translate([0,0,Al_Tube_Z]) rotate([90,0,0]) cylinder(d=Al_Tube_d+IDXtra, h=Body_ID+1, center=true);
+		
+		// Rail guide bolt holes
+		translate([Body_ID/2, 0, -9]) {
+			translate([0,0,6.35]) rotate([0,90,0]) Bolt6Hole();
+			translate([0,0,-6.35]) rotate([0,90,0]) Bolt6Hole();
+		}
+		
+		// Rope holes
+		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j+180/nRopes]) 
+			translate([0,RopeHoleBC_r,-Overlap]) cylinder(d=Rope_d, h=5+Overlap*2);
+		
+	} // difference
+	
+	// Ribs
+	for (j=[0:nRibs-1]) rotate([0,0,360/nRibs*(j+0.5)]) hull(){
+		translate([0,Body_ID/2-Rib_w/2-1,-Skirt_Len]) cylinder(d=Rib_w, h=Skirt_Len+Overlap);
+		translate([0,MotorTube_OD/2+Rib_w/2+1,-Skirt_Len]) cylinder(d=Rib_w, h=Skirt_Len+Overlap);
+	} // hull
+} // MotorTubeTopper
+
+//MotorTubeTopper(MotorTube_OD=B_MotorTube_OD, MotorTube_ID=B_MotorTube_ID, Body_ID=B_Body_ID);
+
 
 module BoosterFinCan(LowerHalfOnly=false, UpperHalfOnly=false){
-
+	DMFR_MotorRetainer_d=84.2;
+	DMFR_MotorRetainer_Len=32;
+	
 	difference(){
 		FC2_FinCan(Body_OD=B_Body_OD, Body_ID=B_Body_ID, Can_Len=BoosterFinCanLength,
 				MotorTube_OD=B_MotorTube_OD, RailGuide_h=RailGuide_h,
@@ -639,7 +743,7 @@ module BoosterFinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 		// aluminum motor retainer
 		if (LowerHalfOnly || (!LowerHalfOnly && !UpperHalfOnly))
 		translate([0,0,-B_Cone_Len-Overlap]) {
-			cylinder(d=84.5, h=30);
+			translate([0,0,-4]) cylinder(d=DMFR_MotorRetainer_d+IDXtra*2, h=DMFR_MotorRetainer_Len);
 			cylinder(d=100, h=4);
 		}
 		
@@ -649,18 +753,21 @@ module BoosterFinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 
 // BoosterFinCan(LowerHalfOnly=false, UpperHalfOnly=false);
 
+
 module Booster_Electronics_Bay(ShowDoors=false){
 	// Altimeter, Altimeter Battery, Cable Puller, Batt Door w/ Switch x2
-	Len=EBay_Len;
+	nBolts=6;
+	
+	Len=Booster_EBay_Len;
 	Body_OD=B_Body_OD;
 	Body_ID=B_Body_ID;
 	InnerTube_OD=BT54Body_OD;
 	
-	CablePuller_Z=EBay_Len/2;
-	BattSwDoor_Z=72;
-	TopSkirt_Len=15;
-	BottomSkirt_Len=15;
 	
+	BattSwDoor_Z=72;
+	TopSkirt_Len=16;
+	BottomSkirt_Len=16;
+	CablePuller_Z=Len/2-3;
 	
 	CP1_a=0;
 	CP2_a=180; // not used
@@ -687,9 +794,17 @@ module Booster_Electronics_Bay(ShowDoors=false){
 			translate([0,0,BottomSkirt_Len])
 				CenteringRing(OD=B_Body_OD-1, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=4);
 
+			// Top centering ring stop
+			translate([0,0,Len-5-TopSkirt_Len-5]) difference(){
+				cylinder(d=Body_ID+Overlap, h=5);
+				
+				translate([0,0,-Overlap]) cylinder(d1=Body_ID+Overlap, d2=Body_ID-3, h=3+Overlap*2);
+				translate([0,0,-Overlap]) cylinder(d=Body_ID-3, h=5+Overlap*2);
+			} // difference
+			
 			// Top centering ring
-			translate([0,0,Len-5-TopSkirt_Len])
-				CenteringRing(OD=Body_OD-1, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=4);
+			//translate([0,0,Len-5-TopSkirt_Len])
+				//CenteringRing(OD=Body_OD-1, ID=InnerTube_OD+IDXtra*2, Thickness=5, nHoles=4);
 		} // union
 
 		// Altimeter
@@ -710,8 +825,14 @@ module Booster_Electronics_Bay(ShowDoors=false){
 		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt3_a])
 			Batt_BayFrameHole(Tube_OD=Body_OD, HasSwitch=true);
 
+	// Bolt holes
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]){
+			 translate([0, B_Body_OD/2, 7.5]) rotate([-90,0,0]) Bolt4ClearHole();
+			 translate([0, B_Body_OD/2, Len-7.5]) rotate([-90,0,0]) Bolt4ClearHole();
+		}
 	} // difference
 
+			
 	//*
 	// Altimeter
 	translate([0,0,CablePuller_Z]) rotate([0,0,Alt_a])
@@ -735,14 +856,23 @@ module Booster_Electronics_Bay(ShowDoors=false){
 } // Booster_Electronics_Bay
 
 //translate([0,0,EBay_Len]) Booster_Electronics_Bay(ShowDoors=false);
+//translate([0,0,Booster_EBay_Len-20]) CenteringRing(OD=B_Body_ID-IDXtra*2, ID=BT54Body_OD+IDXtra*2, Thickness=5, nHoles=4);
 
-/*
-translate([0,0,-37])
-STB_BallRetainerTop(BallPerimeter_d=BT137BallPerimeter_d, Outer_OD=B_Body_OD, Body_OD=B_Body_ID, nLockBalls=nBT137Balls, 
-					IntegratedCouplerLenXtra=B_CouplerLenXtra, HasIntegratedCouplerTube=true, Body_ID=B_Body_ID, 
-					HasSecondServo=true, UsesBigServo=true, Engagement_Len=25, HasLargeInnerBearing=true);
+module BoosterBallRetainerTop(){
+	nBolts=6;
+	
+	difference(){
+		STB_BallRetainerTop(BallPerimeter_d=BT137BallPerimeter_d, Outer_OD=B_Body_OD, Body_OD=B_Body_ID, nLockBalls=nBT137Balls, 
+							IntegratedCouplerLenXtra=B_CouplerLenXtra, HasIntegratedCouplerTube=true, Body_ID=B_Body_ID, 
+							HasSecondServo=true, UsesBigServo=true, Engagement_Len=25, HasLargeInnerBearing=true);
+							
+		// Bolt holes
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j])
+			 translate([0, B_Body_OD/2, 12.5+24+B_CouplerLenXtra+7.5]) rotate([-90,0,0]) Bolt4Hole();
+	} // difference
+} // BoosterBallRetainerTop
 
-/**/
+//BoosterBallRetainerTop();
 
 module Rocket_BoosterFin(){
 	TrapFin2(Post_h=B_Fin_Post_h, Root_L=B_Fin_Root_L, Tip_L=B_Fin_Tip_L,

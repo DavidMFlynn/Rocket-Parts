@@ -36,7 +36,7 @@ echo(TubesLib_Rev());
 // MotorRetainer(Tube_OD=BT54Mtr_OD, Tube_ID=BT54Mtr_ID, Mtr_OD=54, MtrAC_OD=58);
 // ShockCordMount(OD=PML98Body_ID, ID=BT54Mtr_OD, AnchorRod_OD=12.7);
 // Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=300, myfn=$preview? 36:360);
-// CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0, Offset=0);
+// CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0, Offset=0, myfn=$preview? 36:90);
 // ClusterRing(OD=BT137Body_ID, Thickness=5, CenterMotor_OD=BT54Body_OD, ClusterMotor_OD=PML38Body_OD, nClusterMotors=3, Gap=7, Cant_a=2, Cant_Z=300);
 //
 // SplitCenteringRing(OD=BT98Coupler_ID, ID=PML54Body_OD+IDXtra*2);
@@ -184,9 +184,9 @@ module MotorRetainer(Tube_OD=BT54Mtr_OD, Tube_ID=BT54Mtr_ID, Mtr_OD=54, MtrAC_OD
 //MotorRetainer(Tube_OD=BT54Mtr_OD, Tube_ID=BT54Mtr_ID, Mtr_OD=54, MtrAC_OD=58);
 //MotorRetainer(Tube_OD=BT38Body_OD, Tube_ID=BT38Body_ID, Mtr_OD=38, MtrAC_OD=42);
 
-module CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0, Offset=0){
+module CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0, Offset=0, myfn=$preview? 36:90){
 	difference(){
-		cylinder(d=OD, h=Thickness);
+		cylinder(d=OD, h=Thickness, $fn=myfn);
 		
 		translate([0,Offset,-Overlap]) cylinder(d=ID, h=Thickness+Overlap*2);
 		if (nHoles>0) for (j=[0:nHoles-1]) rotate([0,0,360/nHoles*j])
