@@ -67,13 +67,14 @@ B_CouplerLenXtra=0;
 // SE_SlidingSpringMiddle(OD=S_Coupler_OD, nRopes=6, SliderLen=40, SpLen=40, SpringStop_Z=20);
 // R98C_MotorTubeTopper();
 //
+// CenteringRing(OD=B_Body_ID-IDXtra*2, ID=BT54Body_OD+IDXtra*2, Thickness=5, nHoles=4);
 // rotate([180,0,0]) EB_LowerElectronics_Bay(Tube_OD=S_Body_OD, Tube_ID=S_Body_ID, Len=EBay_Len, nBolts=5, BoltInset=7.5, ShowDoors=false);
 //
 // rotate([180,0,0]) SustainerFinCan();
 // Rocket_SustainerFin();
 //
 //
-// rotate([180,0,0]) SustainerCup(Offset_a=7.5);
+// rotate([180,0,0]) SustainerCup(Offset_a=0);
 // rotate([-90,0,0]) Stager_LockRod(Adj=0);
 //
 // =============================================
@@ -480,10 +481,11 @@ module SustainerFinCan(){
 // SustainerFinCan();
 //translate([0,0,-42]) SustainerCup();
 
-module SustainerCup(Offset_a=7.5){
+module SustainerCup(Offset_a=0){
+	nLocks=3;
 	
 	difference(){
-		Stager_Cup(Tube_OD=S_Body_OD, ID=78, nLocks=3, BoltsOn=true, Collar_h=29, Offset_a=Offset_a);
+		Stager_Cup(Tube_OD=S_Body_OD, ID=78, nLocks=nLocks, BoltsOn=true, Collar_h=29, Offset_a=Offset_a);
 		
 		ID=94;
 		// Hollow out inside
@@ -494,7 +496,7 @@ module SustainerCup(Offset_a=7.5){
 				translate([0,0,20-Overlap]) cylinder(d2=78, d1=ID, h=10);
 			} // union
 			
-			for (j=[0:1]) rotate([0,0,180*j+Offset_a]) translate([0,ID/2,15]) cube([9.5,20,40], center=true);
+			for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j+Offset_a]) translate([0,ID/2,15]) cube([9.5,20,40], center=true);
 		} // difference
 	} // difference
 } // SustainerCup
@@ -738,7 +740,8 @@ module BoosterFinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 				MotorTube_OD=B_MotorTube_OD, RailGuide_h=RailGuide_h,
 				nFins=nFins, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 				Fin_Root_W=B_Fin_Root_W, Fin_Root_L=B_Fin_Root_L, Fin_Post_h=B_Fin_Post_h, Fin_Chamfer_L=B_Fin_Chamfer_L,
-				Cone_Len=B_Cone_Len, ThreadedTC=false, LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly, HasWireHoles=false);
+				Cone_Len=B_Cone_Len, ThreadedTC=false, LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly,
+				HasWireHoles=false, HollowTailcone=false);
 
 		// aluminum motor retainer
 		if (LowerHalfOnly || (!LowerHalfOnly && !UpperHalfOnly))

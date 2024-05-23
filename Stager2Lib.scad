@@ -432,7 +432,7 @@ module Stager_CableRedirectTop(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 		// Ball Detent
 		rotate([0,0,BallDetent_a]) translate([0,BoltCircle_d(Tube_OD=Tube_OD)/2+3,-21]) cylinder(d=14-Overlap, h=30);
 
-		rotate([0,0,Cable_a]) translate([0,CablePath_Y,1]) rotate([0,0,Exit_a]) CablePath();
+		//rotate([0,0,Cable_a]) translate([0,CablePath_Y,1]) rotate([0,0,Exit_a]) CablePath();
 		
 		// vertical tube for cable
 		rotate([0,0,Cable_a]) translate([0,CablePath_Y,-20-Overlap]) cylinder(d=6, h=25+Overlap*2);
@@ -444,6 +444,9 @@ module Stager_CableRedirectTop(Tube_OD=PML98Body_OD, Skirt_ID=PML98Body_ID,
 } // Stager_CableRedirectTop
 
 //Stager_CableRedirectTop(HasRaceway=true);
+
+//Stager_CableRedirectTop(Tube_OD=BT98Body_OD, Skirt_ID=BT98Body_ID, InnerTube_OD=BT54Body_OD, HasRaceway=false, Raceway_a=270);
+
 /*
 Stager_CableRedirectTop(Tube_OD=BT137Body_OD, Skirt_ID=BT137Body_ID, 
 							InnerTube_OD=PML75Body_OD,
@@ -807,7 +810,7 @@ module Stager_LockRod(Adj=0){
 
 module Stager_CupHoles(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true, Offset_a=0){
 	Collar_h=18;
-	nBolts=8;
+	nBolts=nLocks*4;
 	
 	difference(){
 		translate([0,0,-Overlap]) cylinder(d=Tube_OD+1, h=Collar_h+Overlap, $fn=$preview? 90:360); // test
@@ -830,7 +833,7 @@ module Stager_Cup(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true, Collar_h=
 	LR_X=Stager_LockRod_X;
 	LR_Y=Stager_LockRod_Y;
 	LR_Z=Stager_LockRod_Z;
-	nBolts=8;
+	nBolts=nLocks*4;
 	
 	difference(){
 		union(){
@@ -888,7 +891,7 @@ module Stager_Cup(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true, Collar_h=
 				color("Orange") Stager_LockRod();
 } // Stager_Cup
 
-//translate([0,0,Overlap]) Stager_Cup(Tube_OD=PML98Body_OD, ID=76, nLocks=2, Collar_h=18+15,HasElectrical=false);
+//translate([0,0,Overlap]) Stager_Cup(Tube_OD=PML98Body_OD, ID=76, nLocks=3, Collar_h=18+15,HasElectrical=false);
 //Stager_Cup(Tube_OD=PML98Body_OD, ID=78, nLocks=2, BoltsOn=true, Collar_h=18, HasElectrical=true);
 //rotate([0,180,0]) Stager_Cup(Tube_OD=BT137Body_OD, ID=BT137Body_OD-28, nLocks=3, BoltsOn=false, Collar_h=18, HasElectrical=true);
 

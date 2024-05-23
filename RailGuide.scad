@@ -47,7 +47,7 @@ echo("RailGuide 1.0.5");
 // RailGuideMountingPlate(Length = 40, BoltSpace=12.7);
 //
 // *** Includes sections of tube.  Usually part of a fin can. ***
-// RailGuidePost(OD=PML98Body_OD, MtrTube_OD=PML54Body_OD, H=5.5*25.4/2, TubeLen=70, Length = 40, BoltSpace=12.7);
+// RailGuidePost(OD=PML98Body_OD, MtrTube_OD=PML54Body_OD, H=5.5*25.4/2, TubeLen=70, Length = 40, BoltSpace=12.7, AddTaper=false);
 //
 // RailButtonPost(OD=PML98Body_OD, MtrTube_OD=PML54Body_OD, H=5.5*25.4/2, Len=50); // Includes sections of tube. 
 //
@@ -200,15 +200,36 @@ module RailGuideSpacer(OD=PML98Body_OD, H=PML98Body_OD/2+2, Length = 30, BoltSpa
 //RailGuideSpacer(OD=PML98Body_OD, H=PML98Body_OD/2+2, Length = 30, BoltSpace=12.7);
 
 module RailGuidePost(OD=PML98Body_OD, MtrTube_OD=PML54Body_OD, H=5.5*25.4/2, TubeLen=60,
-						Length = 30, BoltSpace=12.7){
+						Length = 30, BoltSpace=12.7, AddTaper=false){
 	Size_Z=TubeLen;
+	MotorTubeReinforcer_OD=MtrTube_OD+4.4+IDXtra*3;
+	MotorTubeReinforcer_ID=MtrTube_OD+IDXtra*3;
 	
-	translate([0,0,-Size_Z/2]) 
-		Tube(OD=MtrTube_OD+4.4+IDXtra*3, ID=MtrTube_OD+IDXtra*3, Len=Size_Z, myfn=$preview? 36:360);
+	translate([0,0,-Size_Z/2]) {
+		Tube(OD=MotorTubeReinforcer_OD, ID=MotorTubeReinforcer_ID, Len=Size_Z, myfn=$preview? 36:360);
+		
+		// add taper to top
+		if (AddTaper)
+		translate([0,0,Size_Z-Overlap]) difference(){
+			cylinder(d1=MotorTubeReinforcer_OD, d2=MotorTubeReinforcer_ID, h=4, $fn=$preview? 36:360);
+			
+			translate([0,0,-Overlap]) cylinder(d=MotorTubeReinforcer_ID, h=4+Overlap*2, $fn=$preview? 36:360);
+		} // difference
+	} // translate
 	
 	difference(){
 		union(){
-			translate([0,0,-Size_Z/2]) Tube(OD=OD, ID=OD-4.4, Len=Size_Z, myfn=$preview? 36:360);
+			translate([0,0,-Size_Z/2]){
+				Tube(OD=OD, ID=OD-4.4, Len=Size_Z, myfn=$preview? 36:360);
+			
+				// add taper to top
+				if (AddTaper)
+				translate([0,0,Size_Z-Overlap]) difference(){
+					cylinder(d=OD, h=4, $fn=$preview? 36:360);
+					
+					translate([0,0,-Overlap]) cylinder(d1=OD-4.4, d2=OD, h=4+Overlap*2, $fn=$preview? 36:360);
+				} // difference
+			} // translate
 			
 			translate([0,MtrTube_OD/2+IDXtra,0])
 			hull(){
@@ -234,7 +255,7 @@ module RailGuidePost(OD=PML98Body_OD, MtrTube_OD=PML54Body_OD, H=5.5*25.4/2, Tub
 	} // difference
 } // RailGuidePost
 
-//RailGuidePost();
+//RailGuidePost(AddTaper=true);
 //translate([0,5.5*25.4/2,0]) BoltOnRailGuide(Length = 40, BoltSpace=12.7);
 
 module BoltOnRailGuidePost(OD=PML98Body_OD, H=5.5*25.4/2,
