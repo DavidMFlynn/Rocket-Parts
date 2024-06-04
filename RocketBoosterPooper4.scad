@@ -36,12 +36,14 @@
 // BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD, L=NC_Len, Base_L=NC_Base_L, nRivets=6, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
 //
 // NC_ShockcordRingDual(Tube_OD=Body_OD+Vinyl_t, Tube_ID=Body_ID, NC_Base_L=NC_Base_L, nRivets=6);
-// SE_SlidingBigSpringMiddle(OD=BT137Coupler_OD, SliderLen=75, Extension=20);
+// SE_SlidingBigSpringMiddle(OD=BT137Coupler_OD, SliderLen=75, Extension=20); // not required
+// PD_NC_PetalHub(OD=Coupler_OD, nPetals=3, nRopes=6, ShockCord_a=-1, HasThreadedCore=false, ST_DSpring_ID=SE_Spring_CS11890_ID(), ST_DSpring_OD=SE_Spring_CS11890_OD(), CouplerTube_ID=Coupler_ID);
 //
-// NC_PetalHub();
+// NC_PetalHub(); // old version
 //
 // rotate([-90,0,0]) PD_PetalSpringHolder(OD=Coupler_OD);
 // rotate([180,0,0]) PD_GridPetals(OD=Coupler_OD, Len=180, nPetals=nPetals, Wall_t=1.2);
+// rotate([180,0,0]) PD_GridPetals(OD=Coupler_OD, Len=85, nPetals=nPetals, Wall_t=1.2);
 //
 // SE_SpringEndTypeA(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, nRopes=6, Spring_OD=SE_Spring_CS11890_OD());
 //		An end for Spring_CS4323.

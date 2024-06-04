@@ -75,7 +75,7 @@ B_CouplerLenXtra=0;
 //
 //
 // rotate([180,0,0]) SustainerCup(Offset_a=0);
-// rotate([-90,0,0]) Stager_LockRod(Adj=0);
+// rotate([-90,0,0]) Stager_LockRod(Adj=0.0); // worked at 0.0
 //
 // =============================================
 //  *** Booster ***
@@ -134,6 +134,9 @@ B_CouplerLenXtra=0;
 // Booster_PetalHub();
 // rotate([-90,0,0]) PD_PetalSpringHolder(OD=B_Coupler_OD);
 // rotate([180,0,0]) PD_GridPetals(OD=B_Coupler_OD, Len=150, nPetals=3, Wall_t=1.2, HasLocks=false);
+//
+// rotate([180,0,0]) SE_SpringEndTypeA(Coupler_OD=B_Coupler_OD, Coupler_ID=B_Coupler_ID, nRopes=6, Spring_OD=SE_Spring_CS11890_OD());
+// SE_SlidingBigSpringMiddle(OD=BT137Coupler_OD, SliderLen=50, Extension=0);
 //
 // *** choose one ***
 // rotate([180,0,0]) SE_SpringEndTypeA(Coupler_OD=B_Coupler_OD, Coupler_ID=B_Coupler_ID, nRopes=6, Spring_OD=SE_Spring_CS11890_OD());
