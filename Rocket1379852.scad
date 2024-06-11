@@ -47,8 +47,8 @@ B_CouplerLenXtra=0;
 //
 // rotate([-90,0,0]) AltDoor54(Tube_OD=S_Body_OD, IsLoProfile=false, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowAlt=true);
 // 
-// rotate([-90,0,0]) Batt_Door(Tube_OD=S_Body_OD, InnerTube_OD=0, HasSwitch=true);
-// rotate([-90,0,0]) Batt_Door(Tube_OD=S_Body_OD, InnerTube_OD=0, HasSwitch=false);
+// rotate([-90,0,0]) Batt_Door(Tube_OD=S_Body_OD, InnerTube_OD=0, HasSwitch=true, DoubleBatt=false);
+// rotate([-90,0,0]) Batt_Door(Tube_OD=S_Body_OD, InnerTube_OD=0, HasSwitch=false, DoubleBatt=false);
 //
 // *** Ball Lock ***
 //
@@ -100,8 +100,9 @@ B_CouplerLenXtra=0;
 //
 // rotate([-90,0,0]) AltDoor54(Tube_OD=B_Body_OD, IsLoProfile=false, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowAlt=true);
 // 
-// rotate([-90,0,0]) Batt_Door(Tube_OD=B_Body_OD, InnerTube_OD=0, HasSwitch=true);
-// rotate([-90,0,0]) Batt_Door(Tube_OD=B_Body_OD, InnerTube_OD=0, HasSwitch=false);
+// rotate([-90,0,0]) Batt_Door(Tube_OD=B_Body_OD, InnerTube_OD=0, HasSwitch=true, DoubleBatt=false);
+// rotate([-90,0,0]) Batt_Door(Tube_OD=B_Body_OD, InnerTube_OD=0, HasSwitch=true, DoubleBatt=true);
+// rotate([-90,0,0]) Batt_Door(Tube_OD=B_Body_OD, InnerTube_OD=0, HasSwitch=false, DoubleBatt=false);
 //
 // rotate([-90,0,0]) CP_Door(Tube_OD=B_Body_OD, BoltBossInset=3, HasArmingSlot=true);
 //
@@ -445,7 +446,10 @@ module ShowBooster(ShowInternals=false){
 // ShowBooster(ShowInternals=true);
 
 module SustainerFinCan(){
-
+	MotorRetainerHole_d=63+IDXtra*2;
+	// was S_MotorTube_OD+5
+	//echo(S_MotorTube_OD+5);
+	
 	difference(){
 		union(){
 			FC2_FinCan(Body_OD=S_Body_OD, Body_ID=S_Body_ID, Can_Len=SustainerFinCanLength, 
@@ -475,8 +479,8 @@ module SustainerFinCan(){
 		
 		// Aluminum retainer
 		translate([0,0,-42]){
-			cylinder(d=S_MotorTube_OD+5, h=33);
-			cylinder(d=S_MotorTube_OD+10, h=10);
+			cylinder(d=MotorRetainerHole_d, h=33);
+			cylinder(d=MotorRetainerHole_d+5, h=10);
 		}
 	} // difference
 } // SustainerFinCan
