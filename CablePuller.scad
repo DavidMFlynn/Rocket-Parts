@@ -3,7 +3,7 @@
 // Filename: CablePuller.scad
 // by David M. Flynn
 // Created: 8/21/2022 
-// Revision: 1.2.0  4/29/2023
+// Revision: 1.2.1  6/20/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -26,7 +26,8 @@
 //
 //  ***** History *****
 //
-echo("CablePuller 1.2.0");
+echo("CablePuller 1.2.1");
+// 1.2.1  6/20/2024   Added CP_ prefix to routines.
 // 1.2.0  4/29/2023   New door design, uses DoorLib.scad
 // 1.1.11  1/3/2023   Added 1.25mm space for the spring
 // 1.1.10  1/3/2023   Added CP_SpringWindingTool()
@@ -55,29 +56,29 @@ echo("CablePuller 1.2.0");
 // rotate([0,180,0]) CP_Door(Tube_OD=PML98Body_OD, BoltBossInset=2, HasArmingSlot=true);
 // *** BoltBossInset=2 was 3, use 2 to clear 54mm motor tube w/ 98mm body tube ***
 //
-// BoltInServoMount();
-// ThroughOut();
-// rotate([0,90,0]) SpringBody();
-// CableRetainer();
-// StopAdjuster();
-// CageBottom();
-// AddServo(); // CageTop w/ servo mount translate([0,0,SpringBody_YZ/2+2.5]) rotate([180,0,0]) CageTop();
+// CP_BoltInServoMount();
+// CP_ThroughOut();
+// rotate([0,90,0]) CP_SpringBody();
+// CP_CableRetainer();
+// CP_StopAdjuster();
+// CP_CageBottom();
+// CP_AddServo(); // CageTop w/ servo mount translate([0,0,CP_SpringBody_YZ/2+2.5]) rotate([180,0,0]) CP_CageTop();
 //
 /*
 	translate([0,0,CP_SpringBody_YZ/2+2.5]) rotate([180,0,0]){ 
-		CageTop();
-		BellCrankTriggerBearingHolder();}
+		CP_CageTop();
+		CP_BellCrankTriggerBearingHolder();}
 /**/
-// rotate([180,0,0]) TriggerBellCrank();
+// rotate([180,0,0]) CP_TriggerBellCrank();
 //
-// BellCrank(Len=38);
+// CP_BellCrank(Len=38);
 
 // CP_SpringWindingTool();
 //
 // ***********************************
 //  ***** Routines *****
 //
-// CablePullerBoltPattern() Bolt4Hole();
+// CP_CablePullerBoltPattern() Bolt4Hole();
 //
 // CPDoorHole(Tube_OD=PML98Body_OD);
 // CP_DoorBoltPattern(Tube_OD=PML98Body_OD) Bolt4Hole();
@@ -135,7 +136,7 @@ module ShowCablePuller(Tube_OD=PML98Body_OD){
 	//TO_a=-45;
 	TO_a=0;
 	
-	rotate([0,0,TO_a]) ThroughOut();
+	rotate([0,0,TO_a]) CP_ThroughOut();
 	translate([0,0,-CP_Bearing_H/2]) Bearing();
 	translate([0,0,CP_Bearing_H/2]) Bearing();
 	color("Silver") Dowel(Len=CP_SpringBody_YZ+5.05);
@@ -143,23 +144,23 @@ module ShowCablePuller(Tube_OD=PML98Body_OD){
 	translate([ArmLen,0,0]) Bearing();
 	translate([ArmLen,0,0]) color("Silver") Dowel(Len=CP_Bearing_H+6);}
 	
-	translate([ArmLen+CP_Bearing_OD,0,0])SpringBody();
+	translate([ArmLen+CP_Bearing_OD,0,0]) CP_SpringBody();
 	translate([ArmLen+CP_Bearing_OD,0,0]) Bearing();
 	translate([ArmLen+CP_Bearing_OD,0,0]) color("Silver") Dowel(Len=CP_SpringBody_YZ);
 	
 	translate([ArmLen+CR_h+CP_Bearing_OD*1.5+3,0,0])
-		color("LightBlue") rotate([0,-90,0]) CableRetainer();
+		color("LightBlue") rotate([0,-90,0]) CP_CableRetainer();
 	
-	CageBottom();
+	CP_CageBottom();
 	
-	translate([ArmLen,CP_SpringBody_YZ/2+LooseFit/2+0.4,0]) rotate([-90,0,0]) color("Tan") StopAdjuster();
+	translate([ArmLen,CP_SpringBody_YZ/2+LooseFit/2+0.4,0]) rotate([-90,0,0]) color("Tan") CP_StopAdjuster();
 	
 	//translate([10,10,15]) 
-	translate([0,0,Overlap]) CageTop();
+	translate([0,0,Overlap]) CP_CageTop();
 	
-	BellCrankTriggerBearingHolder();
+	CP_BellCrankTriggerBearingHolder();
 	translate([CP_Bearing_OD*1.5+ArmLen, 7.5+4+CP_Bearing_OD/2, 7.5-2-CP_Bearing_H/2-1.5])
-		TriggerBellCrank();
+		CP_TriggerBellCrank();
 	
 	translate([8,0,36]) rotate([0,0,-90]) rotate([0,180,0]) CP_Door(Tube_OD=Tube_OD, BoltBossInset=3, HasArmingSlot=true);
 } // ShowCablePuller
@@ -211,7 +212,7 @@ module CPDoorHole(Tube_OD=PML98Body_OD){
 } // CPDoorHole
 
 //CPDoorHole(Tube_OD=PML98Body_OD);
-//translate([0,-20,PML98Body_OD/2-6]) rotate([0,0,90]) CablePullerBoltPattern() cylinder(d=Bolt4Inset*2, h=4);
+//translate([0,-20,PML98Body_OD/2-6]) rotate([0,0,90]) CP_CablePullerBoltPattern() cylinder(d=Bolt4Inset*2, h=4);
 
 module CP_DoorBoltPattern(Tube_OD=PML98Body_OD){
 	Door_Y=CP_Door_Y;
@@ -267,25 +268,34 @@ module CP_Door(Tube_OD=PML98Body_OD, BoltBossInset=2, HasArmingSlot=false){
 						
 				// Bolt bosses
 				union(){
-					translate([12,-Tube_OD/2-3,-Door_Y/2+27]) rotate([90,0,-90]) BoltInServoMountBase();
+					translate([12,-Tube_OD/2-3,-Door_Y/2+27]) rotate([90,0,-90]) CP_BoltInServoMountBase(BoltBossInset=BoltBossInset);
 				
-					translate([0,-Tube_OD/2+Door_t+BoltBossInset,CP_Offset_Y]) 
-						rotate([0,-90,90]) CablePullerBoltPattern() cylinder(d=8, h=BoltBossInset+3);
-						}
+					if (BoltBossInset<5){
+						translate([0,-Tube_OD/2+Door_t+BoltBossInset,CP_Offset_Y]) 
+							rotate([0,-90,90]) CP_CablePullerBoltPattern() cylinder(d=8, h=BoltBossInset+3);
+					}else{
+						translate([0,-Tube_OD/2+Door_t+BoltBossInset,CP_Offset_Y]) 
+							rotate([0,-90,90]) hull() CP_CablePullerBoltPattern(Right=false) cylinder(d=8, h=BoltBossInset+3);
+						translate([0,-Tube_OD/2+Door_t+BoltBossInset,CP_Offset_Y]) 
+							rotate([0,-90,90]) hull() CP_CablePullerBoltPattern(Left=false) cylinder(d=8, h=BoltBossInset+3);
+					}
+							
+				} // union
 					
 			} // intersection
 		} // union
 			
 		// Servo Mount Mounting Holes
-		translate([12,-Tube_OD/2+10,-Door_Y/2+27]) rotate([90,0,-90]) 
-			BoltInServoMountBoltPattern() rotate([180,0,0]) Bolt4Hole();
+		 translate([12, -Tube_OD/2+3+BoltBossInset, -Door_Y/2+27]) rotate([90,0,-90]) 
+			CP_BoltInServoMountBoltPattern() rotate([180,0,0]) Bolt4Hole();
 			
 		// Trim door clear of servo base
-		translate([12,-Tube_OD/2+0.5-Overlap,-Door_Y/2+27]) rotate([90,0,-90]) BoltInServoMountBase();
+		//translate([12+Overlap,-Tube_OD/2+0.5+BoltBossInset-5-Overlap,-Door_Y/2+27]) 
+		//	rotate([90,0,-90]) scale([1,1.02,1.1]) CP_BoltInServoMountBase(BoltBossInset=BoltBossInset);
 		
 		// CablePuller bolt holes
 		translate([0,-Tube_OD/2+Door_t+BoltBossInset,CP_Offset_Y]) 
-			rotate([0,-90,90]) CablePullerBoltPattern() {
+			rotate([0,-90,90]) CP_CablePullerBoltPattern() {
 				rotate([180,0,0]) Bolt4Hole(depth=BoltBossInset+2); 
 				rotate([180,0,0]) cylinder(d=8, h=2);
 			}
@@ -304,37 +314,37 @@ module CP_Door(Tube_OD=PML98Body_OD, BoltBossInset=2, HasArmingSlot=false){
 	} // difference
 } // CP_Door
 
-//rotate([90,0,0]) 
-//rotate([0,180,0])
+// rotate([90,0,0]) 
+// rotate([0,180,0])
 // CP_Door(Tube_OD=PML98Body_OD, BoltBossInset=3, HasArmingSlot=true);
-//CP_Door(Tube_OD=BT137Body_OD, BoltBossInset=3, HasArmingSlot=true);
+// CP_Door(Tube_OD=BT137Body_OD, BoltBossInset=3, HasArmingSlot=true);
 
-module BoltInServoMountBase(){
-	translate([-8,-18,0]) cube([3.5,36,10]);
-} // BoltInServoMountBase
+module CP_BoltInServoMountBase(BoltBossInset=2){
+	translate([-5.7-BoltBossInset,-18,0]) cube([BoltBossInset+1.5,36,10]);
+} // CP_BoltInServoMountBase
 
-module BoltInServoMountBoltPattern(){
+module CP_BoltInServoMountBoltPattern(){
 	translate([0,14,6.5]) rotate([0,90,0]) children();
 	translate([0,-14,6.5]) rotate([0,90,0]) children();
-} // BoltInServoMountBoltPattern
+} // CP_BoltInServoMountBoltPattern
 
-module BoltInServoMount(){
+module CP_BoltInServoMount(){
 	
 	
 	difference(){
 		union(){
 			translate([-3.5,-18,0]) cube([3.5,36,10]);
-			ServoMount(Extend=0);
+			CP_ServoMount(Extend=0);
 		} // union
 		
-		BoltInServoMountBoltPattern() Bolt4ButtonHeadHole();
+		CP_BoltInServoMountBoltPattern() Bolt4ButtonHeadHole();
 		
 	} // diff
-} // BoltInServoMount
+} // CP_BoltInServoMount
 
-//BoltInServoMount();
+//CP_BoltInServoMount();
 	
-module ServoMount(Extend=0){
+module CP_ServoMount(Extend=0){
 	Servo_X=12;
 	Servo_Y=22.6;
 	ServoBC_Y=28;
@@ -352,11 +362,11 @@ module ServoMount(Extend=0){
 		translate([Servo_X/2+0.3, -ServoBC_Y/2, MountPlate_h]) Bolt2Hole();
 		translate([Servo_X/2+0.3, ServoBC_Y/2, MountPlate_h]) Bolt2Hole();
 	} // difference
-} // ServoMount
+} // CP_ServoMount
 
 //translate([28,-CP_SpringBody_YZ/2-2.5-4,0]) rotate([0,0,-90]) ServoMount();
 
-module StopAdjuster(){
+module CP_StopAdjuster(){
 	OA_h=6.5;
 	Base_h=2;
 	
@@ -372,24 +382,24 @@ module StopAdjuster(){
 		
 		translate([0,0,OA_h]) Bolt8Hole();
 	} // 
-} // StopAdjuster
+} // CP_StopAdjuster
 
-// translate([ArmLen,CP_SpringBody_YZ/2-1,0]) rotate([-90,0,0]) StopAdjuster();
+// translate([ArmLen,CP_SpringBody_YZ/2-1,0]) rotate([-90,0,0]) CP_StopAdjuster();
 
-module AddServo(){
-	translate([0,0,CP_SpringBody_YZ/2+2.5]) rotate([180,0,0]) CageTop();
+module CP_AddServo(){
+	translate([0,0,CP_SpringBody_YZ/2+2.5]) rotate([180,0,0]) CP_CageTop();
 	
 	difference(){
-		translate([28,-CP_SpringBody_YZ/2-2.5-4,0]) rotate([0,0,-90]) ServoMount();
+		translate([28,-CP_SpringBody_YZ/2-2.5-4,0]) rotate([0,0,-90]) CP_ServoMount();
 		
 		translate([ArmLen,-CP_SpringBody_YZ/2-1,CP_SpringBody_YZ/2+2.5]) 
 			rotate([90,0,0]) cylinder(d=11, h=5.5);
 	} // difference
-} // AddServo
+} // CP_AddServo
 
-//AddServo();
+//CP_AddServo();
 
-module CablePullerBoltPattern(){
+module CP_CablePullerBoltPattern(Left=true, Right=true){
 	Bolt_X1=-2;
 	Cage_YZ=CP_SpringBody_YZ+5;
 	Cage_PX=ArmLen+CP_Bearing_OD*1.5+CP_Spring_CBL+CableEnd_h+4+4;
@@ -398,14 +408,16 @@ module CablePullerBoltPattern(){
 	CP_Bolt_CL=(Cage_PX-4)-Bolt_X1;
 	echo(CP_Bolt_CL=CP_Bolt_CL);
 	
+	if (Left){
 	translate([Cage_PX-4,-Cage_YZ/2-BoltOffset,0]) children();
+	translate([Bolt_X1,-Cage_YZ/2-BoltOffset,0]) children();}
+	if (Right){
 	translate([Cage_PX-4,Cage_YZ/2+BoltOffset,0]) children();
-	translate([Bolt_X1,-Cage_YZ/2-BoltOffset,0]) children();
-	translate([Bolt_X1,Cage_YZ/2+BoltOffset,0]) children();
+	translate([Bolt_X1,Cage_YZ/2+BoltOffset,0]) children();}
 
-} // CablePullerBoltPattern
+} // CP_CablePullerBoltPattern
 
-//CablePullerBoltPattern() Bolt4Hole();
+//CP_CablePullerBoltPattern() Bolt4Hole();
 
 module CR_Cage(){
 	Bolt_X1=-2;
@@ -472,7 +484,7 @@ module CR_Cage(){
 		}
 		
 		// Bolts
-		CablePullerBoltPattern() Bolt1();
+		CP_CablePullerBoltPattern() Bolt1();
 		
 		// cable path
 		translate([Cage_PX+1,0,0]) rotate([0,-90,0]) cylinder(d=CableEnd_d+1, h=10);
@@ -527,26 +539,26 @@ module CR_Cage(){
 } // CR_Cage
 
 // bottom only
-module CageBottom(){
+module CP_CageBottom(){
 	difference(){
 		CR_Cage();
 		translate([-50,-50,0]) cube([150,100,20]);
 	} // difference
-} // CageBottom
+} // CP_CageBottom
 
-//CageBottom();
+//CP_CageBottom();
 
 // top only
-module CageTop(){
+module CP_CageTop(){
 	difference(){
 		CR_Cage();
 		translate([-50,-50,0]) mirror([0,0,1]) cube([150,100,20]);
 	} // difference
-} // CageTop
+} // CP_CageTop
 
-//CageTop();
+//CP_CageTop();
 
-module BellCrankTriggerBearingHolder(){
+module CP_BellCrankTriggerBearingHolder(){
 	// Add to CR_Cage();
 	Cage_YZ=CP_SpringBody_YZ+5;
 	B_Offset_Y=4.5; // added 0.5mm 10/14/22
@@ -578,12 +590,12 @@ module BellCrankTriggerBearingHolder(){
 		translate([CP_Bearing_OD*1.5+ArmLen, Cage_YZ/2+B_Offset_Y+CP_Bearing_OD/2, Cage_YZ/2-2-CP_Bearing_H/2-0.5])
 		Bearing();
 	
-} // BellCrankTriggerBearingHolder
+} // CP_BellCrankTriggerBearingHolder
 
-// translate([0,0,Overlap]) BellCrankTriggerBearingHolder();
+// translate([0,0,Overlap]) CP_BellCrankTriggerBearingHolder();
 
 
-module TriggerBellCrank(){
+module CP_TriggerBellCrank(){
 	TriggerArm_Len=12;
 	ServoArm_Len=12;
 	
@@ -606,12 +618,12 @@ module TriggerBellCrank(){
 		translate([0,ServoArm_Len,CP_Bearing_H]) Bolt2Hole(); 
 		translate([0,0,-Overlap]) cylinder(d=CP_Bearing_OD+IDXtra, h=CP_Bearing_H+Overlap*2);
 	} // difference
-} // TriggerBellCrank
+} // CP_TriggerBellCrank
 
 //translate([CP_Bearing_OD*1.5+ArmLen, 7.5+4+CP_Bearing_OD/2, 7.5-2-CP_Bearing_H/2-1.5])
-//TriggerBellCrank();
+//CP_TriggerBellCrank();
 
-module CableRetainer(){
+module CP_CableRetainer(){
 	difference(){
 		cylinder(d=CP_Spring_OD, h=CableEnd_h+2);
 		
@@ -623,11 +635,11 @@ module CableRetainer(){
 		} // hull
 		
 	} // difference
-} // CableRetainer
+} // CP_CableRetainer
 
-// CableRetainer();
+// CP_CableRetainer();
 
-module BellCrank(Len=38){
+module CP_BellCrank(Len=38){
 	Thickness=6;
 	Ball_d=5/16*25.4;
 	
@@ -665,11 +677,11 @@ module BellCrank(Len=38){
 		translate([Len/2,0,0]) Slot(dd=10);
 		
 	} // difference
-} // BellCrank
+} // CP_BellCrank
 
-//BellCrank(Len=38);
+//CP_BellCrank(Len=38);
 
-module SpringBody(){
+module CP_SpringBody(){
 
 	AO_YZ=CP_SpringBody_YZ;
 	Body_L=CP_Spring_CBL+CableEnd_h+1.5;
@@ -718,9 +730,9 @@ module SpringBody(){
 		// dowel pin
 		cylinder(d=4+IDXtra, h=AO_YZ+Overlap*2, center=true);
 	} // difference
-} // SpringBody
+} // CP_SpringBody
 
-//translate([ArmLen+CP_Bearing_OD,0,0]) SpringBody();
+//translate([ArmLen+CP_Bearing_OD,0,0]) CP_SpringBody();
 //translate([ArmLen+CP_Bearing_OD,0,0]) Bearing();
 
 module Dowel(Len=8){
@@ -729,7 +741,7 @@ module Dowel(Len=8){
 
 //Dowel(Len=8);
 
-module ThroughOut(){
+module CP_ThroughOut(){
 	
 	
 	difference(){
@@ -757,9 +769,9 @@ module ThroughOut(){
 		translate([ArmLen,0,0])
 		cylinder(d=4+IDXtra, h=CP_Bearing_H+6+Overlap*2, center=true);
 	} // difference
-} // ThroughOut
+} // CP_ThroughOut
 
-// ThroughOut();
+// CP_ThroughOut();
 //Bearing();
 //translate([ArmLen,0,0]) Dowel(Len=CP_Bearing_H+6);
 //translate([ArmLen,0,0]) Bearing();

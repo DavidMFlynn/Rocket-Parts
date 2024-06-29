@@ -3,7 +3,7 @@
 // Filename: Rocket1379852.scad
 // by David M. Flynn
 // Created: 5/13/2024
-// Revision: 0.9.3  5/22/2024
+// Revision: 0.9.4  6/29/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -17,6 +17,7 @@
 //
 //  ***** History *****
 //
+// 0.9.4  6/29/2024 Added RailGuideSpacer for sustainer.
 // 0.9.3  5/22/2024 Replaced centering ring and spring end with MotorTubeTopper() in booster.
 // 0.9.2  5/16/2024 Changed to 3 fins, added bolt holes to trasition and booster e-bay.
 // 0.9.1  5/14/2024 Ready to begin printing.
@@ -46,7 +47,9 @@ B_CouplerLenXtra=0;
 // *** Doors ***
 //
 // rotate([-90,0,0]) AltDoor54(Tube_OD=S_Body_OD, IsLoProfile=false, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowAlt=true);
+// rotate([-90,0,0]) AltDoor54(Tube_OD=S_Body_OD, IsLoProfile=true, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowAlt=true);
 // 
+// rotate([-90,0,0]) Batt_Door(Tube_OD=S_Body_OD, InnerTube_OD=BT54Body_OD, HasSwitch=false, DoubleBatt=false);
 // rotate([-90,0,0]) Batt_Door(Tube_OD=S_Body_OD, InnerTube_OD=0, HasSwitch=true, DoubleBatt=false);
 // rotate([-90,0,0]) Batt_Door(Tube_OD=S_Body_OD, InnerTube_OD=0, HasSwitch=false, DoubleBatt=false);
 //
@@ -66,6 +69,7 @@ B_CouplerLenXtra=0;
 // rotate([180,0,0]) SE_SpringEndTypeA(Coupler_OD=S_Coupler_OD, Coupler_ID=S_Coupler_ID, nRopes=6, Spring_OD=SE_Spring_CS4323_OD());
 // SE_SlidingSpringMiddle(OD=S_Coupler_OD, nRopes=6, SliderLen=40, SpLen=40, SpringStop_Z=20);
 // R98C_MotorTubeTopper();
+// rotate([-90,0,0]) RailGuideSpacer(OD=S_Body_OD, H=RailGuide_h, Length = 35, BoltSpace=12.7);
 //
 // CenteringRing(OD=B_Body_ID-IDXtra*2, ID=BT54Body_OD+IDXtra*2, Thickness=5, nHoles=4);
 // rotate([180,0,0]) EB_LowerElectronics_Bay(Tube_OD=S_Body_OD, Tube_ID=S_Body_ID, Len=EBay_Len, nBolts=5, BoltInset=7.5, ShowDoors=false);
@@ -104,7 +108,7 @@ B_CouplerLenXtra=0;
 // rotate([-90,0,0]) Batt_Door(Tube_OD=B_Body_OD, InnerTube_OD=0, HasSwitch=true, DoubleBatt=true);
 // rotate([-90,0,0]) Batt_Door(Tube_OD=B_Body_OD, InnerTube_OD=0, HasSwitch=false, DoubleBatt=false);
 //
-// rotate([-90,0,0]) CP_Door(Tube_OD=B_Body_OD, BoltBossInset=3, HasArmingSlot=true);
+// rotate([-90,0,0]) CP_Door(Tube_OD=B_Body_OD, BoltBossInset=13, HasArmingSlot=true);
 //
 // =======================
 //  *** Cable Puller ***
@@ -148,11 +152,14 @@ B_CouplerLenXtra=0;
 // BoosterFinCan(LowerHalfOnly=false, UpperHalfOnly=true);
 // rotate([180,0,0]) BoosterFinCan(LowerHalfOnly=true, UpperHalfOnly=false);
 //
+// rotate([90,0,0]) BoltOnRailGuide(Length = 35, BoltSpace=12.7, RoundEnds=true, ExtraBack=0);
+//
 // ***********************************
 //  ***** for Viewing *****
 //
 // ShowRocket(ShowInternals=false);
-// ShowSustainer(ShowInternals=false)
+// ShowSustainer(ShowInternals=false);
+// ShowSustainer(ShowInternals=true);
 // ShowBooster(ShowInternals=false);
 // ShowBooster(ShowInternals=true);
 //
@@ -248,7 +255,10 @@ NC_Base_L=15;
 ForwardPetalLen=180;
 S_UpperTubeLen=ForwardPetalLen+110;
 AftPetalLen=180;
-S_LowerTubeLen=AftPetalLen+270;
+S_LowerTubeLen=AftPetalLen+300;
+echo("Sustainer Upper Tube Len = ",S_UpperTubeLen);
+echo("Sustainer Lower Tube Len = ",S_LowerTubeLen);
+echo(SustainerMotorTube_Len=SustainerMotorTube_Len);
 S_nLockBalls=6;
 
 module ShowRocket(ShowInternals=false){
