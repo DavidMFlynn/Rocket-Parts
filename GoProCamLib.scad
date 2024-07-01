@@ -155,7 +155,8 @@ module GPC_GoProHero11Black(Xtra=0, Xtra_Z=0, IncludeVP=true, BackAccess=false, 
 			}
 		} // hull
 		
-		if (BackAccess){
+		//  mirror([1,0,0]) // to make retaining bolt enter from the other side
+		if (BackAccess) mirror([1,0,0]) {
 			translate([-Ear_CL/2-Ear_t/2-1+40,-Body_Y/2-Ear_Bolt_Y,Body_Z/2]) rotate([0,90,0]) Bolt10ClearHole(depth=40);
 			translate([-Ear_CL/2,-Body_Y/2-Ear_Bolt_Y,Body_Z/2]) rotate([0,90,0]) Bolt10Hole();
 			}
@@ -167,11 +168,11 @@ module GPC_GoProHero11Black(Xtra=0, Xtra_Z=0, IncludeVP=true, BackAccess=false, 
 
 module GPC_CameraShellTest(){
 	difference(){
-		GoProHero11Black(Xtra=5, Xtra_Z=0, IncludeVP=false, BackAccess=false, HasMountingEars=true);
+		GPC_GoProHero11Black(Xtra=5, Xtra_Z=0, IncludeVP=false, BackAccess=false, HasMountingEars=true);
 						
 		translate([0,0,33.0]) cylinder(d=100, h=20);
 		
-		GoProHero11Black(Xtra=0, Xtra_Z=0, IncludeVP=true, BackAccess=true, HasMountingEars=true);
+		GPC_GoProHero11Black(Xtra=0, Xtra_Z=0, IncludeVP=true, BackAccess=true, HasMountingEars=true);
 	} // difference
 } // GPC_CameraShellTest
 
@@ -200,7 +201,7 @@ module GPC_CameraBay(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID){
 				union(){
 					translate([CamOffset_X,CamOffset_Y,CamOffset_Z]) rotate([10,0,0]) 
 						rotate([Cam_X_a,Cam_Y_a,Cam_Z_a]) 
-							GoProHero11Black(Xtra=5, Xtra_Z=0, IncludeVP=false, BackAccess=false, HasMountingEars=true);
+							GPC_GoProHero11Black(Xtra=5, Xtra_Z=0, IncludeVP=false, BackAccess=false, HasMountingEars=true);
 					translate([CamOffset_X-9.5,CamOffset_Y-20,CamOffset_Z+12]) 
 						rotate([100,0,0]) RoundRect(X=40, Y=50, Z=30, R=5);
 				} // union
@@ -214,7 +215,7 @@ module GPC_CameraBay(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID){
 		} // union
 		
 		translate([CamOffset_X,CamOffset_Y,CamOffset_Z]) rotate([10,0,0]) 
-			rotate([Cam_X_a,Cam_Y_a,Cam_Z_a]) GoProHero11Black(Xtra=0, Xtra_Z=0, IncludeVP=true, BackAccess=true, HasMountingEars=true);
+			rotate([Cam_X_a,Cam_Y_a,Cam_Z_a]) GPC_GoProHero11Black(Xtra=0, Xtra_Z=0, IncludeVP=true, BackAccess=true, HasMountingEars=true);
 			
 		// Bolts
 		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) {
@@ -225,7 +226,8 @@ module GPC_CameraBay(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID){
 	
 } // GPC_CameraBay
 
-//rotate([80,0,0]) GPC_CameraBay();
+//rotate([80,0,0]) 
+GPC_CameraBay();
 
 
 
