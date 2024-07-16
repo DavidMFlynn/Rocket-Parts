@@ -43,6 +43,7 @@ BluntOgiveNoseCone(ID=R75_Body_ID, OD=R75_Body_OD, L=NC_Len, Base_L=NC_Base, nRi
 //
 // STB_LockDisk(BallPerimeter_d=R75_Body_OD, nLockBalls=nLockBalls, HasLargeInnerBearing=false);
 // 
+// R75_BallRetainerTop(Body_OD=Body75_OD, Body_ID=Body75_ID); // Alt for dual deploy 2 req. Found in R98Lib.scad
 /*
 rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=R75_Body_OD, Outer_OD=R75_Body_OD, Body_OD=R75_Body_ID, nLockBalls=nLockBalls, 
 			HasIntegratedCouplerTube=true, Body_ID=R75_Body_ID, HasSecondServo=false, UsesBigServo=false, 
