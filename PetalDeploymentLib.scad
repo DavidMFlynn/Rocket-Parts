@@ -3,7 +3,7 @@
 // Filename: PetalDeploymentLib.scad
 // by David M. Flynn
 // Created: 10/22/2023 
-// Revision: 0.9.6  6/3/2024
+// Revision: 0.9.7  7/15/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -18,6 +18,7 @@
 //
 //  ***** History *****
 //
+// 0.9.7  7/15/2024	  Removed OD param from PD_PetalSpringHolder() only used as translate([0,OD/2,0])
 // 0.9.6  6/3/2024    Added params and coupler tube option to PD_NC_PetalHub
 // 0.9.5  4/21/2024   Petal connections are shorter by 2mm
 // 0.9.4  3/23/2024	  Worked on locks.
@@ -31,7 +32,7 @@
 //
 // rotate([180,0,0]) PD_Petals(OD=BT75Coupler_OD, Len=110, nPetals=3, Wall_t=1.8, AntiClimber_h=0, HasLocks=false, Lock_Span_a=0);
 // rotate([180,0,0]) PD_GridPetals(OD=BT137Coupler_OD, Len=150, nPetals=3, Wall_t=1.2, HasLocks=false);
-// rotate([-90,0,0]) PD_PetalSpringHolder(OD=BT75Coupler_OD);
+// rotate([-90,0,0]) PD_PetalSpringHolder();
 /*
 PD_PetalHub(OD=BT75Coupler_OD, 
 					nPetals=3, 
@@ -398,7 +399,7 @@ module PD_GridPetals(OD=BT137Coupler_OD, Len=150, nPetals=3, Wall_t=1.2, HasLock
 
 //PD_GridPetals(HasLocks=true);
 
-module PD_PetalSpringHolder(OD=BT75Coupler_OD){
+module PD_PetalSpringHolder(){
 	Width=11;
 	Thickness=3;
 	Spring_d=5/16*25.4;
@@ -410,36 +411,37 @@ module PD_PetalSpringHolder(OD=BT75Coupler_OD){
 	difference(){
 		union(){
 			translate([0,0,8]) hull(){
-				translate([0,OD/2-Thickness-Width/2,0]) cylinder(d=Width, h=10);
-				translate([-Width/2,OD/2-Thickness-1,0]) cube([Width,1,1]);
+				translate([0,-Thickness-Width/2,0]) cylinder(d=Width, h=10);
+				translate([-Width/2,-Thickness-1,0]) cube([Width,1,1]);
 			
-				translate([0,OD/2-Thickness,Bolt4Inset*3]) rotate([90,0,0]) cylinder(d=Width,h=3);
+				translate([0,-Thickness,Bolt4Inset*3]) rotate([90,0,0]) cylinder(d=Width,h=3);
 			} // hull
 			
-			translate([0,OD/2-Thickness-AxleBoss_d/2,0]) hull(){
+			translate([0,-Thickness-AxleBoss_d/2,0]) hull(){
 				rotate([0,90,0]) cylinder(d=AxleBoss_d, h=PetalWidth, center=true);
 				translate([0,0,8]) rotate([0,90,0]) cylinder(d=AxleBoss_d, h=Width, center=true);
 			} // hull
 			
 			// Axle
-			translate([0,OD/2-Thickness-AxleBoss_d/2,0])
-			rotate([0,90,0]) cylinder(d=Axle_d, h=Axle_L, center=true);
+			translate([0,-Thickness-AxleBoss_d/2,0])
+				rotate([0,90,0]) cylinder(d=Axle_d, h=Axle_L, center=true);
 		} // union
 		
 		
 		// Sping	
-		translate([0,OD/2-Thickness-Width/2,-AxleBoss_d/2-Overlap]) {
+		translate([0,-Thickness-Width/2,-AxleBoss_d/2-Overlap]) {
 			cylinder(d=Spring_d+IDXtra, h=16+AxleBoss_d/2);
 			cylinder(d=4, h=30);
 		}
 		
-		translate([0,OD/2,12]) rotate([-90,0,0]) Bolt4Hole(depth=6);
-		translate([0,OD/2,12+Bolt4Inset*2]) rotate([-90,0,0]) Bolt4Hole(depth=9.5);
+		translate([0,0,12]) rotate([-90,0,0]) Bolt4Hole(depth=6);
+		translate([0,0,12+Bolt4Inset*2]) rotate([-90,0,0]) Bolt4Hole(depth=9.5);
 	} // difference
 } // PD_PetalSpringHolder
 
-//PD_PetalSpringHolder(OD=BT137Coupler_OD);
-//rotate([-90,0,0]) PD_PetalSpringHolder(OD=BT75Coupler_OD);
+//PD_PetalSpringHolder();
+
+//rotate([-90,0,0]) PD_PetalSpringHolder();
 
 module PD_PetalHubBoltPattern(OD=BT75Coupler_OD, nPetals=3){
 	for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*(j+0.5)])

@@ -4,7 +4,7 @@
 // Filename: ElectronicsBayLib.scad
 // by David M. Flynn
 // Created: 3/31/2024 
-// Revision: 1.0.2  5/14/2024 
+// Revision: 1.0.3  7/15/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -13,6 +13,7 @@
 //
 //  ***** History *****
 //
+// 1.0.3  7/15/2024  Added doors shortcuts.
 // 1.0.2  5/14/2024  Added EB_LowerElectronics_Bay()
 // 1.0.1  4/18/2024  Added nBolts=3, BoltInset=7.5 to EB_Electronics_Bay3
 // 1.0.0  3/31/2024  First code, moved stuff here
@@ -30,6 +31,11 @@
 //  *** Standard single altimeter bay w/ 2 or 3 battery doors ***
 // EB_Electronics_Bay(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, Len=162, nBolts=3, BoltInset=7.5, ShowDoors=false, HasSecondBattDoor=true);
 // EB_Electronics_Bay(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=162, nBolts=3, BoltInset=7.5, ShowDoors=false, HasSecondBattDoor=false);
+//
+//  *** Doors ***
+// rotate([-90,0,0]) EB_AltDoor(Tube_OD=BT98Body_OD);
+// rotate([-90,0,0]) EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=false);
+// rotate([-90,0,0]) EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=true);
 //
 // ***********************************
 //  ***** Routines *****
@@ -54,6 +60,18 @@ $fn=$preview? 36:90;
 Alt_DoorXtra_X=6;
 Alt_DoorXtra_Y=4;
 	
+module EB_AltDoor(Tube_OD=BT98Body_OD){
+	AltDoor54(Tube_OD=Tube_OD, IsLoProfile=false, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowAlt=true);
+} // EB_AltDoor
+
+//EB_AltDoor(Tube_OD=BT98Body_OD);
+
+module EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=false){
+	Batt_Door(Tube_OD=Tube_OD, Door_X=BattDoorX(), InnerTube_OD=0, HasSwitch=HasSwitch, DoubleBatt=false);
+} // EB_BattDoor
+
+//EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=false);
+
 module EB_LowerElectronics_Bay(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, Len=162, nBolts=5, BoltInset=7.5, ShowDoors=false){
 	// One Battery Door w/o Switch and One Altimeter for sustainer lower e-bay.
 	
@@ -106,7 +124,7 @@ module EB_LowerElectronics_Bay(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, Len=162
 	
 } // EB_LowerElectronics_Bay
 
-EB_LowerElectronics_Bay();
+// EB_LowerElectronics_Bay();
 
 module EB_Electronics_Bay3(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=162, nBolts=3, BoltInset=7.5, DualDeploy=false, ShowDoors=false){
 	// One/two Battery Door w/ Switch and One Altimeter
