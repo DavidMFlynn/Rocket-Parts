@@ -29,11 +29,13 @@ BluntOgiveNoseCone(ID=R75_Body_ID, OD=R75_Body_OD, L=NC_Len, Base_L=NC_Base, nRi
 //
 //  *** Petal Deployer ***
 //
+// SE_SlidingSpringMiddle(OD=R75_Coupler_OD, nRopes=3, SliderLen=40, SpLen=40, SpringStop_Z=20);
+//
 /*
  PD_NC_PetalHub(OD=R75_Coupler_OD, nPetals=3, nRopes=3, ShockCord_a=-1, HasThreadedCore=false, ST_DSpring_ID=SE_Spring_CS4323_ID(), ST_DSpring_OD=SE_Spring_CS4323_OD(), CouplerTube_ID=0);
 
 /**/
-// rotate([180,0,0]) PD_Petals(OD=R75_Coupler_OD, Len=150, nPetals=3, Wall_t=1.8, AntiClimber_h=4, HasLocks=false, Lock_Span_a=0);
+// rotate([180,0,0]) PD_Petals(OD=R75_Coupler_OD, Len=200, nPetals=3, Wall_t=1.8, AntiClimber_h=4, HasLocks=false, Lock_Span_a=0);
 // rotate([-90,0,0]) PD_PetalSpringHolder();
 //
 //
@@ -53,8 +55,8 @@ rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=R75_Body_OD, Outer_OD=R75_
 //
 // EB_Electronics_Bay(Tube_OD=R75_Body_OD, Tube_ID=R75_Body_ID, Len=162, nBolts=3, BoltInset=7.5, ShowDoors=false, HasSecondBattDoor=false);
 // rotate([-90,0,0]) EB_AltDoor(Tube_OD=R75_Body_OD);
-// rotate([-90,0,0]) EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=false);
-// rotate([-90,0,0]) EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=true);
+// rotate([-90,0,0]) EB_BattDoor(Tube_OD=R75_Body_OD, HasSwitch=false);
+// rotate([-90,0,0]) EB_BattDoor(Tube_OD=R75_Body_OD, HasSwitch=true);
 //
 //
 // R75_UpperRailButtonPost();
