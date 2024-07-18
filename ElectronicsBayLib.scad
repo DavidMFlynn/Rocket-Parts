@@ -34,8 +34,8 @@
 //
 //  *** Doors ***
 // rotate([-90,0,0]) EB_AltDoor(Tube_OD=BT98Body_OD);
-// rotate([-90,0,0]) EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=false);
-// rotate([-90,0,0]) EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=true);
+// rotate([-90,0,0]) EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=false, DoubleBatt=false);
+// rotate([-90,0,0]) EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=true, DoubleBatt=false);
 //
 // ***********************************
 //  ***** Routines *****
@@ -66,8 +66,8 @@ module EB_AltDoor(Tube_OD=BT98Body_OD){
 
 //EB_AltDoor(Tube_OD=BT98Body_OD);
 
-module EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=false){
-	Batt_Door(Tube_OD=Tube_OD, Door_X=BattDoorX(), InnerTube_OD=0, HasSwitch=HasSwitch, DoubleBatt=false);
+module EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=false, DoubleBatt=false){
+	Batt_Door(Tube_OD=Tube_OD, Door_X=BattDoorX(), InnerTube_OD=0, HasSwitch=HasSwitch, DoubleBatt=DoubleBatt);
 } // EB_BattDoor
 
 //EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=false);

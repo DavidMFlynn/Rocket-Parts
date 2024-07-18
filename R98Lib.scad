@@ -65,8 +65,8 @@ module R98C_MotorTubeTopper(){
 	Al_Tube_d=12.7;
 	Al_Tube_Z=-Al_Tube_d/2-5;
 	
-	ST_DSpring_OD=44.30;
-	ST_DSpring_ID=40.5;
+	ST_DSpring_OD=SE_Spring_CS4323_OD();
+	ST_DSpring_ID=SE_Spring_CS4323_ID();
 	
 	nRopes=6;
 	Rope_d=4;
@@ -138,61 +138,6 @@ module R98C_MotorTubeTopperNL(){
 } // R98C_MotorTubeTopperNL
 
 // R98C_MotorTubeTopperNL();
-
-module R75_BallRetainerTop(Body_OD=Body75_OD, Body_ID=Body75_ID){
-	Tube_d=12.7;
-	Tube_Z=31;
-	Tube_a=-70;
-	TubeSlot_w=35;
-	TubeOffset_X=10;
-	Engagement_Len=20;
-	CouplerLenXtra=0;
-	nLockBalls=5;
-	nBolts=3;
-	BoltInset=7.5;
-	Skirt_H=13;
-	
-	difference(){
-		union(){
-			STB_BallRetainerTop(BallPerimeter_d=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls,
-								HasIntegratedCouplerTube=true, IntegratedCouplerLenXtra=CouplerLenXtra,
-								Outer_OD=Body_OD,
-								Body_ID=Body_ID-IDXtra, HasSecondServo=false, UsesBigServo=false, Engagement_Len=Engagement_Len);
-				
-			
-			translate([0,0,35.5]) 
-				Tube(OD=Body_ID-IDXtra, ID=Body_ID-IDXtra-6, Len=5, myfn=$preview? 90:360);
-			
-			// Shock cord retention
-			difference(){
-				rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z])
-				union(){
-					rotate([90,0,0]) cylinder(d=Tube_d+6, h=Body_ID-2, center=true);
-					translate([0,0,-14.5]) 
-						cube([Tube_d-3, Body_ID-2, 21], center=true);
-				} // union
-				
-				rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z]){
-					rotate([90,0,0]) cylinder(d=Tube_d+7, h=TubeSlot_w, center=true);
-					translate([0,0,-12.2]) 
-						cube([Tube_d-1, TubeSlot_w,21.1], center=true);
-					}
-				// Trim outside
-				Tube(OD=Body_OD+20, ID=Body_ID-1, Len=50, myfn=$preview? 90:360);
-			} // difference
-		} // union
-	
-		rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z]) rotate([90,0,0]) cylinder(d=Tube_d, h=Body_OD, center=true);
-		
-		//Bolt holes for ebay
-		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j])
-			translate([0, -Body_OD/2-1, Engagement_Len/2+Skirt_H+7.5]) 
-				rotate([90,0,0]) Bolt4Hole();
-		
-	} // difference
-} // R75_BallRetainerTop
-
-// R75_BallRetainerTop();
 
 module R98C_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID){
 	Tube_d=12.7;

@@ -1,6 +1,6 @@
 // ***********************************
 // Project: 3D Printed Rocket
-// Filename: Rocket75C.scad
+// Filename: Rocket75D.scad
 // by David M. Flynn
 // Created: 8/6/2023 
 // Revision: 1.3.0  7/18/2024 
@@ -8,7 +8,6 @@
 // ***********************************
 //  ***** Notes *****
 //
-//  Upscale of Rocket65
 //  Rocket with 75mm Body and 54mm motor. 
 //
 //  Single deploy:
@@ -51,7 +50,7 @@
 //
 //  ***** History *****
 //
-// 1.3.0  7/18/2024  Changed to 5 Lock Balls and Dual Deploy
+// 1.3.0  7/18/2024  Copied from Rocket75C 1.2.3 No longer an upscale. Changed to 5 Lock Balls and Dual Deploy.
 // 1.2.3  4/21/2024  Added screw holes to R75_BallRetainerTop()
 // 1.2.2  4/18/2024  Standardized some parts
 // 1.2.1  3/31/2024  Now uses ElectronicsBayLib.scad
@@ -67,72 +66,60 @@
 // *** Nosecode ***
 //
 // BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=NC_Len, Base_L=NC_Base_L, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
-
-// BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=NC_Len, Base_L=NC_Base_L, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=120, LowerPortion=false); // Upper half
-
-// BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=NC_Len, Base_L=NC_Base_L, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=120, Transition_OD=BT75Body_OD-18, LowerPortion=true); // Lower half
 //
 // NC_ShockcordRing75(Body_OD=Body_OD, Body_ID=Body_ID, NC_Base_L=NC_Base_L);
 //
-// *** Electronics Bay ***
-//
-// EB_Electronics_Bay3(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=162, nBolts=3, BoltInset=NC_Base_L/2, DualDeploy=false, ShowDoors=false);
-//
 // *** Dual Deploy Electronics Bay ***
 //
-// EB_Electronics_Bay3(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=162, nBolts=3, BoltInset=NC_Base_L/2, DualDeploy=true, ShowDoors=false);
+// EB_Electronics_Bay3(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=EBay_Len, nBolts=3, BoltInset=NC_Base_L/2, DualDeploy=true, ShowDoors=false);
 // 
 // *** Doors ***
 //
-// rotate([-90,0,0]) AltDoor54(Tube_OD=Body_OD, IsLoProfile=false, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowAlt=true);
-// 
-// rotate([-90,0,0]) Batt_Door(Tube_OD=Body_OD, InnerTube_OD=0, HasSwitch=true);
-// rotate([-90,0,0]) Batt_Door(Tube_OD=Body_OD, InnerTube_OD=0, HasSwitch=true, DoubleBatt=true);
+// rotate([-90,0,0]) EB_AltDoor(Tube_OD=Body_OD);
+// rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD, HasSwitch=true, DoubleBatt=false);
+// rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD, HasSwitch=true, DoubleBatt=true);
 //
 // *** Ball Lock ***
 //
 // STB_LockDisk(BallPerimeter_d=Body_OD, nLockBalls=nLockBalls);
-// rotate([180,0,0]) R75_BallRetainerTop();
-// R75_BallRetainerBottom();
+// rotate([180,0,0]) R75_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID);
+// R75_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false); // Forward
+// R75_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=true); // Aft
 // rotate([180,0,0]) STB_TubeEnd(BallPerimeter_d=Body_OD, nLockBalls=nLockBalls, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=20);
 //
 // *** petal deployer ***
 //
-// PD_NC_PetalHub(OD=Coupler_OD, nPetals=3, nRopes=3); // for dual deploy only
-// PD_PetalHub(OD=Coupler_OD, nPetals=3, ShockCord_a=ShockCord_a);
-// rotate([-90,0,0]) PD_PetalSpringHolder(OD=Coupler_OD);
-// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=150, nPetals=3, Wall_t=1.8, AntiClimber_h=3, HasLocks=false);
-// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=110, nPetals=3, Wall_t=1.8, AntiClimber_h=3, HasLocks=false);
+// PD_NC_PetalHub(OD=Coupler_OD, nPetals=nPetals, nRopes=3); // for dual deploy only
+// R75_PetalHub(Body_OD=Body_OD, Body_ID=Body_ID); // for bottom of ebay
+// rotate([-90,0,0]) PD_PetalSpringHolder();
+// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=ForwardPetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
+// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=AftPetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
 //
-// SE_SpringEndTop(OD=Coupler_OD-IDXtra, Tube_ID=BT75Coupler_OD-IDXtra-3.6, nRopeHoles=3, CutOutCenter=true);
+// SE_SpringEndTop(OD=Coupler_OD, Tube_ID=Coupler_OD-4.4, nRopeHoles=3, CutOutCenter=true);
 // SE_SlidingSpringMiddle(OD=Coupler_OD, nRopes=3);
 //
-//  *** bottom of spring options
-// SE_SpringEndBottom(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=3);// optional may be required for 54/1706 (K185W)
-// rotate([180,0,0]) SE_SpringEndTypeA(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, nRopes=3); // preferred option
-// SE_SpringEndTypeB(Coupler_OD=Coupler_OD, MotorCoupler_OD=MotorCoupler_OD, nRopes=3); // Sits on top of motor tube
-// SE_SpringSpacer(OD=Coupler_OD, Tube_ID=Coupler_ID, Len=70); // optional
-// SE_SpringSpacer(OD=Coupler_OD, Tube_ID=Coupler_ID, Len=55); // optional
-//
-// UpperRailBtnMount75();
+// R75_MotorTubeTopper(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID);
 //
 // *** Fin Can ***
 //
 /*
 	rotate([180,0,0]) FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=Can_Len,
-				MotorTube_OD=MotorTube_OD, RailGuide_h=1, // Rail Button
+				MotorTube_OD=MotorTube_OD, RailGuide_h=RailGuide_h, RailGuideLen=RailGuideLen,
 				nFins=nFins, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 				Fin_Root_W=Fin_Root_W, Fin_Root_L=Fin_Root_L, Fin_Post_h=Fin_Post_h, Fin_Chamfer_L=Fin_Chamfer_L,
-				Cone_Len=TailCone_Len, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
+				Cone_Len=TailCone_Len, ThreadedTC=true, Extra_OD=TailConeExtra_OD,
+				LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
 /**/
 /*
   FC2_MotorRetainer(Body_OD=Body_OD,
 						MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID,
-						HasWrenchCuts=false, Cone_Len=35, ExtraLen=0);
+						HasWrenchCuts=false, Cone_Len=TailCone_Len, ExtraLen=0, Extra_OD=TailConeExtra_OD);
 /**/
+//
 // RocketFin();
 //
-// RailButton(); // (4 req) print many
+// rotate([90,0,0]) BoltOnRailGuide(Length = RailGuideLen, BoltSpace=12.7, RoundEnds=true, ExtraBack=0);
+// rotate([-90,0,0]) RailGuideSpacer(OD=Body_OD, H=RailGuide_h, Length = RailGuideLen, BoltSpace=12.7);
 //
 // ***********************************
 //  ***** Routines *****
@@ -157,6 +144,7 @@ use<SpringThingBooster.scad>
 use<PetalDeploymentLib.scad>
 use<ThreadLib.scad>
 use<SpringEndsLib.scad>
+use<R75Lib.scad>
 
 //also included
  //include<CommonStuffSAEmm.scad>
@@ -165,20 +153,22 @@ Overlap=0.05;
 IDXtra=0.2;
 $fn=$preview? 24:90;
 
-Scale=1.1808;
-echo("Scale on Rocket65 = ",Scale);
-
+nPetals=3;
 nLockBalls=5;
+RailGuideLen=35;
 
 nFins=5;
 Fin_Post_h=10;
-Fin_Root_L=160*Scale;
-Fin_Root_W=6*Scale;
+Fin_Root_L=190;
+Fin_Root_W=8;
 Fin_Tip_W=3.0;
-Fin_Tip_L=70*Scale;
-Fin_Span=70*Scale;
-Fin_TipOffset=20*Scale;
-Fin_Chamfer_L=18*Scale;
+Fin_Tip_L=83;
+Fin_Span=83;
+Fin_TipOffset=24;
+Fin_Chamfer_L=22;
+
+ForwardPetal_Len=200; // Main 'chute and lots of shock cord
+AftPetal_Len=150; // Drogue
 
 Body_OD=BT75Body_OD;
 Body_ID=BT75Body_ID;
@@ -192,25 +182,22 @@ MotorCoupler_OD=BT54Coupler_OD;
 
 MotorTubeHole_d=MotorTube_OD+IDXtra*3;
 
-NC_Len=180*Scale;
-NC_Tip_r=5*Scale;
+NC_Len=212;
+NC_Tip_r=6;
 NC_Wall_t=1.8;
-NC_Base_L=13;
+NC_Base_L=15;
 
 MainBay_Len=8.5*25.4;
-EBay_Len=152;
+EBay_Len=162;
 BodyTubeLen=16*25.4;
 MotorTubeLen=16*25.4;
 
-Alt_DoorXtra_X=6;
-Alt_DoorXtra_Y=4;
-
-FinInset_Len=5*Scale;
+FinInset_Len=10;
 Can_Len=Fin_Root_L+FinInset_Len*2;
 TailCone_Len=35;
+TailConeExtra_OD=1;
 Bolt4Inset=4;
-ShockCord_a=35;// offset between PD_PetalHub and R65_BallRetainerBottom
-CouplerLenXtra=-5;
+RailGuide_h=Body_OD/2+2;
 
 module ShowRocket(ShowInternals=false, DualDeploy=false, ShowDoors=false){
 	FinCan_Z=35;
@@ -251,9 +238,9 @@ module ShowRocket(ShowInternals=false, DualDeploy=false, ShowDoors=false){
 	if (ShowInternals){
 		translate([0,0,BodyTube_Z+BodyTubeLen+15+Overlap*2-0.2]) R75_BallRetainerBottom();
 		translate([0,0,BodyTube_Z+BodyTubeLen+15+Overlap*2-9.2]) rotate([0,0,200]) rotate([180,0,0]) 
-			PD_PetalHub(OD=BT75Coupler_OD, nPetals=3, ShockCord_a=ShockCord_a);
+			PD_PetalHub(OD=BT75Coupler_OD, nPetals=nPetals, ShockCord_a=ShockCord_a);
 		translate([0,0,BodyTube_Z+BodyTubeLen+15+Overlap*2-15]) 
-			rotate([0,0,200]) rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=150, nPetals=3);
+			rotate([0,0,200]) rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=150, nPetals=nPetals);
 	}
 	
 	if (ShowInternals==false)
@@ -281,134 +268,6 @@ module ShowRocket(ShowInternals=false, DualDeploy=false, ShowDoors=false){
 
 //ShowRocket(DualDeploy=true, ShowDoors=true);
 //ShowRocket(ShowInternals=true);
-
-module R75_BallRetainerBottom(){
-	difference(){
-		STB_BallRetainerBottom(BallPerimeter_d=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls, HasSpringGroove=false);
-		
-		rotate([0,0,PD_ShockCordAngle()-ShockCord_a]) PD_PetalHubBoltPattern(OD=Coupler_OD, nPetals=3) Bolt4Hole();
-
-	} // difference
-} // R75_BallRetainerBottom
-
-// translate([0,0,-8]) rotate([180,0,0]) R75_BallRetainerBottom();
-
-//rotate([0,0,170]) PD_PetalHub(OD=Coupler_OD, nPetals=3, ShockCord_a=ShockCord_a);
-
-module R75_BallRetainerTop(){
-	// combined with NC_ShockcordRingDual(){
-	
-	Tube_d=12.7;
-	Tube_a=-40;
-	Tube_Z=25;
-	CR_z=8;
-	Wall_t=3;
-	nBolts=3;
-	BoltInset=NC_Base_L/2;
-	Engagement_Len=20;
-	
-	difference(){
-		union(){
-			STB_BallRetainerTop(BallPerimeter_d=Body_OD, Body_OD=Body_ID, 
-						nLockBalls=nLockBalls, 
-						HasIntegratedCouplerTube=true, 
-							IntegratedCouplerLenXtra=CouplerLenXtra, 
-							Body_ID=Body_ID-IDXtra, HasSecondServo=false, UsesBigServo=false, Engagement_Len=Engagement_Len);
-			
-			translate([0,0,Tube_Z]) 
-				Tube(OD=Body_ID-IDXtra, ID=Body_ID-IDXtra-Wall_t*2, 
-						Len=Tube_d/2+Wall_t, myfn=$preview? 90:360);
-				
-			// Tube holder
-			rotate([0,0,Tube_a]) difference(){
-				hull(){
-					translate([0,0,Tube_Z])
-						rotate([0,90,0]) cylinder(d=Tube_d+Wall_t*2, h=Body_ID-3, center=true);
-					translate([0,0,CR_z]) cube([Body_ID-4,Tube_d,Overlap],center=true);
-				} // hull
-				
-				// center hole
-				translate([0,0,Tube_Z]) cube([Body_ID-25,Tube_d+10,55],center=true);
-			} // difference
-		} // union
-		
-		// Center hole
-		//translate([0,0,-6]) cylinder(d=ST_DSpring_OD-6, h=30);
-		
-		//Bolt holes for electronics bay
-		if (nBolts>0)
-		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+22.5])
-			translate([0,-Body_OD/2-1,Engagement_Len/2+CouplerLenXtra+13+BoltInset]) rotate([90,0,0]) Bolt4Hole();
-		
-		// Tube hole
-		translate([0,0,Tube_Z]) rotate([0,0,Tube_a]) 
-			rotate([0,90,0]) cylinder(d=Tube_d, h=Body_OD, center=true);
-		
-		//cube([50,50,50]);
-	} // difference
-	
-} // R75_BallRetainerTop
-
-//R75_BallRetainerTop();
-
-module UpperRailBtnMount(){
-	Len=15;
-	
-	difference(){
-		cylinder(d=Body_ID, h=Len);
-		
-		// remove extra
-		translate([0,0,-Overlap]) {
-		 translate([10,-Body_ID/2,0]) cube([Body_ID,Body_ID,Len+Overlap*2]);
-		 mirror([1,0,0]) translate([10,-Body_ID/2,0]) cube([Body_ID,Body_ID,Len+Overlap*2]);
-		}
-		
-		// Motor tube
-		translate([0,0,-Overlap]) cylinder(d=MotorTubeHole_d, h=Len+Overlap*2);
-		
-		// Rail button bolt hole
-		translate([0,-Body_OD/2,Len/2]) rotate([90,0,0]) Bolt8Hole();
-		
-		// Shock cord
-		translate([0,MotorTube_OD/2+5,-1]) rotate([20,0,0]) cylinder(d=5, h=Len+5);
-	} // difference
-
-	difference(){
-		rotate([0,0,90/5]) CenteringRing(OD=Body_ID, ID=MotorTubeHole_d, Thickness=3, nHoles=5, Offset=0);
-		
-		// Shock cord
-		translate([0,MotorTube_OD/2+5,-1]) rotate([20,0,0]) cylinder(d=5, h=Len+5);
-	} // difference	
-	
-} // UpperRailBtnMount
-
-//UpperRailBtnMount();
-
-module UpperRailBtnMount75(){
-	Len=20;
-	AlTube_d=12.7;
-	
-	difference(){
-		union(){
-			$fn=$preview? 90:360;
-			CenteringRing(OD=Body_ID, ID=MotorTubeHole_d, Thickness=Len, nHoles=0, Offset=0);
-			
-			// Tube stop
-			translate([0,0,Len-2]) 
-				CenteringRing(OD=Body_ID, ID=MotorTube_ID, Thickness=2, nHoles=0, Offset=0);
-		} // union
-		
-		// Shock cord mount
-		translate([0,0,AlTube_d/2+2]) rotate([0,90,0]) cylinder(d=AlTube_d+IDXtra, h=Body_OD, center=true);
-		
-		// Rail button bolt hole
-		translate([0,-Body_OD/2,Len-6]) rotate([90,0,0]) Bolt8Hole();
-		
-	} // difference
-} // UpperRailBtnMount75
-
-//UpperRailBtnMount75();
-
 				
 module RocketFin(){
 	

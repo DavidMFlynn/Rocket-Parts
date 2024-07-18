@@ -171,7 +171,7 @@ module NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13
 				rotate([-10,0,0]) FW_GPS_Batt_Mount();
 
 			// Nosecone interface
-			translate([0,0,-1]) Tube(OD=Body_ID-IDXtra*2, ID=Body_ID-4.4, Len=14, myfn=$preview? 36:360);
+			Tube(OD=Body_ID-IDXtra*2, ID=Body_ID-4.4, Len=NC_Base_L, myfn=$preview? 36:360);
 			
 			// Body tube interface
 			translate([0,0,-15]) Tube(OD=Body_ID, ID=Body_ID-4.4, Len=15, myfn=$preview? 36:360);

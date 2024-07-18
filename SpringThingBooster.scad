@@ -1028,7 +1028,7 @@ module STB_BallRetainerBottom(BallPerimeter_d=BT54Body_ID, Body_OD=PML54Coupler_
 	Plate_T=Engagement_Len/2-LockDiskHole_H+4;
 	SpringGroove_H=HasSpringGroove? 1.5:0;
 	
-	Bottom_H=LockDiskHole_H/2+Plate_T+SpringGroove_H;
+	Bottom_H=Engagement_Len/2+SpringGroove_H;
 	LockDisk_d=STB_LockPinBC_d(BallPerimeter_d)+BearingMR84_OD;
 	
 	echo(Bottom_H=Bottom_H);
@@ -1037,7 +1037,7 @@ module STB_BallRetainerBottom(BallPerimeter_d=BT54Body_ID, Body_OD=PML54Coupler_
 		
 	difference(){
 		translate([0,0,-Bottom_H]) 
-			cylinder(d=Body_OD-IDXtra*2, h=LockDiskHole_H/2+Plate_T+SpringGroove_H);
+			cylinder(d=Body_OD-IDXtra*2, h=Bottom_H, $fn=$preview? 90:360);
 		
 		STB_ManualDisArmingHole(BallPerimeter_d=BallPerimeter_d, nLockBalls=nLockBalls);
 		

@@ -37,6 +37,7 @@
 PD_PetalHub(OD=BT75Coupler_OD, 
 					nPetals=3, 
 					HasBolts=true,
+					nBolts=0, // Same as nPetals
 					ShockCord_a=PD_ShockCordAngle(),
 					HasNCSkirt=false, 
 						Body_OD=BT75Body_OD,
@@ -58,7 +59,7 @@ PD_PetalHub(OD=BT75Coupler_OD,
 function PD_ShockCordAngle()=ShockCord_a;
 //
 // PD_PetalLocks(OD=BT75Coupler_OD, Len=25, nPetals=3);
-// PD_PetalHubBoltPattern(OD=BT75Coupler_OD, nPetals=3) Bolt4Hole();
+// PD_PetalHubBoltPattern(OD=BT75Coupler_OD, nBolts=3) Bolt4Hole();
 // PD_ShockCordHolePattern(OD=BT75Coupler_OD, ShockCord_a=ShockCordAngle()) cylinder(d=4, h=15);
 //
 // ***********************************
@@ -443,12 +444,12 @@ module PD_PetalSpringHolder(){
 
 //rotate([-90,0,0]) PD_PetalSpringHolder();
 
-module PD_PetalHubBoltPattern(OD=BT75Coupler_OD, nPetals=3){
-	for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*(j+0.5)])
+module PD_PetalHubBoltPattern(OD=BT75Coupler_OD, nBolts=3){
+	for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*(j+0.5)])
 			translate([0,OD/2-Bolt4Inset,0]) children();
 } // PD_PetalHubBoltPattern
 
-// PD_PetalHubBoltPattern(OD=BT75Coupler_OD, nPetals=3) Bolt4Hole();
+// PD_PetalHubBoltPattern(OD=BT75Coupler_OD, nBolts=3) Bolt4Hole();
 
 module PD_ShockCordHolePattern(OD=BT75Coupler_OD, ShockCord_a=ShockCord_a){
 	rotate([0,0,ShockCord_a]) translate([0,OD/2-6,0]) children();
@@ -480,6 +481,7 @@ module PD_HubSpringExtension(Len=150){
 module PD_PetalHub(OD=BT75Coupler_OD, 
 					nPetals=3, 
 					HasBolts=true,
+					nBolts=0, // Same as nPetals
 					ShockCord_a=ShockCord_a,
 					HasNCSkirt=false, 
 						Body_OD=BT75Body_OD,
@@ -497,6 +499,7 @@ module PD_PetalHub(OD=BT75Coupler_OD,
 	AxleBoss_d=Axle_d+2.4;
 	Skirt_OD=Body_ID-IDXtra;
 	Skirt_ID=Skirt_OD-4.4;
+	nMountingBolts=(nBolts==0)? nPetals:nBolts;
 	
 	difference(){
 		union(){
@@ -542,7 +545,7 @@ module PD_PetalHub(OD=BT75Coupler_OD,
 			translate([0,0,-SkirtLen-3-NC_Base/2]) RivetPattern(BT_Dia=Body_ID, nRivets=3, Dia=5/32*25.4);
 		}else{
 			if (HasBolts)
-				PD_PetalHubBoltPattern(OD=OD, nPetals=nPetals) 
+				PD_PetalHubBoltPattern(OD=OD, nBolts=nMountingBolts) 
 					translate([0,0,5]) Bolt4HeadHole(lHead=20);
 		}
 		
@@ -599,7 +602,8 @@ module PD_PetalHub(OD=BT75Coupler_OD,
 //PD_PetalHub(OD=BT75Coupler_OD, HasNCSkirt=true, SkirtLen=10, nPetals=3, ShockCord_a=ShockCord_a);
 /*
 PD_PetalHub(OD=BT137Coupler_OD, Body_OD=BT137Body_OD,
-						 nPetals=3, HasBolts=true, ShockCord_a=-1,
+						nPetals=3, HasBolts=true, nBolts=0, // Same as nPetals
+						ShockCord_a=-1,
 						HasNCSkirt=false,
 							Body_ID=BT137Body_ID,
 							NC_Base=25, 
