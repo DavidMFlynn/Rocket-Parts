@@ -9,13 +9,14 @@
 //  ***** Notes *****
 //
 //  Rocket with 75mm Body and 54mm motor. 
+//  Recommended Motors: J275W, J180W, J415W, J135W, K185W
 //
-//  Single deploy:
+//  Dual deploy:
 //   Mission Control V3 / RocketServo
 //
 //  ***** Parts *****
 //
-// BlueTube 2.0 3" Body Tube by 8.5 inches (for dual deploy)
+// BlueTube 2.0 3" Body Tube by 12 inches (Forward body)
 // BlueTube 2.0 3" Body Tube by 18 to 24 inches (19.25" as built)
 // Blue Tube 2.1" Body Tube by 16 inches
 // 45" Parachute
@@ -25,28 +26,27 @@
 //  ***** Hardware *****
 //    Note: Qty for Single Deploy/Qty for Dual Deploy
 // 5/32" x 1/8" Plastic Rivets (3 req) Nosecone
-// #8-32 x 3/4" Button Head Cap Screw (2 req) Rail Buttons
-// #4-40 x 1/2" Socket Head Cap Screw (3/6 req) Ball Lock
-// #4-40 x 3/8" Button Head Cap Screw (6/10 req) Doors
-// #4-40 x 3/8" Socket Head Cap Screw (3 req) PetalHub
-// #4-40 x 1/4" Button Head Cap Screw (6/12 req) Petals
-// #4-40 x 1/4" Button Head Cap Screw (6/9 req) Couplers
+// #6-32 x 3/4" Button Head Cap Screw (4 req) Rail Guides
+// #4-40 x 1/2" Socket Head Cap Screw (10 req) Ball Lock
+// #4-40 x 3/8" Button Head Cap Screw (10 req) Doors
+// #4-40 x 3/8" Socket Head Cap Screw (6 req) PetalHub
+// #4-40 x 1/4" Button Head Cap Screw (12 req) Petals
 // #4-40 x 1/4" Button Head Cap Screw (4 req) Altimeter
-// #2-56 x 1/4" Socket Head Cap Screw (2/4 req) Servo
-// MR84-2RS Bearing (5/10 req) Ball Lock
-// 3/8" Delrin Ball (3/6 req) Ball Lock
-// 4mm Dia. x 10mm Undersize Steel Dowel (3/6 req) Ball Lock
-// 4mm Dia. x 16mm Undersize Steel Dowel (3/6 req) Ball Lock
-// 3/16" Dia x 1/8" Disc Magnet N42 (2/4 req) Ball Lock
-// SG90 or MG90S Micro Servo (1/2 req) Ball Lock
-// C&K Rotary Switch (1/2 req) Battery Door
+// #2-56 x 1/4" Socket Head Cap Screw (4 req) Servos
+// MR84-2RS Bearing (14 req) Ball Lock
+// 3/8" Delrin Ball (10 req) Ball Lock
+// 4mm Dia. x 10mm Undersize Steel Dowel (10 req) Ball Lock
+// 4mm Dia. x 16mm Undersize Steel Dowel (6 req) Ball Lock
+// 3/16" Dia x 1/8" Disc Magnet N42 (4 req) Ball Lock
+// MG90S Micro Servo (2 req) Ball Lock
+// C&K Rotary Switch (2 req) Battery Door
 // Mission Control V3 Altimeter PCBA
-// Rocket Servo PCBA (1/2 req)
+// Rocket Servo PCBA (2 req)
 // FeatherWeight GPS
-// 1/4" Rail Button (2 req)
-// CS4323 Spring (1/2 req)
-// 5/16" Dia x 1-1/4" Spring (3/6 req) PetalHub
-// 1/2" Dia x 0.035" Wall x 74mm Long Aluminum Tube (1/3 req)
+// #4-40 x 1/2" Nylon Pan Head (2 Req.) GPS
+// CS4323 Spring (4 req)
+// 5/16" Dia x 1-1/4" Spring (6 req) PetalHub
+// 1/2" Dia x 0.035" Wall x 74mm Long Aluminum Tube (3 req)
 //
 //  ***** History *****
 //
