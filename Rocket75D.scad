@@ -18,7 +18,7 @@
 //
 // BlueTube 2.0 3" Body Tube by 12 inches (Forward body)
 // BlueTube 2.0 3" Body Tube by 18 to 24 inches (19.25" as built)
-// Blue Tube 2.1" Body Tube by 16 inches
+// Blue Tube 2.1" Body Tube by 18 inches (Motor Tube)
 // 45" Parachute
 // 1/8" Paracord (3 feet)
 // 1/2" Braided Nylon Shock Cord (20 feet)
@@ -206,10 +206,10 @@ NC_Tip_r=6;
 NC_Wall_t=1.8;
 NC_Base_L=15;
 
-MainBay_Len=8.5*25.4;
+MainBay_Len=12*25.4;
 EBay_Len=162;
-BodyTubeLen=16*25.4;
-MotorTubeLen=16*25.4;
+BodyTubeLen=19.25*25.4;
+MotorTubeLen=18*25.4;
 
 FinInset_Len=10;
 Can_Len=Fin_Root_L+FinInset_Len*2;
@@ -218,13 +218,14 @@ TailConeExtra_OD=1;
 Bolt4Inset=4;
 RailGuide_h=Body_OD/2+2;
 
-module ShowRocket(ShowInternals=false, DualDeploy=false, ShowDoors=false){
+module ShowRocket(ShowInternals=false, ShowDoors=false){
 	FinCan_Z=35;
 	Fin_Z=FinCan_Z+Fin_Root_L/2+FinInset_Len;
+	MotorTube_Z=FinCan_Z-23;
 	BodyTube_Z=FinCan_Z+Can_Len+Overlap*2;
 	EBay_Z=BodyTube_Z+BodyTubeLen+33.5;
 	UpperBallLock_Z=EBay_Z+EBay_Len+18.5;
-	NoseCone_Z=DualDeploy? MainBay_Len+29+EBay_Z+EBay_Len+2+Overlap*2:EBay_Z+EBay_Len+2+Overlap*2;
+	NoseCone_Z=MainBay_Len+29+EBay_Z+EBay_Len+2+Overlap*2;
 
 	
 	//*
@@ -234,32 +235,63 @@ module ShowRocket(ShowInternals=false, DualDeploy=false, ShowDoors=false){
 		rotate([0,0,-30]) color("LightGreen")
 			NC_ShockcordRing75(Body_OD=Body_OD, Body_ID=Body_ID, NC_Base_L=NC_Base_L);}
 	
-	if (DualDeploy){
 	
-		if (ShowInternals==false)
-			translate([0,0,UpperBallLock_Z+10]) color("LightBlue") Tube(OD=Body_OD, ID=Body_ID, 
-				Len=MainBay_Len-Overlap*2, myfn=$preview? 90:360);
-		//*
-		if (ShowInternals==false)
-			translate([0,0,UpperBallLock_Z]) rotate([180,0,0])
-				STB_TubeEnd(BallPerimeter_d=Body_OD, nLockBalls=nLockBalls, Body_OD=Body_OD, 
-								Body_ID=Body_ID, Skirt_Len=20);
-		/**/
-		translate([0,0,UpperBallLock_Z]) rotate([180,0,0]) color("Tan") R75_BallRetainerTop();
 	
+	if (ShowInternals==false)
+		translate([0,0,UpperBallLock_Z+10]) color("LightBlue") 
+			Tube(OD=Body_OD, ID=Body_ID, Len=MainBay_Len-Overlap*2, myfn=$preview? 90:360);
+				
+	// Main parachute compartment parts
+	if (ShowInternals){
+		translate([0,0,NoseCone_Z-60]) SE_SlidingSpringMiddle(OD=Coupler_OD, nRopes=3);
+		
+		translate([0,0,UpperBallLock_Z+ForwardPetal_Len+20+9]) rotate([180,0,0]) 
+			PD_NC_PetalHub(OD=Coupler_OD, nPetals=nPetals, nRopes=3);
+			
+		translate([0,0,UpperBallLock_Z+ForwardPetal_Len+20]) rotate([180,0,0]) 
+			PD_Petals(OD=Coupler_OD, Len=ForwardPetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
+	
+		translate([0,0,UpperBallLock_Z]) rotate([180,0,0]) 
+			R75_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false);
 	}
-	translate([0,0,EBay_Z]) Electronics_Bay(DualDeploy=DualDeploy, ShowDoors=ShowDoors);
+	
+	//*
+	if (ShowInternals==false)
+		translate([0,0,UpperBallLock_Z]) rotate([180,0,0])
+			STB_TubeEnd(BallPerimeter_d=Body_OD, nLockBalls=nLockBalls, Body_OD=Body_OD, 
+								Body_ID=Body_ID, Skirt_Len=20);
+	/**/
+	
+	
+	translate([0,0,UpperBallLock_Z]) rotate([180,0,0]) color("Tan") R75_BallRetainerTop();
+	
+	
+	translate([0,0,EBay_Z]) 
+			EB_Electronics_Bay3(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=EBay_Len, nBolts=3, BoltInset=NC_Base_L/2, 
+				DualDeploy=true, ShowDoors=ShowDoors);
 	
 	translate([0,0,BodyTube_Z+BodyTubeLen+15+Overlap*2])
 		color("Tan") R75_BallRetainerTop();
 	/**/
 	
+	// Drogue compartment parts
 	if (ShowInternals){
-		translate([0,0,BodyTube_Z+BodyTubeLen+15+Overlap*2-0.2]) R75_BallRetainerBottom();
-		translate([0,0,BodyTube_Z+BodyTubeLen+15+Overlap*2-9.2]) rotate([0,0,200]) rotate([180,0,0]) 
-			PD_PetalHub(OD=BT75Coupler_OD, nPetals=nPetals, ShockCord_a=ShockCord_a);
-		translate([0,0,BodyTube_Z+BodyTubeLen+15+Overlap*2-15]) 
-			rotate([0,0,200]) rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=150, nPetals=nPetals);
+		translate([0,0,BodyTube_Z+BodyTubeLen+15+Overlap*2-0.2]) 
+			R75_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=true);
+			
+		translate([0,0,BodyTube_Z+BodyTubeLen+15+Overlap*2-19.5]) rotate([0,0,200]) rotate([180,0,0]) 
+			R75_PetalHub(Body_OD=Body_OD, Body_ID=Body_ID);
+			
+		translate([0,0,BodyTube_Z+BodyTubeLen+15+Overlap*2-29]) 
+			rotate([0,0,200]) rotate([180,0,0]) 
+				PD_Petals(OD=Coupler_OD, Len=AftPetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
+			
+		translate([0,0,MotorTube_Z+MotorTubeLen+17+45])
+			SE_SpringEndTop(OD=Coupler_OD, Tube_ID=Coupler_OD-4.4, nRopeHoles=3, CutOutCenter=true);
+			
+		translate([0,0,MotorTube_Z+MotorTubeLen+17]) SE_SlidingSpringMiddle(OD=Coupler_OD, nRopes=3);
+		translate([0,0,MotorTube_Z+MotorTubeLen])
+			R75_MotorTubeTopper(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID);
 	}
 	
 	if (ShowInternals==false)
@@ -267,14 +299,19 @@ module ShowRocket(ShowInternals=false, DualDeploy=false, ShowDoors=false){
 		STB_TubeEnd(BallPerimeter_d=Body_OD, nLockBalls=nLockBalls, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=20);
 	
 	if (ShowInternals==false)
-	translate([0,0,BodyTube_Z]) color("LightBlue") Tube(OD=Body_OD, ID=Body_ID, 
-			Len=BodyTubeLen-Overlap*2, myfn=$preview? 90:360);
+	translate([0,0,BodyTube_Z]) color("LightBlue") 
+		Tube(OD=Body_OD, ID=Body_ID, Len=BodyTubeLen-Overlap*2, myfn=$preview? 90:360);
 	
 	if (ShowInternals)
-	translate([0,0,FinCan_Z-23]) color("Blue") Tube(OD=MotorTube_OD, ID=MotorTube_ID, 
-			Len=MotorTubeLen-Overlap*2, myfn=$preview? 90:360);
+	translate([0,0,MotorTube_Z]) color("Blue") 
+		Tube(OD=MotorTube_OD, ID=MotorTube_ID, Len=MotorTubeLen-Overlap*2, myfn=$preview? 90:360);
 			
-	translate([0,0,FinCan_Z]) color("White") FinCan(LowerHalfOnly=false, UpperHalfOnly=false);
+	translate([0,0,FinCan_Z]) color("White") FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=Can_Len,
+				MotorTube_OD=MotorTube_OD, RailGuide_h=RailGuide_h, RailGuideLen=RailGuideLen,
+				nFins=nFins, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
+				Fin_Root_W=Fin_Root_W, Fin_Root_L=Fin_Root_L, Fin_Post_h=Fin_Post_h, Fin_Chamfer_L=Fin_Chamfer_L,
+				Cone_Len=TailCone_Len, ThreadedTC=true, Extra_OD=TailConeExtra_OD,
+				LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
 	
 	//*
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j])
@@ -282,10 +319,12 @@ module ShowRocket(ShowInternals=false, DualDeploy=false, ShowDoors=false){
 			rotate([0,90,0]) color("Yellow") RocketFin();
 	/**/
 	
-	translate([0,0,FinCan_Z-0.2]) MotorRetainer(ShowCut=false);
+	translate([0,0,FinCan_Z-0.2]) FC2_MotorRetainer(Body_OD=Body_OD,
+						MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID,
+						HasWrenchCuts=false, Cone_Len=TailCone_Len, ExtraLen=0, Extra_OD=TailConeExtra_OD);
 } // ShowRocket
 
-//ShowRocket(DualDeploy=true, ShowDoors=true);
+//ShowRocket(ShowDoors=true);
 //ShowRocket(ShowInternals=true);
 				
 module RocketFin(){
