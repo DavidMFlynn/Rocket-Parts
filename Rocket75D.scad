@@ -3,7 +3,7 @@
 // Filename: Rocket75D.scad
 // by David M. Flynn
 // Created: 8/6/2023 
-// Revision: 1.3.0  7/18/2024 
+// Revision: 1.3.1  7/20/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -50,6 +50,7 @@
 //
 //  ***** History *****
 //
+// 1.3.1  7/20/2024  ULine 3" Mailing tube version
 // 1.3.0  7/18/2024  Copied from Rocket75C 1.2.3 No longer an upscale. Changed to 5 Lock Balls and Dual Deploy.
 // 1.2.3  4/21/2024  Added screw holes to R75_BallRetainerTop()
 // 1.2.2  4/18/2024  Standardized some parts
@@ -114,6 +115,7 @@
 // Alt: 2 piece fincan
 
 /*
+// Upper half
 	FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=Can_Len,
 				MotorTube_OD=MotorTube_OD, RailGuide_h=RailGuide_h, RailGuideLen=RailGuideLen,
 				nFins=nFins, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
@@ -122,6 +124,7 @@
 				LowerHalfOnly=false, UpperHalfOnly=true, HasWireHoles=false);
 /**/
 /*
+// Lower half
 	rotate([180,0,0]) FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=Can_Len,
 				MotorTube_OD=MotorTube_OD, RailGuide_h=RailGuide_h, RailGuideLen=RailGuideLen,
 				nFins=nFins, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
@@ -189,10 +192,21 @@ Fin_Chamfer_L=22;
 ForwardPetal_Len=200; // Main 'chute and lots of shock cord
 AftPetal_Len=150; // Drogue
 
+//*
+// BlueTube 2.0 version
 Body_OD=BT75Body_OD;
 Body_ID=BT75Body_ID;
 Coupler_OD=BT75Coupler_OD;
 Coupler_ID=BT75Coupler_ID;
+/**/
+
+/*
+// U-Line 3" Mailing Tube version
+Body_OD=ULine75Body_OD;
+Body_ID=ULine75Body_ID;
+Coupler_OD=BT75Coupler_OD;
+Coupler_ID=BT75Coupler_ID;
+/**/
 
 // *** 38mm Motor Tube ***
 MotorTube_OD=BT54Body_OD;

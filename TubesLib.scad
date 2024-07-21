@@ -82,7 +82,7 @@ echo(PML98Coupler_ID=PML98Coupler_ID);
 /**/
 
 ULine75Body_OD=80.30;
-ULine75Body_ID=76.60;
+ULine75Body_ID=76.60; // Works w/ BT75Coupler_OD
 
 PML75Body_OD=79.6; // 8/4/2022 Adjusted +0.2 to match QT better
 PML75Body_ID=3.002*25.4;
