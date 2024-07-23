@@ -101,6 +101,10 @@
 //
 // R75_MotorTubeTopper(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID);
 //
+// Alt part, scock cord will attach to top of motor, threaded forward closure is required
+// R75_UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD);
+// SE_SpringEndBottom(OD=Coupler_OD, Tube_ID=Coupler_OD-3.6, Len=20, nRopeHoles=3, CutOutCenter=true);
+//
 // *** Fin Can ***
 //
 /*

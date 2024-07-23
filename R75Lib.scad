@@ -3,7 +3,7 @@
 // Filename: R75Lib.scad
 // by David M. Flynn
 // Created: 7/17/2024 
-// Revision: 0.9.1  7/18/2024 
+// Revision: 0.9.2  7/22/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,12 +12,14 @@
 //
 //  ***** History *****
 //
+// 0.9.2  7/22/2024  Added R75_UpperRailGuideMount()
 // 0.9.1  7/18/2024  3 petals, 5 balls, 6 bolts
 // 0.9.0  7/17/2024  First code, copied from many places
 //
 // ***********************************
 //  ***** for STL output *****
 //
+// R75_UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD);
 // R75_MotorTubeTopper(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID);
 // R75_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID);  // One small servo w/ shock cord attachment.
 // R75_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false);
@@ -47,6 +49,23 @@ Coupler_OD=BT75Coupler_OD;
 Coupler_ID=BT75Coupler_ID;
 MotorTube_OD=BT54Body_OD;
 MotorTube_ID=BT54Body_ID;
+
+module R75_UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD){
+	Len=25;
+	
+	difference(){
+		Tube(OD=Body_ID, ID=MotorTube_OD+IDXtra*2, Len=Len, myfn=$preview? 36:360);
+				
+		// Rail guide bolts
+		translate([Body_ID/2, 0, Len/2]) {
+			translate([0,0,6.35]) rotate([0,90,0]) Bolt6Hole();
+			translate([0,0,-6.35]) rotate([0,90,0]) Bolt6Hole();
+		}
+	} // difference
+} // R75_UpperRailGuideMount
+
+//R75_UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD);
+
 
 module R75_MotorTubeTopper(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID){
 // Z zero is top of motor tube
