@@ -3,7 +3,7 @@
 // Filename: SpringThingBooster.scad
 // by David M. Flynn
 // Created: 2/26/2023
-// Revision: 1.3.2   5/14/2024
+// Revision: 1.3.3   7/23/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -39,9 +39,10 @@
 //
 //  ***** History *****
 module SpringThingBoosterRev(){
-	echo("SpringThingBooster Rev. 1.3.2");
+	echo("SpringThingBooster Rev. 1.3.3");
 } // SpringThingBoosterRev
 SpringThingBoosterRev();
+// 1.3.3   7/23/2024  Changed: tube interface in STB_TubeEnd() from Body_OD+IDXtra*2 to Body_OD+IDXtra
 // 1.3.2   5/14/2024  Added Outer_OD parameter to STB_BallRetainerTop() to stop using BallPerimeter_d as OD.
 // 1.3.1   5/7/2024   Moved to "SE_" STB_SpringEnd, STB_SpringSeat, STB_SpringMiddle, SE_SpringCupTOMT, SE_SpringGuide,
 //						Deleted STB_SpringPlate
@@ -491,6 +492,7 @@ module STB_TubeEnd(BallPerimeter_d=PML75Body_OD, nLockBalls=nLockBalls,
 	ChamferLen=4;
 	Ring_OD=BallPerimeter_d+4.4;
 	RingLen=Skirt_Len+10-ChamferLen;
+	DepthExtra=0.5;
 	
 	difference(){
 		union(){
@@ -508,11 +510,11 @@ module STB_TubeEnd(BallPerimeter_d=PML75Body_OD, nLockBalls=nLockBalls,
 			translate([0,0,-Skirt_Len/2-10-ChamferLen+1])
 			difference(){
 				cylinder(d2=Ring_OD, d1=Body_OD+IDXtra*2+1.2, h=ChamferLen-1, $fn=$preview? 90:360);
-				translate([0,0,-Overlap]) cylinder(d=Body_OD+IDXtra*2, h=ChamferLen+Overlap*2, $fn=$preview? 90:360);
+				translate([0,0,-Overlap]) cylinder(d=Body_OD+IDXtra, h=ChamferLen+Overlap*2, $fn=$preview? 90:360);
 			} // difference
 		} // union
 		
-		translate([0,0,-Skirt_Len/2-10-Overlap]) cylinder(d=Body_OD+IDXtra*2, h=10, $fn=$preview? 90:360);
+		translate([0,0,-Skirt_Len/2-10-Overlap]) cylinder(d=Body_OD+IDXtra, h=10, $fn=$preview? 90:360);
 		
 		//Ball Grooves
 		Steps=90/nLockBalls;
@@ -522,11 +524,11 @@ module STB_TubeEnd(BallPerimeter_d=PML75Body_OD, nLockBalls=nLockBalls,
 		
 		for (j=[0:nLockBalls-1]) for (k=[0:Steps])
 			hull(){
-				rotate([0,0,360/nLockBalls*j+k]) 
-					translate([0,BallPerimeter_d/2+1,-DispPerStep*k+Offset])
+				rotate([0, 0, 360/nLockBalls*j+k]) 
+					translate([0, BallPerimeter_d/2+DepthExtra, -DispPerStep*k+Offset])
 						rotate([90,0,0]) cylinder(d=Slot_Width, h=5);
-				rotate([0,0,360/nLockBalls*j+k+1]) 
-					translate([0,BallPerimeter_d/2+1,-DispPerStep*(k+1)+Offset])
+				rotate([0, 0, 360/nLockBalls*j+k+1]) 
+					translate([0, BallPerimeter_d/2+DepthExtra, -DispPerStep*(k+1)+Offset])
 						rotate([90,0,0]) cylinder(d=Slot_Width, h=5);
 			} // hull
 			
@@ -537,7 +539,8 @@ module STB_TubeEnd(BallPerimeter_d=PML75Body_OD, nLockBalls=nLockBalls,
 	//echo("STB_LockBall_d=",STB_LockBall_d(BallPerimeter_d=BallPerimeter_d));
 } // STB_TubeEnd
 
-//STB_TubeEnd(BallPerimeter_d=PML75Body_OD, Body_OD=PML75Body_OD, Body_ID=PML75Body_ID, Skirt_Len=20, nLockBalls=5);
+//
+STB_TubeEnd(BallPerimeter_d=PML75Body_OD, Body_OD=PML75Body_OD, Body_ID=PML75Body_ID, Skirt_Len=20, nLockBalls=5);
 
 //STB_TubeEnd(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls, Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, Skirt_Len=25);
 
