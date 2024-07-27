@@ -3,7 +3,7 @@
 // Filename: Rocket75D.scad
 // by David M. Flynn
 // Created: 8/6/2023 
-// Revision: 1.3.2  7/23/2024 
+// Revision: 1.3.3  7/26/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -17,8 +17,8 @@
 //  ***** Parts *****
 //
 // BlueTube 2.0 3" Body Tube by 12 inches (Forward body)
-// BlueTube 2.0 3" Body Tube by 18 to 24 inches (19.25" as built)
-// Blue Tube 2.1" Body Tube by 18 inches (Motor Tube)
+// BlueTube 2.0 3" Body Tube by 18 to 24 inches (19.25" and 18.11" as built)
+// Blue Tube 2.1" Body Tube by 18 inches (Motor Tube) Built w/ 16.5" 
 // 45" Parachute
 // 1/8" Paracord (3 feet)
 // 1/2" Braided Nylon Shock Cord (20 feet)
@@ -46,10 +46,12 @@
 // #4-40 x 1/2" Nylon Pan Head (2 Req.) GPS
 // CS4323 Spring (4 req)
 // 5/16" Dia x 1-1/4" Spring (6 req) PetalHub
-// 1/2" Dia x 0.035" Wall x 74mm Long Aluminum Tube (3 req)
+// 1/2" Dia x 0.035" Wall x 68mm Long Aluminum Tube (2 req) R75_BallRetainerTop
+// 1/2" Dia x 0.035" Wall x 74mm Long Aluminum Tube NC_ShockcordRing75
 //
 //  ***** History *****
 //
+// 1.3.3  7/26/2024  Updated hardware list. Sorted params, added 3 fin fin data
 // 1.3.2  7/23/2024  Removed double battery door, it didn't fit.
 // 1.3.1  7/20/2024  ULine 3" Mailing tube version
 // 1.3.0  7/18/2024  Copied from Rocket75C 1.2.3 No longer an upscale. Changed to 5 Lock Balls and Dual Deploy.
@@ -104,6 +106,8 @@
 // Alt part, scock cord will attach to top of motor, threaded forward closure is required
 // R75_UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD);
 // SE_SpringEndBottom(OD=Coupler_OD, Tube_ID=Coupler_OD-3.6, Len=20, nRopeHoles=3, CutOutCenter=true);
+// SE_SpringSpacer(OD=Coupler_OD, Tube_ID=Coupler_ID, Len=70); // only needed if body tube is longer than minimum, can also use coupler tube
+// 
 //
 // *** Fin Can ***
 //
@@ -154,8 +158,9 @@
 // ***********************************
 //  ***** for Viewing *****
 //
-// ShowRocket();
-// translate([300,0,0]) ShowRocket(ShowInternals=true);
+// 
+ShowRocket(ShowInternals=false, ShowDoors=true);
+// translate([300,0,0]) ShowRocket(ShowInternals=true, ShowDoors=false);
 //
 // ***********************************
 include<TubesLib.scad>
@@ -178,11 +183,28 @@ use<R75Lib.scad>
 Overlap=0.05;
 IDXtra=0.2;
 $fn=$preview? 24:90;
+Bolt4Inset=4;
+
+// Nosecone param's
+NC_Len=212;
+NC_Tip_r=6;
+NC_Wall_t=1.8;
+NC_Base_L=15;
+
+EBay_Len=162;
 
 nPetals=3;
 nLockBalls=5;
 RailGuideLen=35;
 
+ForwardPetal_Len=200; // Main 'chute and lots of shock cord
+AftPetal_Len=150; // Drogue
+
+TailCone_Len=35;
+TailConeExtra_OD=1;
+
+/*
+// 5 smaller fins
 nFins=5;
 Fin_Post_h=10;
 Fin_Root_L=190;
@@ -192,9 +214,23 @@ Fin_Tip_L=83;
 Fin_Span=83;
 Fin_TipOffset=24;
 Fin_Chamfer_L=22;
+FinInset_Len=10;
+/**/
+//*
+// 3 larger fins
+nFins=3;
+Fin_Post_h=10;
+Fin_Root_L=220;
+Fin_Root_W=12;
+Fin_Tip_W=3;
+Fin_Tip_L=80;
+Fin_Span=140;
+Fin_TipOffset=40;
+Fin_Chamfer_L=30;
+FinInset_Len=10;
+/**/
 
-ForwardPetal_Len=200; // Main 'chute and lots of shock cord
-AftPetal_Len=150; // Drogue
+Can_Len=Fin_Root_L+FinInset_Len*2; // Calculated fin can length
 
 //*
 // BlueTube 2.0 version
@@ -212,29 +248,19 @@ Coupler_OD=BT75Coupler_OD;
 Coupler_ID=BT75Coupler_ID;
 /**/
 
-// *** 38mm Motor Tube ***
+// *** 54mm Motor Tube ***
 MotorTube_OD=BT54Body_OD;
 MotorTube_ID=BT54Body_ID;
 MotorCoupler_OD=BT54Coupler_OD;
 
 MotorTubeHole_d=MotorTube_OD+IDXtra*3;
 
-NC_Len=212;
-NC_Tip_r=6;
-NC_Wall_t=1.8;
-NC_Base_L=15;
-
-MainBay_Len=12*25.4;
-EBay_Len=162;
-BodyTubeLen=19.25*25.4;
-MotorTubeLen=18*25.4;
-
-FinInset_Len=10;
-Can_Len=Fin_Root_L+FinInset_Len*2;
-TailCone_Len=35;
-TailConeExtra_OD=1;
-Bolt4Inset=4;
 RailGuide_h=Body_OD/2+2;
+
+// For display only, not used by parts
+MainBay_Len=12*25.4;
+BodyTubeLen=18.11*25.4; // 19.25*25.4;
+MotorTubeLen=16.5*25.4; //18*25.4;
 
 module ShowRocket(ShowInternals=false, ShowDoors=false){
 	FinCan_Z=35;
@@ -245,10 +271,8 @@ module ShowRocket(ShowInternals=false, ShowDoors=false){
 	UpperBallLock_Z=EBay_Z+EBay_Len+18.5;
 	NoseCone_Z=MainBay_Len+29+EBay_Z+EBay_Len+2+Overlap*2;
 
-	
-	//*
 	translate([0,0,NoseCone_Z]){
-		BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=NC_Len, Base_L=13, 
+		rotate([0,0,90]) BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=NC_Len, Base_L=13, 
 							Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
 		rotate([0,0,-30]) color("LightGreen")
 			NC_ShockcordRing75(Body_OD=Body_OD, Body_ID=Body_ID, NC_Base_L=NC_Base_L);}
@@ -271,18 +295,14 @@ module ShowRocket(ShowInternals=false, ShowDoors=false){
 	
 		translate([0,0,UpperBallLock_Z]) rotate([180,0,0]) 
 			R75_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false);
-	}
+	} // if (ShowInternals)
 	
-	//*
 	if (ShowInternals==false)
 		translate([0,0,UpperBallLock_Z]) rotate([180,0,0])
 			STB_TubeEnd(BallPerimeter_d=Body_OD, nLockBalls=nLockBalls, Body_OD=Body_OD, 
 								Body_ID=Body_ID, Skirt_Len=20);
-	/**/
-	
 	
 	translate([0,0,UpperBallLock_Z]) rotate([180,0,0]) color("Tan") R75_BallRetainerTop();
-	
 	
 	translate([0,0,EBay_Z]) 
 			EB_Electronics_Bay3(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=EBay_Len, nBolts=3, BoltInset=NC_Base_L/2, 
@@ -290,7 +310,6 @@ module ShowRocket(ShowInternals=false, ShowDoors=false){
 	
 	translate([0,0,BodyTube_Z+BodyTubeLen+15+Overlap*2])
 		color("Tan") R75_BallRetainerTop();
-	/**/
 	
 	// Drogue compartment parts
 	if (ShowInternals){
@@ -310,7 +329,7 @@ module ShowRocket(ShowInternals=false, ShowDoors=false){
 		translate([0,0,MotorTube_Z+MotorTubeLen+17]) SE_SlidingSpringMiddle(OD=Coupler_OD, nRopes=3);
 		translate([0,0,MotorTube_Z+MotorTubeLen])
 			R75_MotorTubeTopper(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID);
-	}
+	} // if (ShowInternals)
 	
 	if (ShowInternals==false)
 	translate([0,0,BodyTube_Z+BodyTubeLen+15])
@@ -331,11 +350,9 @@ module ShowRocket(ShowInternals=false, ShowDoors=false){
 				Cone_Len=TailCone_Len, ThreadedTC=true, Extra_OD=TailConeExtra_OD,
 				LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
 	
-	//*
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j])
 		translate([Body_OD/2-Fin_Post_h, 0, Fin_Z]) 
 			rotate([0,90,0]) color("Yellow") RocketFin();
-	/**/
 	
 	translate([0,0,FinCan_Z-0.2]) FC2_MotorRetainer(Body_OD=Body_OD,
 						MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID,
