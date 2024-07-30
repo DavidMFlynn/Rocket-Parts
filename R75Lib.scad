@@ -25,12 +25,14 @@
 // R75_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false);
 // R75_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=true); // for bottom of ebay
 // R75_PetalHub(Body_OD=Body_OD, Body_ID=Body_ID); // for bottom of ebay
+// R75_NC_Base_PetalHub(Body_OD=Body_OD, Body_ID=Body_ID); // for bottom of nosecone
 //
 // ***********************************
 include<TubesLib.scad>
 use<SpringThingBooster.scad> SpringThingBoosterRev();
 use<PetalDeploymentLib.scad>
 use<SpringEndsLib.scad>
+use<NoseCone.scad>
 
 Overlap=0.05;
 IDXtra=0.2;
@@ -64,7 +66,7 @@ module R75_UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD){
 	} // difference
 } // R75_UpperRailGuideMount
 
-//R75_UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD);
+// R75_UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD);
 
 
 module R75_MotorTubeTopper(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID){
@@ -93,7 +95,7 @@ module R75_MotorTubeTopper(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, MotorTube
 			translate([0,0,-20]) 
 				Tube(OD=MotorTube_OD+6, ID=MotorTube_OD+IDXtra*3, Len=21, myfn=$preview? 36:360);
 			translate([0,0,-20]) 
-				Tube(OD=Body_ID-IDXtra*2, ID=Body_ID-IDXtra*2-6, Len=21, myfn=$preview? 36:360);
+				Tube(OD=Body_ID-IDXtra, ID=Body_ID-IDXtra*2-6, Len=21, myfn=$preview? 36:360);
 			
 			CenteringRing(OD=Body_ID, ID=ST_DSpring_ID, Thickness=5, nHoles=0, Offset=0);
 			translate([0,0,4]) 
@@ -219,7 +221,7 @@ module R75_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false
 // R75_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=true);
 
 
-module R75_PetalHub(Body_OD=Body_OD, Body_ID=Body_ID){
+module R75_PetalHub(Body_OD=Body_OD, Body_ID=Body_ID, Coupler_OD=Coupler_OD){
 	ShockCord_a=45;
 	
 	PD_PetalHub(OD=Coupler_OD, 
@@ -236,10 +238,48 @@ module R75_PetalHub(Body_OD=Body_OD, Body_ID=Body_ID){
 
 //translate([0,0,-21]) rotate([180,0,200]) R75_PetalHub(Body_OD=Body_OD, Body_ID=Body_ID);
 						
+module R75_NC_Base_PetalHub(Body_OD=Body_OD, Body_ID=Body_ID, Coupler_OD=Coupler_OD){
+	ShockCord_a=-1;
+	
+	difference(){
+		PD_PetalHub(OD=Coupler_OD, 
+					nPetals=3, 
+					HasBolts=true,
+					nBolts=6,
+					ShockCord_a=ShockCord_a,
+					HasNCSkirt=false, 
+						Body_OD=Body_OD,
+						Body_ID=Body_ID,
+						NC_Base=0, 
+						SkirtLen=10);
+						
+		translate([0,0,-Overlap]) cylinder(d=21, h=10);
+	} // difference
+} // R75_NC_Base_PetalHub
 
+// R75_NC_Base_PetalHub();
 
+module R75_NC_Base(Body_OD=Body_OD, Body_ID=Body_ID, NC_Base_L=15, Coupler_OD=Coupler_OD){
+	nBolts=6;
+	
+	difference(){
+		union(){
+			NC_ShockcordRing75(Body_OD=Body_OD, Body_ID=Body_ID, NC_Base_L=NC_Base_L);
+			
+			translate([0,0,-3]) cylinder(d=Body_OD, h=3, $fn=$preview? 90:360);
+		} // union
+		
+		translate([0,0,-20]) cylinder(d=Body_OD+1, h=17);
+		translate([0,0,-3-Overlap]) hull(){
+			translate([-8,0,0]) cylinder(d=19, h=6);
+			translate([8,0,0]) cylinder(d=19, h=6);
+		} // hull
+		
+		rotate([0,0,20]) translate([0,0,-3]) PD_PetalHubBoltPattern(OD=Coupler_OD, nBolts=nBolts) rotate([180,0,0]) Bolt4Hole();
+	} // difference
+} // R75_NC_Base
 
-
+// R75_NC_Base();
 
 
 

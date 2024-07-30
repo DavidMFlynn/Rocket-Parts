@@ -158,8 +158,7 @@
 // ***********************************
 //  ***** for Viewing *****
 //
-// 
-ShowRocket(ShowInternals=false, ShowDoors=true);
+// ShowRocket(ShowInternals=false, ShowDoors=true);
 // translate([300,0,0]) ShowRocket(ShowInternals=true, ShowDoors=false);
 //
 // ***********************************
