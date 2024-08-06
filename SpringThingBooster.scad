@@ -3,7 +3,7 @@
 // Filename: SpringThingBooster.scad
 // by David M. Flynn
 // Created: 2/26/2023
-// Revision: 1.3.6   8/2/2024
+// Revision: 1.3.7   8/6/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -37,9 +37,10 @@
 //
 //  ***** History *****
 module SpringThingBoosterRev(){
-	echo("SpringThingBooster Rev. 1.3.6");
+	echo("SpringThingBooster Rev. 1.3.7");
 } // SpringThingBoosterRev
 SpringThingBoosterRev();
+// 1.3.7   8/6/2024   Changed calculation for STB_Unlocked_a()
 // 1.3.6   8/2/2024   Added STB_TubeEnd2() new smoother version
 // 1.3.5   8/1/2024   Removed old unused stuff.
 // 1.3.4   8/1/2024   Fixed: large bearing issue
@@ -185,7 +186,8 @@ function STB_LockPinBC_d(BallPerimeter_d=BT75Body_OD)=BallPerimeter_d-STB_LockBa
 function STB_LockedPost_a(BallPerimeter_d=BT75Body_OD)=
 			-STB_CalcChord_a(Dia=STB_LockPinBC_d(BallPerimeter_d), Dist=BearingMR84_OD/2+Dowel_d/2+0.4);
 			
-function STB_Unlocked_a(BallPerimeter_d=BT75Body_OD)=STB_CalcChord_a(Dia=STB_LockPinBC_d(BallPerimeter_d), Dist=BearingMR84_OD/2+Dowel_d/2);
+function STB_Unlocked_a(BallPerimeter_d=BT75Body_OD)=STB_CalcChord_a(Dia=STB_LockPinBC_d(BallPerimeter_d), 
+						Dist=STB_LockBall_d(BallPerimeter_d=BallPerimeter_d)*0.35+BearingMR84_OD*0.35); // was BearingMR84_OD/2+Dowel_d/2);
 
 function STB_UnlockedPost_a(BallPerimeter_d=BT75Body_OD, nLockBalls=nLockBalls)=
 			STB_Unlocked_a(BallPerimeter_d)+360/nLockBalls+
@@ -464,7 +466,7 @@ module STB_TubeEnd2(BallPerimeter_d=BT75Body_OD, nLockBalls=nLockBalls,
 		//Ball Grooves
 		Steps=90/nLockBalls;
 		DispPerStep=1.5/Steps;
-		Offset=-0.5; // -1.0 was too tight on 3", Move groove down (tighter)
+		Offset=-0.25; // was -0.5; 
 		Ball_d=STB_LockBall_d(BallPerimeter_d=BallPerimeter_d);
 		Slot_Width=Ball_d+IDXtra*3;
 		myFn=$preview? 36:90;
@@ -781,7 +783,7 @@ module STB_BallRetainerBottom(BallPerimeter_d=BT75Body_OD, Body_OD=BT75Body_ID, 
 		
 		// Bolt holes
 		STB_BR_BoltPattern(BallPerimeter_d=BallPerimeter_d, Body_OD=Body_OD, nLockBalls=nLockBalls)
-			Bolt4Hole();
+			Bolt4Hole(depth=Bottom_H);
 		
 		// Shock cord hole
 		if (HasLargeInnerBearing==false)
@@ -852,23 +854,31 @@ module STB_BallRetainerBottom(BallPerimeter_d=BT75Body_OD, Body_OD=BT75Body_ID, 
 	} // difference
 } // STB_BallRetainerBottom
 
-//STB_BallRetainerBottom(BallPerimeter_d=BT137BallPerimeter_d, Body_OD=BT137Body_ID, nLockBalls=nBT137Balls, HasSpringGroove=false, Engagement_Len=25, HasLargeInnerBearing=true);
-
+/*
+STB_BallRetainerBottom(BallPerimeter_d=BT137BallPerimeter_d, Body_OD=BT137Body_ID, nLockBalls=nBT137Balls, HasSpringGroove=false, Engagement_Len=25, HasLargeInnerBearing=true);
+rotate([0,0,STB_Unlocked_a(BallPerimeter_d=BT137BallPerimeter_d)]){
+	STB_LockDisk(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls);
+	STB_ShowLockBearings(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls);
+	}
+STB_ShowMyBalls(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls, InLockedPosition=false);
+/**/
 /*
 STB_BallRetainerBottom(BallPerimeter_d=BT54Body_ID, Body_OD=PML54Coupler_ID, nLockBalls=nLockBalls, HasSpringGroove=true, Engagement_Len=20);
-rotate([0,0,STB_Unlocked_a(BallPerimeter_d=PML54Body_ID)])
-{
-STB_LockDisk(BallPerimeter_d=PML54Body_ID, nLockBalls=3);
-STB_ShowLockBearings(BallPerimeter_d=PML54Body_ID, nLockBalls=nLockBalls);}
+rotate([0,0,STB_Unlocked_a(BallPerimeter_d=PML54Body_ID)]){
+	STB_LockDisk(BallPerimeter_d=PML54Body_ID, nLockBalls=3);
+	STB_ShowLockBearings(BallPerimeter_d=PML54Body_ID, nLockBalls=nLockBalls);}
+STB_ShowMyBalls(BallPerimeter_d=PML54Body_ID, nLockBalls=3, InLockedPosition=false);
 /**/
+
 /*
 STB_BallRetainerBottom(BallPerimeter_d=PML75Body_OD, Body_OD=PML75Body_ID, nLockBalls=5, HasSpringGroove=false, Engagement_Len=20);
 
-//rotate([0,0,STB_Unlocked_a(BallPerimeter_d=PML75Body_OD)])
+rotate([0,0,STB_Unlocked_a(BallPerimeter_d=PML75Body_OD)])
 {
-STB_LockDisk(BallPerimeter_d=PML75Body_OD, nLockBalls=5);
-STB_ShowLockBearings(BallPerimeter_d=PML75Body_OD, nLockBalls=5);
+	STB_LockDisk(BallPerimeter_d=PML75Body_OD, nLockBalls=5);
+	STB_ShowLockBearings(BallPerimeter_d=PML75Body_OD, nLockBalls=5);
 }
+STB_ShowMyBalls(BallPerimeter_d=PML75Body_OD, nLockBalls=5, InLockedPosition=false);
 /**/
 
 /*

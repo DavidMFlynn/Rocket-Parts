@@ -3,7 +3,7 @@
 // Filename: RocketBoosterPooper4.scad
 // by David M. Flynn
 // Created: 9/15/2023 
-// Revision: 0.9.9  8/1/2024
+// Revision: 0.9.10  8/6/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -20,6 +20,7 @@
 //  Boosters are in R75StrapOn.scad
 //
 //  ***** History *****
+// 0.9.10  8/6/2024 STB parts have been reworked, stop angle has changed.
 // 0.9.9  8/1/2024  Reworked electronics bay for dual deploy like Rocket75D
 // 0.9.8  3/28/2024 New spring for nosecone CS11890
 // 0.9.7  1/28/2024 Shock cord pass thru in STB at top to e bay.
@@ -372,13 +373,19 @@ module R137_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=fals
 				
 				rotate([0,0,Bolt_a]) translate([0,0,-Engagement_Len/2-PD_Ring_h])
 					PD_PetalHubBoltPattern(OD=Coupler_OD, nBolts=6) cylinder(d=8, h=PD_Ring_h+Overlap);
-					}/**/
+					
+				translate([0,0,-Engagement_Len/2-PD_Ring_h]) 
+					Tube(OD=39, ID=34, Len=PD_Ring_h+Overlap, myfn=$preview? 90:360);
+			}
+		/**/
 			
 		} // union
 		
-		if (HasPD_Ring)
-		rotate([0,0,Bolt_a]) translate([0,0,-Engagement_Len/2-PD_Ring_h])
-			PD_PetalHubBoltPattern(OD=Coupler_OD, nBolts=6) rotate([180,0,0]) Bolt4Hole(depth=PD_Ring_h-1);
+		if (HasPD_Ring){
+			rotate([0,0,Bolt_a]) translate([0,0,-Engagement_Len/2-PD_Ring_h])
+				PD_PetalHubBoltPattern(OD=Coupler_OD, nBolts=6) rotate([180,0,0]) Bolt4Hole(depth=PD_Ring_h-1);
+			
+		}
 
 	} // difference
 } // R137_BallRetainerBottom
@@ -415,7 +422,7 @@ module NC_PetalHub(){
 //NC_PetalHub();
 
 module RBP4_BallRetainerTop(){
-	XtraLen=0;
+	XtraLen=-12;
 	Tube_d=12.7;
 	Tube_Z=XtraLen+13+30.15;
 	Tube_a=-30;
@@ -436,7 +443,7 @@ module RBP4_BallRetainerTop(){
 				Tube(OD=Body_ID, ID=Body_ID-6, Len=4, myfn=$preview? 90:360);
 			
 			translate([0,0,XtraLen+13+35.5+4]) 
-				rotate([180,0,0]) Tube(OD=39, ID=34, Len=46.5, myfn=$preview? 90:360);
+				rotate([180,0,0]) Tube(OD=39, ID=34, Len=XtraLen+46.5, myfn=$preview? 90:360);
 				
 			// Shock cord retention
 			difference(){
@@ -454,6 +461,7 @@ module RBP4_BallRetainerTop(){
 						cube([Tube_d+8+Overlap, TubeSlot_w, Overlap*2], center=true);
 				} // hull
 					
+				// Trim outside
 				Tube(OD=Body_OD+20, ID=Body_ID-1, Len=50, myfn=$preview? 90:360);
 			} // difference
 		} // union
