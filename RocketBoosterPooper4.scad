@@ -617,6 +617,74 @@ module Drogue_Cup(){
 // translate([0,0,-0.2]) rotate([0,0,-21]) Drogue_Cup();
 // translate([0,0,-0.2]) rotate([0,0,0]) Drogue_Cup();
 
+module GearCover(){
+	Gear1_d=43;
+	Gear2_d=50;
+	Shaft1_d=20;
+	Shaft2_d=25;
+	GearCover_w=16;
+	Wall_t=2.2;
+	Face_Y=21.5;
+	Shelf_h=30;
+	
+	
+	difference(){
+		union(){
+			// gear covers
+			rotate([-90,0,0]) cylinder(d=Gear1_d+12, h=GearCover_w, center=true);
+			translate([40,0,17]) rotate([-90,0,0]) cylinder(d=Gear2_d+12, h=GearCover_w, center=true);
+		
+			// mounting
+			translate([-(Gear1_d+12)/2,Face_Y,-10]) mirror([0,1,0]) cube([Gear1_d+12+30,Face_Y-6,40]);
+			translate([-(Gear1_d+12)/2,Face_Y+6,Shelf_h]) mirror([0,1,0]) cube([Gear1_d+12+30, Face_Y, 3]);
+		} // union
+		
+		// trim bottom
+		translate([0,0,-30]) cube([200,100,46],center=true);
+		
+		// trim right side
+		translate([50,-15,-20]) cube([50,50,100]);
+		
+		// trim outside
+		translate([0,-18,-20]) Tube(OD=Body_OD, ID=Coupler_ID-1, Len=100, myfn=$preview? 36:360);
+		
+		// Gears
+		hull(){
+			rotate([-90,0,0]) cylinder(d=Gear1_d+7, h=GearCover_w-Wall_t*2, center=true);
+			translate([0,0,-50]) rotate([-90,0,0]) cylinder(d=Gear1_d+7, h=GearCover_w-Wall_t*2, center=true);
+		} // hull
+		hull(){
+			translate([40,0,17]) rotate([-90,0,0]) cylinder(d=Gear2_d+7, h=GearCover_w-Wall_t*2, center=true);
+			translate([40,0,17-50]) rotate([-90,0,0]) cylinder(d=Gear2_d+7, h=GearCover_w-Wall_t*2, center=true);
+		} // hull
+
+		// Shafts
+		hull(){
+			rotate([-90,0,0]) cylinder(d=Shaft1_d, h=GearCover_w+40, center=true);
+			translate([0,0,-50]) rotate([-90,0,0]) cylinder(d=Shaft1_d, h=GearCover_w+40, center=true);
+		} // hull
+		
+		hull(){
+			translate([0,8,0]) rotate([-90,0,0]) cylinder(d=Shaft1_d, h=1);
+			translate([0,Face_Y-6,0]) rotate([-90,0,0]) cylinder(d=30, h=7);
+			
+			translate([0,8,-50]) rotate([-90,0,0]) cylinder(d=Shaft1_d, h=1);
+			translate([0,Face_Y-6,-50]) rotate([-90,0,0]) cylinder(d=30, h=7);
+		} // hull
+		
+		
+		hull(){
+			translate([40,0,17]) rotate([-90,0,0]) cylinder(d=Shaft2_d, h=GearCover_w+10, center=true);
+			translate([40,0,17-50]) rotate([-90,0,0]) cylinder(d=Shaft2_d, h=GearCover_w+10, center=true);
+		} // hull
+	
+	} // difference
+
+
+} // GearCover
+
+//GearCover();
+
 module DrogueBayBase(){
 	Wall_t=2.2;
 	
