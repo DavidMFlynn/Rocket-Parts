@@ -3,7 +3,7 @@
 // Filename: FinCan2Lib.scad
 // by David M. Flynn
 // Created: 12/24/2023 
-// Revision: 0.9.4  7/18/2024
+// Revision: 0.9.5  8/13/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -15,6 +15,7 @@
 function FinCan2LibRev()="FinCan2Lib 0.9.4";
 echo(FinCan2LibRev());
 //
+// 0.9.5  8/13/2024   Fixed calculation for rail guide position
 // 0.9.4  7/18/2024   Added Extra_OD Parameter
 // 0.9.3  4/21/2024   Looser nut, global parameters added
 // 0.9.2  4/18/2024   Fixed a tail cone problem.
@@ -174,7 +175,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 			
 			// Rail guide bolt boss
 			if (RailGuide_h>5)
-			translate([0,0,RailGuide_Z]) rotate([0,0,90]) 
+			translate([0,0,RailGuide_Z]) rotate([0,0,180/nFins-90]) 
 				RailGuidePost(OD=Body_OD, MtrTube_OD=MotorTubeHole_d, H=RailGuide_h, 
 					TubeLen=RailGuideTube_Len, Length = RailGuideLen, BoltSpace=12.7, AddTaper=true);
 					
@@ -198,7 +199,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 		
 		// Rail guide bolt holes
 		if (RailGuide_h>5)
-			translate([-RailGuide_h,0,RailGuide_Z]) rotate([0,0,90]) 
+			rotate([0,0,180/nFins+180]) translate([-RailGuide_h,0,RailGuide_Z]) rotate([0,0,90])
 				RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
 				
 		// Rail button bolt hole

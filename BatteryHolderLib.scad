@@ -3,7 +3,7 @@
 // Filename: BatteryHolderLib.scad
 // by David M. Flynn
 // Created: 9/30/2022 
-// Revision: 1.2.3  1/3/2024
+// Revision: 1.2.4  8/11/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,9 +12,10 @@
 //
 //  ***** History *****
 //
-function BatteryHolderLibRev()="BatteryHolderLib 1.2.2";
+function BatteryHolderLibRev()="BatteryHolderLib 1.2.4";
 echo(BatteryHolderLibRev());
 //
+// 1.2.4  8/11/2024   Added RocketServoHolder()
 // 1.2.3  1/3/2024    Added function BattDoorX()
 // 1.2.2  12/6/2023   Added DoubleBatteryPocket, Batt_Door(DoubleBatt=false)
 // 1.2.1  9/16/2023   Added DeepHole_t to Batt_BayFrameHole()
@@ -81,6 +82,127 @@ CK_RotSw_Face_d=18;
 CK_RotSw_Face_h=0.6;
 CK_RotSw_Access_d=8;
 CK_RotSw_AO_h=15;
+
+module MiniBoosterEBay(OD=BT54Body_OD, Coupler_OD=BT54Body_ID, ID=BT54Coupler_ID){
+	Base_t=3;
+	Exposed_Len=35;
+	LowerCoupler_Len=13.5;
+	Coupler_Len=20;
+	OAL=LowerCoupler_Len+Coupler_Len+Exposed_Len;
+	Switch_Z=LowerCoupler_Len+Exposed_Len/2-5;
+	
+	Door_t=4.5;
+	Batt_a=-130;
+	
+	difference(){
+		union(){
+			// Bottom plate
+			cylinder(d=Coupler_OD, h=Base_t);
+			
+			// coupler
+			Tube(OD=Coupler_OD, ID=ID, Len=OAL, myfn=$preview? 36:360);
+			
+			// visible middle part
+			translate([0,0,LowerCoupler_Len])
+				Tube(OD=OD, ID=ID, Len=Exposed_Len, myfn=$preview? 36:360);
+				
+			// Switch
+			intersection(){
+				translate([0, -OD/2+CK_RotSw_AO_h/2, Switch_Z])
+							rotate([90,0,0]) cylinder(d=CK_RotSw_d+4, h=CK_RotSw_AO_h);
+				cylinder(d=Coupler_OD-1, h=OAL);
+			} // intersection
+			
+			// Battery
+			intersection(){
+				rotate([0,0,Batt_a]) translate([0,-13.6,2]) SingleBatteryPocket(Extra=0, ShowBattery=false);
+				
+				cylinder(d=Coupler_OD-1, h=OAL);
+			} // intersection
+		} // union
+		
+		// Battery
+		rotate([0,0,Batt_a]) translate([0,-13.6,-Overlap]) cylinder(d=12, h=4);
+		
+		// motor bolt
+		translate([0,0,6]) BoltM8ButtonHeadHole(depth=12, lHead=20);
+		//cylinder(d=6.35, h=Base_t+Overlap*2);
+		
+		// Switch
+		translate([0, -OD/2+CK_RotSw_AO_h/2+Overlap, Switch_Z]) rotate([90,0,0]){
+				cylinder(d=CK_RotSw_d+IDXtra*2, h=CK_RotSw_AO_h/2-Door_t);
+				cylinder(d=CK_RotSw_Face_d+IDXtra*2, h=CK_RotSw_AO_h/2+CK_RotSw_Face_h-Door_t);
+				cylinder(d=CK_RotSw_Access_d+IDXtra, h=CK_RotSw_AO_h/2+Overlap*2);
+				
+				// LED
+				translate([CK_RotSw_d/2+5,2,-4]) cylinder(d=3, h=10);
+				translate([CK_RotSw_d/2+5,2,-4]) cylinder(d=5, h=3);
+			}
+			
+		if ($preview) translate([0,0,-Overlap]) cube([30,30,100]);
+	} // difference
+	
+	//if ($preview) rotate([0,0,-20]) translate([0,16.5,36]) rotate([-90,0,0]) RocketServoHolder(IsDouble=false);
+	
+} // MiniBoosterEBay
+
+//
+MiniBoosterEBay();
+
+
+module RocketServoHolder(IsDouble=false){
+	PCB_X=14.8;
+	PCB_Y=60.5;
+	PCB_Z=1.65;
+	PCB_BackSpace_Z=2.2;
+	Sup1_Y=7;
+	Sup2_Y=47.5;
+	Sup_w=3;
+	
+	Screw1_Y=17.5;
+	Screw2_Y=52.5;
+	Screw_Offset=1.8;
+	
+	Foot_Xtra=5;
+	Base_t=2.1;
+	
+	OAH=Base_t+PCB_BackSpace_Z+PCB_Z;
+	nRS=IsDouble? 2:1;
+	Spacing_X=PCB_X+Foot_Xtra-1;
+	
+	difference(){
+		union(){
+			for (j=[0:nRS-1]) translate([(Spacing_X)*j,0,0]){
+				// base
+				RoundRect(X=PCB_X+Foot_Xtra, Y=PCB_Y+Foot_Xtra, Z=OAH, R=Foot_Xtra/3);
+				
+				// screw bosses
+				translate([-PCB_X/2-Screw_Offset, -PCB_Y/2+Screw1_Y, 0]) cylinder(d=6, h=OAH);
+				translate([PCB_X/2+Screw_Offset, -PCB_Y/2+Screw2_Y, 0]) cylinder(d=6, h=OAH);
+			} // for
+		} // union
+		
+		for (j=[0:nRS-1]) translate([(Spacing_X)*j,0,0]){
+			translate([0,0,Base_t]) RoundRect(X=PCB_X+IDXtra*2, Y=PCB_Y+IDXtra*2, Z=PCB_BackSpace_Z+PCB_Z+Overlap, R=0.1);
+			
+			// bolt holes
+			translate([-PCB_X/2-Screw_Offset, -PCB_Y/2+Screw1_Y, OAH]) Bolt4Hole();
+			translate([PCB_X/2+Screw_Offset, -PCB_Y/2+Screw2_Y, OAH]) Bolt4Hole();
+			
+			translate([0, -PCB_Y/2+3.5, Base_t+0.6]) Bolt4ButtonHeadHole();
+			translate([0, PCB_Y/2-7, Base_t+0.6]) Bolt4ButtonHeadHole();
+		} // for
+	} // difference
+	
+	for (j=[0:nRS-1]) translate([(Spacing_X)*j,0,0]){
+		// PCB support
+		translate([-PCB_X/2-1, -PCB_Y/2+Sup1_Y, Base_t-Overlap]) cube([PCB_X+2, Sup_w, PCB_BackSpace_Z]);
+		translate([-PCB_X/2-1, -PCB_Y/2+Sup2_Y, Base_t-Overlap]) cube([PCB_X+2, Sup_w, PCB_BackSpace_Z]);
+	} // for
+} // RocketServoHolder
+
+// RocketServoHolder();
+// RocketServoHolder(IsDouble=true);
 
 module BattDoorHole(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, HasSwitch=false){
 	Door_Y=HasSwitch? Batt_Door_Y+CK_RotSw_d+1:Batt_Door_Y+1;

@@ -47,7 +47,7 @@ echo(CableReleaseBBRev());
 // CRBB_ExtensionRod(Len=100);
 // CRBB_LockingPin(LockPin_Len=LockPin_Len, GuidePoint=false);
 // rotate([180,0,0]) CRBB_LockRing(GuidePoint=false);
-// rotate([180,0,0]) CRBB_TopRetainer(LockRing_d=LockRing_d, GuidePoint=false);
+// rotate([180,0,0]) CRBB_TopRetainer(CRBB_TopRetainer(LockRing_d=CRBB_LockRingDiameter(), OD=0, HasMountingBolts=true, GuidePoint=false);
 // CRBB_OuterBearingRetainer();
 // rotate([180,0,0]) CRBB_InnerBearingRetainer(HasServo=true);
 // rotate([180,0,0]) CRBB_MagnetBracket();
@@ -271,7 +271,7 @@ module CRBB_LockRing(GuidePoint=false){
 	if ($preview) CRBB_ShowBearings();
 } // CRBB_LockRing
 
-//CRBB_LockRing(GuidePoint=true);
+// CRBB_LockRing(GuidePoint=true);
 
 module CRBB_OuterBearingRetainer(){
 	H=5.1; // 17 layers
@@ -371,19 +371,20 @@ module CRBB_TriggerPost(){
 //translate([0,0,-19.5]) CRBB_TriggerPost();
 
 
-module CRBB_MountingBoltPattern(nTopBolts=nBalls, LockRing_d=LockRing_d){
+module CRBB_MountingBoltPattern(nTopBolts=nBalls, LockRing_d=CRBB_LockRingDiameter()){
 	for (j=[0:nTopBolts-1]) rotate([0,0,360/nTopBolts*(j+0.5)+Lock_a/2])
 			translate([0,CRBB_TopBoltCircle_d(LockRing_d)/2,0]) children();
 } // CRBB_MountingBoltPattern
 
 // CRBB_MountingBoltPattern(nTopBolts=nBalls) Bolt4Hole();
 
-module CRBB_TopRetainer(LockRing_d=LockRing_d, HasMountingBolts=true, GuidePoint=false){
+module CRBB_TopRetainer(LockRing_d=CRBB_LockRingDiameter(), OD=0, HasMountingBolts=true, GuidePoint=false){
 	Point_Len=GuidePoint? GuidePoint_Len:0;
 	Bearing_Z=Bearing6805_H+3+Ball_d/2;
 	TopRetainer_Len=28.5;
 	
 	LockStart_a=-0.5;
+	Flange_OD=(OD>0)? OD:LockRing_d;
 	
 	difference(){
 		union(){
@@ -395,7 +396,7 @@ module CRBB_TopRetainer(LockRing_d=LockRing_d, HasMountingBolts=true, GuidePoint
 				cylinder(d=BallCircle_d+Ball_d, h=TopRetainer_Len+Point_Len-Bearing6805_H);
 			
 			// Flange
-			translate([0,0,-Bearing_Z+LockRing_h+0.5]) cylinder(d=LockRing_d, h=6);
+			translate([0,0,-Bearing_Z+LockRing_h+0.5]) cylinder(d=Flange_OD, h=6);
 		} // union
 		
 		if (GuidePoint) translate([0,0,-Bearing_Z+LockRing_h+0.5+1]) 
@@ -445,6 +446,70 @@ module CRBB_TopRetainer(LockRing_d=LockRing_d, HasMountingBolts=true, GuidePoint
 
 // CRBB_TopRetainer(LockRing_d=LockRing_d, HasMountingBolts=false, GuidePoint=true);
 // CRBB_LockingPin();
+// CRBB_TopRetainer(LockRing_d=CRBB_LockRingDiameter(), HasMountingBolts=true, GuidePoint=false);
+
+module CRBB_CenteringRingMount(Tube_ID=BT54Body_ID, Thickness=5, Skirt_Len=0, nBolts=5, 
+							HasShockcodeAnchor=false, LockRing_d=CRBB_LockRingDiameter()){
+	
+	nAnchors=2;
+	PinCenter_Z=2.5;
+	
+	module AnchorPinAccess(){
+		translate([0,0,PinCenter_Z]) rotate([-90,0,0]) cylinder(d=4, h=Tube_ID);
+		// Shockcord path
+			translate([0,0,PinCenter_Z]) rotate([-90,0,0]) cylinder(d=8, h=3, center=true);
+	} // AnchorPinAccess
+	
+	module Anchor(){
+		
+		difference(){
+			hull(){
+				translate([0,0,PinCenter_Z]) rotate([-90,0,0]) cylinder(d=10, h=20, center=true);
+				cube([11,20,Overlap],center=true);
+			} // hull
+			
+			// Shockcord path
+			translate([0,0,PinCenter_Z]) rotate([-90,0,0]) cylinder(d=14, h=3, center=true);
+			
+			// Pin
+			translate([0,0,PinCenter_Z]) rotate([-90,0,0]) cylinder(d=4, h=21, center=true);
+		} // difference
+	} // Anchor
+	
+	difference(){
+		union(){
+			CenteringRing(OD=Tube_ID, ID=21, Thickness=Thickness, nHoles=0, Offset=0, myfn=$preview? 36:90);
+			
+			if (Skirt_Len>Thickness)
+				Tube(OD=Tube_ID, ID=Tube_ID-4.4, Len=Skirt_Len, myfn=$preview? 36:360);
+				
+			if (HasShockcodeAnchor)
+				for (j=[0:nAnchors-1]) rotate([0,0,360/nAnchors*j]) translate([14,0,Thickness])
+					Anchor();
+		} // union
+		
+		if (HasShockcodeAnchor)
+				for (j=[0:nAnchors-1]) rotate([0,0,360/nAnchors*j]) translate([14,0,Thickness])
+					AnchorPinAccess();
+		
+		// center hole
+		translate([0,0,-Overlap]) cylinder(d=21, h=30);
+		
+		// Spring
+		translate([0,0,Thickness-2]) Tube(OD=SE_Spring_CS4323_OD(), ID=SE_Spring_CS4323_ID()-1, Len=Thickness+10, myfn=$preview? 36:360);
+		
+		// Bolts to CRBB_TopRetainer
+		translate([0,0,4]) rotate([0,0,6])
+			CRBB_MountingBoltPattern(nTopBolts=nBolts, LockRing_d=LockRing_d) Bolt4ButtonHeadHole();
+	} // difference
+	
+	
+	
+} // CRBB_CenteringRingMount
+
+//CRBB_CenteringRingMount(Tube_ID=BT54Body_ID, Thickness=5, Skirt_Len=12.5, nBolts=5, HasShockcodeAnchor=true, LockRing_d=CRBB_LockRingDiameter());
+
+
 
 module CRBB_TopRetainerEBayEnd(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_OD=BT98Coupler_OD, HasSpring=true, CT_Len=30, StopRing_Len=5, nBolts=3, nServos=0){
 	

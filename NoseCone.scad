@@ -470,6 +470,26 @@ Fairing55_OD=5.5*25.4;
 BluntConeNoseCone(ID=Fairing55_OD-4.4, OD=Fairing55_OD, L=190, Base_L=15, Tip_R=7, Wall_T=2.2, HasRivets=false);
 /**/
 
+
+module ElipticalShape(L=100, D=50, Base_L=2){
+	// tangent ogive
+	R=D/2;
+	p=L/R;
+	
+	translate([0,Base_L,0])
+	difference(){
+		intersection(){
+			square([R,L]);
+			scale([1,p,1]) circle(r=R,$fn=$preview? 90:360);
+		} // intersection
+		
+		translate([-100,-Overlap,0]) square([100,L+Overlap*2]);
+	} // difference
+	if (Base_L>0) square([R,Base_L+Overlap]);
+} // ElipticalShape
+
+//rotate_extrude() ElipticalShape(Base_L=0);
+
 module OgiveShape(L=100, D=50, Base_L=2){
 	// tangent ogive
 	R=D/2;
@@ -484,7 +504,7 @@ module OgiveShape(L=100, D=50, Base_L=2){
 		
 		translate([-100,-Overlap,0]) square([100,L+Overlap*2]);
 	} // difference
-	square([R,Base_L+Overlap]);
+	if (Base_L>0) square([R,Base_L+Overlap]);
 } // OgiveShape
 
 //rotate_extrude() OgiveShape();

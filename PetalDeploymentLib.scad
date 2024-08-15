@@ -3,7 +3,7 @@
 // Filename: PetalDeploymentLib.scad
 // by David M. Flynn
 // Created: 10/22/2023 
-// Revision: 0.9.7  7/15/2024
+// Revision: 0.9.8  8/11/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -18,6 +18,7 @@
 //
 //  ***** History *****
 //
+// 0.9.8  8/11/2024   Added PD_Booster_PetalHub()
 // 0.9.7  7/15/2024	  Removed OD param from PD_PetalSpringHolder() only used as translate([0,OD/2,0])
 // 0.9.6  6/3/2024    Added params and coupler tube option to PD_NC_PetalHub
 // 0.9.5  4/21/2024   Petal connections are shorter by 2mm
@@ -50,6 +51,8 @@ PD_PetalHub(OD=BT75Coupler_OD,
 // *** Used to prevent drag separation ***
 // rotate([0,-90,0]) PD_PetalLockCatch(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, Len=27, LockStop=false);
 // PD_CatchHolder(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, nPetals=3);
+//
+// PD_Booster_PetalHub(OD=BT54Coupler_OD, nPetals=2, nRopes=2, ShockCord_a=-1, HasThreadedCore=true, ST_DSpring_ID=SE_Spring_CS4323_ID(), ST_DSpring_OD=SE_Spring_CS4323_OD(), CouplerTube_ID=0)
 //
 // ***********************************
 //  ***** Routines *****
@@ -125,6 +128,7 @@ module PD_PetalLockCatch(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, Len=2
 
 //PD_PetalLockCatch(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, Len=30, LockStop=false);
 
+
 module PD_LockSocket(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Len=22, Wall_t=1.8, nPetals=3){
 	W=10+IDXtra*4;
 	
@@ -151,20 +155,23 @@ module PD_LockSocket(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Len=22, Wall_t=1.8, n
 
 //PD_LockSocket();
 
-module PD_CatchHolder(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, nPetals=3){
+module PD_CatchHolder(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, nPetals=3, HasBasePlate=false){
 	Len=22;
 	Lip=3;
 	W=10+IDXtra*2;
 	Core_d=ID-10;
+	Core_Z=HasBasePlate? 3:-Overlap;
 	
 	difference(){
 		union(){
 			translate([0,0,Len-Lip]) cylinder(d=OD, h=Lip, $fn=$preview? 90:360);
 			cylinder(d=ID, h=Len-Lip+Overlap, $fn=$preview? 90:360);
+			
 		} // union
 		
 		// Inside
-		translate([0,0,-Overlap]) cylinder(d=Core_d, h=Len+Overlap*2, $fn=$preview? 90:360);
+		translate([0,0,Core_Z]) cylinder(d=Core_d, h=Len+Overlap*2, $fn=$preview? 90:360);
+		translate([0,0,-Overlap]) cylinder(d=4, h=Len+Overlap*2);
 		
 		// Chamfer top
 		translate([0,0,Len-5]) cylinder(d1=Core_d, d2=ID, h=5+Overlap, $fn=$preview? 90:360);
@@ -188,6 +195,7 @@ module PD_CatchHolder(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, nPetals=
 } // PD_CatchHolder
 
 //translate([0,0,-2]) PD_CatchHolder();
+
 
 module PD_ShowCatchAssy(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, nPetals=3){
 	PD_CatchHolder(OD=OD, ID=ID, Wall_t=Wall_t, nPetals=nPetals);
@@ -683,6 +691,7 @@ module PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, nRopes=3, ShockCord_a=-1, Ha
 
 //PD_NC_PetalHub();
 //PD_NC_PetalHub(OD=BT98Coupler_OD, nPetals=3, nRopes=6, ShockCord_a=45, HasThreadedCore=true);
+//PD_NC_PetalHub(OD=BT54Coupler_OD, nPetals=2, nRopes=2, ShockCord_a=60, HasThreadedCore=true);
 /*
 PD_NC_PetalHub(OD=BT137Coupler_OD, nPetals=3, nRopes=6, ShockCord_a=-1, HasThreadedCore=false,
 		ST_DSpring_ID=SE_Spring_CS11890_ID(),
@@ -690,8 +699,85 @@ PD_NC_PetalHub(OD=BT137Coupler_OD, nPetals=3, nRopes=6, ShockCord_a=-1, HasThrea
 /**/
 
 
+module PD_Booster_PetalHub(OD=BT54Coupler_OD, nPetals=2, nRopes=2, ShockCord_a=-1, HasThreadedCore=true,
+				ST_DSpring_ID=SE_Spring_CS4323_ID(), ST_DSpring_OD=SE_Spring_CS4323_OD(), CouplerTube_ID=0){
+				
+	// Custom for 54mm Omega booster
+	
+	BodyTube_L=10;
+	SpringHole_ID=ST_DSpring_ID-IDXtra*2-4.4;
+	CenterHole_d=6;
+	
+	
+	// Body tube interface
+	if (CouplerTube_ID==0)
+	translate([0,0,-BodyTube_L]) 
+		Tube(OD=OD, ID=OD-4.4, Len=BodyTube_L+1, myfn=$preview? 90:360);
+									
+	difference(){
+		union(){
+			PD_PetalHub(OD=OD, nPetals=nPetals, HasBolts=false, ShockCord_a=ShockCord_a);
+			
+			translate([0,0,-BodyTube_L])
+				Tube(OD=ST_DSpring_ID-IDXtra*2, 
+						ID=ST_DSpring_ID-IDXtra*2-4.4, Len=BodyTube_L+1, myfn=$preview? 90:360);
+						
+						
+			// Coupler tube interface
+			if (CouplerTube_ID>0)
+			translate([0,0,-BodyTube_L]) 
+				cylinder(d=CouplerTube_ID, h=BodyTube_L+1, $fn=$preview? 90:360);
+		} // union
+			
+		// Center Hole
+		translate([0,0,-BodyTube_L-Overlap]) 
+			cylinder(d=SpringHole_ID, h=BodyTube_L+Overlap*2, $fn=$preview? 90:360);
+		//translate([0,0,-Overlap]) 
+		//	cylinder(d=CenterHole_d, h=20, $fn=$preview? 90:360);
+			
+		if (CouplerTube_ID>0){
+			translate([0,0,-BodyTube_L-Overlap]) 
+				cylinder(d=ST_DSpring_OD, h=BodyTube_L, $fn=$preview? 90:360);
+			translate([0,0,-BodyTube_L-Overlap]) 
+				cylinder(d1=ST_DSpring_OD+5, d2=ST_DSpring_OD, h=BodyTube_L-5, $fn=$preview? 90:360);
+		}
+			
+		// Retention cord
+		if (nRopes>0)
+		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*(j+0.5)]) {
+				translate([0,14,-BodyTube_L-Overlap]) cylinder(d=4, h=30);
+				translate([0,14,5]) cylinder(d=8, h=30);
+			}
+	} // difference
+	
+	if (HasThreadedCore) translate([0,0,-BodyTube_L])
+		difference(){
+			union(){
+				cylinder(d=20, h=BodyTube_L);
+				
+				for (j=[0:2]) rotate([0,0,120*j]) hull(){
+					cylinder(d=4, h=BodyTube_L);
+					translate([0,SpringHole_ID/2,0]) cylinder(d=4, h=BodyTube_L);
+				} // hull
+			} // union
+			
+			translate([0,0,-Overlap]) 
+			if ($preview){ 
+				cylinder(d=6.35, h=BodyTube_L+Overlap*2); }
+			else { 
+				ExternalThread(Pitch=25.4/20, Dia_Nominal=6.35+IDXtra*2, 
+							Length=BodyTube_L+Overlap*2, Step_a=2,TrimEnd=true,TrimRoot=true); }
+			
+		} // difference
+	
+	
+} // PD_Booster_PetalHub
 
-
+// *** Parts for Omega54
+// PD_Booster_PetalHub(OD=BT54Coupler_OD, nPetals=2, nRopes=2, ShockCord_a=-1, HasThreadedCore=true, ST_DSpring_ID=SE_Spring_CS4323_ID(), ST_DSpring_OD=SE_Spring_CS4323_OD(), CouplerTube_ID=0);
+// rotate([180,0,0])PD_Petals(OD=BT54Coupler_OD, Len=50, nPetals=2, Wall_t=1.8, AntiClimber_h=0, HasLocks=true, Lock_Span_a=180);
+// rotate([0,90,0]) translate([0,0,2])PD_PetalLockCatch(OD=BT54Coupler_OD, ID=BT54Coupler_ID, Wall_t=1.8, Len=27, LockStop=false);
+// PD_CatchHolder(OD=BT54Coupler_OD, ID=BT54Coupler_ID, Wall_t=1.8, nPetals=2, HasBasePlate=true);
 
 
 

@@ -133,6 +133,7 @@ module R75_MotorTubeTopper(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, MotorTube
 
 // R75_MotorTubeTopper();
 
+
 module R75_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID){
 	Tube_d=12.7;
 	Tube_Z=25;
@@ -151,7 +152,6 @@ module R75_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID){
 								HasIntegratedCouplerTube=true, IntegratedCouplerLenXtra=CouplerLenXtra,
 								Outer_OD=Body_OD,
 								Body_ID=Body_ID-IDXtra, HasSecondServo=false, UsesBigServo=false, Engagement_Len=Engagement_Len);
-				
 			
 			translate([0,0,Tube_Z]) 
 				Tube(OD=Body_ID-IDXtra, ID=Body_ID-IDXtra-Wall_t*2, Len=Tube_d/2+Wall_t, myfn=$preview? 90:360);
@@ -186,6 +186,66 @@ module R75_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID){
 } // R75_BallRetainerTop
 
 //  R75_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID);
+
+
+
+module R75_BallRetainerTopTest(Body_OD=Body_OD, Body_ID=Body_ID){
+  // test of thick walled e-bay
+
+	Tube_d=12.7;
+	Tube_Z=25;
+	Tube_a=-70;
+	TubeSlot_w=35;
+	TubeOffset_X=10;
+	
+	Wall_t=3;
+	nBolts=3;
+	BoltInset=7.5;
+	Skirt_H=8;
+	
+	EBayWall_t=3.5;
+	EBay_ID=Body_OD-EBayWall_t*2;
+	
+	difference(){
+		union(){
+			STB_BallRetainerTop(BallPerimeter_d=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls,
+								HasIntegratedCouplerTube=true, IntegratedCouplerLenXtra=CouplerLenXtra,
+								Outer_OD=Body_OD,
+								Body_ID=EBay_ID-IDXtra, HasSecondServo=false, UsesBigServo=false, Engagement_Len=Engagement_Len);
+			
+			translate([0,0,Tube_Z]) 
+				Tube(OD=EBay_ID-IDXtra, ID=EBay_ID-IDXtra-Wall_t*2, Len=Tube_d/2+Wall_t, myfn=$preview? 90:360);
+			
+			// Shock cord retention
+			difference(){
+				rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z])
+				hull(){
+					rotate([90,0,0]) cylinder(d=Tube_d+Wall_t*2, h=EBay_ID-2, center=true);
+					translate([0,0,-17]) 
+						cube([Tube_d+6, EBay_ID-2, 1], center=true);
+				} // hull
+				
+				rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z]) hull(){
+					rotate([90,0,0]) cylinder(d=Tube_d+7, h=TubeSlot_w, center=true);
+					translate([0,0,-17]) 
+						cube([Tube_d+6+Overlap, TubeSlot_w,1], center=true);
+					}
+				// Trim outside
+				Tube(OD=Body_OD+20, ID=EBay_ID-1, Len=50, myfn=$preview? 90:360);
+			} // difference
+		} // union
+	
+		rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z]) rotate([90,0,0]) cylinder(d=Tube_d, h=Body_OD, center=true);
+		
+		//Bolt holes for ebay
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+12])
+			translate([0, -Body_OD/2-1, Engagement_Len/2+Skirt_H+7.5]) 
+				rotate([90,0,0]) Bolt4Hole();
+		
+	} // difference
+} // R75_BallRetainerTopTest
+
+//  R75_BallRetainerTopTest(Body_OD=Body_OD, Body_ID=Body_ID);
 
 module R75_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false){
 	// PD_Ring is required to attach the petal hub because 3 balls isn't good enough and 5 won't line up.

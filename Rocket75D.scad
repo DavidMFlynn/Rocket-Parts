@@ -77,6 +77,8 @@
 //
 // EB_Electronics_Bay3(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=EBay_Len, nBolts=3, BoltInset=NC_Base_L/2, DualDeploy=true, ShowDoors=false);
 // 
+EBayWall_t=3.5; // *** experimental ***
+//EB_Electronics_Bay3(Tube_OD=Body_OD, Tube_ID=Body_OD-EBayWall_t*2, Len=EBay_Len, nBolts=3, BoltInset=NC_Base_L/2, DualDeploy=true, ShowDoors=false);
 // *** Doors ***
 //
 // rotate([-90,0,0]) EB_AltDoor(Tube_OD=Body_OD);
