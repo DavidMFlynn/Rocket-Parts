@@ -36,6 +36,8 @@
 //  *** Large 2 altimeter electronics bay ***
 // EB_Electronics_Bay55(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, Len=162, nBolts=6, BoltInset=7.5, ShowDoors=false);
 // 
+//  *** Shock cord attachment and servo space ***
+// EB_ExtensionRing(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=21, nBolts=4, BoltInset=7.5)
 //
 //  *** Doors ***
 // rotate([-90,0,0]) EB_AltDoor(Tube_OD=BT98Body_OD);
@@ -180,7 +182,43 @@ module EB_Electronics_Bay3(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=162, nB
 
 // EB_Electronics_Bay3();
 
-module EB_Electronics_Bay(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, Len=162, nBolts=3, BoltInset=7.5, ShowDoors=false, HasSecondBattDoor=true){
+module EB_ExtensionRing(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=21, nBolts=4, BoltInset=7.5){
+	FwdCouplerLen=15;
+	
+	Coupler_OD=Tube_ID-IDXtra*2;
+	Coupler_ID=Coupler_OD-6;
+	Al_Tube_d=12.7;
+	Al_Tube_Z=Al_Tube_d/2+3;
+	AftCouplerLen=Al_Tube_d+6;
+	OAL=FwdCouplerLen+Len+AftCouplerLen;
+	
+	translate([0,0,-AftCouplerLen]) // align for viewing
+	difference(){
+		union(){
+			Tube(OD=Coupler_OD, ID=Coupler_ID, Len=OAL, myfn=$preview? 36:360);
+		
+			translate([0,0,AftCouplerLen])
+				Tube(OD=Tube_OD, ID=Coupler_ID, Len=Len, myfn=$preview? 36:360);
+				
+			CenteringRing(OD=Coupler_OD-1, ID=Coupler_ID-20, Thickness=5, nHoles=0, Offset=0, myfn=$preview? 36:90);
+			
+			translate([0,0,Al_Tube_Z]) rotate([0,90,180/nBolts]) cylinder(d=Al_Tube_d+6, h=Coupler_ID+Overlap, center=true);
+		} // union
+		
+		// Center hole
+		translate([0,0,-Overlap]) cylinder(d=Coupler_ID-20, h=AftCouplerLen+Overlap*2);
+		translate([0,0,Al_Tube_Z]) rotate([0,90,180/nBolts]) cylinder(d=Al_Tube_d, h=Coupler_OD+Overlap, center=true);
+		
+		if (nBolts>0) for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]){
+			translate([0,Coupler_OD/2,AftCouplerLen-BoltInset]) rotate([-90,0,0]) Bolt4Hole();
+			translate([0,Coupler_OD/2,AftCouplerLen+Len+BoltInset]) rotate([-90,0,0]) Bolt4Hole();
+		}
+	} // difference
+} // EB_ExtensionRing
+
+//EB_ExtensionRing();
+
+module EB_Electronics_Bay(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, Len=162, nBolts=3, BoltInset=7.5, ShowDoors=false, HasSecondBattDoor=true, HasFwdIntegratedCoupler=false, HasFwdShockMount=false){
 	// Standard single altimeter bay
 
 	Altimeter_Z=Len/2;
@@ -191,8 +229,45 @@ module EB_Electronics_Bay(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, Len=162, nBo
 	Batt2_a=HasSecondBattDoor? 180:240;
 	Batt3_a=270;
 	
+	FwdBolt_Z=HasFwdIntegratedCoupler? Len+BoltInset:Len-BoltInset;
+	IntegratedCoupler_OD=Tube_ID-IDXtra*2;
+	IntegratedCoupler_ID=Tube_ID-IDXtra*2-6;
+	IntegratedCoupler_Len=HasFwdShockMount? 20:15;
+	Al_Tube_d=12.7;
+	Fwd_Al_Tube_Z=Len+Al_Tube_d/2+1;
+	
 	difference(){
-		Tube(OD=Tube_OD, ID=Tube_ID, Len=Len, myfn=$preview? 36:360);
+		union(){
+			Tube(OD=Tube_OD, ID=Tube_ID, Len=Len, myfn=$preview? 36:360);
+			
+			if (HasFwdIntegratedCoupler) {
+				translate([0,0,Len-5]) 
+					Tube(OD=IntegratedCoupler_OD, ID=IntegratedCoupler_ID, Len=IntegratedCoupler_Len+5, myfn=$preview? 36:360);
+				translate([0,0,Len-5]) 
+					Tube(OD=Tube_OD, ID=IntegratedCoupler_ID, Len=5, myfn=$preview? 36:360);
+				translate([0,0,Len-5+Overlap]) 
+					rotate([180,0,0]) TubeStop(InnerTubeID=IntegratedCoupler_ID, OuterTubeOD=Tube_OD, myfn=$preview? 36:360);
+					
+				// Shock cord mount
+				if (HasFwdShockMount){
+					difference(){
+						intersection(){
+							translate([0,0,Fwd_Al_Tube_Z]) 
+								rotate([90,0,180/nBolts]) cylinder(d=Al_Tube_d+6, h=IntegratedCoupler_OD, center=true);
+								
+							translate([0,0,Len-5]) cylinder(d=IntegratedCoupler_OD-1, h=IntegratedCoupler_Len+5);
+						} // intersection
+						translate([0,0,Fwd_Al_Tube_Z]) 
+							rotate([90,0,180/nBolts]) cylinder(d=Al_Tube_d+7, h=20, center=true);
+					} // difference
+				}
+			}
+		} // union
+		
+		if (HasFwdIntegratedCoupler && HasFwdShockMount) {
+			translate([0,0,Fwd_Al_Tube_Z]) rotate([90,0,180/nBolts]) cylinder(d=Al_Tube_d, h=Tube_OD, center=true);
+			
+		}
 		
 		// Altimeter
 		translate([0,0,Altimeter_Z]) rotate([0,0,Alt_a]) 
@@ -212,9 +287,10 @@ module EB_Electronics_Bay(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, Len=162, nBo
 		if (nBolts>0)
 		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]){
 			translate([0,-Tube_OD/2-1,BoltInset]) rotate([90,0,0]) Bolt4Hole();
-			translate([0,-Tube_OD/2-1,Len-BoltInset]) rotate([90,0,0]) Bolt4Hole();
+			translate([0,-Tube_OD/2-1,FwdBolt_Z]) rotate([90,0,0]) Bolt4Hole();
 		} // for
 	
+		//cube([50,50,200]);
 	} // difference
 	
 	// Altimeter
@@ -234,6 +310,7 @@ module EB_Electronics_Bay(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, Len=162, nBo
 } // EB_Electronics_Bay
 
 // EB_Electronics_Bay(ShowDoors=false, HasSecondBattDoor=false);
+// EB_Electronics_Bay(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=162, nBolts=4, BoltInset=7.5, ShowDoors=false, HasSecondBattDoor=false, HasFwdIntegratedCoupler=true, HasFwdShockMount=true);
 
 module EB_Electronics_Bay55(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, Len=162, nBolts=7, BoltInset=7.5, ShowDoors=false){
 	// Large 2 altimeter electronics bay

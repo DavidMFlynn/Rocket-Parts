@@ -3,7 +3,7 @@
 // Filename: BatteryHolderLib.scad
 // by David M. Flynn
 // Created: 9/30/2022 
-// Revision: 1.2.4  8/11/2024
+// Revision: 1.2.5  8/16/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,9 +12,10 @@
 //
 //  ***** History *****
 //
-function BatteryHolderLibRev()="BatteryHolderLib 1.2.4";
+function BatteryHolderLibRev()="BatteryHolderLib 1.2.5";
 echo(BatteryHolderLibRev());
 //
+// 1.2.5  8/16/2024	  Added BlueRavenMount();
 // 1.2.4  8/11/2024   Added RocketServoHolder()
 // 1.2.3  1/3/2024    Added function BattDoorX()
 // 1.2.2  12/6/2023   Added DoubleBatteryPocket, Batt_Door(DoubleBatt=false)
@@ -83,6 +84,39 @@ CK_RotSw_Face_h=0.6;
 CK_RotSw_Access_d=8;
 CK_RotSw_AO_h=15;
 
+module BlueRavenMount(){
+	Edge=2;
+	Base_T=2;
+	PCB_X=1.77*25.4;
+	PCB_Y=0.79*25.4;
+	PCB_T=1.5;
+	PCB_Back_Z=2.5;
+	PCB_R=0.1*25.4;
+	H1_X=1.63*25.4;
+	H1_Y=0.65*25.4;
+	H2_X=0.48*25.4;
+	H2_Y=0.15*25.4;
+	
+	difference(){
+		union(){
+			difference(){
+				RoundRect(X=PCB_X+Edge*2, Y=PCB_Y+Edge*2, Z=Base_T+PCB_T+PCB_Back_Z, R=PCB_R+Edge);
+				translate([0,0,Base_T]) RoundRect(X=PCB_X+IDXtra*2, Y=PCB_Y+IDXtra*2, Z=PCB_T+PCB_Back_Z+Overlap, R=PCB_R);
+			} // difference
+			
+			translate([PCB_X/2-H2_X, PCB_Y/2-H2_Y, 0]) cylinder(d=6, h=Base_T+PCB_Back_Z);
+			translate([PCB_X/2-H1_X, PCB_Y/2-H1_Y, 0]) cylinder(d=6, h=Base_T+PCB_Back_Z);
+		} // union
+		
+		translate([PCB_X/2-H2_X, PCB_Y/2-H2_Y, Base_T+PCB_Back_Z]) Bolt4Hole();
+		translate([PCB_X/2-H1_X, PCB_Y/2-H1_Y, Base_T+PCB_Back_Z]) Bolt4Hole();
+	
+	} // difference
+	
+} // BlueRavenMount
+
+//BlueRavenMount();
+
 module MiniBoosterEBay(OD=BT54Body_OD, Coupler_OD=BT54Body_ID, ID=BT54Coupler_ID){
 	Base_t=3;
 	Exposed_Len=35;
@@ -146,8 +180,7 @@ module MiniBoosterEBay(OD=BT54Body_OD, Coupler_OD=BT54Body_ID, ID=BT54Coupler_ID
 	
 } // MiniBoosterEBay
 
-//
-MiniBoosterEBay();
+//MiniBoosterEBay();
 
 
 module RocketServoHolder(IsDouble=false){
