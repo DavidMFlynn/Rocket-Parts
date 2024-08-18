@@ -1,18 +1,22 @@
 // ***********************************
 // Project: 3D Printed Rocket
-// Filename: Stager75Lib.scad
+// Filename: Stager75BBLib.scad
 // by David M. Flynn
 // Created: 8/14/2024 
-// Revision: 0.9.2  8/16/2024
+// Revision: 0.9.4  8/17/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 //
 // Problem to solve: Stager for 75mm tube and 54mm motors.
 //
+// Cup in Saucer w/ locking pins, servo activated active staging system.
+//
 //  ***** History *****
 //
-echo("Stager75Lib 0.9.2");
+echo("Stager75BBLib 0.9.4");
+// 0.9.4  8/17/2024    Ready for a test printing.
+// 0.9.3  8/16/2024	   Copied from Stager75Lib.scad, new version using 6807-2RS bearing
 // 0.9.2  8/16/2024	   It works, little fixes.
 // 0.9.1  8/15/2024    Code cleanup, First printing.
 // 0.9.0  8/14/2024    First code.
@@ -20,23 +24,23 @@ echo("Stager75Lib 0.9.2");
 // ***********************************
 //  ***** for STL output *****
 //
+//  *** Sustainer "Cup" bolts to bottom of sustainer, incudes AT RMS 54mm motor retention. ***
 // rotate([180,0,0]) Stager_Cup(Tube_OD=BT75Body_OD, ID=BT54Body_ID, nLocks=Default_nLocks, BoltsOn=true); // a.k.a. Sustainer Motor Retainer
 // rotate([-90,0,0]) Stager_LockRod(Adj=0.5);
 // rotate([-90,0,0]) Stager_LockRod(Adj=0.0);
 //
 // Stager_Saucer(Tube_OD=BT75Body_OD, nLocks=Default_nLocks); // Bolts on
 //
-// Stager_LockRing(Tube_OD=BT75Body_OD, nLocks=Default_nLocks, FlexComp_d=0.0, UseSteelBearing=false); 
+// Stager_LockRing(Tube_OD=BT75Body_OD, nLocks=Default_nLocks, FlexComp_d=0.0); 
 // Stager_LockStop(Tube_OD=BT75Body_OD, HasMagnet=true);
 // Stager_LockStop(Tube_OD=BT75Body_OD, HasMagnet=false);
 //
-// Stager_Lanyard();
-//
+//  *** Main Body ***
 // Stager_Mech(Tube_OD=BT75Body_OD, nLocks=Default_nLocks, Skirt_ID=BT75Body_ID, Skirt_Len=Default_SkirtLen, nSkirtBolts=4, ShowLocked=true);
+// Stager_OuterBearingCover(nLocks=Default_nLocks); // Secures Outer Race of Main Bearing
 //
-// Stager_InnerRace(Tube_OD=BT75Body_OD);
-// Stager_BallSpacer(Tube_OD=BT75Body_OD);
-// Stager_ServoPlate(Tube_OD=BT75Body_OD, Skirt_ID=BT75Body_ID);
+// Stager_InnerRace(Tube_OD=BT75Body_OD); // Secures Inner Race of Main Bearing and has mounting holes for Lock Stops
+// Stager_ServoPlate(Tube_OD=BT75Body_OD, Skirt_ID=BT75Body_ID); // Bottom Plate
 //
 // ***********************************
 //  ***** Routines *****
@@ -56,6 +60,7 @@ echo("Stager75Lib 0.9.2");
 
 include<TubesLib.scad>
 use<LD-20MGServoLib.scad>
+use<SG90ServoLib.scad>
 //include<CommonStuffSAEmm.scad>
 
 Overlap=0.05;
@@ -155,29 +160,29 @@ module ShowStagerAssy(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, nLocks=Default_n
 	translate([0,0,-Mech_Z]) 
 	difference(){
 		Stager_Mech(Tube_OD=Tube_OD, nLocks=nLocks, Skirt_ID=Tube_ID, Skirt_Len=Default_SkirtLen, ShowLocked=ShowLocked);
-		rotate([0,0,-45-180]) translate([0,0,-90]) cube([100,100,100]);
+		//rotate([0,0,-45-180]) translate([0,0,-90]) cube([100,100,100]);
 	}
-	//translate([0,0,-Mech_Z-25]) rotate([180,0,0]) color("Tan") OuterBearingCover();
+	//translate([0,0,-Mech_Z-25]) rotate([180,0,0]) color("Tan") Stager_OuterBearingCover();
 	/**/
 
 	//*
-	translate([0,0,40+6+0.2]) Stager_Saucer();
+	//translate([0,0,40+6+0.2]) Stager_Saucer();
 	
-	translate([0,0,-Sep_Z]) Stager_ServoPlate(Tube_OD=BT75Body_OD, Skirt_ID=Tube_ID);
+	//translate([0,0,-Sep_Z]) Stager_ServoPlate(Tube_OD=BT75Body_OD, Skirt_ID=Tube_ID);
 
 	rotate([0,0,Lock_a]){
 		InnerRace_Z=10;
 		
-		translate([0,0,InnerRace_Z])
+		translate([0,0,InnerRace_Z]) color("LightBlue") 
 		   Stager_InnerRace(Tube_OD=Tube_OD);
 
-		Stop_Z= 10;
+		Stop_Z= 10+Overlap;
 		
 		translate([0,0,Stop_Z]) 
-			rotate([0,180,-45-60]) Stager_LockStop(Tube_OD=Tube_OD, HasMagnet=true);
+			rotate([0,180,-45-60]) color("Tan") Stager_LockStop(Tube_OD=Tube_OD, HasMagnet=true);
 			
 		translate([0,0,Stop_Z]) 
-			rotate([0,180,-15-60+180]) Stager_LockStop(Tube_OD=Tube_OD, HasMagnet=false);
+			rotate([0,180,-15-60+180]) color("Tan") Stager_LockStop(Tube_OD=Tube_OD, HasMagnet=false);
 	}
 	/**/
 					
@@ -189,16 +194,23 @@ module ShowStagerAssy(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, nLocks=Default_n
 module Stager_ServoPlate(Tube_OD=BT75Body_OD, Skirt_ID=BT75Body_ID){
 											
 	CablePath_Y=BoltCircle_d(Tube_OD=Tube_OD)/2;
-	
+	LargeServo=false;
 	nBolts=4;
 	Bolt_a=35;
 	Exit_a=75;
-	Servo_X=-8;
+	Servo_X=LargeServo? -8:-20;
+	Servo_Y=LargeServo? 0:1;
+	Servo_Z=LargeServo? -10:-6;
 	Stop_a= -105;
 	BackStop_a=Stop_a+Calc_a(11,CablePath_Y);
-								
-	Key_a=0;
-								
+	
+	HasAlTube=true;
+	Al_Tube_d=12.7;
+	Al_Tube_Z=-Al_Tube_d/2-3;
+	Al_Tube_a=-10;
+	Al_Tube_X=10;
+	Al_Tube_Y=-3;
+						
 	echo(Stop_a=Stop_a);
 	Magnet_d=3/16*25.4;
 	
@@ -220,8 +232,31 @@ module Stager_ServoPlate(Tube_OD=BT75Body_OD, Skirt_ID=BT75Body_ID){
 		union(){
 			cylinder(d=Skirt_ID, h=5, $fn=$preview? 90:360);
 			
+			if (HasAlTube){
+				intersection(){
+					difference(){
+						hull(){
+							translate([Al_Tube_X,Al_Tube_Y,Al_Tube_Z])
+								rotate([90,0,Al_Tube_a]) cylinder(d=Al_Tube_d+6, h=Skirt_ID+5, center=true);
+								
+							translate([Al_Tube_X,Al_Tube_Y,0])
+								rotate([0,0,Al_Tube_a]) cube([Al_Tube_d+7,Skirt_ID+5,Overlap], center=true);
+						} // hull
+						
+						translate([Al_Tube_X,Al_Tube_Y,Al_Tube_Z]) rotate([90,0,Al_Tube_a]) cylinder(d=Al_Tube_d, h=Skirt_ID+6, center=true);
+						translate([Al_Tube_X,Al_Tube_Y,Al_Tube_Z]) rotate([90,0,Al_Tube_a]) cylinder(d=Al_Tube_d+17, h=20, center=true);
+					} // difference
+					
+					translate([0,0,Al_Tube_Z-Al_Tube_d/2-4]) cylinder(d=Skirt_ID-7, h=Al_Tube_d+8);
+				} // intersection
+			}
+			
 			// Servo base
-			translate([Servo_X+10,0,-5]) cube([60,25,10],center=true);
+			if (LargeServo) {
+				translate([Servo_X+10,Servo_Y,-5]) cube([60,25,10],center=true);
+			}else{
+				translate([Servo_X+5,Servo_Y,-2]) cube([35,15,8],center=true);
+			}
 			
 			// Locked position stop
 			rotate([0,0,Stop_a]) StopBlock(LockedBlock=true); //cylinder(d=8, h=10);
@@ -232,14 +267,18 @@ module Stager_ServoPlate(Tube_OD=BT75Body_OD, Skirt_ID=BT75Body_ID){
 		} // union
 		
 		// Servo
-		translate([Servo_X,0,0]) rotate([0,0,180]) translate([0,0,-10]) Servo_LD20MG(BottomMount=true,TopAccess=false);
+		if (LargeServo) {
+			translate([Servo_X,Servo_Y,0]) rotate([0,0,180]) translate([0,0,Servo_Z]) Servo_LD20MG(BottomMount=true,TopAccess=false);
+		}else{
+			translate([Servo_X,Servo_Y,0]) translate([0,0,Servo_Z]) ServoSG90(TopMount=true);
+		}
 		
 		// mounting bolts
 		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+Bolt_a]) translate([0,Skirt_ID/2-Bolt4Inset,0])
 			rotate([180,0,0]) Bolt4ButtonHeadHole();
 		
 		// Alignment Key
-		rotate([0,0,Key_a]) translate([0,Skirt_ID/2,-Overlap]) cylinder(d=5, h=5+Overlap*2);
+		translate([0,Skirt_ID/2,-Overlap]) cylinder(d=5, h=5+Overlap*2);
 	} // difference
 	
 } // Stager_ServoPlate
@@ -257,12 +296,32 @@ module Stager_LockRing(Tube_OD=BT75Body_OD, nLocks=Default_nLocks, FlexComp_d=0.
 	Arc_a=Calc_a(9,(OD/2-Inset));
 	echo(Arc_a=Arc_a);
 	Small_ID=OD-15; // center hole ID
-	Large_ID=MainBearing_ID-16;
+	Large_ID=MainBearing_ID-Bolt4Inset*4;
 	
 	// center of ball in locked position
 	Locked_Ball_Y=Tube_OD/2-StagerLockInset_Y(D=Tube_OD)-Stager_LockRod_Y/2-LockBall_d/2+2+FlexComp_d/2;
 		
 	Ball_Z=23-LockBall_d/2-0.8;
+	
+	module LanyardAttachmentPoint(){
+		Ly_OD=Large_ID+1;
+		Ly_t=4;
+		HoleCenter_Z=Ly_t+2;
+		
+		cylinder(d=Ly_OD, h=Ly_t);
+		
+		difference(){
+			hull(){
+				translate([0,0,HoleCenter_Z]) rotate([90,0,0]) cylinder(d=10, h=4, center=true);
+				
+				translate([0,0,Ly_t]) cube([12,4,Overlap],center=true);
+			} // hull
+			
+			translate([0,0,HoleCenter_Z]) rotate([90,0,0]) cylinder(d=4, h=4+Overlap*2, center=true);
+		} // difference
+	} // LanyardAttachmentPoint
+	
+	translate([0,0,2]) LanyardAttachmentPoint();
 	
 	module Bearing(){
 		translate([0,Locked_Ball_Y-LockBall_d/2-MR84_Bearing_OD/2,0]){
@@ -281,6 +340,7 @@ module Stager_LockRing(Tube_OD=BT75Body_OD, nLocks=Default_nLocks, FlexComp_d=0.
 	Bearing_Z=0;
 	FullD_Z=Bearing_Z+MainBearing_T+4;
 	
+	
 	difference(){
 		union(){
 			// Base
@@ -297,6 +357,7 @@ module Stager_LockRing(Tube_OD=BT75Body_OD, nLocks=Default_nLocks, FlexComp_d=0.
 			translate([0,0,Ball_Z]) Bearing();
 			
 		// center hole
+		translate([0,0,FullD_Z+13]) cylinder(d1=Small_ID, d2=Small_ID+1, h=1+Overlap); // chamfer
 		translate([0,0,FullD_Z]) cylinder(d=Small_ID, h=20+Overlap*2); // top
 		translate([0,0,Bearing_Z+2-Overlap]) cylinder(d=Large_ID, h=5+Overlap); // bottom
 		translate([0,0,Bearing_Z+2+2]) cylinder(d1=Large_ID, d2=Small_ID, h=7+Overlap); // transition
@@ -314,7 +375,6 @@ module Stager_LockRing(Tube_OD=BT75Body_OD, nLocks=Default_nLocks, FlexComp_d=0.
 } // Stager_LockRing
 
 //Stager_LockRing();
-//Stager_LockRing();
 
 module Stager_LockStop(Tube_OD=BT75Body_OD, HasMagnet=true){
 	BC_r=BoltCircle_d(Tube_OD=Tube_OD)/2;
@@ -323,7 +383,7 @@ module Stager_LockStop(Tube_OD=BT75Body_OD, HasMagnet=true){
 	Stop_a=Calc_a(8,BC_r);
 	Magnet_OD=3/16*25.4;
 	Block_H=10.5;
-	Block_Len=8;
+	Block_Len=HasMagnet? 8:13;
 			
 	module BoltPattern(){
 		for (j=[0:1]) rotate([0,0,360/nBottomBolts*j-180/nBottomBolts]) 
@@ -339,13 +399,25 @@ module Stager_LockStop(Tube_OD=BT75Body_OD, HasMagnet=true){
 			} // hull
 			
 			// Manual Set and Trigger lever
-			translate([0,BC_r-4+Block_Len/2,Block_H/2])
-				cube([6,Block_Len,Block_H],center=true);
+			if (HasMagnet){
+				translate([0,BC_r-4+Block_Len/2,Block_H/2])
+					cube([6,Block_Len,Block_H],center=true);
+			}else{
+				translate([0,BC_r-4+Block_Len/2,Block_H/2+Plate_H/2-Overlap])
+					cube([6,Block_Len,Block_H-Plate_H],center=true);
+			}
+				
+				
 		} // union
 		
 		// magnet
-		if (HasMagnet)
+		if (HasMagnet){
 			translate([0, BC_r, Block_H-Magnet_OD/2-1]) rotate([0,90,0]) cylinder(d=Magnet_OD, h=7, center=true);
+		}else{
+			
+		}
+			
+		
 		
 		translate([0,0,-Overlap]) cylinder(d=Race_ID(Tube_OD=Tube_OD), h=Plate_H+Overlap*2);
 		translate([0,0,Plate_H]) BoltPattern() Bolt4ButtonHeadHole();
@@ -536,12 +608,12 @@ module Stager_Saucer(Tube_OD=BT75Body_OD, nLocks=Default_nLocks){
 
 //Stager_Saucer();
 
-
 module Stager_InnerRace(Tube_OD=BT75Body_OD){
 	
 	nBolts=nInnerRaceBolts*4; // allows 15° indexing
 	Thickess=5;
 	Bearing_Z=8;
+	Holes=[5,9,15,19]; // stop mounting holes
 	
 	difference(){
 		union(){
@@ -558,7 +630,7 @@ module Stager_InnerRace(Tube_OD=BT75Body_OD){
 			translate([MainBearing_ID/2-Bolt4Inset,0,Bearing_Z-4]) rotate([180,0,0]) Bolt4HeadHole();
 			
 		// Activator and Stop bolt holes
-		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) 
+		for (j=Holes) rotate([0,0,360/nBolts*j]) 
 			translate([0,BoltCircle_d(Tube_OD=Tube_OD)/2,Thickess])
 				Bolt4Hole();
 	} // difference
@@ -731,7 +803,7 @@ module Stager_Mech(Tube_OD=BT75Body_OD, nLocks=Default_nLocks, Skirt_ID=BT75Body
 		// Arm / Trigger access hole
 		Stager_ArmDisarmAccess(Tube_OD=Tube_OD, Len=Tube_OD);
 
-		if ($preview) translate([0,0,-100]) cube([50,50,100]);
+		//if ($preview) translate([0,0,-100]) cube([50,50,100]);
 	} // difference
 	
 	
@@ -739,7 +811,7 @@ module Stager_Mech(Tube_OD=BT75Body_OD, nLocks=Default_nLocks, Skirt_ID=BT75Body
 
 // Stager_Mech();
 
-module OuterBearingCover(nLocks=Default_nLocks){
+module Stager_OuterBearingCover(nLocks=Default_nLocks){
 	nBolts=nLocks*2;
 	Thickness=5;
 	
@@ -762,9 +834,9 @@ module OuterBearingCover(nLocks=Default_nLocks){
 			for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+180/nBolts])
 				translate([0,MainBearing_OD/2+Bolt4Inset,Thickness]) Bolt4ButtonHeadHole();
 	} // difference
-} // OuterBearingCover
+} // Stager_OuterBearingCover
 
-//translate([0,0,-25]) rotate([180,0,0]) OuterBearingCover();
+//translate([0,0,-25]) rotate([180,0,0]) Stager_OuterBearingCover();
 
 /*
 // test
@@ -775,13 +847,11 @@ difference(){
 /**/
 
 module Stager_ArmDisarmAccess(Tube_OD=BT75Body_OD, Len=BT75Body_OD){
-	Tube_Len=40;
-	Race_Z=-Saucer_Len-Tube_Len;
+	Post_Z=-Saucer_Len-36;
 	
-	CablePath_Y=BoltCircle_d(Tube_OD=Tube_OD)/2;
-	Cable_Offset_a=15*round((-60+Calc_a(12,CablePath_Y)+Calc_a(26,CablePath_Y) )/15);
+	ArmingPost_a=108;
 	
-	rotate([0,0,-Cable_Offset_a-66]) translate([0,BearingBallCircle_d(Tube_OD=Tube_OD)/2-2,Race_Z-3])
+	rotate([0,0,ArmingPost_a]) translate([0,MainBearing_OD/2+4,Post_Z])
 			rotate([0,90,0]) cylinder(d=3, h=Len, center=true);
 } // Stager_ArmDisarmAccess
 
