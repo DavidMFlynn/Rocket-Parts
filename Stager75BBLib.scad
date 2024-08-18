@@ -12,6 +12,8 @@
 //
 // Cup in Saucer w/ locking pins, servo activated active staging system.
 //
+// There is still (as of 8/17/24) legacy code and bad math that will prevent scaling to 98mm, needs more work.
+//
 //  ***** History *****
 //
 echo("Stager75BBLib 0.9.4");
