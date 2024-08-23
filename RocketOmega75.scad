@@ -8,6 +8,7 @@
 // ***********************************
 //  ***** Notes *****
 //
+//  This is a partial design, booster is just too long to look like an Omega, see Rocket75D2
 //  3" Upscale of Estes Astron Omega
 //  Two Stage Rocket with 75mm Body.
 //  J460T-P to J135W-P
@@ -46,6 +47,9 @@
 //
 // EB_LowerElectronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=EBay_Len, nBolts=4, BoltInset=7.5, ShowDoors=false);
 // EB_Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=EBay_Len, nBolts=4, BoltInset=7.5, ShowDoors=false, HasSecondBattDoor=false, HasFwdIntegratedCoupler=false, HasFwdShockMount=false);
+//
+//  * Booster E_Bay *
+// EB_Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=EBay_Len, nBolts=4, BoltInset=7.5, ShowDoors=false, HasSecondBattDoor=false, HasFwdIntegratedCoupler=true, HasFwdShockMount=false);
 //
 //  *** Doors ***
 // rotate([-90,0,0]) EB_AltDoor(Tube_OD=BT98Body_OD);
@@ -96,7 +100,9 @@
 // R75_PetalHub(Body_OD=Body_OD, Body_ID=Body_ID);
 // rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=BoosterPetalLen, nPetals=3, Wall_t=1.8, AntiClimber_h=4, HasLocks=false, Lock_Span_a=180);
 //
-// rotate([180,0,0]) BoosterFinCan();
+// rotate([180,0,0]) BoosterFinCan(LowerHalfOnly=true, UpperHalfOnly=false);
+// BoosterFinCan(LowerHalfOnly=false, UpperHalfOnly=true);
+//
 // BoosterMotorRetainer();
 // RocketOmegaBoosterFin();
 //
@@ -122,7 +128,7 @@ use<AT-RMS-Lib.scad>
 use<R75Lib.scad>
 use<PetalDeploymentLib.scad>
 use<ElectronicsBayLib.scad>
-use<Stager75Lib.scad>
+use<Stager75BBLib.scad>
 use<FinCan2Lib.scad>
 use<NoseCone.scad>
 use<FinCan.scad>
@@ -153,13 +159,14 @@ MotorTube_ID=BT54Body_ID;
 Stager_ID=MotorTube_OD;
 
 nLocks=3; // Stager locks
-nFins=4;
+
 nLockBalls=5; // Ball Lock (STB) units
 BallPerimeter_d=Body_OD;
 
 BoosterPetalLen=150;
 
-// Sustainer Fin
+// Sustainer Fin, Omega style
+nFins=4;
 Sustainer_Fin_Post_h=Body_OD/2-MotorTube_OD/2-1.2;
 Sustainer_Fin_Root_L=72*Scale;
 Sustainer_Fin_Root_W=5*Scale;
@@ -170,7 +177,7 @@ Sustainer_Fin_Span=Sustainer_Fin_Root_L*0.75;
 Sustainer_Fin_TipOffset=0;
 Sustainer_Fin_Chamfer_L=Sustainer_Fin_Root_W*3;
 
-// Booster Fin
+// Booster Fin, Omega style
 Booster_Fin_Post_h=Body_OD/2-MotorTube_OD/2-1.2;
 Booster_Fin_Root_L=90*Scale;
 Booster_Fin_Root_W=5.7*Scale;
@@ -181,6 +188,7 @@ Booster_Fin_TipOffset=0;
 Booster_Fin_Chamfer_L=Booster_Fin_Root_W*3;
 //echo(Booster_Fin_Root_L=Booster_Fin_Root_L);
 //echo(Booster_Fin_Span=Booster_Fin_Span);
+
 
 EBay_Len=162;
 ScaleBooster_Body_Len=5*25.4*Scale;
@@ -226,19 +234,18 @@ module ShowBooster(ShowInternals=true){
 	Body_Z=FinCan_Z+BoostFinCan_Len+0.1;
 	STB_Z=Body_Z+InterstageTube_Len+10;
 	Ebay_Z=STB_Z+23.5;
-	Adaptor_Z=Ebay_Z+EBay_Len+0.1;
-	Stager_Z=Adaptor_Z+21+0.1+35+57;
+	Stager_Z=Ebay_Z+EBay_Len+0.1+15+57;
 	Saucer_Z=Stager_Z+0.1;
 
 	translate([0,0,Saucer_Z]) Stager_Saucer(Tube_OD=Body_OD, nLocks=nLocks);
 	translate([0,0,Stager_Z]) 
 		Stager_Mech(Tube_OD=Body_OD, nLocks=nLocks, Skirt_ID=Body_ID, Skirt_Len=35, nSkirtBolts=4, ShowLocked=true);
 	
-	translate([0,0,Adaptor_Z]) EB_ExtensionRing(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=21, nBolts=4, BoltInset=7.5);
+	//translate([0,0,Adaptor_Z]) EB_ExtensionRing(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=21, nBolts=4, BoltInset=7.5);
 	
 	//*
 	translate([0,0,Ebay_Z]) 
-		EB_Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=EBay_Len, nBolts=4, BoltInset=7.5, ShowDoors=false, HasSecondBattDoor=false, HasFwdIntegratedCoupler=false, HasFwdShockMount=false);
+		EB_Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=EBay_Len, nBolts=4, BoltInset=7.5, ShowDoors=false, HasSecondBattDoor=false, HasFwdIntegratedCoupler=true, HasFwdShockMount=false);
 	/**/
 	
 	translate([0,0,STB_Z+0.1]) 
@@ -268,8 +275,8 @@ module ShowBooster(ShowInternals=true){
 		translate([Body_OD/2-Booster_Fin_Post_h, 0, Fin_Z]) 
 			rotate([0,90,0]) color("Blue") RocketOmegaBoosterFin();
 			
-	if (ShowInternals) translate([0,0,-23]) ATRMS_54_852_Motor(Extended=false, HasEyeBolt=true); // J275W, J460T, J615ST
-	//if (ShowInternals) translate([0,0,-23]) ATRMS_54_1280_Motor(Extended=false, HasEyeBolt=true); // J800W
+	//if (ShowInternals) translate([0,0,-23]) ATRMS_54_852_Motor(Extended=false, HasEyeBolt=true); // J275W, J460T, J615ST
+	if (ShowInternals) translate([0,0,-23]) ATRMS_54_1280_Motor(Extended=false, HasEyeBolt=true); // J800W
 	
 	
 } // ShowBooster
@@ -282,7 +289,7 @@ module ShowRocketOmega(ShowInternals=true){
 	
 	InterstageCoupler_Len=InterstageTube_Len;
 	
-		SusFinCan_Z=BoostFinCan_Len+InterstageCoupler_Len+1;
+		SusFinCan_Z=BoostFinCan_Len+InterstageCoupler_Len+280+1;
 		LowerTube_Z=SusFinCan_Z+SusFinCan_Len;
 	
 		BH_Z=SusFinCan_Z+SusFinCan_Len+LowerTube_Len;
@@ -302,19 +309,19 @@ module ShowRocketOmega(ShowInternals=true){
 	translate([0,0,NC_Z]){
 		color("Black") OmegaNosecone();
 		if (ShowInternals)
-		translate([0,0,-ROmega_Coupler_OD*0.8])
-			color("Gray") NoseconeBase(OD=ROmega_Body_ID, L=ROmega_Coupler_OD*0.8, NC_Base=21);
+		translate([0,0,-Coupler_OD*0.8])
+			color("Gray") NoseconeBase(OD=Body_ID, L=Coupler_OD*0.8, NC_Base=21);
 		}
 	if (ShowInternals)
-		translate([0,0,NC_Z-ROmega_Coupler_OD*0.8-ParachuteSleeve_Len])
-			Tube(OD=ROmega_Coupler_OD, ID=ROmega_Coupler_ID, Len=ParachuteSleeve_Len, myfn=$preview? 90:360);
+		translate([0,0,NC_Z-Coupler_OD*0.8-ParachuteSleeve_Len])
+			Tube(OD=Coupler_OD, ID=Coupler_ID, Len=ParachuteSleeve_Len, myfn=$preview? 90:360);
 	
 	if (ShowInternals==false){
 		translate([0,0,PBay_Z+0.1]) color("Silver") 
-			Tube(OD=ROmega_Body_OD, ID=ROmega_Body_ID, Len=PBay_Len-0.2, myfn=$preview? 90:360);
+			Tube(OD=Body_OD, ID=Body_ID, Len=PBay_Len-0.2, myfn=$preview? 90:360);
 	
 		translate([0,0,UpperTube_Z+0.1]) color("White") 
-			Tube(OD=ROmega_Body_OD, ID=ROmega_Body_ID, Len=UpperTube_Len-0.2, myfn=$preview? 90:360);
+			Tube(OD=Body_OD, ID=Body_ID, Len=UpperTube_Len-0.2, myfn=$preview? 90:360);
 	}
 		
 	if (ShowInternals){
@@ -323,31 +330,35 @@ module ShowRocketOmega(ShowInternals=true){
 	}
 	
 	translate([0,0,EBay_Z]) {
-		rotate([0,0,180-180/nFins]) color("White") Omega54EBay(ShowDoors=(ShowInternals==false));
+		rotate([0,0,180-180/nFins]) color("White") 
+			EB_Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=EBay_Len, nBolts=4, BoltInset=7.5, ShowDoors=(ShowInternals==false),
+				HasSecondBattDoor=false, HasFwdIntegratedCoupler=false, HasFwdShockMount=false);
+		
+		
 		if (ShowInternals) translate([0,0,15-0.3])
-			rotate([180,0,0]) ShockCordMount(OD=ROmega_Coupler_OD, ID=ROmega_MtrTube_OD, AnchorRod_OD=12.7);
+			rotate([180,0,0]) ShockCordMount(OD=Coupler_OD, ID=MtrTube_OD, AnchorRod_OD=12.7);
 	}
 	
 
 	if (ShowInternals==false)
 		translate([0,0,LowerTube_Z+0.1]) color("White") 
-			Tube(OD=ROmega_Body_OD, ID=ROmega_Body_ID, Len=LowerTube_Len-0.2, myfn=$preview? 90:360);
+			Tube(OD=Body_OD, ID=Body_ID, Len=LowerTube_Len-0.2, myfn=$preview? 90:360);
 	
 	//*
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j])
-		translate([ROmega_Body_OD/2-ROmega_Fin_Post_h, 0, SusFinCan_Z+ROmega_Fin_Root_L/2+20]) 
+		translate([Body_OD/2-Sustainer_Fin_Post_h, 0, SusFinCan_Z+Sustainer_Fin_Root_L/2+SustainerFinInset]) 
 			rotate([0,90,0]) color("Blue") RocketOmegaFin();
 	/**/
 	
 	translate([0,0,SusFinCan_Z]) {
 		
-		color("White") FinCan54();
+		color("White") SustainerFinCan();
 		
-		translate([0,0,-15]) color("Silver")
-		MotorRetainer(Tube_OD=ROmega_BMtrTube_OD, Tube_ID=ROmega_BMtrTube_ID, Mtr_OD=38, MtrAC_OD=42);
+	//	translate([0,0,-15]) color("Silver")
+	//	MotorRetainer(Tube_OD=BMtrTube_OD, Tube_ID=MtrTube_ID, Mtr_OD=38, MtrAC_OD=42);
 		
 		if (ShowInternals) 
-			color("Tan") Tube(OD=ROmega_MtrTube_OD, ID=ROmega_MtrTube_ID, 
+			color("Tan") Tube(OD=MtrTube_OD, ID=MtrTube_ID, 
 									Len=SustainerMotorTube_Len, myfn=$preview? 90:360);
 		MtrRMS38_240(HasEyeBolt=true);
 		}
@@ -405,11 +416,10 @@ module SustainerFinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 	
 } // SustainerFinCan
 
-//
-SustainerFinCan();	
+//SustainerFinCan();	
 	
 module RocketOmegaFin(){
-	//echo(ROmega_Fin_Post_h=ROmega_Fin_Post_h);
+	//echo(Fin_Post_h=Fin_Post_h);
 	
 	TrapFin2(Post_h=Sustainer_Fin_Post_h, Root_L=Sustainer_Fin_Root_L, Tip_L=Sustainer_Fin_Tip_L, 
 			Root_W=Sustainer_Fin_Root_W, Tip_W=Sustainer_Fin_Tip_W, 
@@ -450,7 +460,7 @@ module MtrRMS38_240(HasEyeBolt=false){
 RailGuide_h=Body_OD/2+2;
 TailConeLen=35;
 
-module BoosterFinCan(){
+module BoosterFinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 	Can_Len=Booster_Fin_Root_L+BoosterFinInset*2; //Booster_Body_Len;
 	
 	echo(Can_Len=Can_Len);
@@ -461,7 +471,8 @@ module BoosterFinCan(){
 				nFins=nFins, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 				Fin_Root_W=Booster_Fin_Root_W, Fin_Root_L=Booster_Fin_Root_L, 
 				Fin_Post_h=Booster_Fin_Post_h, Fin_Chamfer_L=Booster_Fin_Chamfer_L,
-				Cone_Len=TailConeLen, ThreadedTC=true, Extra_OD=2, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
+				Cone_Len=TailConeLen, ThreadedTC=true, Extra_OD=2, 
+				LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly, HasWireHoles=false);
 	
 } // BoosterFinCan
 

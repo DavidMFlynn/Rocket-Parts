@@ -86,7 +86,7 @@ nInnerRaceBolts=6;
 Bolt4Inset=4;
 Saucer_Len=6;
 Ball_d=5/16*25.4; // for bearing
-Stager_PreLoadAdj=-0.55; // -0.35 is too tight
+PreLoadAdj=-0.45; // -0.35 is too tight
 Race_W=11;
 Tube_Len=40; //44.5;
 Race_Z=-Saucer_Len-Tube_Len;
@@ -565,7 +565,7 @@ module Stager_InnerRace(Tube_OD=BT75Body_OD){
 		
 			translate([0,0,Race_WXtra/2]) rotate([180,0,0]) 
 				OnePieceInnerRace(BallCircle_d=BearingBallCircle_d(Tube_OD=Tube_OD), Race_ID=Race_ID(Tube_OD=Tube_OD), Ball_d=Ball_d, 
-						Race_w=Race_W+Race_WXtra, PreLoadAdj=Stager_PreLoadAdj, 
+						Race_w=Race_W+Race_WXtra, PreLoadAdj=PreLoadAdj, 
 						VOffset=0.00, BI=false, myFn=$preview? 90:720);
 		
 			
@@ -722,7 +722,7 @@ module Stager_Mech(Tube_OD=BT75Body_OD, nLocks=Default_nLocks, Skirt_ID=BT75Body
 	
 	translate([0,0,Race_Z+Overlap]) rotate([0,0,180/nLocks]) rotate([180,0,0])
 		OnePieceOuterRace(BallCircle_d=BearingBallCircle_d(Tube_OD=Tube_OD), Race_OD=Tube_OD, 
-					Ball_d=Ball_d, Race_w=Race_W, PreLoadAdj=Stager_PreLoadAdj, 
+					Ball_d=Ball_d, Race_w=Race_W, PreLoadAdj=PreLoadAdj, 
 					VOffset=0.00, BI=false, myFn=$preview? 90:720);
 	
 } // Stager_Mech

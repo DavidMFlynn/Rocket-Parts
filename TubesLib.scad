@@ -3,7 +3,7 @@
 // Filename: TubesLib.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.14  4/2/2024
+// Revision: 0.9.15  8/21/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-function TubesLib_Rev()="TubesLib 0.9.14";
+function TubesLib_Rev()="TubesLib 0.9.15";
 echo(TubesLib_Rev());
+// 0.9.15  8/21/2024  Geometry changed: Centering ring holes now start at +Y.
 // 0.9.14  4/2/2024   Added ULine75Body
 // 0.9.13  11/28/2023 Added BT190...
 // 0.9.12  9/13/2023  Changed BT75Coupler, smaller, to measured values.
@@ -190,7 +191,7 @@ module CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0, Of
 		
 		translate([0,Offset,-Overlap]) cylinder(d=ID, h=Thickness+Overlap*2);
 		if (nHoles>0) for (j=[0:nHoles-1]) rotate([0,0,360/nHoles*j])
-			translate([ID/2+(OD/2-ID/2)/2,0,-Overlap]) cylinder(d=(OD/2-ID/2)/2, h=Thickness+Overlap*2);
+			translate([0,ID/2+(OD/2-ID/2)/2,-Overlap]) cylinder(d=(OD/2-ID/2)/2, h=Thickness+Overlap*2);
 	} // difference
 } // CenteringRing
 
@@ -251,7 +252,7 @@ module SplitCenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=
 	} // difference
 } // SplitCenteringRing
 
-//SplitCenteringRing(OD=BT98Coupler_ID, ID=PML54Body_OD+IDXtra*2);
+//SplitCenteringRing(OD=BT98Coupler_ID, ID=PML54Body_OD+IDXtra*2, nHoles=3);
 
 module ShockCordMount(OD=PML98Body_ID, ID=BT54Mtr_OD, AnchorRod_OD=12.7){
 	H=20;

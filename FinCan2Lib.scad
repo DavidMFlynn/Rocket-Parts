@@ -3,7 +3,7 @@
 // Filename: FinCan2Lib.scad
 // by David M. Flynn
 // Created: 12/24/2023 
-// Revision: 0.9.5  8/13/2024
+// Revision: 0.9.6  8/21/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -15,6 +15,7 @@
 function FinCan2LibRev()="FinCan2Lib 0.9.4";
 echo(FinCan2LibRev());
 //
+// 0.9.6  8/21/2024	  Geometry changed: Rail guide/post is now at 0° (+Y) first fin at 180/nFins.
 // 0.9.5  8/13/2024   Fixed calculation for rail guide position
 // 0.9.4  7/18/2024   Added Extra_OD Parameter
 // 0.9.3  4/21/2024   Looser nut, global parameters added
@@ -133,25 +134,23 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 			UpperRing_OD=HasIntegratedCoupler? Body_ID-1:Body_OD-1;
 			// Upper Centering Ring
 			if (Cone_Len==0)
-				translate([0,0,UpperRing_Z]) rotate([0,0,180/nFins])
+				translate([0,0,UpperRing_Z])
 					CenteringRing(OD=UpperRing_OD, ID=MotorTubeHole_d, Thickness=3, nHoles=nFins, Offset=0);
 					
 			// Lower Centering Ring
 			LowerRing_Z=HasAftIntegratedCoupler? -10:0;
 			LowerRing_OD=HasAftIntegratedCoupler? Body_ID-1:Body_OD-1;
 			if (Cone_Len==0) translate([0,0,LowerRing_Z])
-				rotate([0,0,180/nFins])
-					CenteringRing(OD=LowerRing_OD, ID=MotorTubeHole_d, Thickness=3, nHoles=nFins, Offset=0);
+				CenteringRing(OD=LowerRing_OD, ID=MotorTubeHole_d, Thickness=3, nHoles=nFins, Offset=0);
 				
 			// Middle Centering Rings
 			translate([0,0,Can_Len/2-3])
-				rotate([0,0,180/nFins])
 					CenteringRing(OD=Body_OD-1, ID=MotorTubeHole_d, Thickness=6, nHoles=nFins, Offset=0);
 			
 			// Fin Boxes
 			difference(){
-				for (j=[0:nFins]) rotate([0,0,360/nFins*j]) 
-					translate([0,-FinBox_W/2,0]) cube([Body_OD/2,FinBox_W,Can_Len+FB_Xtra_Fwd]);
+				for (j=[0:nFins]) rotate([0,0,360/nFins*j+180/nFins]) 
+					translate([-FinBox_W/2,0,0]) cube([FinBox_W,Body_OD/2,Can_Len+FB_Xtra_Fwd]);
 					
 				difference(){
 					translate([0,0,-Overlap]) cylinder(d=Body_OD+10, h=FB_Xtra_Fwd+Can_Len+Overlap*2);
@@ -175,13 +174,13 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 			
 			// Rail guide bolt boss
 			if (RailGuide_h>5)
-			translate([0,0,RailGuide_Z]) rotate([0,0,180/nFins-90]) 
+			translate([0,0,RailGuide_Z]) 
 				RailGuidePost(OD=Body_OD, MtrTube_OD=MotorTubeHole_d, H=RailGuide_h, 
 					TubeLen=RailGuideTube_Len, Length = RailGuideLen, BoltSpace=12.7, AddTaper=true);
 					
 			// Rail button bolt boss
 			if (RailGuide_h==1)
-			translate([-Body_OD/2,0,10]) rotate([0,90,0]) cylinder(d=10, h=(Body_OD-MotorTubeHole_d)/2);
+			translate([0,Body_OD/2,10]) rotate([90,0,0]) cylinder(d=10, h=(Body_OD-MotorTubeHole_d)/2);
 		} // union
 	
 		// Fin Sockets
@@ -191,30 +190,31 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 		
 		// Wire holes for night launch fins w/ LEDs
 		if (HasWireHoles)
-			for (j=[0:nFins]) rotate([0,0,360/nFins*j]) 
-					translate([Body_OD/2-Fin_Post_h, 0, Can_Len/2-20]) hull(){
+			for (j=[0:nFins]) rotate([0,0,360/nFins*j+180/nFins]) 
+					translate([0, Body_OD/2-Fin_Post_h, Can_Len/2-20]) hull(){
 						cylinder(d=4, h=Can_Len/2+30);
-						translate([-2,0,2]) cylinder(d=4, h=Can_Len/2+30);
+						translate([0,-2,2]) cylinder(d=4, h=Can_Len/2+30);
 						}
 		
 		// Rail guide bolt holes
 		if (RailGuide_h>5)
-			rotate([0,0,180/nFins+180]) translate([-RailGuide_h,0,RailGuide_Z]) rotate([0,0,90])
+			translate([0,RailGuide_h,RailGuide_Z])
 				RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
 				
 		// Rail button bolt hole
 		if (RailGuide_h==1)
-		translate([-Body_OD/2,0,10]) rotate([0,-90,0]) Bolt8Hole();
+			translate([0,Body_OD/2,10]) rotate([-90,0,0]) Bolt8Hole();
 		
 		if (LowerHalfOnly) translate([0,0,Can_Len/2]) cylinder(d=Body_OD+1, h=Can_Len/2+50);
 		if (UpperHalfOnly) translate([0,0,Can_Len/2]) 
 			rotate([180,0,0]) cylinder(d=Body_OD+10, h=Can_Len/2+Cone_Len+1);
 			
-		if ($preview) translate([0,0,-Cone_Len-Overlap]) cube([Body_OD/2+1,Body_OD/2+1,Cone_Len+Can_Len+20]);
+		//if ($preview) translate([0,0,-Cone_Len-Overlap]) cube([Body_OD/2+1,Body_OD/2+1,Cone_Len+Can_Len+20]);
 	} // difference
 } // FC2_FinCan
 
-//rotate([180,0,0]) FC2_FinCan(LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
+//rotate([180,0,0]) 
+FC2_FinCan(RailGuide_h=1, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=true);
 
 
 module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,

@@ -134,7 +134,7 @@ module R75_MotorTubeTopper(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, MotorTube
 // R75_MotorTubeTopper();
 
 
-module R75_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID){
+module R75_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=3){
 	Tube_d=12.7;
 	Tube_Z=25;
 	Tube_a=-70;
@@ -142,9 +142,9 @@ module R75_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID){
 	TubeOffset_X=10;
 	
 	Wall_t=3;
-	nBolts=3;
 	BoltInset=7.5;
 	Skirt_H=8;
+	Bolt_a=(nBolts==3)? 0:-25; // 3 or 4 bolts
 	
 	difference(){
 		union(){
@@ -178,15 +178,15 @@ module R75_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID){
 		rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z]) rotate([90,0,0]) cylinder(d=Tube_d, h=Body_OD, center=true);
 		
 		//Bolt holes for ebay
-		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j])
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+Bolt_a])
 			translate([0, -Body_OD/2-1, Engagement_Len/2+Skirt_H+7.5]) 
-				rotate([90,0,0]) Bolt4Hole();
+				rotate([90,0,0]) Bolt4Hole(depth=6);
 		
 	} // difference
 } // R75_BallRetainerTop
 
 //  R75_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID);
-
+// R75_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=4);
 
 
 module R75_BallRetainerTopTest(Body_OD=Body_OD, Body_ID=Body_ID){

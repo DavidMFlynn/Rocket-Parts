@@ -3,7 +3,7 @@
 // Filename: RailGuide.scad
 // by David M. Flynn
 // Created: 6/11/2022 
-// Revision: 1.0.5  11/2/2023
+// Revision: 1.0.6  8/21/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,7 +12,8 @@
 //
 //  ***** History *****
 //
-echo("RailGuide 1.0.5");
+echo("RailGuide 1.0.6");
+// 1.0.6  8/21/2024  Geometry change: All guides and posts are not oriented to 0° (+Y).
 // 1.0.5  11/2/2023  Added RailGuideSpacer()
 // 1.0.4  1/1/2023   Bolt holes now thru in RailGuidePost. 
 // 1.0.3  11/7/2022  Shorter cap to clear 8020-1010 rail better. 
@@ -99,7 +100,7 @@ module RailGuideBoltPattern(BoltSpace=12.7){
 		
 } // RailGuideBoltPattern
 
-
+// RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
 
 module BoltOnRailGuide(Length = 40, BoltSpace=12.7, RoundEnds=true, ExtraBack=0){
 	Back_T=3;
@@ -289,7 +290,7 @@ module BoltOnRailGuidePost(OD=PML98Body_OD, H=5.5*25.4/2,
 	} // difference
 } // BoltOnRailGuidePost
 
-//BoltOnRailGuidePost(OD=PML98Body_OD, H=PML98Body_OD/2+2, Length = 30, BoltSpace=12.7);
+// BoltOnRailGuidePost(OD=PML98Body_OD, H=PML98Body_OD/2+2, Length = 30, BoltSpace=12.7);
 
 module RialGuide(TubeOD = 98, Length = 40, Offset = 3){
 	
@@ -329,42 +330,42 @@ module RialGuide(TubeOD = 98, Length = 40, Offset = 3){
 
 module TubeBoltedRailGuide(TubeOD=PML98Body_OD, Length = 30, Offset = 2){
 	Size_Z=50;
-	Size_Y=30;
+	Size_X=30;
 	BoltSpace=12.7;
 	
 	function CalcChord_a(Dia=10, Dist=1)=Dist/(Dia*PI)*360;
 	
-	Bolt_a=CalcChord_a(TubeOD,Size_Y/2-6);
+	Bolt_a=CalcChord_a(TubeOD,Size_X/2-6);
 	
-	rotate([0,0,-90]) translate([0,TubeOD/2+Offset-3,0])
+	translate([0,TubeOD/2+Offset-3,0])
 		BoltOnRailGuide(Length = Length, BoltSpace=BoltSpace, RoundEnds=true, ExtraBack=Offset-4);
 		
 	difference(){
 		intersection(){
-			translate([0,0,-Size_Z/2]) Tube(OD=TubeOD+4.4, ID=TubeOD+IDXtra*2, 
-				Len=Size_Z, myfn=$preview? 36:360);
-			rotate([0,90,0]) RoundRect(X=Size_Z, Y=Size_Y, Z=TubeOD, R=4);
+			translate([0,0,-Size_Z/2]) 
+				Tube(OD=TubeOD+4.4, ID=TubeOD+IDXtra*2, Len=Size_Z, myfn=$preview? 36:360);
+			rotate([-90,0,0]) RoundRect(X=Size_X, Y=Size_Z, Z=TubeOD, R=4);
 		} // intersection
 		
 		rotate([0,0,Bolt_a]){ 
-			translate([TubeOD/2+3,0,Size_Z/2-6]) 
-				rotate([0,90,0]) Bolt6ClearHole();
-			translate([TubeOD/2+3,0,-Size_Z/2+6]) 
-				rotate([0,90,0]) Bolt6ClearHole();
+			translate([0,TubeOD/2+3,Size_Z/2-6]) 
+				rotate([-90,0,0]) Bolt6ClearHole();
+			translate([0,TubeOD/2+3,-Size_Z/2+6]) 
+				rotate([-90,0,0]) Bolt6ClearHole();
 		}
 		rotate([0,0,-Bolt_a]){
-			translate([TubeOD/2+3,0,Size_Z/2-6]) 
-				rotate([0,90,0]) Bolt6ClearHole();
-			translate([TubeOD/2+3,0,-Size_Z/2+6]) 
-				rotate([0,90,0]) Bolt6ClearHole();
+			translate([0,TubeOD/2+3,Size_Z/2-6]) 
+				rotate([-90,0,0]) Bolt6ClearHole();
+			translate([0,TubeOD/2+3,-Size_Z/2+6]) 
+				rotate([-90,0,0]) Bolt6ClearHole();
 		}
 		
-		rotate([0,0,-90]) translate([0,TubeOD/2+Offset,0]) RailGuideBoltPattern(BoltSpace=BoltSpace) Bolt6ClearHole(depth=10+Offset);
+		translate([0,TubeOD/2+Offset,0]) RailGuideBoltPattern(BoltSpace=BoltSpace) Bolt6ClearHole(depth=10+Offset);
 	} // difference
 	
 } // TubeBoltedRailGuide
 
-// rotate([0,-90,0]) TubeBoltedRailGuide(TubeOD=PML98Body_OD, Length = 35,  Offset = 5.0);
+// rotate([90,0,0]) TubeBoltedRailGuide(TubeOD=PML98Body_OD, Length = 35,  Offset = 5.0);
 
 
 
@@ -377,18 +378,18 @@ module RailButtonPost(OD=PML98Body_OD, MtrTube_OD=PML54Body_OD, H=5.5*25.4/2, Le
 		union(){
 			translate([0,0,-Size_Z/2]) Tube(OD=OD, ID=OD-4.4, Len=Size_Z, myfn=$preview? 36:360);
 			hull(){
-				translate([MtrTube_OD/2+IDXtra,0,Size_Z/2-1]) 
-					rotate([0,90,0]) cylinder(d=2, h=OD/2-MtrTube_OD/2);
-				translate([MtrTube_OD/2+IDXtra,0,-Size_Z/2+1]) 
-					rotate([0,90,0]) cylinder(d=2, h=OD/2-MtrTube_OD/2);
-				translate([MtrTube_OD/2+IDXtra,0,0]) 
-					rotate([0,90,0]) cylinder(d=16, h=OD/2-MtrTube_OD/2);
-				translate([MtrTube_OD/2+IDXtra,0,0]) 
-					rotate([0,90,0]) cylinder(d=10, h=H-MtrTube_OD/2-IDXtra);
+				translate([0,MtrTube_OD/2+IDXtra,Size_Z/2-1]) 
+					rotate([-90,0,0]) cylinder(d=2, h=OD/2-MtrTube_OD/2);
+				translate([0,MtrTube_OD/2+IDXtra,-Size_Z/2+1]) 
+					rotate([-90,0,0]) cylinder(d=2, h=OD/2-MtrTube_OD/2);
+				translate([0,MtrTube_OD/2+IDXtra,0]) 
+					rotate([-90,0,0]) cylinder(d=16, h=OD/2-MtrTube_OD/2);
+				translate([0,MtrTube_OD/2+IDXtra,0]) 
+					rotate([-90,0,0]) cylinder(d=10, h=H-MtrTube_OD/2-IDXtra);
 			} // hull
 		} // union
 		
-		translate([H,0,0]) rotate([0,90,0]) Bolt8Hole();
+		translate([0,H,0]) rotate([-90,0,0]) Bolt8Hole();
 	} // difference
 } // RailButtonPost
 
@@ -396,6 +397,7 @@ module RailButtonPost(OD=PML98Body_OD, MtrTube_OD=PML54Body_OD, H=5.5*25.4/2, Le
 
 module BoltOnRailButtonPost(OD=PML98Body_OD, H=5.5*25.4/2){
 	Size_Z=50;
+	Size_X=30;
 	
 	function GetBoltAngle(d) = lookup(d, [ [38,25],[98,10]]);
 	Bolt_a=GetBoltAngle(OD);
@@ -403,27 +405,26 @@ module BoltOnRailButtonPost(OD=PML98Body_OD, H=5.5*25.4/2){
 	
 	difference(){
 		union(){
-			translate([0,0,-Size_Z/2]) Tube(OD=OD+4.4, ID=OD+IDXtra*2, Len=Size_Z, myfn=$preview? 36:360);
+			intersection(){
+				translate([0,0,-Size_Z/2]) Tube(OD=OD+4.4, ID=OD+IDXtra*2, Len=Size_Z, myfn=$preview? 36:360);
+				rotate([-90,0,0]) RoundRect(X=Size_X, Y=Size_Z, Z=OD, R=4);
+			} // intersection
 			
 			hull(){
-				translate([OD/2+IDXtra,0,Size_Z/2-1]) rotate([0,90,0]) cylinder(d=2, h=2);
-				translate([OD/2+IDXtra,0,-Size_Z/2+1]) rotate([0,90,0]) cylinder(d=2, h=2);
-				translate([OD/2+IDXtra,0,0]) rotate([0,90,0]) cylinder(d=16, h=2);
-				translate([OD/2+IDXtra,0,0]) rotate([0,90,0]) cylinder(d=10, h=H-OD/2-IDXtra);
+				translate([0,OD/2+IDXtra,Size_Z/2-1]) rotate([-90,0,0]) cylinder(d=2, h=2);
+				translate([0,OD/2+IDXtra,-Size_Z/2+1]) rotate([-90,0,0]) cylinder(d=2, h=2);
+				translate([0,OD/2+IDXtra,0]) rotate([-90,0,0]) cylinder(d=16, h=2);
+				translate([0,OD/2+IDXtra,0]) rotate([-90,0,0]) cylinder(d=10, h=H-OD/2-IDXtra);
 			} // hull
 			
 		} // union
+				
+		rotate([0,0,Bolt_a]) translate([0,OD/2+3,Size_Z/3]) rotate([-90,0,0]) Bolt8Hole();
+		rotate([0,0,-Bolt_a]) translate([0,OD/2+3,Size_Z/3]) rotate([-90,0,0]) Bolt8Hole();
+		rotate([0,0,Bolt_a]) translate([0,OD/2+3,-Size_Z/3]) rotate([-90,0,0]) Bolt8Hole();
+		rotate([0,0,-Bolt_a]) translate([0,OD/2+3,-Size_Z/3]) rotate([-90,0,0]) Bolt8Hole();
 		
-		translate([-OD/2-5,-OD/2-5,-Size_Z/2-Overlap]) cube([OD*0.75,OD+10,Size_Z+Overlap*2]);
-		translate([0,15,-Size_Z/2-Overlap]) cube([OD*0.75,OD+10,Size_Z+Overlap*2]);
-		translate([0,-15,-Size_Z/2-Overlap]) mirror([0,1,0]) cube([OD*0.75,OD+10,Size_Z+Overlap*2]);
-		
-		rotate([0,0,Bolt_a]) translate([OD/2+3,0,Size_Z/3]) rotate([0,90,0]) Bolt8Hole();
-		rotate([0,0,-Bolt_a]) translate([OD/2+3,0,Size_Z/3]) rotate([0,90,0]) Bolt8Hole();
-		rotate([0,0,Bolt_a]) translate([OD/2+3,0,-Size_Z/3]) rotate([0,90,0]) Bolt8Hole();
-		rotate([0,0,-Bolt_a]) translate([OD/2+3,0,-Size_Z/3]) rotate([0,90,0]) Bolt8Hole();
-		
-		translate([H,0,0]) rotate([0,90,0]) Bolt8Hole();
+		translate([0,H,0]) rotate([-90,0,0]) Bolt8Hole();
 	} // difference
 	
 } // BoltOnRailButtonPost

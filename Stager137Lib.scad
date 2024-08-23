@@ -1,39 +1,28 @@
 // ***********************************
 // Project: 3D Printed Rocket
-// Filename: Stager75BBLib.scad
+// Filename: Stager137Lib.scad
 // by David M. Flynn
-// Created: 8/14/2024 
-// Revision: 0.9.6  8/20/2024
+// Created: 8/22/2024 
+// Revision: 0.9.0  8/22/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 //
-// Problem to solve: Stager for 75mm tube and 54mm motors.
+// Problem to solve: Stager for 137mm tube. A bigger tougher version is needed.
 //
 // Cup in Saucer w/ locking pins, servo activated active staging system.
 //
-// There is still (as of 8/17/24) legacy code and bad math that will prevent scaling to 98mm, needs more work.
-// For now, it works and will stay a 75mm only stager.
-//
-// Assy Note: Align InnerRace key with LockRing key and ServoPlate key. 
-//			  Viewed from bottom LockStop w/ magnet goes on the left when keys are aligned.
 //
 //  ***** History *****
 //
-echo("Stager75BBLib 0.9.6");
-// 0.9.6  8/20/2024	   Code cleanup, release candidate!
-// 0.9.5  8/18/2024    It works, made some small improvements.
-// 0.9.4  8/17/2024    Ready for a test printing.
-// 0.9.3  8/16/2024	   Copied from Stager75Lib.scad, new version using 6807-2RS bearing
-// 0.9.2  8/16/2024	   It works, little fixes.
-// 0.9.1  8/15/2024    Code cleanup, First printing.
-// 0.9.0  8/14/2024    First code.
+echo("Stager137Lib 0.9.0");
+// 0.9.0  8/22/2024	   Copied from Stager75BBLib 0.9.6 with bearing from Stager2Lib
 //
 // ***********************************
 //  ***** for STL output *****
 //
-//  *** Sustainer "Cup" bolts to bottom of sustainer, incudes AT RMS 54mm motor retention. ***
-// rotate([180,0,0]) Stager_Cup(Tube_OD=DefaultBody_OD, ID=Default_ID, nLocks=Default_nLocks, BoltsOn=true, Collar_h=17, Offset_a=0); // a.k.a. Sustainer Motor Retainer
+//  *** Sustainer "Cup" bolts to bottom of sustainer ***
+// rotate([180,0,0]) Stager_Cup(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true, Collar_h=16, Offset_a=0); // a.k.a. Sustainer Motor Retainer
 // rotate([-90,0,0]) Stager_LockRod(Adj=0.5); // Looser
 // rotate([-90,0,0]) Stager_LockRod(Adj=0.0); // This works!
 //
@@ -45,15 +34,17 @@ echo("Stager75BBLib 0.9.6");
 //
 //  *** Main Body ***
 // Stager_Mech(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Skirt_ID=DefaultBody_ID, Skirt_Len=Default_SkirtLen, nSkirtBolts=4, ShowLocked=true);
-// Stager_OuterBearingCover(nLocks=Default_nLocks); // Secures Outer Race of Main Bearing
 //
-// Stager_InnerRace(Tube_OD=DefaultBody_OD); // Secures Inner Race of Main Bearing and has mounting holes for Lock Stops
+// Stager_BallSpacer(Tube_OD=DefaultBody_OD);
+//
+// Stager_Indexer(Tube_OD=DefaultBody_OD); // Bolts to InnerRace and has mounting holes for Lock Stops
+// Stager_InnerRace(Tube_OD=DefaultBody_OD);
 // Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID); // Bottom Plate
 //
 // ***********************************
 //  ***** Routines *****
 //
-// Stager_CupHoles(Tube_OD=DefaultBody_OD, ID=Default_ID, nLocks=Default_nLocks, BoltsOn=true);
+// Stager_CupHoles(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true);
 // Stager_SaucerBoltPattern(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks);
 // Stager_ArmDisarmAccess(Tube_OD=DefaultBody_OD, Len=DefaultBody_OD);
 //
@@ -67,6 +58,7 @@ echo("Stager75BBLib 0.9.6");
 // ***********************************
 
 include<TubesLib.scad>
+use<BearingLib.scad>
 use<LD-20MGServoLib.scad>
 use<SG90ServoLib.scad>
 //include<CommonStuffSAEmm.scad>
@@ -80,61 +72,50 @@ Stager_Spring_OD=5/16*25.4;
 Stager_Spring_FL=1.25*25.4;
 Stager_Spring_CBL=0.7*25.4;
 
-Stager_LockRod_X=10;
-Stager_LockRod_Y=5;
-Stager_LockRod_Z=36;
+Stager_LockRod_X=12;
+Stager_LockRod_Y=6;
+Stager_LockRod_Z=38;
 Stager_LockRod_R=1;
-LockBall_d=3/8 * 25.4; // 3/8" Delrin balls
+LockBall_d=1/2 * 25.4; // 1/2" Delrin balls
 CupBoltHoleInset=5;
 
-Default_nLocks=3;
+Default_nLocks=5;
 Default_SkirtLen=16;
-DefaultBody_OD=BT75Body_OD;
-DefaultBody_ID=BT75Body_ID;
+DefaultBody_OD=BT137Body_OD;
+DefaultBody_ID=BT137Body_ID;
 
 LooseFit=0.8;
 
 nInnerRaceBolts=6;
+InnerRaceXtra_W=2;
 Bolt4Inset=4;
-Saucer_Len=6;
+Saucer_H=6;
 
 // Small Bearing
 MR84_Bearing_OD=8;
 MR84_Bearing_ID=4;
 MR84_Bearing_T=3;
 
-// Main Bearing
-Bearing6806_OD=42;
-Bearing6806_ID=30;
-Bearing6806_T=7;
+Ball_d=5/16*25.4; // for bearing
+PreLoadAdj=-0.45; // -0.35 is too tight
+Race_W=11;
 
-Bearing6807_OD=47;
-Bearing6807_ID=35;
-Bearing6807_T=7;
 
-Bearing6808_OD=52;
-Bearing6808_ID=40;
-Bearing6808_T=7;
-
-Bearing6810_OD=65;
-Bearing6810_ID=50;
-Bearing6810_T=7;
-
-MainBearing_OD=Bearing6807_OD;
-MainBearing_ID=Bearing6807_ID;
-MainBearing_T=Bearing6807_T;
-MainBearingSplit=2; // race mounting split 
-
-function StagerLockInset_Y(D=DefaultBody_OD)=(D>90)? 8:8; // LockRod inset from tube OD
+function StagerLockInset_Y(D=DefaultBody_OD)=(D>90)? 9:8; // LockRod inset from tube OD
 function Calc_a(Dist=1,R=2)=Dist/(R*2*PI)*360;
-function BoltCircle_d(Tube_OD=DefaultBody_OD)=Tube_OD-28-Bolt4Inset*2; // Bolt circle for LockStops
 function Saucer_ID(Tube_OD=DefaultBody_OD)=Tube_OD-StagerLockInset_Y(D=Tube_OD)*2-Stager_LockRod_Y-LockBall_d*2+6;
+function BearingBallCircle_d(Tube_OD=DefaultBody_OD)=Tube_OD-40-Ball_d;
+function Race_ID(Tube_OD=DefaultBody_OD)=BearingBallCircle_d(Tube_OD=Tube_OD)-Ball_d-Bolt4Inset*4-4;
+function Race_BC_d(Tube_OD=DefaultBody_OD)=Race_ID(Tube_OD=Tube_OD)+Bolt4Inset*2; // Bolt holes in inner race
+function BoltCircle_d(Tube_OD=DefaultBody_OD)=Tube_OD-StagerLockInset_Y(D=Tube_OD)-21-Bolt4Inset*2; // Bolt circle for LockStops
+function nBearingBalls(Tube_OD=DefaultBody_OD)=floor(BearingBallCircle_d(Tube_OD=Tube_OD)*PI/Ball_d/3)+
+					(floor(BearingBallCircle_d(Tube_OD=Tube_OD)*PI/Ball_d/3)%2);
 
 // ============================================================================ //
 
 module ShowStager(Tube_OD=DefaultBody_OD, Tube_ID=DefaultBody_ID, nLocks=Default_nLocks){
 	
-	translate([0,0,30]) Stager_Cup(Tube_OD=Tube_OD, ID=Tube_OD-24, nLocks=nLocks);
+	translate([0,0,30]) Stager_Cup(Tube_OD=Tube_OD, nLocks=nLocks, Collar_h=16, Offset_a=0);
 	translate([0,0,10]) color("LightBlue") Stager_Saucer(Tube_OD=Tube_OD, nLocks=nLocks);
 	Stager_Mech(Tube_OD=Tube_OD, nLocks=nLocks, Skirt_ID=Tube_ID, Skirt_Len=Default_SkirtLen);
 	
@@ -155,43 +136,44 @@ module ShowStager(Tube_OD=DefaultBody_OD, Tube_ID=DefaultBody_ID, nLocks=Default
 // ShowStager(Tube_OD=DefaultBody_OD, Tube_ID=DefaultBody_ID, nLocks=Default_nLocks);
 
 module ShowStagerAssy(Tube_OD=DefaultBody_OD, Tube_ID=DefaultBody_ID, nLocks=Default_nLocks, ShowLocked=true){
-	
-	
-	Mech_Z=-Saucer_Len-40;
 
 	// Shown in the locked position?
 	Lock_a=	ShowLocked? 0:Calc_a(11,(BoltCircle_d(Tube_OD=Tube_OD)/2));
 						
-	Sep_Z=6; 
-
-	translate([0,0,18.1]) color("Red") Tube(OD=MainBearing_OD, ID=MainBearing_ID, Len=MainBearing_T, myfn=90);
 	
-	//translate([0,0,45]) Stager_CupHoles(Tube_OD=Tube_OD, ID=Default_ID, nLocks=Default_nLocks, BoltsOn=true);
-	//translate([0,0,50]) Stager_Cup(Tube_OD=Tube_OD, ID=BT54Body_ID, nLocks=Default_nLocks, BoltsOn=true);
+	//translate([0,0,50]) Stager_CupHoles(Tube_OD=Tube_OD, nLocks=Default_nLocks, BoltsOn=true);
+	//translate([0,0,50]) 
+	//
+	translate([0,0,0.4]) Stager_Cup(Tube_OD=Tube_OD, nLocks=Default_nLocks, BoltsOn=true, Collar_h=16, Offset_a=0);
 	
-	translate([0,0,18.1]) rotate([0,0,Lock_a]) Stager_LockRing(Tube_OD=Tube_OD, nLocks=nLocks);
+	translate([0,0,-Saucer_H-LockBall_d-2+0.2]) rotate([0,0,Lock_a]) Stager_LockRing(Tube_OD=Tube_OD, nLocks=nLocks);
 
 	//*
-	translate([0,0,-Mech_Z]) 
 		difference(){
 			Stager_Mech(Tube_OD=Tube_OD, nLocks=nLocks, Skirt_ID=Tube_ID, Skirt_Len=Default_SkirtLen, ShowLocked=ShowLocked);
-			//rotate([0,0,-45-180]) translate([0,0,-90]) cube([100,100,100]);
+			rotate([0,0,-38-180]) translate([0,0,-90]) cube([100,100,100]);
 		}
-	translate([0,0,-Mech_Z-26.1]) rotate([180,0,0]) color("Tan") Stager_OuterBearingCover();
+	
 	/**/
 
 	//*
-	//translate([0,0,40+6+0.2]) Stager_Saucer();
+	//
+	translate([0,0,0.2]) Stager_Saucer();
 	
-	//translate([0,0,-Sep_Z]) Stager_ServoPlate(Tube_OD=Tube_OD, Skirt_ID=Tube_ID);
+	//
+	translate([0,0,-Saucer_H-LockBall_d-2-Race_W-InnerRaceXtra_W-22-0.3]) Stager_ServoPlate(Tube_OD=Tube_OD, Skirt_ID=Tube_ID);
 
+	
+	
 	rotate([0,0,Lock_a]){
-		InnerRace_Z=10;
+		InnerRace_Z=-Saucer_H-LockBall_d-2-Race_W-InnerRaceXtra_W/2;
+		
+		translate([0,0,-Saucer_H-LockBall_d-2-Race_W-InnerRaceXtra_W-0.1]) Stager_Indexer();
 		
 		translate([0,0,InnerRace_Z]) color("LightBlue") 
 		   Stager_InnerRace(Tube_OD=Tube_OD);
 
-		Stop_Z= 10+Overlap;
+		Stop_Z= -Saucer_H-LockBall_d-2-Race_W-InnerRaceXtra_W-5-0.2;
 		
 		translate([0,0,Stop_Z]) 
 			rotate([0,180,-45-60]) color("Tan") Stager_LockStop(Tube_OD=Tube_OD, HasMagnet=true);
@@ -207,16 +189,40 @@ module ShowStagerAssy(Tube_OD=DefaultBody_OD, Tube_ID=DefaultBody_ID, nLocks=Def
 //ShowStagerAssy(ShowLocked=false);
 //ShowStagerAssy(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, nLocks=Default_nLocks, ShowLocked=true);
 
+module Stager_BallSpacer(Tube_OD=DefaultBody_OD){
+	Thickness=1.5;
+	nBalls=nBearingBalls(Tube_OD=Tube_OD);
+	//echo(nBalls=nBalls);
+	
+	difference(){
+		cylinder(d=BearingBallCircle_d(Tube_OD=Tube_OD)+Ball_d*0.6, h=Ball_d/2+Thickness);
+		
+		// center hole
+		translate([0,0,-Overlap]) cylinder(d=BearingBallCircle_d(Tube_OD=Tube_OD)-Ball_d*0.6, h=Ball_d/2+Thickness+Overlap*2);
+		
+		for (j=[0:nBalls-1]) rotate([0,0,360/nBalls*j]) translate([BearingBallCircle_d(Tube_OD=Tube_OD)/2,0,Ball_d/2+Thickness])
+			sphere(d=Ball_d+LooseFit, $fn=36);
+			
+		for (j=[0:nBalls/2-1]) rotate([0,0,720/nBalls*j-180/nBalls]){
+			translate([BearingBallCircle_d(Tube_OD=Tube_OD)/2,0,0]) rotate([180,0,0]) Bolt2Hole();
+			rotate([0,0,360/nBalls]) translate([BearingBallCircle_d(Tube_OD=Tube_OD)/2,0,0]) rotate([180,0,0]) Bolt2HeadHole();
+		}
+	} // difference
+} // Stager_BallSpacer
+
+//Stager_BallSpacer();
+
 module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID){
 											
 	BC_r=BoltCircle_d(Tube_OD=Tube_OD)/2;
-	LargeServo=false;
+	
 	nBolts=4;
 	Bolt_a=35;
 	Exit_a=75;
-	Servo_X=LargeServo? -8:-20;
-	Servo_Y=LargeServo? 0:1;
-	Servo_Z=LargeServo? -10:-6;
+	Servo_X= -Tube_OD/2+28;
+	Servo_Y=0;
+	Servo_Z=-10;
+	Servo_a=8;
 	Stop_a= -105;
 	BackStop_a=Stop_a+Calc_a(11,BC_r);
 	
@@ -230,8 +236,30 @@ module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID){
 	echo(Stop_a=Stop_a);
 	Magnet_d=3/16*25.4;
 	
+	module LanyardAttachmentPoint(){
+		Ly_OD=25;
+		Ly_t=5;
+		HoleCenter_Z=Ly_t+3;
+		Offset_Y=0;
+		Offset_X=5;
+		
+		difference(){
+			union(){
+				hull(){
+					translate([Offset_X,Offset_Y,HoleCenter_Z]) rotate([90,0,0]) cylinder(d=10, h=4, center=true);
+					translate([Offset_X,Offset_Y,Ly_t]) cube([12,4,Overlap],center=true);
+				} // hull
+				translate([Offset_X,Offset_Y,0]) cylinder(d=Ly_OD, h=Ly_t);
+			} // union
+			
+			translate([Offset_X,Offset_Y,HoleCenter_Z]) rotate([90,0,0]) cylinder(d=4, h=4+Overlap*2, center=true);
+		} // difference
+	} // LanyardAttachmentPoint
+	
+	LanyardAttachmentPoint();
+	
 	module StopBlock(LockedBlock=true){
-		Block_H=11.5;
+		Block_H=12.5;
 		Block_T=4;
 		BlockOffset=LockedBlock? Block_T/2+3:-Block_T/2-3;
 		Offset_Y=0;
@@ -239,7 +267,7 @@ module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID){
 		difference(){
 			translate([BlockOffset,BC_r+Offset_Y,Block_H/2]) cube([Block_T,12,Block_H],center=true);
 			
-			translate([BlockOffset,BC_r,6+Magnet_d/2]) rotate([0,90,0]) cylinder(d=Magnet_d, h=Block_T+1, center=true);
+			translate([BlockOffset,BC_r,7+Magnet_d/2]) rotate([0,90,0]) cylinder(d=Magnet_d, h=Block_T+1, center=true);
 			
 		} // difference
 	} // StopBlock
@@ -268,11 +296,7 @@ module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID){
 			}
 			
 			// Servo base
-			if (LargeServo) {
-				translate([Servo_X+10,Servo_Y,-5]) cube([60,25,10],center=true);
-			}else{
-				translate([Servo_X+5,Servo_Y,-2]) cube([35,15,8],center=true);
-			}
+			rotate([0,0,Servo_a]) translate([Servo_X+10,Servo_Y,-5]) cube([60,25,10],center=true);
 			
 			// Locked position stop
 			rotate([0,0,Stop_a]) StopBlock(LockedBlock=true); //cylinder(d=8, h=10);
@@ -283,11 +307,8 @@ module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID){
 		} // union
 		
 		// Servo
-		if (LargeServo) {
-			translate([Servo_X,Servo_Y,0]) rotate([0,0,180]) translate([0,0,Servo_Z]) Servo_LD20MG(BottomMount=true,TopAccess=false);
-		}else{
-			translate([Servo_X,Servo_Y,0]) translate([0,0,Servo_Z]) ServoSG90(TopMount=true);
-		}
+		rotate([0,0,Servo_a]) translate([Servo_X,Servo_Y,0]) 
+			rotate([0,0,180]) translate([0,0,Servo_Z]) Servo_LD20MG(BottomMount=true,TopAccess=false);
 		
 		// mounting bolts
 		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+Bolt_a]) translate([0,Skirt_ID/2-Bolt4Inset,0])
@@ -303,7 +324,7 @@ module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID){
 
 
 module Stager_LockRing(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, FlexComp_d=0.0){
-	
+	BC_r=Race_BC_d(Tube_OD=Tube_OD)/2;
 	nBolts=nInnerRaceBolts;
 	OD=Tube_OD-StagerLockInset_Y(D=Tube_OD)*2-Stager_LockRod_Y-LockBall_d*2+4;
 	Depth=3;
@@ -311,37 +332,14 @@ module Stager_LockRing(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, FlexComp_d
 	nSteps=15;
 	Arc_a=Calc_a(9,(OD/2-Inset));
 	echo(Arc_a=Arc_a);
-	Small_ID=OD-15; // center hole ID
-	Large_ID=MainBearing_ID-Bolt4Inset*4;
+	Large_ID=OD-16; // center hole ID
+	Small_ID=Race_BC_d(Tube_OD=Tube_OD)-Bolt4Inset*2;
 	
 	// center of ball in locked position
 	Locked_Ball_Y=Tube_OD/2-StagerLockInset_Y(D=Tube_OD)-Stager_LockRod_Y/2-LockBall_d/2+2+FlexComp_d/2;
 		
-	Ball_Z=23-LockBall_d/2-0.8;
-	
-	module LanyardAttachmentPoint(){
-		Ly_OD=Large_ID+4;
-		Ly_t=4;
-		HoleCenter_Z=Ly_t+MainBearingSplit;
-		
-		
-		
-		difference(){
-			union(){
-				hull(){
-					translate([0,0,HoleCenter_Z]) rotate([90,0,0]) cylinder(d=10, h=4, center=true);
-					translate([0,0,Ly_t]) cube([12,4,Overlap],center=true);
-				} // hull
-				cylinder(d=Ly_OD, h=Ly_t);
-			} // union
-			// Key
-			translate([0,MainBearing_ID/2-Bolt4Inset*2,-Overlap]) cylinder(d=3, h=1);
-		
-			translate([0,0,HoleCenter_Z]) rotate([90,0,0]) cylinder(d=4, h=4+Overlap*2, center=true);
-		} // difference
-	} // LanyardAttachmentPoint
-	
-	translate([0,0,MainBearingSplit]) LanyardAttachmentPoint();
+	LockHead_H=LockBall_d+4;
+	Ball_Z=LockHead_H/2;
 	
 	module Bearing(){
 		translate([0,Locked_Ball_Y-LockBall_d/2-MR84_Bearing_OD/2,0]){
@@ -357,32 +355,25 @@ module Stager_LockRing(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, FlexComp_d
 			} // hull
 	} // Bearing
 	
-	Bearing_Z=0;
-	FullD_Z=Bearing_Z+MainBearing_T+4;
-	
+	FullD_Z=5;
 	
 	difference(){
-		union(){
-			translate([0,0,Bearing_Z+MainBearingSplit]) cylinder(d=MainBearing_ID, h=MainBearing_T, $fn=$preview? 90:360);
-			translate([0,0,Bearing_Z+MainBearing_T]) cylinder(d1=MainBearing_ID+3, d2=OD, h=4+Overlap, $fn=$preview? 90:360);
-			translate([0,0,FullD_Z]) cylinder(d=OD, h=14, $fn=$preview? 90:360);
-		} // union
+		cylinder(d=OD, h=LockHead_H, $fn=$preview? 90:360);
 		
 		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j])
 			translate([0,0,Ball_Z]) Bearing();
 			
 		// center hole
-		translate([0,0,FullD_Z+13]) cylinder(d1=Small_ID, d2=Small_ID+1, h=1+Overlap); // chamfer
-		translate([0,0,FullD_Z]) cylinder(d=Small_ID, h=20+Overlap*2); // top
-		translate([0,0,Bearing_Z+MainBearingSplit-Overlap]) cylinder(d=Large_ID, h=5+Overlap); // bottom
-		translate([0,0,Bearing_Z+MainBearingSplit+2]) cylinder(d1=Large_ID, d2=Small_ID, h=7+Overlap); // transition
+		translate([0,0,LockHead_H-1]) cylinder(d1=Large_ID, d2=Large_ID+1, h=1+Overlap, $fn=$preview? 90:360); // chamfer
+		translate([0,0,FullD_Z]) cylinder(d=Large_ID, h=LockHead_H, $fn=$preview? 90:360); // top
+		translate([0,0,-Overlap]) cylinder(d=Small_ID, h=LockHead_H, $fn=$preview? 90:360); // bottom
 		
 		// Bolts
-		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) 
-			translate([MainBearing_ID/2-Bolt4Inset,0,Bearing_Z]) rotate([180,0,0]) Bolt4Hole();
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+180/nBolts]) 
+			translate([0,BC_r,6]) Bolt4HeadHole();
 			
 		// Key
-		translate([0,MainBearing_ID/2-Bolt4Inset*2,Bearing_Z+MainBearingSplit-Overlap]) cylinder(d=3, h=1);
+		translate([0,Small_ID/2,-Overlap]) cylinder(d=3, h=1);
 		
 	} // difference
 	
@@ -391,16 +382,17 @@ module Stager_LockRing(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, FlexComp_d
 				cylinder(d=MR84_Bearing_OD, h=MR84_Bearing_T, center=true);
 } // Stager_LockRing
 
-//Stager_LockRing();
+//translate([0,0,-Saucer_H-LockBall_d-2+0.2]) Stager_LockRing();
 
 module Stager_LockStop(Tube_OD=DefaultBody_OD, HasMagnet=true){
 	BC_r=BoltCircle_d(Tube_OD=Tube_OD)/2;
-	nBottomBolts=nInnerRaceBolts;
+	nBottomBolts=12;
 	Plate_H=4;
 	Stop_a=Calc_a(8,BC_r);
 	Magnet_OD=3/16*25.4;
-	Block_H=10.5;
+	Block_H=11;
 	Block_Len=HasMagnet? 8:13;
+	ServoWheelHub_d=13;
 			
 	module BoltPattern(){
 		for (j=[0:1]) rotate([0,0,360/nBottomBolts*j-180/nBottomBolts]) 
@@ -431,8 +423,8 @@ module Stager_LockStop(Tube_OD=DefaultBody_OD, HasMagnet=true){
 		}else{
 			// Servo wheel
 			rotate([0,0,10]) hull(){
-				translate([0,BC_r-6,Plate_H]) cylinder(d=8, h=7);
-				translate([0,BC_r-2,Plate_H]) cylinder(d=8, h=7);
+				translate([0,BC_r-6,Plate_H]) cylinder(d=ServoWheelHub_d, h=Block_H);
+				translate([0,BC_r-2,Plate_H]) cylinder(d=ServoWheelHub_d, h=Block_H);
 			}
 		}
 			
@@ -448,9 +440,10 @@ module Stager_LockRodBoltPattern(){
 	// from bottom center
 	LR_Y=Stager_LockRod_Y;
 	LR_Z=Stager_LockRod_Z;
+	LockOffset_Z=-5;
 
-	translate([0,-LR_Y/2,LR_Z-5]) rotate([90,0,0]) children();
-	translate([0,-LR_Y/2,LR_Z-5-8]) rotate([90,0,0]) children();
+	translate([0,-LR_Y/2,LR_Z+LockOffset_Z]) rotate([90,0,0]) children();
+	translate([0,-LR_Y/2,LR_Z+LockOffset_Z-8]) rotate([90,0,0]) children();
 	
 } // Stager_LockRodBoltPattern
 
@@ -460,7 +453,7 @@ module Stager_LockRod(Adj=0){
 	LR_X=Stager_LockRod_X;
 	LR_Y=Stager_LockRod_Y;
 	LR_Z=Stager_LockRod_Z;
-	Lock_Z=10-LockBall_d/2; // 10mm is the bottom of the saucer
+	Lock_Z=LockBall_d/2+1;
 	Lock_Cam=2+IDXtra;
 	
 	difference(){
@@ -480,16 +473,17 @@ module Stager_LockRod(Adj=0){
 //Stager_LockRod();
 //Stager_LockRod(Adj=0.5);
 
-module Stager_CupHoles(Tube_OD=DefaultBody_OD, ID=Default_ID, nLocks=Default_nLocks, BoltsOn=true, Offset_a=0){
+module Stager_CupHoles(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true, Offset_a=0){
 	Collar_h=18;
 	nBolts=nLocks*4;
+	ID=Tube_OD-22;
 	
 	difference(){
 		translate([0,0,-Overlap]) cylinder(d=Tube_OD+1, h=Collar_h+Overlap, $fn=$preview? 90:360); // test
 		translate([0,0,-Overlap*2]) cylinder(d=ID-IDXtra*2, h=Collar_h+Overlap*4, $fn=$preview? 90:360); 
 	} // difference
 	
-	translate([0,0,-12]) rotate([0,0,Offset_a]) Stager_LockRod_Holes(Tube_OD=Tube_OD, nLocks=nLocks);
+	translate([0,0,-14]) rotate([0,0,Offset_a]) Stager_LockRod_Holes(Tube_OD=Tube_OD, nLocks=nLocks);
 	
 	// BoltHoles
 	if (BoltsOn)
@@ -500,14 +494,15 @@ module Stager_CupHoles(Tube_OD=DefaultBody_OD, ID=Default_ID, nLocks=Default_nLo
 
 //Stager_CupHoles();
 
-module Stager_Cup(Tube_OD=DefaultBody_OD, ID=Default_ID, nLocks=Default_nLocks, BoltsOn=true, Collar_h=17, Offset_a=0){
-	// also acts as motor retainer
+module Stager_Cup(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true, Collar_h=16, Offset_a=0){
 
 	Len=3;
 	LR_X=Stager_LockRod_X;
 	LR_Y=Stager_LockRod_Y;
 	LR_Z=Stager_LockRod_Z;
 	nBolts=nLocks*4;
+	ID=Tube_OD-22;
+	LockRodOffset_Z=-20;
 	
 	difference(){
 		union(){
@@ -538,7 +533,7 @@ module Stager_Cup(Tube_OD=DefaultBody_OD, ID=Default_ID, nLocks=Default_nLocks, 
 		
 		if (nLocks>0)
 		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j+Offset_a]) 
-			translate([0,Tube_OD/2-StagerLockInset_Y(D=Tube_OD),-16])
+			translate([0,Tube_OD/2-StagerLockInset_Y(D=Tube_OD),LockRodOffset_Z])
 				Stager_LockRodBoltPattern() Bolt6Hole(depth=StagerLockInset_Y(D=Tube_OD)+4);
 		
 		// wire path only, for sustainer ignition
@@ -554,7 +549,7 @@ module Stager_Cup(Tube_OD=DefaultBody_OD, ID=Default_ID, nLocks=Default_nLocks, 
 	} // difference
 	
 	if ($preview && (nLocks>0))
-		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j+Offset_a]) translate([0, Tube_OD/2-StagerLockInset_Y(D=Tube_OD),-16])
+		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j+Offset_a]) translate([0, Tube_OD/2-StagerLockInset_Y(D=Tube_OD),LockRodOffset_Z])
 				color("Orange") Stager_LockRod();
 } // Stager_Cup
 
@@ -562,7 +557,7 @@ module Stager_Cup(Tube_OD=DefaultBody_OD, ID=Default_ID, nLocks=Default_nLocks, 
 // rotate([180,0,0]) Stager_Cup(ID=BT54Body_ID); // STL test
 
 module Stager_SaucerBoltPattern(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks){
-	Inset_Y=7.5;
+	Inset_Y=StagerLockInset_Y(D=Tube_OD);
 	Bolt_a=Calc_a(15,(Tube_OD/2));
 	
 	for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j]) {
@@ -578,7 +573,7 @@ module Stager_LockRod_Holes(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Offse
 	LR_Y=Stager_LockRod_Y;
 	LR_Z=Stager_LockRod_Z;
 	
-	Saucer_H=Saucer_Len;
+	Saucer_H=Saucer_H;
 	
 	for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j+Offset_a]) 
 		translate([0,Tube_OD/2-StagerLockInset_Y(D=Tube_OD), -Saucer_H-12-Overlap]){
@@ -594,7 +589,7 @@ module Stager_LockRod_Holes(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Offse
 //Stager_LockRod_Holes();
 
 module Stager_Saucer(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks){
-	Len=Saucer_Len;
+	Len=Saucer_H;
 	ID=Saucer_ID(Tube_OD=Tube_OD);
 	echo("Saucer ID = ",ID);
 	LR_X=Stager_LockRod_X;
@@ -623,32 +618,31 @@ module Stager_Saucer(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks){
 	
 } // Stager_Saucer
 
-//Stager_Saucer();
+// Stager_Saucer();
 
-module Stager_InnerRace(Tube_OD=DefaultBody_OD){
+module Stager_Indexer(Tube_OD=DefaultBody_OD){
 	
-	nBolts=nInnerRaceBolts*4; // allows 15° indexing
+	nBolts=24; // allows 15° indexing
 	Thickess=5;
-	Bearing_Z=8;
-	Holes=[5,9,15,19]; // stop mounting holes
+	Bearing_Z=5;
+	Holes=[6,8,16,18]; // stop mounting holes
 	
+	translate([0,0,-Bearing_Z])
 	difference(){
 		union(){
 			cylinder(d=BoltCircle_d(Tube_OD=Tube_OD)+Bolt4Inset*2,h=Thickess, $fn=$preview? 90:360);
 			
-			cylinder(d=MainBearing_ID, h=Bearing_Z+MainBearingSplit, $fn=$preview? 90:360);
-			cylinder(d=MainBearing_ID+2, h=Bearing_Z, $fn=$preview? 90:360);
+			cylinder(d=Race_BC_d(Tube_OD=Tube_OD)+Bolt4Inset*2, h=Bearing_Z, $fn=$preview? 90:360);
+			
 			
 		} // union
 		
-		translate([0,0,-Overlap]) cylinder(d=MainBearing_ID-Bolt4Inset*4, h=Bearing_Z+2+Overlap*2);
-		
-		// Screw access
-		translate([0,MainBearing_OD/2+Bolt4Inset,0]) Bolt4ButtonHeadHole();
-		
-		// Bolts for LockRing
+		// Center hole
+		translate([0,0,-Overlap]) cylinder(d=Race_ID(Tube_OD=Tube_OD), h=Bearing_Z+2+Overlap*2);
+				
+		// Bolts for inner race
 		for (j=[0:nInnerRaceBolts-1]) rotate([0,0,360/nInnerRaceBolts*j]) 
-			translate([MainBearing_ID/2-Bolt4Inset,0,Bearing_Z-4]) rotate([180,0,0]) Bolt4HeadHole();
+			translate([0,Race_BC_d(Tube_OD=Tube_OD)/2,Bearing_Z-6]) rotate([180,0,0]) Bolt4HeadHole();
 			
 		// Activator and Stop bolt holes
 		for (j=Holes) rotate([0,0,360/nBolts*j]) 
@@ -657,20 +651,42 @@ module Stager_InnerRace(Tube_OD=DefaultBody_OD){
 	} // difference
 	
 	// Key
-	translate([0,MainBearing_ID/2-Bolt4Inset*2,0]) cylinder(d=3, h=1);
+	translate([0,Race_ID(Tube_OD=Tube_OD)/2,-Bearing_Z]) cylinder(d=3, h=1);
+	
+} //Stager_Indexer
+
+//translate([0,0,-Saucer_H-LockBall_d-2-Race_W-InnerRaceXtra_W/2-8]) Stager_Indexer();
+
+
+
+module Stager_InnerRace(Tube_OD=DefaultBody_OD){
+	nBolts=12;
+	
+	difference(){
+		translate([0,0,-InnerRaceXtra_W/2])
+			OnePieceInnerRace(BallCircle_d=BearingBallCircle_d(Tube_OD=Tube_OD), Race_ID=Race_ID(Tube_OD=Tube_OD), Ball_d=Ball_d, 
+						Race_w=Race_W+InnerRaceXtra_W, PreLoadAdj=PreLoadAdj, 
+						VOffset=0.00, BI=false, myFn=$preview? 90:720);
+		
+			
+		// Activator and Stop bolt holes
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) 
+			translate([0,Race_BC_d(Tube_OD=Tube_OD)/2,Race_W+InnerRaceXtra_W/2])
+				Bolt4Hole(depth=Race_W+InnerRaceXtra_W);
+	} // difference
 	
 } //Stager_InnerRace
 
-//Stager_InnerRace();
+// translate([0,0,-Saucer_H-LockBall_d-2-Race_W-InnerRaceXtra_W/2]) Stager_InnerRace(Tube_OD=DefaultBody_OD);
 	
 module Stager_Mech(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Skirt_ID=DefaultBody_ID, Skirt_Len=Default_SkirtLen, nSkirtBolts=4, ShowLocked=true){
 		
-	Len=Saucer_Len;
+	Len=Saucer_H;
 	ID=Saucer_ID(Tube_OD=Tube_OD);
 	Raceway_Len=44;
 	Raceway_Z=-49;
-	Tube_Len=18;
-	Race_Z=-Saucer_Len-Tube_Len;
+	Tube_Len=10+LockBall_d;
+	Race_Z=-Saucer_H-LockBall_d-2-Race_W-InnerRaceXtra_W/2;
 
 	Locked_Ball_X=0; //Stager_LockRod_X/2+LockBall_d/2-2;
 	Locked_Ball_Y=Tube_OD/2-StagerLockInset_Y(D=Tube_OD)-Stager_LockRod_Y/2-LockBall_d/2+2;
@@ -687,7 +703,7 @@ module Stager_Mech(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Skirt_ID=Defau
 	} // ShowBall
 	
 	module BackStop(){
-		Block_W=22;
+		Block_W=24;
 		Block_H=LockBall_d+5;
 		
 		module BallPath(){
@@ -731,38 +747,26 @@ module Stager_Mech(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Skirt_ID=Defau
 		
 	difference(){
 		union(){
+			translate([0,0,Race_Z])
+			OnePieceOuterRace(BallCircle_d=BearingBallCircle_d(Tube_OD=Tube_OD), Race_OD=Tube_OD, 
+					Ball_d=Ball_d, Race_w=Race_W, PreLoadAdj=PreLoadAdj, 
+					VOffset=0.00, BI=false, myFn=$preview? 90:720);
+
 	
 			// Spring wells
 			for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j]) 
 				translate([0,Tube_OD/2-StagerLockInset_Y(D=Tube_OD)+1, -Len-Stager_Spring_FL])
 					cylinder(d=Stager_Spring_OD+5, h=Stager_Spring_CBL);
-					
-			// Main bearing
-			translate([0,0,MainBearing_Z])
-				difference(){
-					translate([0,0,MainBearingSplit]) cylinder(d=Tube_OD-1, h=MainBearing_T);
-					
-					translate([0,0,MainBearingSplit]) cylinder(d=ID, h=MainBearing_T+Overlap);
-					
-					cylinder(d=MainBearing_OD+IDXtra*2, h=MainBearing_T);
-				} // difference
-	
 		} // union
-		
-		// bearing holder Bolts
-		nBolts=nLocks*2;
-		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+180/nBolts])
-				translate([0,MainBearing_OD/2+Bolt4Inset,MainBearing_Z]) rotate([180,0,0]) Bolt4Hole();
 						
 		// Spring wells
 		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j]) 
 				translate([0,Tube_OD/2-StagerLockInset_Y(D=Tube_OD)+1, -Len-Stager_Spring_FL])
 					translate([0,0,2]) cylinder(d=Stager_Spring_OD+LooseFit, h=Stager_Spring_FL);
 					
-		// center hole
-		translate([0,0,-Len-Tube_Len-Overlap]) cylinder(d=ID, h=Len+Tube_Len+Overlap*2, $fn=$preview? 90:360);
 	} // difference
 	
+	Plate_Z=Race_Z-18.5;
 	
 	// The Tube
 	difference(){
@@ -770,102 +774,65 @@ module Stager_Mech(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Skirt_ID=Defau
 		Bolt_a=35;
 		
 		union(){
-			translate([0,0,-Len-Tube_Len]) 
-				cylinder(d=Tube_OD, h=Tube_Len, $fn=$preview? 90:360);
-			
 			// Lower Skirt, connects to E_Bay
-			translate([0,0,Race_Z-23-5-Skirt_Len]) 
+			translate([0,0,Plate_Z-5-Skirt_Len]) 
 				Tube(OD=Tube_OD, ID=Skirt_ID, Len=Skirt_Len+6, myfn=$preview? 90:360);
 				
 			// Upper Skirt
-			translate([0,0,Race_Z-23]) 
-				Tube(OD=Tube_OD, ID=Tube_OD-4.4, Len=40, myfn=$preview? 90:360);
+			translate([0,0,Plate_Z]) 
+				Tube(OD=Tube_OD, ID=Tube_OD-4.4, Len=-Plate_Z-Saucer_H, myfn=$preview? 90:360);
 				
-			translate([0,0,Race_Z-23]) 
+			translate([0,0,Plate_Z]) 
 				TubeStop(InnerTubeID=Skirt_ID-3, OuterTubeOD=Tube_OD, myfn=$preview? 90:360);
 				
 			// Bolt bosses
 			difference(){
-				for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+Bolt_a]) translate([0,Skirt_ID/2-Bolt4Inset,Race_Z-23])
+				for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+Bolt_a]) translate([0,Skirt_ID/2-Bolt4Inset,Plate_Z])
 					hull(){
 						cylinder(d=Bolt4Inset*2, h=5);
 						translate([-Bolt4Inset-1,Bolt4Inset+1,0]) cube([Bolt4Inset*2+2,Overlap,5]);
 					} // hull
 					
-				translate([0,0,Race_Z-23-Overlap]) cylinder(d=Skirt_ID-Bolt4Inset*3.25, h=5+Overlap*2);
+				translate([0,0,Plate_Z-Overlap]) cylinder(d=Skirt_ID-Bolt4Inset*3.25, h=5+Overlap*2);
 			} // difference
 			
 			// Alignment key
 			intersection(){
-				translate([0,Skirt_ID/2,Race_Z-27]) cylinder(d=4,h=5);
-				translate([0,0,Race_Z-27]) cylinder(d=Skirt_ID+1, h=5);
+				translate([0,Skirt_ID/2,Plate_Z-4]) cylinder(d=4,h=5);
+				translate([0,0,Plate_Z-4]) cylinder(d=Skirt_ID+1, h=5);
 			} // intersection
 
 		} // union
 		
 		// Rivet holes
 		if (nSkirtBolts>0) for (j=[0:nSkirtBolts-1]) rotate([0,0,360/nSkirtBolts*j]) 
-			translate([0,Tube_OD/2,Race_Z-23-5-Skirt_Len+7.5]) rotate([-90,0,0]) Bolt4ClearHole();
+			translate([0,Tube_OD/2,Plate_Z-5-Skirt_Len+7.5]) rotate([-90,0,0]) Bolt4ClearHole();
 		
 		// Bolts
 		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+Bolt_a])
-			translate([0,Skirt_ID/2-Bolt4Inset,Race_Z-23+5]) Bolt4Hole();
+			translate([0,Skirt_ID/2-Bolt4Inset,Plate_Z+5]) Bolt4Hole();
 			
-		translate([0,0,-Len-Tube_Len-Overlap]) 
-			cylinder(d=Tube_OD-4.0, h=Tube_Len+Overlap*2, $fn=$preview? 90:360);
+		//translate([0,0,-Len-Tube_Len-Overlap]) 
+		//	cylinder(d=Tube_OD-4.0, h=Tube_Len+Overlap*2, $fn=$preview? 90:360);
 		
 		// Arm / Trigger access hole
 		Stager_ArmDisarmAccess(Tube_OD=Tube_OD, Len=Tube_OD);
 
-		//if ($preview) translate([0,0,-100]) cube([50,50,100]);
+		//
+		if ($preview) translate([0,0,-100]) cube([Tube_OD/2,Tube_OD/2,100]);
 	} // difference
 	
-	
+
 } // Stager_Mech
 
 // Stager_Mech();
 
-module Stager_OuterBearingCover(nLocks=Default_nLocks){
-	nBolts=nLocks*2;
-	Thickness=4;
-	
-	difference(){
-		union(){
-			cylinder(d=MainBearing_OD+6, h=Thickness);
-			
-			// bearing holder Bolts
-			hull() for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+180/nBolts])
-				translate([0,MainBearing_OD/2+Bolt4Inset,0]) cylinder(d=Bolt4Inset*2, h=Thickness);
-		} // union
-		
-		translate([0,0,-Overlap]) cylinder(d=MainBearing_OD-2, h=Thickness+Overlap*2);
-		translate([0,0,-Overlap]) cylinder(d=MainBearing_OD+IDXtra*2, h=MainBearingSplit+Overlap);
-		
-		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j+180/nLocks]) translate([0,MainBearing_OD/2+9,-Overlap]) 
-			cylinder(d=14, h=Thickness+Overlap*2);
-		
-		// bearing holder Bolts
-			for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+180/nBolts])
-				translate([0,MainBearing_OD/2+Bolt4Inset,Thickness]) Bolt4ButtonHeadHole();
-	} // difference
-} // Stager_OuterBearingCover
-
-//translate([0,0,-25]) rotate([180,0,0]) Stager_OuterBearingCover();
-
-/*
-// test
-difference(){
-	Stager_Mech();
-	translate([0,0,-100]) cylinder(d=100, h=63);
-}
-/**/
-
 module Stager_ArmDisarmAccess(Tube_OD=DefaultBody_OD, Len=DefaultBody_OD){
-	Post_Z=-Saucer_Len-36;
+	Post_Z=-Saucer_H-41;
 	
 	ArmingPost_a=108;
 	
-	rotate([0,0,ArmingPost_a]) translate([0,MainBearing_OD/2+4,Post_Z])
+	rotate([0,0,ArmingPost_a]) translate([0,BoltCircle_d(Tube_OD=Tube_OD)/2+4,Post_Z])
 			rotate([0,90,0]) cylinder(d=3, h=Len, center=true);
 } // Stager_ArmDisarmAccess
 
