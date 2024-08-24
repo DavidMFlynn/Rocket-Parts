@@ -135,12 +135,9 @@
 // ***********************************
 //  ***** Routines *****
 //
-// MtrRMS38_240(HasEyeBolt=false);
 //
 // ***********************************
 //  ***** for Viewing *****
-//
-// ShowCableRelease();
 //
 // ShowRocket(ShowInternals=true);
 // ShowRocket(ShowInternals=false);
@@ -164,10 +161,7 @@ use<SpringThingBooster.scad>
 use<RailGuide.scad>
 
 //also included
- //include<RailGuide.scad>
  //include<Fins.scad>
- //include<TubesLib.scad>
- //include<BearingLib.scad>
  //include<CommonStuffSAEmm.scad>
 
 Overlap=0.05;

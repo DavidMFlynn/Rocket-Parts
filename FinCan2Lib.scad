@@ -31,21 +31,21 @@ FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 				MotorTube_OD=BT54Body_OD, RailGuide_h=BT98Body_OD/2+2,
 				nFins=5, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 				Fin_Root_W=14, Fin_Root_L=130, Fin_Post_h=14, Fin_Chamfer_L=32,
-				Cone_Len=65, ThreadedTC=true, Extra_OD=0, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
+				Cone_Len=65, ThreadedTC=true, Extra_OD=0, RailGuideLen=30, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
 /**/
 /*
 FC2_FinCan(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, Can_Len=160,
 				MotorTube_OD=BT54Body_OD, RailGuide_h=BT75Body_OD/2+2,
 				nFins=5, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 				Fin_Root_W=12, Fin_Root_L=130, Fin_Post_h=10, Fin_Chamfer_L=32,
-				Cone_Len=35, ThreadedTC=true, Extra_OD=0, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
+				Cone_Len=35, ThreadedTC=true, Extra_OD=0, RailGuideLen=30, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
 /**/
 /*
   FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 				MotorTube_OD=BT54Body_OD, RailGuide_h=BT98Body_OD/2+2,
 				nFins=5,
 				Fin_Root_W=14, Fin_Root_L=130, Fin_Post_h=14, Fin_Chamfer_L=32,
-				Cone_Len=65, ThreadedTC=true, Extra_OD=0, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
+				Cone_Len=65, ThreadedTC=true, Extra_OD=0, RailGuideLen=30, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
 /**/
 /*
   FC2_MotorRetainer(Body_OD=BT98Body_OD,
@@ -209,7 +209,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 		if (UpperHalfOnly) translate([0,0,Can_Len/2]) 
 			rotate([180,0,0]) cylinder(d=Body_OD+10, h=Can_Len/2+Cone_Len+1);
 			
-		//if ($preview) translate([0,0,-Cone_Len-Overlap]) cube([Body_OD/2+1,Body_OD/2+1,Cone_Len+Can_Len+20]);
+		if ($preview) rotate([0,0,-180/nFins]) translate([0,0,-Cone_Len-Overlap]) cube([Body_OD/2+1,Body_OD/2+1,Cone_Len+Can_Len+20]);
 	} // difference
 } // FC2_FinCan
 

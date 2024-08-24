@@ -102,10 +102,10 @@ SpringThingBoosterRev();
 // LockBall_d=1/2 * 25.4;
 // nBT137Balls=7;
 // 
-// STB_LockDisk(BallPerimeter_d=BT137Body_ID, nLockBalls=nBT137Balls, HasLargeInnerBearing=true);
-// rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=BT137BallPerimeter_d, Outer_OD=BT137Body_OD, Body_OD=BT137Body_ID, nLockBalls=nBT137Balls, IntegratedCouplerLenXtra=-19, HasIntegratedCouplerTube=true, Body_ID=BT137Body_ID, HasSecondServo=true, UsesBigServo=true, Engagement_Len=25, HasLargeInnerBearing=true);
-// STB_BallRetainerBottom(BallPerimeter_d=BT137BallPerimeter_d, Outer_OD=BT137Body_OD, Body_OD=BT137Body_ID, nLockBalls=nBT137Balls, HasSpringGroove=false, Engagement_Len=25, HasLargeInnerBearing=true);
-// rotate([180,0,0]) STB_TubeEnd(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls, Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, Skirt_Len=25);
+// STB_LockDisk(BallPerimeter_d=STB_BT137BallPerimeter_d(), nLockBalls=nBT137Balls, HasLargeInnerBearing=true);
+// rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=STB_BT137BallPerimeter_d(), Outer_OD=BT137Body_OD, Body_OD=BT137Body_ID, nLockBalls=nBT137Balls, IntegratedCouplerLenXtra=-19, HasIntegratedCouplerTube=true, Body_ID=BT137Body_ID, HasSecondServo=true, UsesBigServo=true, Engagement_Len=25, HasLargeInnerBearing=true);
+// STB_BallRetainerBottom(BallPerimeter_d=STB_BT137BallPerimeter_d(), Outer_OD=BT137Body_OD, Body_OD=BT137Body_ID, nLockBalls=nBT137Balls, HasSpringGroove=false, Engagement_Len=25, HasLargeInnerBearing=true);
+// rotate([180,0,0]) STB_TubeEnd(BallPerimeter_d=STB_BT137BallPerimeter_d(), nLockBalls=nBT137Balls, Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, Skirt_Len=25);
 //
 // ---------------
 //  *** Tools ***

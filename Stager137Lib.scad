@@ -22,7 +22,7 @@ echo("Stager137Lib 0.9.0");
 //  ***** for STL output *****
 //
 //  *** Sustainer "Cup" bolts to bottom of sustainer ***
-// rotate([180,0,0]) Stager_Cup(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true, Collar_h=16, Offset_a=0); // a.k.a. Sustainer Motor Retainer
+// rotate([180,0,0]) Stager_Cup(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true, Collar_h=16, Offset_a=0);
 // rotate([-90,0,0]) Stager_LockRod(Adj=0.5); // Looser
 // rotate([-90,0,0]) Stager_LockRod(Adj=0.0); // This works!
 //
@@ -33,7 +33,7 @@ echo("Stager137Lib 0.9.0");
 // Stager_LockStop(Tube_OD=DefaultBody_OD, HasMagnet=false);
 //
 //  *** Main Body ***
-// Stager_Mech(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Skirt_ID=DefaultBody_ID, Skirt_Len=Default_SkirtLen, nSkirtBolts=4, ShowLocked=true);
+// Stager_Mech(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Skirt_ID=DefaultBody_ID, Skirt_Len=Default_SkirtLen, nSkirtBolts=5, ShowLocked=true);
 //
 // Stager_BallSpacer(Tube_OD=DefaultBody_OD);
 //
@@ -66,6 +66,7 @@ use<SG90ServoLib.scad>
 Overlap=0.05;
 IDXtra=0.2;
 $fn=$preview? 24:90;
+Bolt4Inset=4;
 
 // Heavy spring
 Stager_Spring_OD=5/16*25.4;
@@ -77,7 +78,7 @@ Stager_LockRod_Y=6;
 Stager_LockRod_Z=38;
 Stager_LockRod_R=1;
 LockBall_d=1/2 * 25.4; // 1/2" Delrin balls
-CupBoltHoleInset=5;
+CupBoltHoleInset=4+Bolt4Inset;
 
 Default_nLocks=5;
 Default_SkirtLen=16;
@@ -88,7 +89,6 @@ LooseFit=0.8;
 
 nInnerRaceBolts=6;
 InnerRaceXtra_W=2;
-Bolt4Inset=4;
 Saucer_H=6;
 
 // Small Bearing
@@ -818,8 +818,7 @@ module Stager_Mech(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Skirt_ID=Defau
 		// Arm / Trigger access hole
 		Stager_ArmDisarmAccess(Tube_OD=Tube_OD, Len=Tube_OD);
 
-		//
-		if ($preview) translate([0,0,-100]) cube([Tube_OD/2,Tube_OD/2,100]);
+		//if ($preview) translate([0,0,-100]) cube([Tube_OD/2,Tube_OD/2,100]);
 	} // difference
 	
 
