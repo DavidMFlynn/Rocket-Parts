@@ -124,8 +124,7 @@ module EB_LowerElectronics_Bay(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, Len=162
 				rotate([0,0,RailGuide_a]) CenteringRing(OD=Tube_ID-1, ID=MotorTubeHole_d, Thickness=5, nHoles=nFins, Offset=0);
 			}
 			
-			if (Bolted){
-				
+			if (Bolted)
 				difference(){
 					translate([0,0,Len/2-10]) cylinder(d=Tube_OD-1, h=20);
 						
@@ -146,16 +145,16 @@ module EB_LowerElectronics_Bay(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, Len=162
 					}
 				} // difference
 			
-			}
 			
-			if (HasRailGuide){
+			
+			if (HasRailGuide)
 				translate([0,0,RailGuide_Z]) difference(){
 					rotate([0,0,RailGuide_a]) 
 						RailGuidePost(OD=Tube_OD, MtrTube_OD=0, H=Tube_OD/2+2, 
 										TubeLen=55, Length = RailGuideLen, BoltSpace=12.7, AddTaper=false);
 					cylinder(d=Tube_ID-1.2, h=60, center=true);			
 				} // difference
-			}
+			
 		} // union
 				
 		if (HasRailGuide) rotate([0,0,RailGuide_a]) 
@@ -202,8 +201,7 @@ module EB_LowerElectronics_Bay(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, Len=162
 	
 } // EB_LowerElectronics_Bay
 
-// 
-EB_LowerElectronics_Bay(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=162, nBolts=5, Bolted=true, TopOnly=false, BottomOnly=false,HasLowerIntegratedCoupler=true, HasRailGuide=true );
+// EB_LowerElectronics_Bay(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=162, nBolts=5, Bolted=true, TopOnly=false, BottomOnly=false,HasLowerIntegratedCoupler=true, HasRailGuide=true );
 // rotate([180,0,0]) EB_LowerElectronics_Bay(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=162, nBolts=5, Bolted=true, TopOnly=true, BottomOnly=false,HasLowerIntegratedCoupler=true);
 // EB_LowerElectronics_Bay(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=162, nBolts=5, Bolted=true, TopOnly=false, BottomOnly=true,HasLowerIntegratedCoupler=true);
 
@@ -292,7 +290,9 @@ module EB_ExtensionRing(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=21, nBolts
 
 //EB_ExtensionRing();
 
-module EB_Electronics_Bay(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, Len=162, nBolts=3, BoltInset=7.5, ShowDoors=false, HasSecondBattDoor=true, HasFwdIntegratedCoupler=false, HasFwdShockMount=false){
+module EB_Electronics_Bay(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, Len=162, nBolts=3, BoltInset=7.5, ShowDoors=false, 
+					HasSecondBattDoor=true, HasFwdIntegratedCoupler=false, HasFwdShockMount=false, 
+					HasRailGuide=false, RailGuideLen=35){
 	// Standard single altimeter bay
 
 	Altimeter_Z=Len/2;
@@ -312,6 +312,9 @@ module EB_Electronics_Bay(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, Len=162, nBo
 	Fwd_Coupler_Adjustment=HasFwdIntegratedCoupler? 15:0;
 	Fwd_Al_Tube_Z=Len-Fwd_Coupler_Adjustment+Al_Tube_d/2+1;
 	
+	RailGuide_Z=Len-15-30;
+	RailGuide_a=0;
+
 	difference(){
 		union(){
 			Tube(OD=Tube_OD, ID=Tube_ID, Len=Len-Fwd_Coupler_Adjustment, myfn=$preview? 36:360);
@@ -339,13 +342,24 @@ module EB_Electronics_Bay(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, Len=162, nBo
 					} // difference
 				}
 			}
+			
+			if (HasRailGuide)
+				translate([0,0,RailGuide_Z]) difference(){
+					rotate([0,0,RailGuide_a]) 
+						RailGuidePost(OD=Tube_OD, MtrTube_OD=0, H=Tube_OD/2+2, 
+										TubeLen=55, Length = RailGuideLen, BoltSpace=12.7, AddTaper=false);
+					cylinder(d=Tube_ID-1.2, h=60, center=true);			
+				} // difference
+
 		} // union
 		
-		if (HasFwdIntegratedCoupler && HasFwdShockMount) {
-			translate([0,0,Fwd_Al_Tube_Z]) rotate([90,0,180/nBolts]) cylinder(d=Al_Tube_d, h=Tube_OD, center=true);
+		if (HasRailGuide) rotate([0,0,RailGuide_a]) 
+			translate([0,Tube_OD/2+2,RailGuide_Z]) RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
+
+		if (HasFwdIntegratedCoupler && HasFwdShockMount) 
+			translate([0,0,Fwd_Al_Tube_Z]) rotate([90,0,180/nBolts]) 
+				cylinder(d=Al_Tube_d, h=Tube_OD, center=true);
 			
-		}
-		
 		// Altimeter
 		translate([0,0,Altimeter_Z]) rotate([0,0,Alt_a]) 
 			Alt_BayFrameHole(Tube_OD=Tube_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
@@ -388,6 +402,9 @@ module EB_Electronics_Bay(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, Len=162, nBo
 
 // EB_Electronics_Bay(ShowDoors=false, HasSecondBattDoor=false);
 // EB_Electronics_Bay(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=162, nBolts=4, BoltInset=7.5, ShowDoors=false, HasSecondBattDoor=false, HasFwdIntegratedCoupler=true, HasFwdShockMount=false);
+
+//EB_Electronics_Bay(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, Len=162, nBolts=5, BoltInset=7.5, ShowDoors=false, HasSecondBattDoor=false, HasFwdIntegratedCoupler=false, HasFwdShockMount=false, HasRailGuide=true, RailGuideLen=35);
+
 
 module EB_Electronics_Bay55(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, Len=162, nBolts=7, BoltInset=7.5, ShowDoors=false){
 	// Large 2 altimeter electronics bay

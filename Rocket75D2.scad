@@ -15,7 +15,7 @@
 // Sustainer Upper Tube		BT75_Body	 x 300
 // Sustainer Middle Tube	BT75_Body	 x 
 // Sustainer Lower Tube		BT75_Body	 x 110
-// Sustainer Motor Tube		BT54_Body	 x 472
+// Sustainer Motor Tube		BT54_Body	 x 525
 //
 // Booster Interstage		BT75_Body    x 390
 // Booster Motor Tube		BT54_Body	 x 370
@@ -422,6 +422,17 @@ module Nosecone(){
 } // Nosecone
 
 //Nosecone();
+
+module FixTube(){
+	// Centering ring and tube extension to fix a too short motor tube
+	Len=40;
+	CenteringRing(OD=Body_ID, ID=BT54Coupler_OD, Thickness=5, nHoles=5);
+	Tube(OD=MotorTube_OD, ID=BT54Coupler_OD+IDXtra*2, 
+									Len=Len, myfn=$preview? 90:360);
+	
+} // FixTube
+
+//FixTube();
 
 module SustainerFinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 	

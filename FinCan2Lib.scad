@@ -3,7 +3,7 @@
 // Filename: FinCan2Lib.scad
 // by David M. Flynn
 // Created: 12/24/2023 
-// Revision: 0.9.6  8/21/2024
+// Revision: 0.9.7  8/24/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,9 +12,10 @@
 //
 //  ***** History *****
 //
-function FinCan2LibRev()="FinCan2Lib 0.9.4";
+function FinCan2LibRev()="FinCan2Lib 0.9.7";
 echo(FinCan2LibRev());
 //
+// 0.9.7  8/24/2024   Added HollowFinRoots parameter to FC2_FinCan()
 // 0.9.6  8/21/2024	  Geometry changed: Rail guide/post is now at 0° (+Y) first fin at 180/nFins.
 // 0.9.5  8/13/2024   Fixed calculation for rail guide position
 // 0.9.4  7/18/2024   Added Extra_OD Parameter
@@ -84,10 +85,10 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 				nFins=5, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 				Fin_Root_W=14, Fin_Root_L=130, Fin_Post_h=14, Fin_Chamfer_L=32,
 				Cone_Len=65, ThreadedTC=true, Extra_OD=0, RailGuideLen=30,
-				LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false, HollowTailcone=false){
+				LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false, HollowTailcone=false, 
+				HollowFinRoots=false, Wall_t=1.2){
 				
-	Wall_t=1.2;
-	FinBox_W=Fin_Root_W+Wall_t*2;
+	FinBox_W=Fin_Root_W+IDXtra*2+Wall_t*2;
 	RailGuideTube_Len=(RailGuideLen-5)*2;
 	RailGuide_Z=RailGuideTube_Len/2;
 	MotorTubeHole_d=MotorTube_OD+MotorTubeHoleIDXtra;
@@ -150,16 +151,22 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 			// Fin Boxes
 			difference(){
 				for (j=[0:nFins]) rotate([0,0,360/nFins*j+180/nFins]) 
-					translate([-FinBox_W/2,0,0]) cube([FinBox_W,Body_OD/2,Can_Len+FB_Xtra_Fwd]);
-					
+					translate([-FinBox_W/2,0,0]) cube([FinBox_W, Body_OD/2, Can_Len+FB_Xtra_Fwd]);
+				
+				// remove outside
 				difference(){
 					translate([0,0,-Overlap]) cylinder(d=Body_OD+10, h=FB_Xtra_Fwd+Can_Len+Overlap*2);
 					translate([0,0,-Overlap*2]) cylinder(d=Body_OD-1, h=FB_Xtra_Fwd+Can_Len+Overlap*4);
 				} // difference
 				
+				// remove inside
 				translate([0,0,-Overlap]) cylinder(d=MotorTubeHole_d, h=FB_Xtra_Fwd+Can_Len+Overlap*2);
+				
+				// Remove outside of HasIntegratedCoupler
 				if (FB_Xtra_Fwd>0)
 					translate([0,0,Can_Len]) Tube(OD=Body_OD+1, ID=Body_ID-1, Len=15, myfn=$preview? 36:360);
+					
+				
 			} // difference
 			
 			//*
@@ -183,6 +190,19 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 			translate([0,Body_OD/2,10]) rotate([90,0,0]) cylinder(d=10, h=(Body_OD-MotorTubeHole_d)/2);
 		} // union
 	
+		// Hollow roots
+		if (HollowFinRoots && (Body_OD/2-MotorTubeHole_d/2-Fin_Post_h)>5) 
+			for (j=[0:nFins]) rotate([0,0,360/nFins*j+180/nFins]){
+				// Forward box
+				translate([-FinBox_W/2+Wall_t, MotorTubeHole_d/2+Wall_t, Can_Len/2+3])
+					cube([FinBox_W-Wall_t*2, Body_OD/2-MotorTubeHole_d/2-Fin_Post_h-Wall_t*2, Can_Len/2+FB_Xtra_Fwd-Wall_t-6]);
+				// Aft box
+				translate([-FinBox_W/2+Wall_t, MotorTubeHole_d/2+Wall_t, 3])
+					cube([FinBox_W-Wall_t*2, Body_OD/2-MotorTubeHole_d/2-Fin_Post_h-Wall_t*2, Can_Len/2-6]);
+				// Make manifold for printing
+				translate([0, MotorTubeHole_d/2+Wall_t+2.5, Can_Len/2-6]) cylinder(d=1, h=Can_Len);
+			}
+					
 		// Fin Sockets
 		translate([0,0,Fin_Root_L/2+FinInset_Len])
 			TrapFin2Slots(Tube_OD=Body_OD, nFins=nFins, Post_h=Fin_Post_h, 
@@ -213,8 +233,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 	} // difference
 } // FC2_FinCan
 
-//rotate([180,0,0]) 
-FC2_FinCan(RailGuide_h=1, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=true);
+//rotate([180,0,0]) FC2_FinCan(RailGuide_h=1, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false, HollowFinRoots=true);
 
 
 module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
