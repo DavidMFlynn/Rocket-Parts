@@ -25,7 +25,7 @@ echo("Stager137Lib 0.9.4");
 //  ***** for STL output *****
 //
 //  *** Sustainer "Cup" bolts to bottom of sustainer ***
-// rotate([180,0,0]) Stager_Cup(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true, Collar_h=DefaultCollarLen, Offset_a=0);
+// rotate([180,0,0]) Stager_Cup(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true, Collar_h=DefaultCollarLen);
 // rotate([-90,0,0]) Stager_LockRod(Adj=0.5); // Looser
 // rotate([-90,0,0]) Stager_LockRod(Adj=0.0); // This works!
 //
@@ -46,7 +46,7 @@ echo("Stager137Lib 0.9.4");
 //  ***** Routines *****
 //
 // Stager_CupHoles(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true);
-// Stager_LockRod_Holes(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Offset_a=0);
+// Stager_LockRod_Holes(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks);
 // Stager_SaucerBoltPattern(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks);
 // Stager_ArmDisarmAccess(Tube_OD=DefaultBody_OD, Len=DefaultBody_OD);
 //
@@ -113,7 +113,7 @@ StopBlock_W=6;
 CupBoltsPerLock=3;
 
 
-function StagerLockInset_Y(Tube_OD=DefaultBody_OD)=(Tube_OD>90)? 9:8; // LockRod inset from tube OD
+function StagerLockInset_Y(Tube_OD=DefaultBody_OD)=(Tube_OD>90)? 9:8; // center of LockRod inset from tube OD
 function Calc_a(Dist=1,R=2)=Dist/(R*2*PI)*360;
 function Saucer_ID(Tube_OD=DefaultBody_OD)=Tube_OD-StagerLockInset_Y(Tube_OD=Tube_OD)*2-Stager_LockRod_Y-LockBall_d*2+6;
 function BearingBallCircle_d(Tube_OD=DefaultBody_OD)=Tube_OD-40-Ball_d;
@@ -128,7 +128,7 @@ function nBearingBalls(Tube_OD=DefaultBody_OD)=floor(BearingBallCircle_d(Tube_OD
 
 module ShowStager(Tube_OD=DefaultBody_OD, Tube_ID=DefaultBody_ID, nLocks=Default_nLocks){
 	
-	translate([0,0,30]) Stager_Cup(Tube_OD=Tube_OD, nLocks=nLocks, Collar_h=DefaultCollarLen, Offset_a=0);
+	translate([0,0,30]) Stager_Cup(Tube_OD=Tube_OD, nLocks=nLocks, Collar_h=DefaultCollarLen);
 	translate([0,0,10]) color("LightBlue") Stager_Saucer(Tube_OD=Tube_OD, nLocks=nLocks);
 	Stager_Mech(Tube_OD=Tube_OD, nLocks=nLocks, Skirt_ID=Tube_ID, Skirt_Len=Default_SkirtLen);
 	
@@ -152,10 +152,12 @@ module ShowStagerAssy(Tube_OD=DefaultBody_OD, Tube_ID=DefaultBody_ID, nLocks=Def
 
 	// Shown in the locked position?
 	Lock_a=	ShowLocked? 0:Calc_a(11,(BoltCircle_d(Tube_OD=Tube_OD)/2));
-						
-	//translate([0,0,50]) Stager_CupHoles(Tube_OD=Tube_OD, nLocks=Default_nLocks, BoltsOn=true);
+						 
+	//Stager_CupHoles(Tube_OD=Tube_OD, nLocks=Default_nLocks, BoltsOn=true);
 	
-	translate([0,0,0.4]) Stager_Cup(Tube_OD=Tube_OD, nLocks=Default_nLocks, BoltsOn=true, Collar_h=DefaultCollarLen, Offset_a=0);
+	translate([0,0,0.4]) Stager_Cup(Tube_OD=Tube_OD, nLocks=Default_nLocks, BoltsOn=true, Collar_h=DefaultCollarLen);
+	
+	translate([0,0,0.2]) Stager_Saucer();
 	
 	translate([0,0,-Saucer_H-LockBall_d-2+0.2]) rotate([0,0,Lock_a]) Stager_LockRing(Tube_OD=Tube_OD, nLocks=nLocks);
 
@@ -164,10 +166,9 @@ module ShowStagerAssy(Tube_OD=DefaultBody_OD, Tube_ID=DefaultBody_ID, nLocks=Def
 		rotate([0,0,-38-180-90]) translate([0,0,-90]) cube([100,100,100]);
 	}
 
-	translate([0,0,0.2]) Stager_Saucer();
 	
-	translate([0,0,-Saucer_H-LockBall_d-2-Race_W-InnerRaceXtra_W-19-0.3]) 
-		Stager_ServoPlate(Tube_OD=Tube_OD, Skirt_ID=Tube_ID);
+	//translate([0,0,-Saucer_H-LockBall_d-2-Race_W-InnerRaceXtra_W-19-0.3]) 
+	//	Stager_ServoPlate(Tube_OD=Tube_OD, Skirt_ID=Tube_ID);
 
 	rotate([0,0,Lock_a]){
 		InnerRace_Z=-Saucer_H-LockBall_d-2-Race_W-InnerRaceXtra_W/2;
@@ -424,7 +425,7 @@ module Stager_LockRod(Adj=0){
 //Stager_LockRod();
 //Stager_LockRod(Adj=0.5);
 
-module Stager_CupHoles(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true, Collar_h=DefaultCollarLen, Offset_a=0){
+module Stager_CupHoles(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true, Collar_h=DefaultCollarLen){
 	// refferenced from top of saucer
 	Len=StagerCupLen; // thickness without collar
 	nBolts=nLocks*CupBoltsPerLock;
@@ -446,7 +447,7 @@ module Stager_CupHoles(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=tr
 
 //Stager_CupHoles();
 
-module Stager_Cup(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true, Collar_h=DefaultCollarLen, Offset_a=0){
+module Stager_Cup(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true, Collar_h=DefaultCollarLen){
 	Len=StagerCupLen; // thickness without collar
 	LR_X=Stager_LockRod_X;
 	LR_Y=Stager_LockRod_Y;
@@ -486,9 +487,9 @@ module Stager_Cup(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true, C
 				translate([0,Tube_OD/2-CupBoltHoleInset,Collar_h-6]) 
 					rotate([180,0,0]) Bolt4HeadHole(depth=8,lHead=Collar_h);
 		
-		Stager_LockRod_Holes(Tube_OD=Tube_OD, nLocks=nLocks, Offset_a=Offset_a);			
+		Stager_LockRod_Holes(Tube_OD=Tube_OD, nLocks=nLocks);			
 		
-		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j+Offset_a]) 
+		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j]) 
 			translate([0, Tube_OD/2-Inset_Y, LockRodOffset_Z])
 				Stager_LockRodBoltPattern() Bolt6Hole(depth=Inset_Y+4);
 		
@@ -496,7 +497,7 @@ module Stager_Cup(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true, C
 	
 	//*
 	if ($preview)
-		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j+Offset_a]) 
+		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j]) 
 			translate([0, Tube_OD/2-Inset_Y, LockRodOffset_Z])
 				color("Orange") Stager_LockRod();
 	/**/
@@ -517,7 +518,7 @@ module Stager_SaucerBoltPattern(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks){
 
 //Stager_SaucerBoltPattern() Bolt4ButtonHeadHole();
 
-module Stager_LockRod_Holes(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Offset_a=0){
+module Stager_LockRod_Holes(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks){
 	LR_X=Stager_LockRod_X;
 	LR_Y=Stager_LockRod_Y;
 	LR_Z=Stager_LockRod_Z;
@@ -528,7 +529,7 @@ module Stager_LockRod_Holes(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Offse
 	SpringDepth=Saucer_H+Stager_Spring_FL-1;
 	//echo(SpringDepth=SpringDepth);
 	
-	for (j=[0:nLocks-1]) rotate([0, 0, 360/nLocks*j+Offset_a]) 
+	for (j=[0:nLocks-1]) rotate([0, 0, 360/nLocks*j]) 
 		translate([0, Tube_OD/2-StagerLockInset_Y(Tube_OD=Tube_OD), 0]){
 		
 			// BC_LockRod
@@ -644,20 +645,11 @@ module Stager_InnerRace(Tube_OD=DefaultBody_OD){
 	
 module Stager_Mech(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Skirt_ID=DefaultBody_ID, Skirt_Len=Default_SkirtLen, nSkirtBolts=4, ShowLocked=true){
 		
-	ID=Saucer_ID(Tube_OD=Tube_OD);
-	Raceway_Len=44;
-	Raceway_Z=-49;
-	Tube_Len=10+LockBall_d;
-	Race_Z=-Saucer_H-LockBall_d-2-Race_W-InnerRaceXtra_W/2;
+	Race_Z=-Saucer_H-LockBall_d-2-Race_W-InnerRaceXtra_W/2; // Bottom of outer race
 
-	Locked_Ball_X=0; //Stager_LockRod_X/2+LockBall_d/2-2;
+	// Center of ball in locked position
 	Locked_Ball_Y=Tube_OD/2-StagerLockInset_Y(Tube_OD=Tube_OD)-Stager_LockRod_Y/2-LockBall_d/2+2;
-	
-	BC_r=BoltCircle_d(Tube_OD=Tube_OD)/2;
-	LockingBallDepthAdj=0.4;
-	Cable_Offset_a=15*round((-60+Calc_a(12,BC_r)+Calc_a(26,BC_r) )/15);
-	//echo(Cable_Offset_a=Cable_Offset_a);	
-	
+		
 	UnLocked_Y=ShowLocked? 0:-2;
 	
 	module ShowBall(){
@@ -671,10 +663,10 @@ module Stager_Mech(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Skirt_ID=Defau
 		module BallPath(){
 			// lock/unlock path
 			hull(){
-				translate([Locked_Ball_X, Locked_Ball_Y+1, -Saucer_H-LockBall_d/2])
+				translate([0, Locked_Ball_Y+1, -Saucer_H-LockBall_d/2])
 					sphere(d=LockBall_d+IDXtra*2);
 				
-				translate([Locked_Ball_X, Locked_Ball_Y-4, -Saucer_H-LockBall_d/2])
+				translate([0, Locked_Ball_Y-4, -Saucer_H-LockBall_d/2])
 					sphere(d=LockBall_d+IDXtra*2);
 			} // hull
 		} // BallPath
@@ -691,10 +683,6 @@ module Stager_Mech(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Skirt_ID=Defau
 				}
 				translate([0,0,-Saucer_H-Block_H]) cylinder(d=Tube_OD-1, h=Block_H);
 			} // intersection
-			
-			// center hole
-			translate([0,0,-Saucer_H-Block_H-Overlap])
-				cylinder(d=ID, h=Block_H+Overlap*2);
 				
 			BallPath();
 			
@@ -704,7 +692,7 @@ module Stager_Mech(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Skirt_ID=Defau
 		} // difference
 		
 		if ($preview) 
-			translate([Locked_Ball_X, Locked_Ball_Y+UnLocked_Y, -Saucer_H-LockBall_d/2]) ShowBall();
+			translate([0, Locked_Ball_Y+UnLocked_Y, -Saucer_H-LockBall_d/2]) ShowBall();
 	} // BackStop
 	
 // *******************
@@ -753,12 +741,14 @@ module Stager_Mech(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Skirt_ID=Defau
 		//if ($preview) rotate([0,0,15]) translate([0,0,-100]) cube([Tube_OD/2,Tube_OD/2,100]);
 	} // difference
 	
-	Plate_Z=Race_Z-15.5;
-	//*
+	
+
 	// The Tube
 	difference(){
 		nBolts=4;
 		Bolt_a=35;
+		SupportRing_t=3;
+		Plate_Z=Race_Z-15.5; // top of ServoPlate
 		
 		union(){
 			// Lower Skirt, connects to E_Bay
@@ -771,23 +761,19 @@ module Stager_Mech(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Skirt_ID=Defau
 				
 			// Support ring
 			translate([0,0,Race_Z+Race_W-4]) difference(){
-				Tube(OD=Tube_OD, ID=Tube_OD-7, Len=-Race_Z-Saucer_H-Race_W+4, myfn=$preview? 90:360);
-				translate([0,0,-Overlap]) cylinder(d1=Tube_OD-4.4, d2=Tube_OD-7, h=2, $fn=$preview? 90:360);
+				Tube(OD=Tube_OD, ID=Tube_OD-SupportRing_t*2, Len=-Race_Z-Saucer_H-Race_W+4, myfn=$preview? 90:360);
+				translate([0,0,-Overlap]) cylinder(d1=Tube_OD-4.4, d2=Tube_OD-SupportRing_t*2, h=2, $fn=$preview? 90:360);
 			} // difference
 				
 			translate([0,0,Plate_Z]) 
 				TubeStop(InnerTubeID=Skirt_ID-3, OuterTubeOD=Tube_OD, myfn=$preview? 90:360);
 				
 			// Bolt bosses
-			difference(){
-				for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+Bolt_a]) translate([0,Skirt_ID/2-Bolt4Inset,Plate_Z])
+			for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+Bolt_a]) translate([0, Skirt_ID/2-Bolt4Inset, Plate_Z])
 					hull(){
 						cylinder(d=Bolt4Inset*2, h=5);
-						translate([-Bolt4Inset-1,Bolt4Inset+1,0]) cube([Bolt4Inset*2+2,Overlap,5]);
+						translate([-Bolt4Inset-2, Bolt4Inset+1, 0]) cube([Bolt4Inset*2+4, Overlap, 5]);
 					} // hull
-					
-				translate([0,0,Plate_Z-Overlap]) cylinder(d=Skirt_ID-Bolt4Inset*3.25, h=5+Overlap*2);
-			} // difference
 			
 			// Alignment key
 			intersection(){
