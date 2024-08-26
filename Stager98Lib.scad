@@ -3,7 +3,7 @@
 // Filename: Stager98Lib.scad
 // by David M. Flynn
 // Created: 8/25/2024 
-// Revision: 0.9.0  8/25/2024
+// Revision: 0.9.1  8/26/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -14,7 +14,9 @@
 //
 //  ***** History *****
 //
-echo("Stager98Lib 0.9.4");
+echo("Stager98Lib 0.9.1");
+//
+// 0.9.1  8/26/2024    Now the same as Stager137
 // 0.9.0  8/25/2024    Copied from Stager137Lib.scad 0.9.4, ready for test print
 //
 // ***********************************
@@ -36,7 +38,7 @@ echo("Stager98Lib 0.9.4");
 //
 // Stager_InnerRace(Tube_OD=DefaultBody_OD);
 // rotate([180,0,0]) Stager_Indexer(Tube_OD=DefaultBody_OD); // Bolts to InnerRace and has mounting holes for Lock Stops
-// Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID); // Bottom Plate
+// Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, HasAlTube=false); // Bottom Plate
 //
 // ***********************************
 //  ***** Routines *****
@@ -70,18 +72,34 @@ Stager_Spring_OD=5/16*25.4;
 Stager_Spring_FL=1.25*25.4;
 Stager_Spring_CBL=0.7*25.4;
 
+//*
+// for Stager 98
 Stager_LockRod_X=10;
 Stager_LockRod_Y=5;
 Stager_LockRod_Z=36;
 Stager_LockRod_R=1;
 LockBall_d=3/8 * 25.4; // 3/8" Delrin balls
-
 Default_nLocks=3;
+CupBoltsPerLock=2;
+DefaultBody_OD=BT98Body_OD;
+DefaultBody_ID=BT98Body_ID;
+/**/
+/*
+// for Stager 137
+Stager_LockRod_X=12;
+Stager_LockRod_Y=6;
+Stager_LockRod_Z=38;
+Stager_LockRod_R=1;
+LockBall_d=1/2 * 25.4; // 1/2" Delrin balls
+Default_nLocks=5;
+CupBoltsPerLock=3;
+DefaultBody_OD=BT137Body_OD;
+DefaultBody_ID=BT137Body_ID;
+/**/
+
 Default_nSkirtBolts=5;
 Default_SkirtLen=16;
 DefaultCollarLen=16;
-DefaultBody_OD=BT98Body_OD;
-DefaultBody_ID=BT98Body_ID;
 
 LooseFit=0.8;
 
@@ -106,7 +124,7 @@ PreLoadAdj=-0.45; // -0.35 is too tight
 Race_W=11;
 Magnet_d=3/16*25.4;
 StopBlock_W=6;
-CupBoltsPerLock=2;
+
 
 
 function StagerLockInset_Y(Tube_OD=DefaultBody_OD)=(Tube_OD>90)? 9:8; // center of LockRod inset from tube OD
@@ -137,7 +155,7 @@ module ShowStager(Tube_OD=DefaultBody_OD, Tube_ID=DefaultBody_ID, nLocks=Default
 		
 	}
 	/**/
-	translate([0,0,-210]) Stager_ServoPlate(Tube_OD=Tube_OD, Skirt_ID=Tube_ID);		
+	translate([0,0,-210]) Stager_ServoPlate(Tube_OD=Tube_OD, Skirt_ID=Tube_ID, HasAlTube=false);		
 	
 } // ShowStager
 
@@ -165,7 +183,7 @@ module ShowStagerAssy(Tube_OD=DefaultBody_OD, Tube_ID=DefaultBody_ID, nLocks=Def
 	/**/
 	
 	translate([0,0,-Saucer_H-LockBall_d-2-Race_W-InnerRaceXtra_W-19-0.3]) 
-		Stager_ServoPlate(Tube_OD=Tube_OD, Skirt_ID=Tube_ID);
+		Stager_ServoPlate(Tube_OD=Tube_OD, Skirt_ID=Tube_ID, HasAlTube=false);
 
 	rotate([0,0,Lock_a]){
 		InnerRace_Z=-Saucer_H-LockBall_d-2-Race_W-InnerRaceXtra_W/2;
@@ -208,7 +226,7 @@ module Stager_BallSpacer(Tube_OD=DefaultBody_OD){
 
 // Stager_BallSpacer();
 
-module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks=Default_nLocks){
+module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks=Default_nLocks, HasAlTube=false){
 											
 	BC_r=BoltCircle_d(Tube_OD=Tube_OD)/2;
 	
@@ -218,9 +236,8 @@ module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks
 	Servo_X= -Tube_OD/2+28;
 	Servo_Y=0;
 	Servo_Z=-10;
-	Servo_a=180/nLocks+10; // was 4
+	Servo_a=-90+180/nLocks*3-10;
 	
-	HasAlTube=false;
 	Al_Tube_d=12.7;
 	Al_Tube_Z=-Al_Tube_d/2-3;
 	Al_Tube_a=-10;
@@ -641,6 +658,7 @@ module Stager_Mech(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Skirt_ID=Defau
 
 	// Center of ball in locked position
 	Locked_Ball_Y=Tube_OD/2-StagerLockInset_Y(Tube_OD=Tube_OD)-Stager_LockRod_Y/2-LockBall_d/2+2;
+		
 	UnLocked_Y=ShowLocked? 0:-2;
 	
 	module ShowBall(){
@@ -728,8 +746,7 @@ module Stager_Mech(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Skirt_ID=Defau
 		// LockRod holes
 		Stager_LockRod_Holes(Tube_OD=Tube_OD, nLocks=nLocks);
 		
-		//
-		if ($preview) rotate([0,0,-25]) translate([0,0,-100]) cube([Tube_OD/2,Tube_OD/2,100]);
+		//if ($preview) rotate([0,0,15]) translate([0,0,-100]) cube([Tube_OD/2,Tube_OD/2,100]);
 	} // difference
 	
 	// The Tube
@@ -789,7 +806,7 @@ module Stager_Mech(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Skirt_ID=Defau
 /**/
 } // Stager_Mech
 
-// Stager_Mech();
+// Stager_Mech( ShowLocked=true);
 
 module Stager_ArmDisarmAccess(Tube_OD=DefaultBody_OD, Len=DefaultBody_OD){
 	Post_Z=-Saucer_H-36;
