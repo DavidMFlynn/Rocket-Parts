@@ -34,6 +34,8 @@
 //
 // EB_Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=EBay_Len, nBolts=5, BoltInset=7.5, ShowDoors=false, HasSecondBattDoor=false, HasFwdIntegratedCoupler=false, HasFwdShockMount=false, HasRailGuide=true, RailGuideLen=35);
 // 
+// CenteringRing(OD=Body_OD-4.4, ID=MotorTube_OD, Thickness=4, nHoles=5, Offset=0, myfn=$preview? 90:360);
+//
 // *** Doors ***
 //
 // rotate([-90,0,0]) EB_AltDoor(Tube_OD=Body_OD);
@@ -63,7 +65,7 @@
 //
 //  *** 5.5 Inch Stager ***
 //
-// rotate([180,0,0]) Stager_Cup(Tube_OD=Body_OD, nLocks=nLocks, BoltsOn=true, Collar_h=16, Offset_a=0);
+// rotate([180,0,0]) Stager_Cup(Tube_OD=Body_OD, nLocks=nLocks, BoltsOn=true, Collar_h=16);
 // rotate([-90,0,0]) Stager_LockRod(Adj=0.0);
 //
 // Stager_Saucer(Tube_OD=Body_OD, nLocks=nLocks); // Bolts on
@@ -95,14 +97,13 @@
 // rotate([180,0,0]) R137_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID);
 // STB_LockDisk(BallPerimeter_d=STB_BT137BallPerimeter_d(), nLockBalls=nLockBalls, HasLargeInnerBearing=true);
 // R137_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=true);
-// STB_TubeEnd2(BallPerimeter_d=STB_BT137BallPerimeter_d(), nLockBalls=nLockBalls, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=20);
+// rotate([180,0,0]) STB_TubeEnd2(BallPerimeter_d=STB_BT137BallPerimeter_d(), nLockBalls=nLockBalls, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=20);
 //
 //  *** Petal Deployer ***
 //
-// R137_PetalHub(OD=Coupler_OD);
+// R137_PetalHub(Body_OD=Coupler_OD);
 // rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=BoosterPetalLen, nPetals=3, Wall_t=2.2, AntiClimber_h=4, HasLocks=false, Lock_Span_a=180);
 // rotate([-90,0,0]) PD_PetalSpringHolder();
-//
 //
 // rotate([180,0,0]) BoosterFinCan(LowerHalfOnly=false, UpperHalfOnly=false);
 // BoosterFin();

@@ -36,8 +36,8 @@ echo(TubesLib_Rev());
 //
 // MotorRetainer(Tube_OD=BT54Mtr_OD, Tube_ID=BT54Mtr_ID, Mtr_OD=54, MtrAC_OD=58);
 // ShockCordMount(OD=PML98Body_ID, ID=BT54Mtr_OD, AnchorRod_OD=12.7);
-// Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=300, myfn=$preview? 36:360);
-// CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0, Offset=0, myfn=$preview? 36:90);
+// Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=300, myfn=$preview? 90:360);
+// CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0, Offset=0, myfn=$preview? 90:360);
 // ClusterRing(OD=BT137Body_ID, Thickness=5, CenterMotor_OD=BT54Body_OD, ClusterMotor_OD=PML38Body_OD, nClusterMotors=3, Gap=7, Cant_a=2, Cant_Z=300);
 //
 // SplitCenteringRing(OD=BT98Coupler_ID, ID=PML54Body_OD+IDXtra*2);
