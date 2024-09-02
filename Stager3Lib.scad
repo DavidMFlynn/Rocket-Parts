@@ -1,23 +1,28 @@
 // ***********************************
 // Project: 3D Printed Rocket
-// Filename: Stager98Lib.scad
+// Filename: Stager3Lib.scad
 // by David M. Flynn
-// Created: 8/25/2024 
-// Revision: 0.9.1  8/26/2024
+// Created: 8/22/2024 
+// Revision: 0.9.7  8/29/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 //
-// Problem to solve: Stager for 98mm tube. A bigger tougher version is needed.
+// Problem to solve: Stager for 137mm tube. A bigger tougher version is needed.
 //
 // Cup in Saucer w/ locking pins, servo activated active staging system.
 //
 //  ***** History *****
 //
-echo("Stager98Lib 0.9.1");
-//
-// 0.9.1  8/26/2024    Now the same as Stager137
-// 0.9.0  8/25/2024    Copied from Stager137Lib.scad 0.9.4, ready for test print
+echo("Stager3Lib 0.9.7");
+// 0.9.7  8/29/2024    Made OverCenter a parameter in Stager_ServoPlate()
+// 0.9.6  8/28/2024	   Fixed hole depth in Mech, Changed to "Stager3Lib"
+// 0.9.5  8/26/2024	   Now the same as Stager98
+// 0.9.4  8/25/2024	   Reworked Stager_Cup() now lighter and cleaner, code cleanup, FC1
+// 0.9.3  8/24/2024    Reduced the mass of Stager_Mech with slots in the outer race. Stager_Cup bolt pattern changed.
+// 0.9.2  8/23/2024	   Made lock rod holes 3mm deeper.
+// 0.9.1  8/23/2024    All stops are now if fixed positions (fewer parts).
+// 0.9.0  8/22/2024	   Copied from Stager75BBLib 0.9.6 with bearing from Stager2Lib
 //
 // ***********************************
 //  ***** for STL output *****
@@ -37,8 +42,8 @@ echo("Stager98Lib 0.9.1");
 // Stager_BallSpacer(Tube_OD=DefaultBody_OD); // print 2
 //
 // Stager_InnerRace(Tube_OD=DefaultBody_OD);
-// rotate([180,0,0]) Stager_Indexer(Tube_OD=DefaultBody_OD); // Bolts to InnerRace and has mounting holes for Lock Stops
-// Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, HasAlTube=false); // Bottom Plate
+// rotate([180,0,0]) Stager_Indexer(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks); // Bolts to InnerRace
+// Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks=Default_nLocks, OverCenter=IDXtra+0.8, HasAlTube=false); // Bottom Plate
 //
 // ***********************************
 //  ***** Routines *****
@@ -72,7 +77,7 @@ Stager_Spring_OD=5/16*25.4;
 Stager_Spring_FL=1.25*25.4;
 Stager_Spring_CBL=0.7*25.4;
 
-//*
+/*
 // for Stager 98
 Stager_LockRod_X=10;
 Stager_LockRod_Y=5;
@@ -84,7 +89,7 @@ CupBoltsPerLock=2;
 DefaultBody_OD=BT98Body_OD;
 DefaultBody_ID=BT98Body_ID;
 /**/
-/*
+//*
 // for Stager 137
 Stager_LockRod_X=12;
 Stager_LockRod_Y=6;
@@ -125,8 +130,6 @@ Race_W=11;
 Magnet_d=3/16*25.4;
 StopBlock_W=6;
 
-
-
 function StagerLockInset_Y(Tube_OD=DefaultBody_OD)=(Tube_OD>90)? 9:8; // center of LockRod inset from tube OD
 function Calc_a(Dist=1,R=2)=Dist/(R*2*PI)*360;
 function Saucer_ID(Tube_OD=DefaultBody_OD)=Tube_OD-StagerLockInset_Y(Tube_OD=Tube_OD)*2-Stager_LockRod_Y-LockBall_d*2+6;
@@ -155,7 +158,7 @@ module ShowStager(Tube_OD=DefaultBody_OD, Tube_ID=DefaultBody_ID, nLocks=Default
 		
 	}
 	/**/
-	translate([0,0,-210]) Stager_ServoPlate(Tube_OD=Tube_OD, Skirt_ID=Tube_ID, HasAlTube=false);		
+	translate([0,0,-210]) Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks=Default_nLocks, HasAlTube=false);		
 	
 } // ShowStager
 
@@ -183,7 +186,7 @@ module ShowStagerAssy(Tube_OD=DefaultBody_OD, Tube_ID=DefaultBody_ID, nLocks=Def
 	/**/
 	
 	translate([0,0,-Saucer_H-LockBall_d-2-Race_W-InnerRaceXtra_W-19-0.3]) 
-		Stager_ServoPlate(Tube_OD=Tube_OD, Skirt_ID=Tube_ID, HasAlTube=false);
+		Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks=Default_nLocks, HasAlTube=false);
 
 	rotate([0,0,Lock_a]){
 		InnerRace_Z=-Saucer_H-LockBall_d-2-Race_W-InnerRaceXtra_W/2;
@@ -226,7 +229,7 @@ module Stager_BallSpacer(Tube_OD=DefaultBody_OD){
 
 // Stager_BallSpacer();
 
-module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks=Default_nLocks, HasAlTube=false){
+module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks=Default_nLocks, OverCenter=IDXtra+0.8, HasAlTube=false){
 											
 	BC_r=BoltCircle_d(Tube_OD=Tube_OD)/2;
 	
@@ -245,7 +248,8 @@ module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks
 	Al_Tube_Y=-3;
 						
 	UnLock_a=	Calc_a(11,(BoltCircle_d(Tube_OD=Tube_OD)/2));
-	OverCenter=IDXtra+0.4; // IDXtra is the slop in the ball socket, only IDXtra works but is touchy.
+	
+	OverCenter_a=-Calc_a(Dist=OverCenter,R=BoltCircle_d(Tube_OD=Tube_OD)/2-1);
 
 	module LanyardAttachmentPoint(){
 		Ly_t=5;
@@ -268,7 +272,7 @@ module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks
 	module StopBlock(LockedBlock=true){
 		Block_H=8.5;
 		Block_T=StopBlock_W;
-		BlockOffset=LockedBlock? Block_T+OverCenter:-Block_T;
+		BlockOffset=LockedBlock? Block_T:-Block_T;
 		
 		translate([BlockOffset, BoltCircle_d(Tube_OD=Tube_OD)/2-1, Plate_t-Overlap]) 
 			RoundRect(X=Block_T, Y=10, Z=Block_H, R=1);
@@ -276,7 +280,7 @@ module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks
 	
 	module MagnetHole(LockedBlock=true){
 		Block_T=StopBlock_W;
-		BlockOffset=LockedBlock? Block_T+OverCenter:-Block_T;
+		BlockOffset=LockedBlock? Block_T:-Block_T;
 		
 		translate([BlockOffset, BoltCircle_d(Tube_OD=Tube_OD)/2-1, Plate_t+2.5+Magnet_d/2]) 
 			rotate([0,90,0]) cylinder(d=Magnet_d, h=7, center=true);
@@ -287,7 +291,7 @@ module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks
 			cylinder(d=Skirt_ID, h=Plate_t, $fn=$preview? 90:360);
 				
 			// Locked position stops
-			for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j]) StopBlock();
+			for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j+OverCenter_a]) StopBlock();
 			
 			// Unlocked stop
 			rotate([0,0,UnLock_a]) StopBlock(LockedBlock=false);
@@ -317,7 +321,7 @@ module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks
 			rotate([0,0,Servo_a]) translate([Servo_X+10,Servo_Y,-5]) cube([60,25,10],center=true);
 		} // union
 		
-		MagnetHole();
+		rotate([0,0,OverCenter_a]) MagnetHole();
 		
 		// Servo
 		rotate([0,0,Servo_a]) translate([Servo_X,Servo_Y,0]) 
@@ -696,7 +700,7 @@ module Stager_Mech(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Skirt_ID=Defau
 			
 			Stager_LockRod_Holes(Tube_OD=Tube_OD, nLocks=nLocks);
 			
-			Stager_SaucerBoltPattern(Tube_OD=Tube_OD, nLocks=nLocks) Bolt4Hole();
+			translate([0,0,-Saucer_H]) Stager_SaucerBoltPattern(Tube_OD=Tube_OD, nLocks=nLocks) Bolt4Hole();
 		} // difference
 		
 		if ($preview) 

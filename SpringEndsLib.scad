@@ -3,15 +3,16 @@
 // Filename: SpringEndsLib.scad
 // by David M. Flynn
 // Created: 11/24/2023 
-// Revision: 1.0.11  8/3/2024
+// Revision: 1.0.12  8/31/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 // This is a collection of spring ends used for non-pyro deployment.
 //
 //  ***** History *****
-function SpringEndsLibRev()="SpringEndsLib Rev. 1.0.11";
+function SpringEndsLibRev()="SpringEndsLib Rev. 1.0.12";
 echo(SpringEndsLibRev());
+// 1.0.12  8/31/2024  Added SE_SpringEndTypeC()
 // 1.0.11  8/3/2024   Changes to SE_SpringEndTypeB()
 // 1.0.10  8/2/2024   Added param UseSmallSpring to SE_SlidingSpringMiddle when false CS11890 is used
 // 1.0.9  5/7/2024    Moved here from "STB_", SE_SpringEnd, SE_SpringGuide, SE_SpringMiddle, SE_SpringCupTOMT, SE_SpringSeat
@@ -40,7 +41,8 @@ echo(SpringEndsLibRev());
 //		An end for Spring_CS4323.
 // 		Requires a short piece of coupler tube.
 //
-// SE_SpringEndTypeB(Coupler_OD=BT75Coupler_OD, MotorCoupler_OD=BT54Coupler_OD, nRopes=3, UseSmallSpring=true)
+// SE_SpringEndTypeB(Coupler_OD=BT75Coupler_OD, MotorCoupler_OD=BT54Coupler_OD, nRopes=3, UseSmallSpring=true);
+// SE_SpringEndTypeC(Coupler_OD=BT137Coupler_OD, Coupler_ID=BT137Coupler_ID, nRopes=5, UseSmallSpring=false);
 //
 // SE_SlidingSpringMiddle(OD=BT98Coupler_OD, nRopes=6, SliderLen=40, SpLen=40, SpringStop_Z=20, UseSmallSpring=true);
 // SE_SlidingSpringMiddle(OD=BT98Coupler_OD, nRopes=6, SliderLen=40, SpLen=40, SpringStop_Z=20, UseSmallSpring=true);
@@ -363,6 +365,38 @@ module SE_SpringEndTypeB(Coupler_OD=BT75Coupler_OD, MotorCoupler_OD=BT54Coupler_
 
 //SE_SpringEndTypeB();
 //SE_SpringEndTypeB(Coupler_OD=BT137Coupler_OD, MotorCoupler_OD=BT75Coupler_OD, nRopes=6, UseSmallSpring=false);
+
+module SE_SpringEndTypeC(Coupler_OD=BT137Coupler_OD, Coupler_ID=BT137Coupler_ID, nRopes=5, UseSmallSpring=false){
+	Spring_OD=UseSmallSpring? Spring_CS4323_OD:Spring_CS11890_OD;
+	Spring_ID=UseSmallSpring? Spring_CS4323_ID:Spring_CS11890_ID;
+	
+	Len=25;
+	Rope_BC_r=Spring_OD/2+11;
+	
+	difference(){
+		union(){
+			cylinder(d1=Spring_OD+12, d2=Spring_OD+8, h=Len, $fn=$preview? 90:360);
+			
+			cylinder(d=Coupler_OD, h=3, $fn=$preview? 90:360);
+			Tube(OD=Coupler_ID, ID=Coupler_ID-4.4, Len=10, myfn=$preview? 90:360);
+		} // union
+		
+		translate([0,0,-Overlap]) cylinder(d1= Spring_OD+5, d2=Spring_OD, h=Len-7, $fn=$preview? 90:360);
+		
+		
+		cylinder(d= Spring_OD, h=Len-3, $fn=$preview? 90:360);
+		cylinder(d= Spring_ID, h=Len+1, $fn=$preview? 90:360);
+		
+		// Retention cord
+		if (nRopes>0) 
+			for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) 
+				translate([Rope_BC_r,0,-Overlap]) cylinder(d=4, h=Len);
+	} // difference
+
+} // SE_SpringEndTypeC
+
+//SE_SpringEndTypeC();
+
 
 module SE_SlidingBigSpringMiddle(OD=BT137Coupler_OD, SliderLen=50, Extension=0){
 	Wall_t=1.8;

@@ -93,7 +93,8 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 	RailGuide_Z=RailGuideTube_Len/2;
 	MotorTubeHole_d=MotorTube_OD+MotorTubeHoleIDXtra;
 	FinInset_Len=(Can_Len-Fin_Root_L)/2;
-	FB_Xtra_Fwd=HasIntegratedCoupler? 10:0;
+	Coupler_Len=10;
+	FB_Xtra_Fwd=HasIntegratedCoupler? Coupler_Len:0;
 	
 	difference(){
 		union(){
@@ -107,9 +108,9 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 			// integrated coupler
 			if (HasIntegratedCoupler){
 				translate([0,0,Can_Len-Overlap]){
-					Tube(OD=Body_ID-IDXtra, ID=Body_ID-4, Len=10+Overlap, myfn=$preview? 36:360);
+					Tube(OD=Body_ID-IDXtra, ID=Body_ID-4, Len=Coupler_Len+Overlap, myfn=$preview? 36:360);
 					if (HasMotorSleeve)
-						Tube(OD=MotorTubeHole_d+Wall_t*2, ID=MotorTubeHole_d, Len=10+Overlap, myfn=$preview? 36:360);
+						Tube(OD=MotorTubeHole_d+Wall_t*2, ID=MotorTubeHole_d, Len=Coupler_Len+Overlap, myfn=$preview? 36:360);
 				}
 				difference(){
 					translate([0,0,Can_Len-5])
@@ -119,10 +120,10 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 			}
 			
 			if (HasAftIntegratedCoupler){
-				translate([0,0,-10]){
-					Tube(OD=Body_ID-IDXtra, ID=Body_ID-4, Len=10+Overlap, myfn=$preview? 36:360);
+				translate([0,0,-Coupler_Len]){
+					Tube(OD=Body_ID-IDXtra, ID=Body_ID-4, Len=Coupler_Len+Overlap, myfn=$preview? 36:360);
 					if (HasMotorSleeve)
-						Tube(OD=MotorTubeHole_d+Wall_t*2, ID=MotorTubeHole_d, Len=10+Overlap, myfn=$preview? 36:360);
+						Tube(OD=MotorTubeHole_d+Wall_t*2, ID=MotorTubeHole_d, Len=Coupler_Len+Overlap, myfn=$preview? 36:360);
 				}
 				difference(){
 					Tube(OD=Body_OD-1, ID=Body_ID-4, Len=5, myfn=$preview? 36:360);
@@ -139,7 +140,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 					CenteringRing(OD=UpperRing_OD, ID=MotorTubeHole_d, Thickness=3, nHoles=nFins, Offset=0);
 					
 			// Lower Centering Ring
-			LowerRing_Z=HasAftIntegratedCoupler? -10:0;
+			LowerRing_Z=HasAftIntegratedCoupler? -Coupler_Len:0;
 			LowerRing_OD=HasAftIntegratedCoupler? Body_ID-1:Body_OD-1;
 			if (Cone_Len==0) translate([0,0,LowerRing_Z])
 				CenteringRing(OD=LowerRing_OD, ID=MotorTubeHole_d, Thickness=3, nHoles=nFins, Offset=0);
@@ -233,7 +234,8 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 	} // difference
 } // FC2_FinCan
 
-//rotate([180,0,0]) FC2_FinCan(RailGuide_h=1, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false, HollowFinRoots=true);
+//rotate([180,0,0]) 
+FC2_FinCan(RailGuide_h=1, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false, HollowFinRoots=true);
 
 
 module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,

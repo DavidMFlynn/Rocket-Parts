@@ -3,7 +3,7 @@
 // Filename: NoseCone.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.12  3/31/2024
+// Revision: 0.9.14  9/2/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,7 +12,9 @@
 //
 //  ***** History *****
 //
-echo("NoseCone 0.9.12");
+echo("NoseCone 0.9.13");
+// 0.9.14  9/2/2024  Added custom nosecone ID (NC_ID=0) parameter to NC_ShockcordRingDual
+// 0.9.13  8/30/2024 Added HasThreadedTip parameter to BluntOgiveNoseCone for attaching a weight
 // 0.9.12  3/31/2024 Added skirt bolt holes (nBolts) to NC_ShockcordRingDual()
 // 0.9.11 12/3/2023  Added NC_ShockcordRing75
 // 0.9.10 11/20/2023 Added nRivets=3 parameter
@@ -29,11 +31,11 @@ echo("NoseCone 0.9.12");
 //
 // ***********************************
 //  ***** for STL output *****
-// NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13);
-// NC_ShockcordRingDual(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, NC_Base_L=25, nRivets=6, nBolts=0);
-// NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_Base_L=15, nRivets=3, nBolts=0);
+// NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_ID=0, NC_Base_L=13);
+// NC_ShockcordRingDual(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, NC_ID=0, NC_Base_L=25, nRivets=6, nBolts=0);
+// NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_ID=0, NC_Base_L=15, nRivets=3, nBolts=0);
 //
-// BluntConeNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=180, Base_L=21, nRivets=3, Tip_R=15, Wall_T=3);
+// BluntConeNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=180, Base_L=21, nRivets=3, Tip_R=15, HasThreadedTip=false, Wall_T=3);
 // OgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=170, Base_L=21, Wall_T=3);
 //
 // BluntOgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=280, Base_L=5, nRivets=3, Tip_R=5, Wall_T=3, Cut_Z=130, Transition_OD=PML98Body_OD, LowerPortion=false);
@@ -54,6 +56,7 @@ echo("NoseCone 0.9.12");
 
 include<TubesLib.scad>
 include<CommonStuffSAEmm.scad>
+use<ThreadLib.scad>
 
 Overlap=0.05;
 $fn=$preview? 24:90;
@@ -222,7 +225,7 @@ module NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13
 
 //NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13);
 
-module NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_Base_L=20, nRivets=3, nBolts=0){
+module NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_ID=0, NC_Base_L=20, nRivets=3, nBolts=0, Flat=false){
 	// Connects nosecone to deployment tube
 	// Has aluminum tube shock cord mount
 	// Has spring end and resess for spring into nosecone
@@ -244,7 +247,7 @@ Spring_CS4323_OD=44.30;
 Spring_CS4323_ID=40.50;
 Spring_CS4323_CBL=22; // coil bound length
 Spring_CS4323_FL=200; // free length
-
+Nosecone_ID=(NC_ID==0)? Tube_ID-IDXtra*2:NC_ID-IDXtra*2;
 
 	Plate_t=4;
 	nHoles=6;
@@ -256,6 +259,9 @@ Spring_CS4323_FL=200; // free length
 	BodyTube_L=15;
 	SpringEnd_Z=Tube_Z-Tube_d/2-3;
 	SpringSplice_OD=Spring_OD+10;
+	
+	Mod_Z=Flat? 13:0;
+	ID=Nosecone_ID-4.4;
 	
 		
 	module FW_GPS_SW_Hole(a=0){
@@ -351,6 +357,7 @@ Spring_CS4323_FL=200; // free length
 
 	//FW_GPS_Batt_Mount();
 		
+	
 	difference(){
 		union(){
 			// GPS mount
@@ -358,14 +365,14 @@ Spring_CS4323_FL=200; // free length
 			rotate([0,0,32]) translate([0,-Spring_OD/2-13,20]) FW_GPS_Batt_Mount();
 			
 			// Stop ring
-			translate([0,0,CR_z]) Tube(OD=Tube_OD, ID=Tube_ID-1, Len=3, myfn=$preview? 90:360);
+			translate([0,0,CR_z+Mod_Z]) Tube(OD=Tube_OD, ID=ID, Len=3, myfn=$preview? 90:360);
 	
 			// Nosecone interface
-			translate([0,0,-1]) Tube(OD=Tube_ID-IDXtra*2, 
-									ID=Tube_ID-IDXtra*2-4.4, Len=NC_Base_L+1, myfn=$preview? 90:360);
+			translate([0,0,-1+Mod_Z]) Tube(OD=Nosecone_ID, 
+									ID=ID, Len=NC_Base_L+1, myfn=$preview? 90:360);
 			// Body tube interface
-			translate([0,0,-BodyTube_L-3]) Tube(OD=Tube_ID, 
-									ID=Tube_ID-4.4, Len=BodyTube_L+1, myfn=$preview? 90:360);
+			translate([0,0,-BodyTube_L-3+Mod_Z]) Tube(OD=Tube_ID, 
+									ID=ID, Len=BodyTube_L+1, myfn=$preview? 90:360);
 				
 			// Stiffener Plate
 			translate([0,0,-5])
@@ -384,13 +391,13 @@ Spring_CS4323_FL=200; // free length
 		
 		if (nBolts>0){
 			for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j])
-				translate([0,-Tube_ID/2-1,-3-BodyTube_L/2]) rotate([90,0,0]) Bolt4Hole();
+				translate([0,-Tube_ID/2-1,-3-BodyTube_L/2+Mod_Z]) rotate([90,0,0]) Bolt4Hole();
 		}
 		
 		//translate([-4,-34,4]) FW_GPS_SW_Hole(-9);
 		
 		// Nosecone rivets
-		for (j=[0:nRivets-1]) rotate([0,0,360/nRivets*j]) translate([0,-Tube_ID/2-1,NC_Base_L/2])
+		for (j=[0:nRivets-1]) rotate([0,0,360/nRivets*j]) translate([0,-Nosecone_ID/2-1,NC_Base_L/2+Mod_Z])
 			rotate([-90,0,0]){ cylinder(d=Rivet_d, h=10); 
 			translate([0,0,3.2]) cylinder(d=Rivet_d*2, h=6);}
 		
@@ -420,6 +427,7 @@ Spring_CS4323_FL=200; // free length
 //NC_ShockcordRingDual(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, NC_Base_L=25, nRivets=6);
 //NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_Base_L=15, nRivets=3, nBolts=3);
 //NC_ShockcordRingDual(Tube_OD=Body_OD+Vinyl_t, Tube_ID=Body_ID, NC_Base_L=NC_Base_L);
+//NC_ShockcordRingDual(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, NC_ID=BT137Coupler_OD, NC_Base_L=20, nRivets=6, nBolts=6, Flat=true);
 
 module BluntConeShape(L=100, D=50, Base_L=2, Tip_R=5){
 	//Spherically blunted conic
@@ -568,19 +576,30 @@ module BluntOgiveShape(L=150, D=50, Base_L=10, Tip_R=5, Thickness=0){
 //rotate_extrude() 
 //offset(-3) BluntOgiveShape(L=190, D=137, Base_L=1, Tip_R=15);
 
-module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, Tip_R=5, Wall_T=3, Cut_Z=0, Transition_OD=58, LowerPortion=false){
+module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, Tip_R=5, HasThreadedTip=false, Wall_T=3, Cut_Z=0, Transition_OD=58, LowerPortion=false){
 
 	R=OD/2;
 	p=(R*R+L*L)/(2*R);
 	X0 = L-sqrt((p-Tip_R)*(p-Tip_R)-(p-R)*(p-R));
+	ThreadedTipDepth=40;
 	
 	difference(){
-		rotate_extrude($fn=$preview? 90:720) difference(){
-			BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
+		difference(){
+			rotate_extrude($fn=$preview? 90:720) BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R, Thickness=0);
 			
 			// Remove inside
-			BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R, Thickness=Wall_T);
+			difference(){
+				rotate_extrude($fn=$preview? 90:720) BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R, Thickness=Wall_T);
+				
+				if (HasThreadedTip)
+					translate([0,0,Base_L+L-Tip_R-ThreadedTipDepth]) cylinder(d=OD, h=ThreadedTipDepth+Tip_R);
+			} // difference
 		} // difference
+		
+		// 3/8"-16 Thread
+		if (HasThreadedTip) translate([0,0,Base_L+L-Tip_R-ThreadedTipDepth-1])
+			ExternalThread(Pitch=1.5875, Dia_Nominal=9.525, Length=ThreadedTipDepth-Wall_T*2, 
+							Step_a=$preview? 5:20, TrimEnd=true, TrimRoot=true);
 		
 		// Make Skirt fit coupler tube
 		translate([0,0,-Overlap]) cylinder(d=ID, h=Base_L+Overlap*2, $fn=$preview? 90:720);
