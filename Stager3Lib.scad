@@ -3,7 +3,7 @@
 // Filename: Stager3Lib.scad
 // by David M. Flynn
 // Created: 8/22/2024 
-// Revision: 0.9.7  8/29/2024
+// Revision: 0.9.8  9/3/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -14,7 +14,8 @@
 //
 //  ***** History *****
 //
-echo("Stager3Lib 0.9.7");
+echo("Stager3Lib 0.9.8");
+// 0.9.8  9/3/2024     Fixed some math in Stager_Cup() and Stager_ArmDisarmAccess()
 // 0.9.7  8/29/2024    Made OverCenter a parameter in Stager_ServoPlate()
 // 0.9.6  8/28/2024	   Fixed hole depth in Mech, Changed to "Stager3Lib"
 // 0.9.5  8/26/2024	   Now the same as Stager98
@@ -51,7 +52,7 @@ echo("Stager3Lib 0.9.7");
 // Stager_CupHoles(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true);
 // Stager_LockRod_Holes(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks);
 // Stager_SaucerBoltPattern(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks);
-// Stager_ArmDisarmAccess(Tube_OD=DefaultBody_OD, Len=DefaultBody_OD);
+// Stager_ArmDisarmAccess(Tube_OD=DefaultBody_OD, Len=DefaultBody_OD, nLocks=Default_nLocks);
 //
 // ***********************************
 //  ***** for Viewing *****
@@ -76,6 +77,8 @@ Bolt4Inset=4;
 Stager_Spring_OD=5/16*25.4;
 Stager_Spring_FL=1.25*25.4;
 Stager_Spring_CBL=0.7*25.4;
+
+Stager_LockRodTipXtra=1;
 
 /*
 // for Stager 98
@@ -178,7 +181,7 @@ module ShowStagerAssy(Tube_OD=DefaultBody_OD, Tube_ID=DefaultBody_ID, nLocks=Def
 	
 	translate([0,0,-Saucer_H-LockBall_d-2+0.2]) rotate([0,0,Lock_a]) Stager_LockRing(Tube_OD=Tube_OD, nLocks=nLocks);
 
-	/*
+	//*
 	difference(){
 		Stager_Mech(Tube_OD=Tube_OD, nLocks=nLocks, Skirt_ID=Tube_ID, Skirt_Len=Default_SkirtLen, ShowLocked=ShowLocked);
 		rotate([0,0,-38-180-90]) translate([0,0,-90]) cube([100,100,100]);
@@ -418,7 +421,7 @@ module Stager_LockRod(Adj=0){
 	LR_X=Stager_LockRod_X;
 	LR_Y=Stager_LockRod_Y;
 	LR_Z=Stager_LockRod_Z;
-	Lock_Z=LockBall_d/2+1; // bottom of rod to center of lock ball
+	Lock_Z=LockBall_d/2+Stager_LockRodTipXtra; // bottom of rod to center of lock ball
 	Lock_Cam=2+IDXtra;
 	
 	difference(){
@@ -467,9 +470,10 @@ module Stager_Cup(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true, C
 	LR_Z=Stager_LockRod_Z;
 	nBolts=nLocks*CupBoltsPerLock;
 	ID=Tube_OD-CupBoltHoleInset*2;
-	LockRodOffset_Z=-20;
-	Inset_Y=StagerLockInset_Y(Tube_OD=Tube_OD);
 	
+	Inset_Y=StagerLockInset_Y(Tube_OD=Tube_OD);
+	LockRodOffset_Z=-Saucer_H-Stager_LockRodTipXtra-LockBall_d;
+
 	difference(){
 		union(){
 			difference(){
@@ -516,7 +520,7 @@ module Stager_Cup(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true, C
 	/**/
 } // Stager_Cup
 
-// translate([0,0,Overlap]) Stager_Cup(BoltsOn=true);
+// translate([0,0,Overlap]) Stager_Cup(BoltsOn=true,Collar_h=20);
 // rotate([180,0,0]) Stager_Cup(); // STL test
 
 module Stager_SaucerBoltPattern(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks){
@@ -802,7 +806,7 @@ module Stager_Mech(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Skirt_ID=Defau
 			translate([0,Skirt_ID/2-Bolt4Inset,Plate_Z+5]) Bolt4Hole();
 					
 		// Arm / Trigger access hole
-		Stager_ArmDisarmAccess(Tube_OD=Tube_OD, Len=Tube_OD);
+		Stager_ArmDisarmAccess(Tube_OD=Tube_OD, Len=Tube_OD, nLocks=nLocks);
 
 		if ($preview) translate([0,0,-100]) cube([Tube_OD/2,Tube_OD/2,100]);
 	} // difference
@@ -812,10 +816,10 @@ module Stager_Mech(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Skirt_ID=Defau
 
 // Stager_Mech( ShowLocked=true);
 
-module Stager_ArmDisarmAccess(Tube_OD=DefaultBody_OD, Len=DefaultBody_OD){
+module Stager_ArmDisarmAccess(Tube_OD=DefaultBody_OD, Len=DefaultBody_OD, nLocks=Default_nLocks){
 	Post_Z=-Saucer_H-36;
 	
-	ArmingPost_a=108;
+	ArmingPost_a=180/nLocks*3;
 	
 	rotate([0,0,ArmingPost_a]) translate([0,BoltCircle_d(Tube_OD=Tube_OD)/2+4,Post_Z])
 			rotate([0,90,0]) cylinder(d=3, h=Len, center=true);
