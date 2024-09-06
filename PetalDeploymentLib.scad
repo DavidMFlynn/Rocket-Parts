@@ -18,6 +18,8 @@
 //
 //  ***** History *****
 //
+function PetalDeploymentLibRev()="PetalDeploymentLib Rev. 0.9.8";
+echo(PetalDeploymentLibRev());
 // 0.9.8  8/11/2024   Added PD_Booster_PetalHub()
 // 0.9.7  7/15/2024	  Removed OD param from PD_PetalSpringHolder() only used as translate([0,OD/2,0])
 // 0.9.6  6/3/2024    Added params and coupler tube option to PD_NC_PetalHub

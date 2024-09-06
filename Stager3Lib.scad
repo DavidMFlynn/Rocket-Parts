@@ -252,7 +252,7 @@ module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks
 						
 	UnLock_a=	Calc_a(11,(BoltCircle_d(Tube_OD=Tube_OD)/2));
 	
-	OverCenter_a=-Calc_a(Dist=OverCenter,R=BoltCircle_d(Tube_OD=Tube_OD)/2-1);
+	OverCenter_a=-Calc_a(Dist=OverCenter,R=BC_r-1);
 
 	module LanyardAttachmentPoint(){
 		Ly_t=5;
@@ -277,7 +277,7 @@ module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks
 		Block_T=StopBlock_W;
 		BlockOffset=LockedBlock? Block_T:-Block_T;
 		
-		translate([BlockOffset, BoltCircle_d(Tube_OD=Tube_OD)/2-1, Plate_t-Overlap]) 
+		translate([BlockOffset, BC_r-1, Plate_t-Overlap]) 
 			RoundRect(X=Block_T, Y=10, Z=Block_H, R=1);
 	} // StopBlock
 	
@@ -285,7 +285,7 @@ module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks
 		Block_T=StopBlock_W;
 		BlockOffset=LockedBlock? Block_T:-Block_T;
 		
-		translate([BlockOffset, BoltCircle_d(Tube_OD=Tube_OD)/2-1, Plate_t+2.5+Magnet_d/2]) 
+		translate([BlockOffset, BC_r-1, Plate_t+2.5+Magnet_d/2]) 
 			rotate([0,90,0]) cylinder(d=Magnet_d, h=7, center=true);
 	} // MagnetHole
 	
@@ -445,7 +445,7 @@ module Stager_CupHoles(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=tr
 	// refferenced from top of saucer
 	Len=StagerCupLen; // thickness without collar
 	nBolts=nLocks*CupBoltsPerLock;
-	ID=Tube_OD-22;
+	ID=Tube_OD-CupBoltHoleInset*2-Bolt4Inset*2;
 	
 	difference(){
 		translate([0,0,-Overlap]) cylinder(d=Tube_OD+1, h=Len+Collar_h+Overlap, $fn=$preview? 90:360); // test
@@ -520,6 +520,7 @@ module Stager_Cup(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true, C
 	/**/
 } // Stager_Cup
 
+//Stager_Cup(Tube_OD=BT65Body_OD, nLocks=3, BoltsOn=true, Collar_h=DefaultCollarLen);
 // translate([0,0,Overlap]) Stager_Cup(BoltsOn=true,Collar_h=20);
 // rotate([180,0,0]) Stager_Cup(); // STL test
 

@@ -195,8 +195,8 @@ module Alt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=BT98Body_ID, DoorXtra_X=0,
 	BoltBossInset=10.5+2;
 	AltOffset_Y=7;
 	
-	echo(Door_X=Door_X);
-	echo(Door_Y=Door_Y);
+	//echo(Door_X=Door_X);
+	//echo(Door_Y=Door_Y);
 	
 	difference(){
 		DoorFrame(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t, 

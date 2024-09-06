@@ -12,7 +12,8 @@
 //
 //  ***** History *****
 //
-echo("NoseCone 0.9.13");
+function NoseConeRev()="NoseCone Rev. 0.9.13";
+echo(NoseConeRev());
 // 0.9.14  9/2/2024  Added custom nosecone ID (NC_ID=0) parameter to NC_ShockcordRingDual
 // 0.9.13  8/30/2024 Added HasThreadedTip parameter to BluntOgiveNoseCone for attaching a weight
 // 0.9.12  3/31/2024 Added skirt bolt holes (nBolts) to NC_ShockcordRingDual()
@@ -31,7 +32,7 @@ echo("NoseCone 0.9.13");
 //
 // ***********************************
 //  ***** for STL output *****
-// NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_ID=0, NC_Base_L=13);
+// NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13);
 // NC_ShockcordRingDual(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, NC_ID=0, NC_Base_L=25, nRivets=6, nBolts=0);
 // NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_ID=0, NC_Base_L=15, nRivets=3, nBolts=0);
 //

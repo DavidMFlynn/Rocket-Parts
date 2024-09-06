@@ -3,7 +3,7 @@
 // Filename: TubesLib.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.15  8/21/2024
+// Revision: 0.9.16  9/3/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-function TubesLib_Rev()="TubesLib 0.9.15";
+function TubesLib_Rev()="TubesLib 0.9.16";
 echo(TubesLib_Rev());
+// 0.9.16  9/3/2024   Added BT65Body and Coupler
 // 0.9.15  8/21/2024  Geometry changed: Centering ring holes now start at +Y.
 // 0.9.14  4/2/2024   Added ULine75Body
 // 0.9.13  11/28/2023 Added BT190...
@@ -128,6 +129,11 @@ BT75Coupler_OD=75.7; // Measured
 BT75Coupler_ID=BT75Coupler_OD-1.40*2; // Measured wall
 // echo(BT75Body_OD=BT75Body_OD);
 // echo(BT75Coupler_OD=BT75Coupler_OD);
+
+BT65Body_ID=64.8; // measured
+BT65Body_OD=67.5;
+BT65Coupler_ID=61.3;
+BT65Coupler_OD=64.1;
 
 BT54Mtr_OD=57.20;
 BT54Mtr_ID=54.40;

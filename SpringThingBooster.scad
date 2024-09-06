@@ -36,10 +36,9 @@
 //  Steel Dowel Pin 4mm (Undersized) x 16mm (3 Req.)
 //
 //  ***** History *****
-module SpringThingBoosterRev(){
-	echo("SpringThingBooster Rev. 1.3.7");
-} // SpringThingBoosterRev
-SpringThingBoosterRev();
+function SpringThingBoosterRev()="SpringThingBooster Rev. 1.3.7";
+echo(SpringThingBoosterRev());
+
 // 1.3.7   8/6/2024   Changed calculation for STB_Unlocked_a()
 // 1.3.6   8/2/2024   Added STB_TubeEnd2() new smoother version
 // 1.3.5   8/1/2024   Removed old unused stuff.
@@ -329,7 +328,7 @@ module STB_ShockCordHolePattern(BallPerimeter_d=BT75Body_OD, Body_OD=PML54Couple
 		[BT137Body_OD,19]
 		]);
 	
-	echo(SCord_W=SCord_W);
+	//echo(SCord_W=SCord_W);
 	rotate([0,0,Offset_a]){
 		translate([0,Body_OD/2-6,0]) children();
 		translate([0,Body_OD/2-6-SCord_W,0]) children();
@@ -488,8 +487,7 @@ module STB_TubeEnd2(BallPerimeter_d=BT75Body_OD, nLockBalls=nLockBalls,
 	//echo("STB_LockBall_d=",STB_LockBall_d(BallPerimeter_d=BallPerimeter_d));
 } // STB_TubeEnd2
 
-//rotate([180,0,0]) 
-STB_TubeEnd2(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls, Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, Engagement_Len=20);
+//rotate([180,0,0]) STB_TubeEnd2(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls, Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, Engagement_Len=20);
 
 ArmingHole_d=2.5;
 
@@ -504,7 +502,7 @@ module STB_ManualArmingHole(BallPerimeter_d=BT75Body_OD){
 
 
 module STB_BallRetainerTop(BallPerimeter_d=BT75Body_OD, Outer_OD=0, Body_OD=BT75Body_ID, nLockBalls=nLockBalls,
-			HasIntegratedCouplerTube=false,
+			HasIntegratedCouplerTube=false, nBolts=0,
 			IntegratedCouplerLenXtra=0,
 				
 				Body_ID=PML54Body_ID,
@@ -627,6 +625,11 @@ module STB_BallRetainerTop(BallPerimeter_d=BT75Body_OD, Outer_OD=0, Body_OD=BT75
 		if (HasLargeInnerBearing)
 			translate([0,0,-Overlap]) cylinder(d=Bearing_ID-6, h=Top_H+Overlap*2);
 			
+		// Integrated coupler bolt holes
+		if (HasIntegratedCouplerTube && nBolts>0) translate([0,0,Engagement_Len/2+IntCouplerLen+7.5])
+			for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+180/nBolts]) translate([0,Body_OD/2,0]) rotate([-90,0,0]) Bolt4Hole();
+			
+		
 		// Bolt holes
 		translate([0,0,Top_H]) 
 			STB_BR_BoltPattern(BallPerimeter_d=BallPerimeter_d, Body_OD=Body_OD, nLockBalls=nLockBalls) 
@@ -717,7 +720,8 @@ HasIntegratedCouplerTube=true,
 /**/		
 
 /*
-STB_BallRetainerTop(BallPerimeter_d=PML75Body_OD, Body_OD=PML75Body_ID, nLockBalls=5, HasIntegratedCouplerTube=true, Body_ID=PML75Body_ID);
+STB_BallRetainerTop(BallPerimeter_d=PML75Body_OD, Body_OD=PML75Body_ID, nLockBalls=5, HasIntegratedCouplerTube=true, nBolts=4
+	, Body_ID=PML75Body_ID);
 
 //rotate([0,0,STB_Unlocked_a(BallPerimeter_d=PML75Body_OD)])
 {
@@ -761,7 +765,7 @@ module STB_BallRetainerBottom(BallPerimeter_d=BT75Body_OD, Body_OD=BT75Body_ID, 
 	Bottom_H=Engagement_Len/2+SpringGroove_H;
 	LockDisk_d=STB_LockPinBC_d(BallPerimeter_d)+BearingMR84_OD;
 	
-	echo(Bottom_H=Bottom_H);
+	//echo(Bottom_H=Bottom_H);
 	
 	Bearing_ID=Bearing6808_ID;
 		

@@ -12,7 +12,8 @@
 //
 //  ***** History *****
 //
-echo("RailGuide 1.0.6");
+function RailGuideRev()="RailGuide Rev. 1.0.6";
+echo(RailGuideRev());
 // 1.0.6  8/21/2024  Geometry change: All guides and posts are not oriented to 0° (+Y).
 // 1.0.5  11/2/2023  Added RailGuideSpacer()
 // 1.0.4  1/1/2023   Bolt holes now thru in RailGuidePost. 

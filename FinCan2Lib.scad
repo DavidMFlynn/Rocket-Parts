@@ -257,6 +257,7 @@ module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 	FinBox_W=Fin_Root_W+Wall_t*2;
 	MotorRetainer_Len=33;
 	
+	//echo(Interface_OD=Interface_OD);
 	difference(){
 		union(){
 			hull(){

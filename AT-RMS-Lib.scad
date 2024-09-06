@@ -3,13 +3,14 @@
 // Filename: AT-RMS-Lib.scad
 // by David M. Flynn
 // Created: 9/13/2023 
-// Revision: 0.9.1  5/13/2024 
+// Revision: 0.9.2  9/5/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 //
 //  ***** History *****
 //
+// 0.9.2  9/5/2024    Added 38mm motors 38/120..38/720
 // 0.9.1  5/13/2024   Added ATRMS_75_2560_Motor
 // 0.9.0  9/13/2023   First code, 54mm only
 //
@@ -18,6 +19,18 @@
 //
 // ***********************************
 //  ***** Routines *****
+//
+function ATRMS_38_Aft_d()=kATRMS_Aft38_d;
+//
+// ATRMS_38_120_Motor(HasEyeBolt=false);
+// ATRMS_38_240_Motor(HasEyeBolt=false);
+// ATRMS_38_360_Motor(HasEyeBolt=false);
+// ATRMS_38_480_Motor(HasEyeBolt=false);
+// ATRMS_38_600_Motor(HasEyeBolt=false);
+// ATRMS_38_720_Motor(HasEyeBolt=false);
+//
+// ATRMS_ForClosure38();
+// ATRMS_AftClosure38();
 //
 function ATRMS_54_Aft_d()=kATRMS_Aft54_d;
 //
@@ -51,6 +64,31 @@ function ATRMS_54_Aft_d()=kATRMS_Aft54_d;
 // ***********************************
 //
 $fn=90;
+Overlap=0.05;
+
+kATRMS_38_Case_d=38;
+kATRMS_38_120_Case_h=79;
+kATRMS_38_240_Case_h=127;
+kATRMS_38_360_Case_h=174;
+kATRMS_38_480_Case_h=222;
+kATRMS_38_600_Case_h=270;
+kATRMS_38_720_Case_h=318;
+
+kATRMS_For38_d1=38;
+kATRMS_For38_h1=3.25;
+kATRMS_For38_d2=23.7;
+kATRMS_For38_h2=18.5;
+kATRMS_For38_d3=25.8;
+kATRMS_For38_h3=10;
+kATRMS_For38_d4=15.8;
+kATRMS_For38_h4=27;
+kATRMS_For38_d5=15;
+kATRMS_For38_h5=27.8;
+kATRMS_For38_oal=27.8;
+
+kATRMS_Aft38_d=41.4;
+kATRMS_Aft38_h=10;
+
 
 kATRMS_54_Case_d=54;
 kATRMS_54_427_Case_h=127;
@@ -108,6 +146,117 @@ module ShowAll54(){
 
 //ShowAll54();
 
+module ATRMS_38_120_Motor(HasEyeBolt=false){
+	color("LightBlue") ATRMS_38_120_Case();
+	color("Silver") ATRMS_AftClosure38();
+	if (HasEyeBolt)
+		color("Gray") translate([0,0,kATRMS_38_120_Case_h+kATRMS_For38_oal]) Eye_Bolt1();
+	translate([0,0,kATRMS_38_120_Case_h]) color("Silver") ATRMS_ForClosure38();
+} // ATRMS_38_120_Motor
+
+//ATRMS_38_120_Motor(true);
+
+module ATRMS_38_240_Motor(HasEyeBolt=false){
+	color("LightBlue") ATRMS_38_240_Case();
+	color("Silver") ATRMS_AftClosure38();
+	if (HasEyeBolt)
+		color("Gray") translate([0,0,kATRMS_38_240_Case_h+kATRMS_For38_oal]) Eye_Bolt1();
+	translate([0,0,kATRMS_38_240_Case_h]) color("Silver") ATRMS_ForClosure38();
+} // ATRMS_38_240_Motor
+
+//ATRMS_38_240_Motor(true);
+
+module ATRMS_38_360_Motor(HasEyeBolt=false){
+	color("LightBlue") ATRMS_38_360_Case();
+	color("Silver") ATRMS_AftClosure38();
+	if (HasEyeBolt)
+		color("Gray") translate([0,0,kATRMS_38_360_Case_h+kATRMS_For38_oal]) Eye_Bolt1();
+	translate([0,0,kATRMS_38_360_Case_h]) color("Silver") ATRMS_ForClosure38();
+} // ATRMS_38_360_Motor
+
+//ATRMS_38_360_Motor(true);
+
+module ATRMS_38_480_Motor(HasEyeBolt=false){
+	color("LightBlue") ATRMS_38_480_Case();
+	color("Silver") ATRMS_AftClosure38();
+	if (HasEyeBolt)
+		color("Gray") translate([0,0,kATRMS_38_480_Case_h+kATRMS_For38_oal]) Eye_Bolt1();
+	translate([0,0,kATRMS_38_480_Case_h]) color("Silver") ATRMS_ForClosure38();
+} // ATRMS_38_480_Motor
+
+//ATRMS_38_480_Motor(true);
+
+module ATRMS_38_600_Motor(HasEyeBolt=false){
+	color("LightBlue") ATRMS_38_600_Case();
+	color("Silver") ATRMS_AftClosure38();
+	if (HasEyeBolt)
+		color("Gray") translate([0,0,kATRMS_38_600_Case_h+kATRMS_For38_oal]) Eye_Bolt1();
+	translate([0,0,kATRMS_38_600_Case_h]) color("Silver") ATRMS_ForClosure38();
+} // ATRMS_38_600_Motor
+
+//ATRMS_38_600_Motor(true);
+
+module ATRMS_38_720_Motor(HasEyeBolt=false){
+	color("LightBlue") ATRMS_38_720_Case();
+	color("Silver") ATRMS_AftClosure38();
+	if (HasEyeBolt)
+		color("Gray") translate([0,0,kATRMS_38_720_Case_h+kATRMS_For38_oal]) Eye_Bolt1();
+	translate([0,0,kATRMS_38_720_Case_h]) color("Silver") ATRMS_ForClosure38();
+} // ATRMS_38_720_Motor
+
+//ATRMS_38_720_Motor(true);
+
+module ATRMS_38_240_Motor(HasEyeBolt=false){
+	color("LightBlue") ATRMS_38_240_Case();
+	color("Silver") ATRMS_AftClosure38();
+	if (HasEyeBolt)
+		color("Gray") translate([0,0,kATRMS_38_240_Case_h+kATRMS_For38_oal]) Eye_Bolt1();
+	translate([0,0,kATRMS_38_240_Case_h]) color("Silver") ATRMS_ForClosure38();
+} // ATRMS_38_240_Motor
+
+//ATRMS_38_240_Motor(true);
+
+module ATRMS_ForClosure38(){
+	// Standard plugged threaded forward closure
+	cylinder(d=kATRMS_For38_d1, h=kATRMS_For38_h1);
+	cylinder(d=kATRMS_For38_d2, h=kATRMS_For38_h2);
+	translate([0,0,kATRMS_For38_h2-kATRMS_For38_h3/2-1.5]) hull(){
+		cylinder(d=kATRMS_For38_d3, h=kATRMS_For38_h3, center=true);
+		cylinder(d=kATRMS_For38_d2, h=kATRMS_For38_h3+3, center=true);
+	}
+	hull(){
+		cylinder(d=kATRMS_For38_d4, h=kATRMS_For38_h4);
+		cylinder(d=kATRMS_For38_d5, h=kATRMS_For38_h5);
+	}
+} // ATRMS_ForClosure54
+
+// ATRMS_ForClosure54();
+
+module ATRMS_38_120_Case(){
+	cylinder(d=kATRMS_38_Case_d, h=kATRMS_38_120_Case_h);
+} // ATRMS_38_120_Case
+module ATRMS_38_240_Case(){
+	cylinder(d=kATRMS_38_Case_d, h=kATRMS_38_240_Case_h);
+} // ATRMS_38_240_Case
+module ATRMS_38_360_Case(){
+	cylinder(d=kATRMS_38_Case_d, h=kATRMS_38_360_Case_h);
+} // ATRMS_38_360_Case
+module ATRMS_38_480_Case(){
+	cylinder(d=kATRMS_38_Case_d, h=kATRMS_38_480_Case_h);
+} // ATRMS_38_480_Case
+module ATRMS_38_600_Case(){
+	cylinder(d=kATRMS_38_Case_d, h=kATRMS_38_600_Case_h);
+} // ATRMS_38_600_Case
+module ATRMS_38_720_Case(){
+	cylinder(d=kATRMS_38_Case_d, h=kATRMS_38_720_Case_h);
+} // ATRMS_38_720_Case
+module ATRMS_AftClosure38(){
+	translate([0,0,-kATRMS_Aft38_h/2]) hull(){
+		cylinder(d=kATRMS_Aft38_d-2, h=kATRMS_Aft38_h, center=true);
+		cylinder(d=kATRMS_Aft38_d, h=kATRMS_Aft38_h-2, center=true);
+	}
+} // ATRMS_AftClosure38
+
 module Eye_Bolt1(){
 	cylinder(d=19, h=3); // hard washer
 	
@@ -132,7 +281,8 @@ module Eye_Bolt2(){
 
 module ATRMS_54_427_Motor(HasEyeBolt=true){
 	// I115W, I229T
-	color("Gray") translate([0,0,kATRMS_54_427_Case_h+kATRMS_For54_oal]) Eye_Bolt1();
+	if (HasEyeBolt)
+		color("Gray") translate([0,0,kATRMS_54_427_Case_h+kATRMS_For54_oal]) Eye_Bolt1();
 	color("Silver") translate([0,0,kATRMS_54_427_Case_h]) ATRMS_ForClosure54(Extended=false);
 	color("LightBlue") ATRMS_54_427_Case();
 	color("Silver") ATRMS_AftClosure54();
@@ -140,11 +290,13 @@ module ATRMS_54_427_Motor(HasEyeBolt=true){
 
 // ATRMS_54_427_Motor(HasEyeBolt=true);
 
+
 module ATRMS_54_852_Motor(Extended=false, HasEyeBolt=true){
 	// J275W, J90W, J180T, J460T
 	Extra=Extended? kATRMS_ExtFor54_h2:0;
 	
-	color("Gray") translate([0,0,kATRMS_54_852_Case_h+kATRMS_For54_oal+Extra]) Eye_Bolt1();
+	if (HasEyeBolt)
+		color("Gray") translate([0,0,kATRMS_54_852_Case_h+kATRMS_For54_oal+Extra]) Eye_Bolt1();
 	color("Silver") translate([0,0,kATRMS_54_852_Case_h]) ATRMS_ForClosure54(Extended=Extended);
 	color("LightBlue") ATRMS_54_852_Case();
 	color("Silver") ATRMS_AftClosure54();
@@ -157,7 +309,8 @@ module ATRMS_54_1280_Motor(Extended=false, HasEyeBolt=true){
 	// J415W, J135W, J800T
 	Extra=Extended? kATRMS_ExtFor54_h2:0;
 	
-	color("Gray") translate([0,0,kATRMS_54_1280_Case_h+kATRMS_For54_oal+Extra]) Eye_Bolt1();
+	if (HasEyeBolt)
+		color("Gray") translate([0,0,kATRMS_54_1280_Case_h+kATRMS_For54_oal+Extra]) Eye_Bolt1();
 	color("Silver") translate([0,0,kATRMS_54_1280_Case_h]) ATRMS_ForClosure54(Extended=Extended);
 	color("LightBlue") ATRMS_54_1280_Case();
 	color("Silver") ATRMS_AftClosure54();
@@ -167,7 +320,8 @@ module ATRMS_54_1706_Motor(Extended=false, HasEyeBolt=true){
 
 	Extra=Extended? kATRMS_ExtFor54_h2:0;
 	
-	color("Gray") translate([0,0,kATRMS_54_1706_Case_h+kATRMS_For54_oal+Extra]) Eye_Bolt1();
+	if (HasEyeBolt)
+		color("Gray") translate([0,0,kATRMS_54_1706_Case_h+kATRMS_For54_oal+Extra]) Eye_Bolt1();
 	color("Silver") translate([0,0,kATRMS_54_1706_Case_h]) ATRMS_ForClosure54(Extended=Extended);
 	color("LightBlue") ATRMS_54_1706_Case();
 	color("Silver") ATRMS_AftClosure54();
@@ -177,7 +331,8 @@ module ATRMS_54_2560_Motor(Extended=false, HasEyeBolt=true){
 
 	Extra=Extended? kATRMS_ExtFor54_h2:0;
 	
-	color("Gray") translate([0,0,kATRMS_54_2560_Case_h+kATRMS_For54_oal+Extra]) Eye_Bolt1();
+	if (HasEyeBolt)
+		color("Gray") translate([0,0,kATRMS_54_2560_Case_h+kATRMS_For54_oal+Extra]) Eye_Bolt1();
 	color("Silver") translate([0,0,kATRMS_54_2560_Case_h]) ATRMS_ForClosure54(Extended=Extended);
 	color("LightBlue") ATRMS_54_2560_Case();
 	color("Silver") ATRMS_AftClosure54();
@@ -239,13 +394,14 @@ module ATRMS_75_2560_Motor(Extended=false, HasEyeBolt=true){
 
 	Extra=Extended? kATRMS_ExtFor75_h2:0;
 	
-	color("Gray") translate([0,0,kATRMS_75_2560_Case_h+kATRMS_For75_oal+Extra]) Eye_Bolt2();
+	if (HasEyeBolt)
+		color("Gray") translate([0,0,kATRMS_75_2560_Case_h+kATRMS_For75_oal+Extra]) Eye_Bolt2();
 	color("Silver") translate([0,0,kATRMS_75_2560_Case_h]) ATRMS_ForClosure75(Extended=Extended);
 	color("LightBlue") ATRMS_75_2560_Case();
 	color("Silver") ATRMS_AftClosure75();
 } // ATRMS_75_2560_Motor
 
-ATRMS_75_2560_Motor(Extended=false, HasEyeBolt=true);
+//ATRMS_75_2560_Motor(Extended=false, HasEyeBolt=true);
 
 module ATRMS_ForClosure75(Extended=false){
 	// Standard plugged threaded forward closure

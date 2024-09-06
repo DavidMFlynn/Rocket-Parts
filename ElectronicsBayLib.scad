@@ -14,6 +14,8 @@
 //
 //  ***** History *****
 //
+function ElectronicsBayLibRev()="ElectronicsBayLib Rev. 1.2.0";
+echo(ElectronicsBayLibRev());
 // 1.2.0  8/27/2024  Major change: EB_Electronics_BayUniversal()
 // 1.1.0  8/1/2024   Added EB_Electronics_Bay55()
 // 1.0.3  7/15/2024  Added doors shortcuts.
@@ -281,6 +283,7 @@ module EB_IntegratedCoupler(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, nBolts=3, 
 	
 	Al_Tube_d=12.7;
 	Al_Tube_Z=Al_Tube_d/2+1;
+	Al_Tube_a=0; //was 180/nBolts;
 	
 	difference(){
 		union(){
@@ -296,18 +299,18 @@ module EB_IntegratedCoupler(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, nBolts=3, 
 				difference(){
 					intersection(){
 						translate([0, 0, Al_Tube_Z]) 
-							rotate([90, 0, 180/nBolts]) cylinder(d=Al_Tube_d+6, h=IntegratedCoupler_OD, center=true);
+							rotate([90, 0, Al_Tube_a]) cylinder(d=Al_Tube_d+6, h=IntegratedCoupler_OD, center=true);
 							
 						translate([0,0,-5]) cylinder(d=IntegratedCoupler_OD-1, h=IntegratedCoupler_Len+5);
 					} // intersection
 					translate([0,0,Al_Tube_Z]) 
-						rotate([90, 0, 180/nBolts]) cylinder(d=Al_Tube_d+7, h=IntegratedCoupler_ID-20, center=true);
+						rotate([90, 0, Al_Tube_a]) cylinder(d=Al_Tube_d+7, h=IntegratedCoupler_ID-20, center=true);
 				} // difference
 				}
 		} // union
 		
 		if (HasShockMount) 
-			translate([0,0,Al_Tube_Z]) rotate([90, 0, 180/nBolts]) 
+			translate([0,0,Al_Tube_Z]) rotate([90, 0, Al_Tube_a]) 
 				cylinder(d=Al_Tube_d, h=Tube_OD, center=true);
 				
 		//Bolt holes for nosecone and ball lock

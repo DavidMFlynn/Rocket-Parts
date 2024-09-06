@@ -3,7 +3,7 @@
 // Filename: Fins.scad
 // by David M. Flynn
 // Created: 6/11/2022 
-// Revision: 1.0.3  8/21/2024
+// Revision: 1.0.4  9/5/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,7 +12,9 @@
 //
 //  ***** History *****
 //
-echo("Fins 1.0.3");
+function FinsRev()="Fins 1.0.4";
+echo(FinsRev());
+// 1.0.4  9/5/2024   Added PrinterBrim_H=0.9 parameter to TrapFin2()
 // 1.0.3  8/21/2024  Geometry changed: Orientation is now Y centric, Fin 1 is now 1/2 fin angle from +Y.
 // 1.0.2  12/21/2022 Added an optional spar to TrapFin2()
 // 1.0.1  11/14/2022 Span should be in addition to Post_h. 
@@ -33,15 +35,15 @@ echo("Fins 1.0.3");
 // Fin(Root_L=200, Root_W=6, Tip_W=2.5, Span=90, Chamfer_a=15);
 //
 //
-// TrapFin2(Post_h=10, Root_L=180, Tip_L=120, Root_W=10, Tip_W=5.0, Span=120, Chamfer_L=18, TipOffset=0, Bisect=false, Bisect_X=0);
+// TrapFin2(Post_h=10, Root_L=180, Tip_L=120, Root_W=10, Tip_W=5.0, Span=120, Chamfer_L=18, TipOffset=0, Bisect=false, Bisect_X=0, PrinterBrim_H=0.9);
 //
 // *** Examples ***
-// TrapFin2(Post_h=10, Root_L=240, Tip_L=50, Root_W=12, Tip_W=7.0, Span=150, Chamfer_L=24, TipOffset=60);
+// TrapFin2(Post_h=10, Root_L=240, Tip_L=50, Root_W=12, Tip_W=7.0, Span=150, Chamfer_L=24, TipOffset=60, PrinterBrim_H=0.9);
 //
 // OAL = Root_L + (-Root_L/2 + TipOffset + Tip_L/2) = 260mm
-// TrapFin2(Post_h=10, Root_L=200, Tip_L=80, Root_W=14, Tip_W=5.0, Span=180, Chamfer_L=32, TipOffset=120);
+// TrapFin2(Post_h=10, Root_L=200, Tip_L=80, Root_W=14, Tip_W=5.0, Span=180, Chamfer_L=32, TipOffset=120, PrinterBrim_H=0.9);
 //
-// TrapFin2(Post_h=14, Root_L=400, Tip_L=150, Root_W=20, Tip_W=8.0, Span=270, Chamfer_L=44, TipOffset=80, Bisect=false, Bisect_X=0, HasSpar=true, Spar_d=8.0, Spar_L=180);
+// TrapFin2(Post_h=14, Root_L=400, Tip_L=150, Root_W=20, Tip_W=8.0, Span=270, Chamfer_L=44, TipOffset=80, Bisect=false, Bisect_X=0, HasSpar=true, Spar_d=8.0, Spar_L=180, PrinterBrim_H=0.9);
 //
 // ***********************************
 //  ***** Routines *****
@@ -209,7 +211,7 @@ module BisectFin(X_Offset=0, X1=100, Y=10, Z=100, KeepNegXHalf=false){
 module TrapFin2(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100, Chamfer_L=18,
 				TipOffset=0, TipInset=0, HasBluntTip=false, TipPost_h=0,
 				Bisect=false, Bisect_X=0,
-				HasSpar=false, Spar_d=8, Spar_L=100){
+				HasSpar=false, Spar_d=8, Spar_L=100, PrinterBrim_H=0.9){
 					
 	Rib_Spacing=20;
 	Perimeter=0.8;
@@ -274,6 +276,13 @@ module TrapFin2(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100,
 		
 		//translate([-30,-20,81]) cube([100,100,200]);
 	} // difference
+	
+	if ($preview==false && PrinterBrim_H>0){
+		translate([0,-Root_L/2+Root_W*0.7,0]) 
+			cylinder(d=Root_W*2, h=PrinterBrim_H); // Neg
+		translate([0,Root_L/2-Root_W*0.7,0]) 
+			cylinder(d=Root_W*2, h=PrinterBrim_H); // Pos
+	}
 } // TrapFin2
 
 // Goblin
