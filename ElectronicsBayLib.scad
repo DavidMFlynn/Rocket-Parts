@@ -4,7 +4,7 @@
 // Filename: ElectronicsBayLib.scad
 // by David M. Flynn
 // Created: 3/31/2024 
-// Revision: 1.2.0  8/27/2024 
+// Revision: 1.3.0  9/9/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -14,8 +14,10 @@
 //
 //  ***** History *****
 //
-function ElectronicsBayLibRev()="ElectronicsBayLib Rev. 1.2.0";
+function ElectronicsBayLibRev()="ElectronicsBayLib Rev. 1.2.1";
 echo(ElectronicsBayLibRev());
+// 1.3.0  9/9/2024   Added centering rings to EB_Electronics_BayUniversal(), EB_LowerElectronics_Bay() now calls EB_Electronics_BayUniversal()
+// 1.2.1  9/8/2024   Battery doors are 4mm narrower on small rockets (<70mm OD).
 // 1.2.0  8/27/2024  Major change: EB_Electronics_BayUniversal()
 // 1.1.0  8/1/2024   Added EB_Electronics_Bay55()
 // 1.0.3  7/15/2024  Added doors shortcuts.
@@ -44,12 +46,15 @@ echo(ElectronicsBayLibRev());
 // EB_ExtensionRing(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=21, nBolts=4, BoltInset=7.5);
 //
 //  *** Universal, uses a list for door type and position ***
-/* EB_Electronics_BayUniversal(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, DoorAngles=OneAltBay, Len=170, 
+/* 
+EB_Electronics_BayUniversal(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, DoorAngles=OneAltBay, Len=170, 
 									nBolts=6, BoltInset=7.5, ShowDoors=false,
 									HasFwdIntegratedCoupler=false, HasFwdShockMount=false,
 									HasAftIntegratedCoupler=false, HasAftShockMount=false,
 									HasRailGuide=false, RailGuideLen=35,
-									Bolted=false, ExtraBolts=[], TopOnly=false, BottomOnly=false); /**/
+									HasFwdCenteringRing=false, HasAftCenteringRing=false, InnerTube_OD=BT54Body_OD,
+									Bolted=false, ExtraBolts=[], TopOnly=false, BottomOnly=false); 
+/**/
 //
 //  *** Doors ***
 // rotate([-90,0,0]) EB_AltDoor(Tube_OD=BT98Body_OD);
@@ -90,6 +95,9 @@ SimpleOneBattSWBay=[[0],[],[180]];
 SimpleTwoBattSWBay=[[0],[],[120,240]];
 AltBattOneBattSWBay=[[0],[120],[240]];
 AltBattTwoBattSWBay=[[0],[90],[180,270]]; //Alt, Batt, BattSW, BattSW
+
+function EB_BattDoor_X(Tube_OD=BT137Body_OD)=Tube_OD>70? BattDoorX():BattDoorX()-4;
+
 	
 module EB_AltDoor(Tube_OD=BT98Body_OD){
 	AltDoor54(Tube_OD=Tube_OD, IsLoProfile=false, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowAlt=true);
@@ -98,134 +106,33 @@ module EB_AltDoor(Tube_OD=BT98Body_OD){
 //EB_AltDoor(Tube_OD=BT98Body_OD);
 
 module EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=false, DoubleBatt=false){
-	Batt_Door(Tube_OD=Tube_OD, Door_X=BattDoorX(), InnerTube_OD=0, HasSwitch=HasSwitch, DoubleBatt=DoubleBatt);
+	Batt_Door(Tube_OD=Tube_OD, Door_X=EB_BattDoor_X(Tube_OD=Tube_OD), InnerTube_OD=0, HasSwitch=HasSwitch, DoubleBatt=DoubleBatt);
 } // EB_BattDoor
 
 //EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=false);
 
-module EB_LowerElectronics_Bay(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, Len=162, nBolts=5, nFins=5, BoltInset=7.5, ShowDoors=false,
+module EB_LowerElectronics_Bay(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, Len=162, nBolts=5, BoltInset=7.5, ShowDoors=false,
 								Bolted=false, TopOnly=false, BottomOnly=false, HasLowerIntegratedCoupler=false, 
 								HasRailGuide=false, RailGuideLen=35){
 	// One Battery Door w/o Switch and One Altimeter for sustainer lower e-bay.
 	
-	Altimeter_Z=Len/2;
-	BattSwDoor_Z=Len/2;
-	Alt_a=0;
-	Batt1_a=180;
-	MotorTubeHole_d=BT54Body_OD+IDXtra*3;
-	Bolt4Inset=4;
-	Bolted_ID=Tube_ID-Bolt4Inset*4;
-	Bolt_a=[60,80,105,130,-60,-80,-105,-130];
-	OuterTube_Z=HasLowerIntegratedCoupler? 15:0;
-	OuterTubeLen=HasLowerIntegratedCoupler? Len-30:Len-15;
-	RailGuide_Z=Len-15-30;
-	RailGuide_a=90;
+	LowerAltBayDoors=[[90],[270],[]];
 	
-	difference(){
-		union(){
-			translate([0,0,OuterTube_Z]) Tube(OD=Tube_OD, ID=Tube_ID, Len=OuterTubeLen, myfn=$preview? 36:360);
-		
-			//Integrated coupler
-			translate([0,0,Len-17]) Tube(OD=Tube_ID, ID=Tube_ID-4.4, Len=17, myfn=$preview? 36:360);
-			difference(){
-				translate([0,0,Len-22]) cylinder(d=Tube_OD-1, h=5);
-				
-				translate([0,0,Len-22-Overlap]) cylinder(d1=Tube_ID, d2=Tube_ID-4.4, h=5+Overlap*2);
-			} // difference
-			
-			translate([0,0,Len-5]) rotate([0,0,RailGuide_a]) 
-				CenteringRing(OD=Tube_ID-1, ID=MotorTubeHole_d, Thickness=5, nHoles=nFins, Offset=0);
-			
-			if (HasLowerIntegratedCoupler) {
-				Tube(OD=Tube_ID, ID=Tube_ID-4.4, Len=17, myfn=$preview? 36:360);
-			
-				difference(){
-					translate([0,0,17]) cylinder(d=Tube_OD-1, h=5);
-				
-					translate([0,0,17-Overlap]) cylinder(d2=Tube_ID, d1=Tube_ID-4.4, h=5+Overlap*2);
-				} // difference
-			
-				rotate([0,0,RailGuide_a]) CenteringRing(OD=Tube_ID-1, ID=MotorTubeHole_d, Thickness=5, nHoles=nFins, Offset=0);
-			}
-			
-			if (Bolted)
-				difference(){
-					translate([0,0,Len/2-10]) cylinder(d=Tube_OD-1, h=20);
-						
-					translate([0,0,Len/2-10-Overlap]) cylinder(d=Bolted_ID, h=20+Overlap*2);
-					translate([0,0,Len/2-10-Overlap]) cylinder(d1=Tube_ID, d2=Bolted_ID, h=7);
-					translate([0,0,Len/2+3]) cylinder(d2=Tube_ID, d1=Bolted_ID, h=7+Overlap);
-					
-					translate([0,-30,Len/2]) cube([38,Tube_OD,21], center=true);
-					translate([0,30,Len/2]) cube([46,Tube_OD,21], center=true);
-					
-					if (TopOnly)
-						for (j=Bolt_a) rotate([0,0,j]) translate([0,Tube_ID/2-Bolt4Inset,Len/2+6]) Bolt4HeadHole();
-					
-					if (BottomOnly)
-						for (j=Bolt_a) rotate([0,0,j]) translate([0,Tube_ID/2-Bolt4Inset,Len/2]) Bolt4Hole();
-					
-				} // difference
-			
-			
-			
-			if (HasRailGuide)
-				translate([0,0,RailGuide_Z]) difference(){
-					rotate([0,0,RailGuide_a]) 
-						RailGuidePost(OD=Tube_OD, MtrTube_OD=0, H=Tube_OD/2+2, 
-										TubeLen=55, Length = RailGuideLen, BoltSpace=12.7, AddTaper=false);
-					cylinder(d=Tube_ID-1.2, h=60, center=true);			
-				} // difference
-			
-		} // union
-				
-		if (HasRailGuide) rotate([0,0,RailGuide_a]) 
-			translate([0,Tube_OD/2+2,RailGuide_Z]) RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
-		
-		// Altimeter
-		translate([0,0,Altimeter_Z]) rotate([0,0,Alt_a]) 
-			Alt_BayFrameHole(Tube_OD=Tube_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
-		
-		// Battery and Switch door holes
-		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
-			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=false);
-			
-		// Wire path, 3 of 5 fins over from rail guide
-		translate([0,0,-Overlap]) rotate([0,0,RailGuide_a+360/nFins*3]) translate([0,MotorTubeHole_d/2+5,0]) cylinder(d=6, h=30);
-		
-		//Bolt holes for nosecone and ball lock
-		if (nBolts>0)
-		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]){
-			translate([0,-Tube_OD/2-1,BoltInset]) rotate([90,0,0]) Bolt4Hole();
-			translate([0,-Tube_OD/2-1,Len-BoltInset]) rotate([90,0,0]) Bolt4Hole();
-		} // for
-		
-		if (TopOnly) translate([0,0,-Overlap]) cylinder(d=Tube_OD+10, h=Len/2+Overlap);
-		if (BottomOnly) translate([0,0,Len/2]) cylinder(d=Tube_OD+10, h=Len/2+Overlap);
-	} // difference
-	
-	difference(){
-		union(){
-			// Altimeter
-			translate([0,0,Altimeter_Z]) rotate([0,0,Alt_a])
-				Alt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=ShowDoors);
-			
-			// Battery and Switch door2
-			translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
-				Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=false, ShowDoor=ShowDoors);
-				
-		} // union
-		
-		if (TopOnly) translate([0,0,-Overlap]) cylinder(d=Tube_OD+10, h=Len/2+Overlap);
-		if (BottomOnly) translate([0,0,Len/2]) cylinder(d=Tube_OD+10, h=Len/2+Overlap);
-	} // difference
-		
+	EB_Electronics_BayUniversal(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorAngles=LowerAltBayDoors, Len=Len, 
+									nBolts=nBolts, BoltInset=BoltInset, ShowDoors=false,
+									HasFwdIntegratedCoupler=true, HasFwdShockMount=false,
+									HasAftIntegratedCoupler=HasLowerIntegratedCoupler, HasAftShockMount=false,
+									HasRailGuide=HasRailGuide, RailGuideLen=RailGuideLen,
+									HasFwdCenteringRing=true, HasAftCenteringRing=HasLowerIntegratedCoupler, InnerTube_OD=BT54Body_OD,
+									Bolted=true, ExtraBolts=[90], TopOnly=false, BottomOnly=false);
+
 } // EB_LowerElectronics_Bay
 
 // EB_LowerElectronics_Bay(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=162, nBolts=5, Bolted=true, TopOnly=false, BottomOnly=false,HasLowerIntegratedCoupler=true, HasRailGuide=true );
 // rotate([180,0,0]) EB_LowerElectronics_Bay(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=162, nBolts=5, Bolted=true, TopOnly=true, BottomOnly=false,HasLowerIntegratedCoupler=true);
 // EB_LowerElectronics_Bay(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=162, nBolts=5, Bolted=true, TopOnly=false, BottomOnly=true,HasLowerIntegratedCoupler=true);
 
+// EB_LowerElectronics_Bay(Tube_OD=BT65Body_OD, Tube_ID=BT65Body_ID, Len=162, nBolts=4, Bolted=true, TopOnly=false, BottomOnly=true,HasLowerIntegratedCoupler=true);
 
 module EB_Electronics_Bay3(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=162, nBolts=3, BoltInset=7.5, DualDeploy=false, ShowDoors=false){
 	// One/two Battery Door w/ Switch and One Altimeter
@@ -275,6 +182,7 @@ module EB_ExtensionRing(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=21, nBolts
 } // EB_ExtensionRing
 
 //EB_ExtensionRing();
+//EB_ExtensionRing(Tube_OD=BT65Body_OD, Tube_ID=BT65Body_ID, Len=8, nBolts=4, BoltInset=7.5);
 
 module EB_IntegratedCoupler(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, nBolts=3, BoltInset=7.5, HasShockMount=false){
 	IntegratedCoupler_OD=Tube_ID-IDXtra*2;
@@ -364,6 +272,7 @@ module EB_Electronics_BayUniversal(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, D
 									HasFwdIntegratedCoupler=false, HasFwdShockMount=false,
 									HasAftIntegratedCoupler=false, HasAftShockMount=false,
 									HasRailGuide=false, RailGuideLen=35,
+									HasFwdCenteringRing=false, HasAftCenteringRing=false, InnerTube_OD=BT54Body_OD,
 									Bolted=false, ExtraBolts=[], TopOnly=false, BottomOnly=false){
 	
 	Altimeter_Z=HasRailGuide? 80:Len/2;
@@ -388,6 +297,12 @@ module EB_Electronics_BayUniversal(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, D
 	Bolted_ID=Tube_ID-Bolt4Inset*4;
 	BoltCircle_r=Tube_ID/2-Bolt4Inset;
 	
+	CenteringRing_ID=InnerTube_OD+IDXtra*3; // slide thru fit
+	FwdCenteringRing_OD=HasFwdIntegratedCoupler? Tube_ID-1:Tube_OD-1;
+	AftCenteringRing_OD=HasAftIntegratedCoupler? Tube_ID-1:Tube_OD-1;
+	FwdCenteringRing_Z=HasFwdIntegratedCoupler? Len-5:Len-21;
+	AftCenteringRing_Z=HasAftIntegratedCoupler? 0:16;
+	
 	function Calc_a(Dist=1,R=2)=Dist/(R*2*PI)*360;
 	
 	module BoltHole(){
@@ -400,7 +315,12 @@ module EB_Electronics_BayUniversal(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, D
 
 	difference(){
 		union(){
+			if (HasFwdCenteringRing) translate([0,0,FwdCenteringRing_Z])
+				CenteringRing(OD=FwdCenteringRing_OD, ID=CenteringRing_ID, Thickness=5, nHoles=5, Offset=0);
 			
+			if (HasAftCenteringRing) translate([0,0,AftCenteringRing_Z])
+				CenteringRing(OD=AftCenteringRing_OD, ID=CenteringRing_ID, Thickness=5, nHoles=5, Offset=0);
+				
 			translate([0,0,Body_Z]) Tube(OD=Tube_OD, ID=Tube_ID, Len=Body_Len, myfn=$preview? 36:360);
 			
 			if (HasRailGuide)
@@ -427,15 +347,15 @@ module EB_Electronics_BayUniversal(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, D
 					translate([0,0,Len/2-10-Overlap]) cylinder(d1=Tube_ID, d2=Bolted_ID, h=7);
 					translate([0,0,Len/2+3]) cylinder(d2=Tube_ID, d1=Bolted_ID, h=7+Overlap);
 					
-					// doors
+					// door holes
 					for (j=AltDoorAngles) rotate([0,0,j]) 
 						translate([0,-30,Len/2]) cube([39.2,Tube_OD,21], center=true);
 						
 					for (j=BattDoorAngles) rotate([0,0,j]) 
-						translate([0,-30,Len/2]) cube([47.6,Tube_OD,21], center=true);
+						translate([0,-30,Len/2]) cube([EB_BattDoor_X(Tube_OD=Tube_OD)-5,Tube_OD,21], center=true); // 47.6
 
 					for (j=BattSWDoorAngles) rotate([0,0,j]) 
-						translate([0,-30,Len/2]) cube([47.6,Tube_OD,21], center=true);
+						translate([0,-30,Len/2]) cube([EB_BattDoor_X(Tube_OD=Tube_OD)-5,Tube_OD,21], center=true);
 					
 					AltBolt_a=Calc_a(Dist=24+Bolt4Inset,R=BoltCircle_r);
 					BattBolt_a=Calc_a(Dist=28+Bolt4Inset,R=BoltCircle_r);
@@ -467,11 +387,11 @@ module EB_Electronics_BayUniversal(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, D
 		// Battery and Switch door holes
 		for (j=BattDoorAngles)
 		translate([0,0,BattSwDoor_Z]) rotate([0,0,j]) 
-			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=false);
+			Batt_BayFrameHole(Tube_OD=Tube_OD, Door_X=EB_BattDoor_X(Tube_OD=Tube_OD), HasSwitch=false);
 		
 		for (j=BattSWDoorAngles)
 		translate([0,0,BattSwDoor_Z]) rotate([0,0,j]) 
-			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
+			Batt_BayFrameHole(Tube_OD=Tube_OD, Door_X=EB_BattDoor_X(Tube_OD=Tube_OD), HasSwitch=true);
 		
 		
 		//Bolt holes for nosecone and ball lock
@@ -500,11 +420,11 @@ module EB_Electronics_BayUniversal(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, D
 			// Battery and Switch doors
 			for (j=BattDoorAngles)
 			translate([0,0,BattSwDoor_Z]) rotate([0,0,j]) 
-				Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=false, ShowDoor=ShowDoors);
+				Batt_BayDoorFrame(Tube_OD=Tube_OD, Door_X=EB_BattDoor_X(Tube_OD=Tube_OD), HasSwitch=false, ShowDoor=ShowDoors);
 
 			for (j=BattSWDoorAngles)
 			translate([0,0,BattSwDoor_Z]) rotate([0,0,j]) 
-				Batt_BayDoorFrame(Tube_OD=Tube_OD, HasSwitch=true, ShowDoor=ShowDoors);
+				Batt_BayDoorFrame(Tube_OD=Tube_OD, Door_X=EB_BattDoor_X(Tube_OD=Tube_OD), HasSwitch=true, ShowDoor=ShowDoors);
 		} // union
 		
 		if (TopOnly) translate([0,0,-Overlap]) cylinder(d=Tube_OD+10, h=Len/2+Overlap);
@@ -513,11 +433,20 @@ module EB_Electronics_BayUniversal(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, D
 		
 } // EB_Electronics_BayUniversal
 
+/*
+EB_Electronics_BayUniversal(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, DoorAngles=OneAltBay, Len=162, 
+									nBolts=4, BoltInset=7.5, ShowDoors=false,
+									HasFwdIntegratedCoupler=true, HasFwdShockMount=false,
+									HasAftIntegratedCoupler=true, HasAftShockMount=false,
+									HasRailGuide=false, RailGuideLen=35,
+									HasFwdCenteringRing=true, HasAftCenteringRing=true, InnerTube_OD=BT54Body_OD,
+									Bolted=false, ExtraBolts=[], TopOnly=false, BottomOnly=false);
+/**/
+							
+//EB_Electronics_BayUniversal(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, DoorAngles=ToadBay, Len=170, nBolts=6, BoltInset=7.5, ShowDoors=false, HasFwdIntegratedCoupler=true, HasFwdShockMount=false, HasAftIntegratedCoupler=true, HasAftShockMount=false,HasRailGuide=false, RailGuideLen=35, HasFwdCenteringRing=false, HasAftCenteringRing=false, InnerTube_OD=BT54Body_OD, Bolted=true);
 
-//EB_Electronics_BayUniversal(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, DoorAngles=ToadBay, Len=170, nBolts=6, BoltInset=7.5, ShowDoors=false, HasFwdIntegratedCoupler=true, HasFwdShockMount=false, HasAftIntegratedCoupler=true, HasAftShockMount=false,HasRailGuide=false, RailGuideLen=35, Bolted=true);
 
-
-
+//EB_Electronics_BayUniversal(Tube_OD=BT65Body_OD, Tube_ID=BT65Body_ID, DoorAngles=SimpleOneBattSWBay, Len=162, nBolts=4, BoltInset=7.5, ShowDoors=false, HasFwdIntegratedCoupler=true, HasFwdShockMount=false, HasAftIntegratedCoupler=false, HasAftShockMount=false,HasRailGuide=false, RailGuideLen=35, HasFwdCenteringRing=false, HasAftCenteringRing=false, InnerTube_OD=BT54Body_OD, Bolted=true);
 
 
 

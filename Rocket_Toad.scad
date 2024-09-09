@@ -175,8 +175,8 @@ BallPerimeter_d=Body_OD;
 STB_Engagement_Len=25;
 
 nPetals=3;
-BoosterPetalLen=100;
-SustainerPetal_Len=150;
+BoosterPetalLen=75;
+SustainerPetal_Len=130;
 
 // Stager constants
 Stager_LockRod_X=12;

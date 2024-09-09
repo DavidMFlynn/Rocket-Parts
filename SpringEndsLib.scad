@@ -3,15 +3,16 @@
 // Filename: SpringEndsLib.scad
 // by David M. Flynn
 // Created: 11/24/2023 
-// Revision: 1.0.12  8/31/2024
+// Revision: 1.0.13  9/9/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 // This is a collection of spring ends used for non-pyro deployment.
 //
 //  ***** History *****
-function SpringEndsLibRev()="SpringEndsLib Rev. 1.0.12";
+function SpringEndsLibRev()="SpringEndsLib Rev. 1.0.13";
 echo(SpringEndsLibRev());
+// 1.0.13  9/9/2024   Changed SE_SpringEndTop() to work with 65mm tube
 // 1.0.12  8/31/2024  Added SE_SpringEndTypeC()
 // 1.0.11  8/3/2024   Changes to SE_SpringEndTypeB()
 // 1.0.10  8/2/2024   Added param UseSmallSpring to SE_SlidingSpringMiddle when false CS11890 is used
@@ -51,7 +52,7 @@ echo(SpringEndsLibRev());
 // SE_SpringSpacer(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_ID, Len=70);
 //
 // SE_SpringTop(OD=BT98Coupler_OD, Piston_Len=50, nRopes=6);
-// SE_SpringEndTop(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles=5);
+// SE_SpringEndTop(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles=3, CutOutCenter=false);
 // SE_SpringEndBottom(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, Len=30, nRopeHoles=5, CutOutCenter=false);
 // SE_SpringEndBottom(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, Len=30, nRopeHoles=5, CutOutCenter=true);
 //
@@ -498,6 +499,9 @@ module SE_SpringEndTop(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles
 	Len=30;
 	Plate_t=3;
 	
+	Rope_d=4;
+	Rope_Y=min(Spring_OD/2+Rope_d/2+6,Tube_ID/2-Rope_d/2-1);
+	
 	//echo(OD=OD);
 	
 	module SCH(){
@@ -520,9 +524,8 @@ module SE_SpringEndTop(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles
 		if (CutOutCenter) cylinder(d=Spring_ID, h=Len);
 		
 		// Rope Holes
-		Rope_d=4;
-		for (j=[0:nRopeHoles-1]) rotate([0,0,360/nRopeHoles*j]) translate([0,Spring_OD/2+Rope_d/2+6,0])
-			cylinder(d=Rope_d, h=Len);
+		for (j=[0:nRopeHoles-1]) rotate([0,0,360/nRopeHoles*j]) translate([0,Rope_Y,0])
+			cylinder(d=Rope_d, h=Len+Overlap);
 		
 		// Top dish
 		translate([0,0,Len-Piston_h+3+Plate_t]) 
@@ -546,7 +549,7 @@ module SE_SpringEndTop(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles
 
 } // SE_SpringEndTop
 
-//SE_SpringEndTop(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles=5, CutOutCenter=true);
+//SE_SpringEndTop(OD=BT65Coupler_OD, Tube_ID=BT65Coupler_OD-2.4, nRopeHoles=3, CutOutCenter=true);
 
 module SE_SpringEndBottom(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, Len=30, nRopeHoles=3, CutOutCenter=false){
 	Spring_OD=Spring_CS4323_OD;
