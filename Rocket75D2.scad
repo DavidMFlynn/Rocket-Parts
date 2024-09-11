@@ -81,24 +81,23 @@
 //  ***** BOOSTER *****
 //
 //  *** 3 Inch Stager ***
-//
-// rotate([180,0,0]) Stager_Cup(Tube_OD=Body_OD, ID=BT54Body_ID, nLocks=nLocks, BoltsOn=true, Collar_h=17.5, Offset_a=0); // a.k.a. Sustainer Motor Retainer
-// rotate([-90,0,0]) Stager_LockRod(Adj=0.0);
+// rotate([180,0,0]) Stager_Sustainer_Cup(Tube_OD=Body_OD, nLocks=nLocks, MotorTube_OD=MotorTube_OD, Motor_Len=10, nFins=nFins, StagerCollarLen=StagerCollarLen);
+// rotate([-90,0,0]) Stager_LockRod(Adj=-1.0);
 //
 // Stager_Saucer(Tube_OD=Body_OD, nLocks=nLocks); // Bolts on
 //
-// Stager_LockRing(Tube_OD=Body_OD, nLocks=nLocks, FlexComp_d=0.0); 
-// Stager_LockStop(Tube_OD=Body_OD, HasMagnet=true);
-// Stager_LockStop(Tube_OD=Body_OD, HasMagnet=false);
+// Stager_LockRing(Tube_OD=Body_OD, nLocks=nLocks); 
 //
-// Stager_Mech(Tube_OD=Body_OD, nLocks=nLocks, Skirt_ID=Body_ID, Skirt_Len=35, nSkirtBolts=nBoltsBooster, ShowLocked=true);
+// Stager_Mech(Tube_OD=Body_OD, nLocks=nLocks, Skirt_ID=Body_ID, Skirt_Len=16, nSkirtBolts=nBoltsBooster, ShowLocked=true);
 // Stager_OuterBearingCover(nLocks=nLocks); // Secures Outer Race of Main Bearing
 //
-// Stager_InnerRace(Tube_OD=Body_OD);
-// Stager_ServoPlate(Tube_OD=Body_OD, Skirt_ID=Body_ID);
+// rotate([180,0,0]) Stager_Indexer(Tube_OD=Body_OD, nLocks=nLocks);
+// Stager_ServoPlate(Tube_OD=Body_OD, Skirt_ID=Body_ID, nLocks=nLocks, OverCenter=IDXtra);
+// rotate([180,0,0]) Stager_ServoMount();
 //
 //  * Booster E_Bay *
 //
+// EB_ExtensionRing(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=8, nBolts=nBoltsBooster, BoltInset=7.5);
 // EB_Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=EBay_Len, nBolts=nBoltsBooster, BoltInset=7.5, ShowDoors=false, HasSecondBattDoor=false, HasFwdIntegratedCoupler=true, HasFwdShockMount=false);
 //
 // *** Doors ***
@@ -151,10 +150,9 @@ use<AT-RMS-Lib.scad>
 use<R75Lib.scad>
 use<PetalDeploymentLib.scad>
 use<ElectronicsBayLib.scad>
-use<Stager75BBLib.scad>
+include<Stager75BBLib.scad>
 use<FinCan2Lib.scad>
 use<NoseCone.scad>
-use<FinCan.scad>
 use<BatteryHolderLib.scad>
 use<SpringEndsLib.scad>
 use<SpringThingBooster.scad>
@@ -175,6 +173,15 @@ Coupler_ID=BT75Coupler_ID;
 MotorTube_OD=BT54Body_OD;
 MotorTube_ID=BT54Body_ID;
 Stager_ID=MotorTube_OD;
+
+// constants for 75mm stager
+Default_nLocks=3;
+DefaultBody_OD=BT75Body_OD;
+DefaultBody_ID=BT75Body_ID;
+MainBearing_OD=Bearing6807_OD;
+MainBearing_ID=Bearing6807_ID;
+MainBearing_T=Bearing6807_T;
+StagerCollarLen=17.5;
 
 nLocks=3; // Stager locks
 nBoltsBooster=4;
@@ -505,6 +512,7 @@ module RocketFin(){
 } // RocketFin
 
 // RocketFin();
+
 
 module BoosterFinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 	Can_Len=Booster_Fin_Root_L+BoosterFinInset*2;

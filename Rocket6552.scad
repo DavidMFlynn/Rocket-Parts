@@ -389,20 +389,20 @@ module Electronics_Bay(ShowDoors=false){
 									nBolts=4, BoltInset=7.5, ShowDoors=ShowDoors,
 									HasFwdIntegratedCoupler=false, HasFwdShockMount=false,
 									HasAftIntegratedCoupler=false, HasAftShockMount=false,
-									HasRailGuide=false, RailGuideLen=35,
+									HasRailGuide=false, RailGuideLen=RailGuide_Len,
 									Bolted=false, ExtraBolts=[], TopOnly=false, BottomOnly=false);
 } // Electronics_Bay
 
 // Electronics_Bay();
 
-module LowerEBay(ShowDoors=false){
-	LowerEBayDoors=[[0],[180],[]];
+module LowerEBay(ShowDoors=false, TopOnly=false, BottomOnly=false){
+	LowerEBayDoors=[[90],[270],[]];
 	EB_Electronics_BayUniversal(Tube_OD=Body_OD, Tube_ID=Body_ID, DoorAngles=LowerEBayDoors, Len=EBay_Len, 
-									nBolts=4, BoltInset=7.5, ShowDoors=ShowDoors,
+									nBolts=0, BoltInset=7.5, ShowDoors=ShowDoors,
 									HasFwdIntegratedCoupler=true, HasFwdShockMount=false,
-									HasAftIntegratedCoupler=false, HasAftShockMount=false,
-									HasRailGuide=false, RailGuideLen=35,
-									Bolted=false, ExtraBolts=[], TopOnly=false, BottomOnly=false);
+									HasAftIntegratedCoupler=true, HasAftShockMount=false,
+									HasRailGuide=true, RailGuideLen=RailGuide_Len,
+									Bolted=true, ExtraBolts=[90], TopOnly=false, BottomOnly=false);
 } // LowerEBay
 
 // LowerEBay();
@@ -481,7 +481,7 @@ module BoosterEBay(ShowDoors=false){
 									nBolts=4, BoltInset=7.5, ShowDoors=ShowDoors,
 									HasFwdIntegratedCoupler=false, HasFwdShockMount=false,
 									HasAftIntegratedCoupler=false, HasAftShockMount=false,
-									HasRailGuide=false, RailGuideLen=35,
+									HasRailGuide=false, RailGuideLen=RailGuide_Len,
 									Bolted=false, ExtraBolts=[], TopOnly=false, BottomOnly=false);
 } // BoosterEBay
 

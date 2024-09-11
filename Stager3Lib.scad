@@ -128,7 +128,7 @@ MR84_Bearing_ID=4;
 MR84_Bearing_T=3;
 
 Ball_d=5/16*25.4; // for bearing
-PreLoadAdj=-0.45; // -0.35 is too tight
+PreLoadAdj=-0.35; // -0.35 is too tight for some filaments at 100%
 Race_W=11;
 Magnet_d=3/16*25.4;
 StopBlock_W=6;
