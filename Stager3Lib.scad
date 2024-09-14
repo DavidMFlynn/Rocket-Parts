@@ -134,6 +134,7 @@ PreLoadAdj=-0.35; // -0.35 is too tight for some filaments at 100%
 Race_W=11;
 Magnet_d=3/16*25.4;
 StopBlock_W=6;
+ServoPlate_T=5;
 
 function StagerLockInset_Y(Tube_OD=DefaultBody_OD)=(Tube_OD>90)? 9:8; // center of LockRod inset from tube OD
 function Calc_a(Dist=1,R=2)=Dist/(R*2*PI)*360;
@@ -190,7 +191,7 @@ module ShowStagerAssy(Tube_OD=DefaultBody_OD, Tube_ID=DefaultBody_ID, nLocks=Def
 	}
 	/**/
 	
-	translate([0,0,-Saucer_H-LockBall_d-2-Race_W-InnerRaceXtra_W-19-0.3]) 
+	translate([0,0,-Saucer_H-LockBall_d-2-Race_W-InnerRaceXtra_W-ServoPlate_T-14-0.3]) 
 		Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks=Default_nLocks);
 
 	rotate([0,0,Lock_a]){
@@ -316,19 +317,19 @@ module Stager_ServoMount(UseLargeServo=false){
 
 // Stager_ServoMount(UseLargeServo=true);
 
-module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks=Default_nLocks, OverCenter=IDXtra+0.8){
+module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks=Default_nLocks, OverCenter=IDXtra+0.8, UseLargeServo=true){
 											
 	BC_r=BoltCircle_d(Tube_OD=Tube_OD)/2;
 	
 	nBolts=4;
-	Plate_t=5;
 	Bolt_a=35;
-	Servo_X= -Tube_OD/2+28;
+	Servo_X=Servo_X=UseLargeServo? -Tube_OD/2+27 : -BC_r+3;
 	Servo_Y=0;
-	Servo_Z=-10;
-	Servo_a=-90+180/nLocks*3-10;
+	Servo_Z=UseLargeServo? -10:-6;
+	ServoWheel_r=UseLargeServo? 6:4;
+	Servo_a=-90+180/nLocks*3-Calc_a(ServoWheel_r+3,-Servo_X); // -10;
 	
-	UnLock_a=	Calc_a(11,(BoltCircle_d(Tube_OD=Tube_OD)/2));
+	UnLock_a=	Calc_a(11,BC_r);
 	
 	OverCenter_a=-Calc_a(Dist=OverCenter,R=BC_r-1);
 
@@ -355,7 +356,7 @@ module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks
 		Block_T=StopBlock_W;
 		BlockOffset=LockedBlock? Block_T:-Block_T;
 		
-		translate([BlockOffset, BC_r-1, Plate_t-Overlap]) 
+		translate([BlockOffset, BC_r-1, ServoPlate_T-Overlap]) 
 			RoundRect(X=Block_T, Y=10, Z=Block_H, R=1);
 	} // StopBlock
 	
@@ -363,13 +364,13 @@ module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks
 		Block_T=StopBlock_W;
 		BlockOffset=LockedBlock? Block_T:-Block_T;
 		
-		translate([BlockOffset, BC_r-1, Plate_t+2.5+Magnet_d/2]) 
+		translate([BlockOffset, BC_r-1, ServoPlate_T+2.5+Magnet_d/2]) 
 			rotate([0,90,0]) cylinder(d=Magnet_d, h=7, center=true);
 	} // MagnetHole
 	
 	difference(){
 		union(){
-			cylinder(d=Skirt_ID, h=Plate_t, $fn=$preview? 90:360);
+			cylinder(d=Skirt_ID, h=ServoPlate_T, $fn=$preview? 90:360);
 				
 			// Locked position stops
 			for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j+OverCenter_a]) StopBlock();
@@ -382,13 +383,24 @@ module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks
 		rotate([0,0,OverCenter_a]) MagnetHole();
 		
 		// Servo
-		rotate([0,0,Servo_a]) translate([Servo_X,Servo_Y,0]){
-			translate([0,0,Servo_Z]) rotate([0,0,180]) Servo_LD20MG(BottomMount=true,TopAccess=false);
+		if (UseLargeServo){
+			rotate([0,0,Servo_a]) translate([Servo_X,Servo_Y,0]){
+				translate([0,0,Servo_Z]) rotate([0,0,180]) Servo_LD20MG(BottomMount=true,TopAccess=false);
 					
 			// Bolts
-			Stager_ServoMountBoltPattern(IsAEnd=true, UseLargeServo=true) Bolt4Hole(depth=7);
-			Stager_ServoMountBoltPattern(IsAEnd=false, UseLargeServo=true) Bolt4Hole(depth=7);
+			Stager_ServoMountBoltPattern(IsAEnd=true, UseLargeServo=UseLargeServo) Bolt4Hole(depth=7);
+			Stager_ServoMountBoltPattern(IsAEnd=false, UseLargeServo=UseLargeServo) Bolt4Hole(depth=7);
+			}
+		}else{
+			rotate([0,0,Servo_a]) translate([Servo_X,Servo_Y,0]){
+				translate([0,0,Servo_Z]) ServoSG90(TopMount=true, HasGear=false);
+					
+			// Bolts
+			Stager_ServoMountBoltPattern(IsAEnd=true, UseLargeServo=UseLargeServo) Bolt4Hole(depth=7);
+			Stager_ServoMountBoltPattern(IsAEnd=false, UseLargeServo=UseLargeServo) Bolt4Hole(depth=7);
 		} // Servo
+		}
+
 		
 		// mounting bolts
 		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+Bolt_a]) translate([0,Skirt_ID/2-Bolt4Inset,0])
