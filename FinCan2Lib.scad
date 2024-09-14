@@ -234,8 +234,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 	} // difference
 } // FC2_FinCan
 
-//rotate([180,0,0]) 
-FC2_FinCan(RailGuide_h=1, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false, HollowFinRoots=true);
+//rotate([180,0,0]) FC2_FinCan(RailGuide_h=1, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false, HollowFinRoots=true);
 
 
 module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
@@ -353,6 +352,7 @@ module FC2_MotorRetainer(Body_OD=BT98Body_OD,
 	Tail_r=Body_OD/4;
 	Base_d=MotorTube_OD+4.4+Extra_OD;
 	NomonalThread_d=MotorTube_OD+NominalThreadWall_t*2;
+	MT_Extra_OD=max(IDXtra*3,Extra_OD);
 	
 	difference(){
 		hull(){
@@ -379,7 +379,7 @@ module FC2_MotorRetainer(Body_OD=BT98Body_OD,
 			
 		// Motor tube
 		translate([0,0,-Cone_Len-ExtraLen+Retainer_h]) 
-			cylinder(d=MotorTube_OD+IDXtra*3, h=Cone_Len);
+			cylinder(d=MotorTube_OD+MT_Extra_OD, h=Cone_Len);
 	
 		translate([0,0,-Cone_Len+Nut_Len-12+Overlap])
 			ExternalThread(Pitch=ThreadPitch, Dia_Nominal=NomonalThread_d+InternalThreadIDXtra, 
@@ -398,8 +398,11 @@ module FC2_MotorRetainer(Body_OD=BT98Body_OD,
 	} // difference
 } // FC2_MotorRetainer
 
-//translate([0,0,-0.2]) FC2_MotorRetainer(ExtraLen=0);
-
+/*
+translate([0,0,-0.2]) FC2_MotorRetainer(Body_OD=BT65Body_OD,
+						MotorTube_OD=BT38Body_OD, MotorTube_ID=BT38Body_ID,
+						HasWrenchCuts=false, Cone_Len=35, ExtraLen=0, Extra_OD=2);
+/**/
 /*
 translate([0,0,-0.2]) FC2_MotorRetainer(Body_OD=BT75Body_OD,
 						MotorTube_OD=BT54Body_OD, MotorTube_ID=BT54Body_ID,

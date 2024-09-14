@@ -20,10 +20,12 @@
 // #4-40 x 3/8"  Button Head (4 + 2 per Lock req.)
 // #4-40 x 1/4"  Button Head (6 req.)
 // #4-40 x 3/8"  Socket Head (6 req.)
+// #4-40 x 1/4"  Socket Head (4 req.)
 // MR84 (8mm OD x 4mm ID x 3mm Bearing) (1 per Lock req.)
 // 4mm x 12mm undersize Dowell (1 per Lock req.)
 // 6805-2RS Bearing 65mm version only
 // 6807-2RS Bearing 75mm version only 
+// MG90S Micro Servo
 //
 //  ***** History *****
 //
@@ -67,6 +69,7 @@ echo(Stager75BBLib_Rev());
 //  ***** Routines *****
 //
 // Stager_LockRod_Holes(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks);
+// Stager_CupBoltHoles(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks) Bolt4Hole();
 // Stager_CupHoles(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true, Collar_h=DefaultCollarLen);
 // Stager_SaucerBoltPattern(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks);
 // Stager_ArmDisarmAccess(Tube_OD=DefaultBody_OD, Len=DefaultBody_OD, nLocks=Default_nLocks);
@@ -229,7 +232,7 @@ module ShowStagerAssy(Tube_OD=DefaultBody_OD, Tube_ID=DefaultBody_ID, nLocks=Def
 	
 	translate([0,0,-Saucer_H-LockBall_d-2+0.2]) rotate([0,0,Lock_a]) Stager_LockRing(Tube_OD=Tube_OD, nLocks=nLocks);
 
-	//*
+	/*
 	difference(){
 			Stager_Mech(Tube_OD=Tube_OD, nLocks=nLocks, Skirt_ID=Tube_ID, Skirt_Len=Default_SkirtLen, ShowLocked=ShowLocked);
 			//
@@ -523,7 +526,7 @@ module Stager_LockRod(Adj=0){
 // Stager_LockRod();
 // Stager_LockRod(Adj=0.5);
 
-module Stager_CupBoltHoles(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Collar_h=DefaultCollarLen){
+module Stager_CupBoltHoles(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks){
 	nBolts=nLocks*CupBoltsPerLock;
 	Len=StagerCupLen; // thickness without collar
 	
@@ -532,7 +535,7 @@ module Stager_CupBoltHoles(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Collar
 				rotate([180,0,0]) children();
 } // Stager_CupBoltHoles
 
-// Stager_CupBoltHoles();
+// Stager_CupBoltHoles() Bolt4Hole();
 
 module Stager_CupHoles(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true, Collar_h=DefaultCollarLen){
  // copied from Stager3.scad
@@ -551,7 +554,7 @@ module Stager_CupHoles(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=tr
 	
 	// BoltHoles
 	if (BoltsOn) translate([0,0,Len+Collar_h]) 
-		Stager_CupBoltHoles(Tube_OD=Tube_OD, nLocks=nLocks, Collar_h=Collar_h) Bolt4Hole(depth=12);
+		Stager_CupBoltHoles(Tube_OD=Tube_OD, nLocks=nLocks) Bolt4Hole(depth=12);
 } // Stager_CupHoles
 
 // Stager_CupHoles();
@@ -618,8 +621,6 @@ module Stager_Cup(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true, C
 // translate([0,0,Overlap]) Stager_Cup();
 // rotate([180,0,0]) Stager_Cup(ID=BT54Body_ID); // STL test
 
-
-
 module Stager_Sustainer_Cup(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks,
 					MotorTube_OD=DefaultMotorTube_OD, Motor_Len=10, nFins=5, StagerCollarLen=DefaultCollarLen){
 	
@@ -652,7 +653,7 @@ module Stager_Sustainer_Cup(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks,
 		Wires();
 		
 		Stager_LockRod_Holes(Tube_OD=Tube_OD, nLocks=nLocks);
-		translate([0,0,StagerCollarLen+3-8]) Stager_CupBoltHoles() Bolt4HeadHole(depth=8,lHead=StagerCollarLen);
+		translate([0,0,StagerCollarLen+3-8]) Stager_CupBoltHoles(Tube_OD=Tube_OD, nLocks=nLocks) Bolt4HeadHole(depth=8,lHead=StagerCollarLen);
 		
 		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j])
 			translate([0,Tube_OD/2-10,-16.5]) Stager_LockRodBoltPattern() Bolt6ButtonHeadHole();

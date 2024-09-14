@@ -3,7 +3,7 @@
 // Filename: NoseCone.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.14  9/2/2024
+// Revision: 0.9.15  9/12/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-function NoseConeRev()="NoseCone Rev. 0.9.13";
+function NoseConeRev()="NoseCone Rev. 0.9.15";
 echo(NoseConeRev());
+// 0.9.15  9/12/2024 Modified NC_ShockcordRing75() to work w/ 65mm body tube
 // 0.9.14  9/2/2024  Added custom nosecone ID (NC_ID=0) parameter to NC_ShockcordRingDual
 // 0.9.13  8/30/2024 Added HasThreadedTip parameter to BluntOgiveNoseCone for attaching a weight
 // 0.9.12  3/31/2024 Added skirt bolt holes (nBolts) to NC_ShockcordRingDual()
@@ -73,7 +74,8 @@ module NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13
 	nRivets=3;
 	Rivet_d=4;
 	Plate_t=4;
-	nHoles=3;
+	nRopes=3;
+	Rope_d=4;
 	Tube_d=12.7;
 	CR_z=-3;
 	Spring_OD=Spring_CS4323_OD;
@@ -170,8 +172,8 @@ module NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13
 			translate([0,0,-2]) Tube(OD=Body_OD, ID=Body_ID-1, Len=2, myfn=$preview? 36:360);
 			
 			// GPS mount
-			translate([-10,-Body_ID/2+13, 6]) rotate([-10,0,0]) FW_GPS_Mount();
-			rotate([0,0,180]) translate([0,-Body_ID/2+17,20])  
+			translate([-10,-25, 6]) rotate([-10,0,0]) FW_GPS_Mount();
+			rotate([0,0,180]) translate([0,-20,20])  
 				rotate([-10,0,0]) FW_GPS_Batt_Mount();
 
 			// Nosecone interface
@@ -219,12 +221,13 @@ module NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13
 		translate([0,0,CR_z+3+Tube_d/2]) rotate([0,90,0]) cylinder(d=Tube_d, h=Body_OD, center=true);
 		
 		// Retention cord
-		for (j=[0:nHoles-1]) rotate([0,0,360/nHoles*j]) translate([0,Body_ID/2-6,-10]) cylinder(d=4, h=30);
+		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j+180/nRopes]) translate([0,Body_ID/2-Rope_d/2-2.5,-10]) cylinder(d=Rope_d, h=30);
 	} // difference
 	
 } // NC_ShockcordRing75
 
 //NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13);
+//NC_ShockcordRing75(Body_OD=BT65Body_OD, Body_ID=BT65Body_ID, NC_Base_L=13);
 
 module NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_ID=0, NC_Base_L=20, nRivets=3, nBolts=0, Flat=false){
 	// Connects nosecone to deployment tube

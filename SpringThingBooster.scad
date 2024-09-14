@@ -500,7 +500,6 @@ module STB_ManualArmingHole(BallPerimeter_d=BT75Body_OD){
 	
 //STB_ManualArmingHole();
 
-
 module STB_BallRetainerTop(BallPerimeter_d=BT75Body_OD, Outer_OD=0, Body_OD=BT75Body_ID, nLockBalls=nLockBalls,
 			HasIntegratedCouplerTube=false, nBolts=0,
 			IntegratedCouplerLenXtra=0,
