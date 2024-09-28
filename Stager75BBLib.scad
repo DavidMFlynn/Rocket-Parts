@@ -3,7 +3,7 @@
 // Filename: Stager75BBLib.scad
 // by David M. Flynn
 // Created: 8/14/2024 
-// Revision: 1.0.2  9/14/2024
+// Revision: 1.0.4  9/25/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -29,8 +29,10 @@
 //
 //  ***** History *****
 //
-function Stager75BBLib_Rev()="Stager75BBLib Rev. 1.0.2";
+function Stager75BBLib_Rev()="Stager75BBLib Rev. 1.0.4";
 echo(Stager75BBLib_Rev());
+// 1.0.4  9/25/2024    Added servo options ServoMG90S_ID 11 gram micro servo, ServoMS75_ID 21 gram mini servo, ServoMZ996_ID 55 gram standard servo
+// 1.0.3  9/15/2024    Little fixes.
 // 1.0.2  9/14/2024    Changed geometry of Stager_LockRing() for 98mm version, testing 98mm version ready for test printing
 // 1.0.1  9/14/2024    Standarized Stager_ServoMountBoltPattern() Stager_ServoMount() w/ Stager3Lib
 // 1.0.0  9/11/2024    Added hardware list, removed Al tube option. Both 65mm and 75mm versions have been built and tested.
@@ -51,7 +53,7 @@ echo(Stager75BBLib_Rev());
 //  *** Sustainer "Cup" bolts to bottom of sustainer, incudes AT RMS 54mm motor retention. ***
 // Stager_Sustainer_Cup(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, MotorTube_OD=DefaultMotorTube_OD, Motor_Len=10, nFins=5, StagerCollarLen=DefaultCollarLen);
 //
-// rotate([180,0,0]) Stager_Cup(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true, Collar_h=DefaultCollarLen); // a.k.a. Sustainer Motor Retainer
+// rotate([180,0,0]) Stager_Cup(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true, Collar_h=DefaultCollarLen);
 // rotate([-90,0,0]) Stager_LockRod(Adj=0.5); // Looser
 // rotate([-90,0,0]) Stager_LockRod(Adj=0.0); // This works!
 //
@@ -64,12 +66,14 @@ echo(Stager75BBLib_Rev());
 // Stager_OuterBearingCover(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks); // Secures Outer Race of Main Bearing
 //
 // Stager_Indexer(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks); // Secures Inner Race of Main Bearing and has Lock Stops
-// Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks=Default_nLocks, OverCenter=IDXtra+0.8);
-// Stager_ServoMount();
+// Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks=Default_nLocks, OverCenter=IDXtra+0.8, Servo_ID=DefaultServo);
+// Stager_ServoMount(Servo_ID=DefaultServo);
 //
 // ***********************************
 //  ***** Routines *****
 //
+// Stager_ServoMountBoltPattern(IsAEnd=true, Servo_ID=DefaultServo);
+// Stager_ServoTop(Servo_ID=DefaultServo);
 // Stager_LockRod_Holes(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks);
 // Stager_CupBoltHoles(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks) Bolt4Hole();
 // Stager_CupHoles(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true, Collar_h=DefaultCollarLen);
@@ -80,8 +84,7 @@ echo(Stager75BBLib_Rev());
 //  ***** for Viewing *****
 //
 // ShowStager();
-// 
-ShowStagerAssy(Tube_OD=DefaultBody_OD, Tube_ID=DefaultBody_ID, nLocks=Default_nLocks, ShowLocked=true);
+// ShowStagerAssy(Tube_OD=DefaultBody_OD, Tube_ID=DefaultBody_ID, nLocks=Default_nLocks, ShowLocked=true);
 // ShowStagerAssy(Tube_OD=DefaultBody_OD, Tube_ID=DefaultBody_ID, nLocks=Default_nLocks, ShowLocked=false);
 //
 // ShowStagerAssy(Tube_OD=BT65Body_OD, Tube_ID=BT65Body_ID, nLocks=Default_nLocks, ShowLocked=true);
@@ -159,6 +162,9 @@ LockBall_d=3/8 * 25.4; // 3/8" Delrin balls
 
 Default_SkirtLen=16;
 DefaultCollarLen=16;
+ServoMG90S_ID=0; // 11 gram micro servo
+ServoMS75_ID=1;  // 21 gram mini servo
+ServoMZ996_ID=2; // 55 gram standard servo
 
 //*
 // constants for 98mm stager
@@ -166,7 +172,7 @@ Default_nLocks=3;
 DefaultBody_OD=BT98Body_OD;
 DefaultBody_ID=BT98Body_ID;
 DefaultMotorTube_OD=BT54Body_OD;
-DefaultServoIsLarge=true;
+DefaultServo=ServoMS75_ID;
 MainBearing_OD=Bearing6809_OD;
 MainBearing_ID=Bearing6809_ID;
 MainBearing_T=Bearing6809_T;
@@ -178,7 +184,7 @@ Default_nLocks=3;
 DefaultBody_OD=BT75Body_OD;
 DefaultBody_ID=BT75Body_ID;
 DefaultMotorTube_OD=BT54Body_OD;
-DefaultServoIsLarge=false;
+DefaultServo=ServoMS75_ID;
 MainBearing_OD=Bearing6807_OD;
 MainBearing_ID=Bearing6807_ID;
 MainBearing_T=Bearing6807_T;
@@ -190,7 +196,7 @@ Default_nLocks=2;
 DefaultBody_OD=BT65Body_OD;
 DefaultBody_ID=BT65Body_ID;
 DefaultMotorTube_OD=BT38Body_OD;
-DefaultServoIsLarge=false;
+DefaultServo=ServoMG90S_ID;
 MainBearing_OD=Bearing6805_OD;
 MainBearing_ID=Bearing6805_ID;
 MainBearing_T=Bearing6805_T;
@@ -295,108 +301,113 @@ module ShowStagerAssy(Tube_OD=DefaultBody_OD, Tube_ID=DefaultBody_ID, nLocks=Def
 					
 } // ShowStagerAssy
 
-//
-ShowStagerAssy(ShowLocked=true);
+//ShowStagerAssy(ShowLocked=true);
 //ShowStagerAssy(ShowLocked=false);
 //ShowStagerAssy(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, nLocks=Default_nLocks, ShowLocked=true);
 
-module Stager_ServoMountBoltPattern(IsAEnd=true, UseLargeServo=DefaultServoIsLarge){
+module Stager_ServoMountBoltPattern(IsAEnd=true, Servo_ID=DefaultServo){
 // copied from Stager3Lib.scad
-
-	Spread=UseLargeServo? 12.5+Bolt4Inset:11;
+	ServoBoltSpace=[11,10+Bolt4Inset,12.5+Bolt4Inset];
+	BoltOffsetA=[-8.5,-9.5,-13];
+	BoltOffsetB=[18.5,24,34];
 	
-	if (UseLargeServo)
-		if (IsAEnd){
-			translate([-13,0,0]){
-				translate([0,-Spread,-2]) rotate([0,180,0]) children();
-				translate([0,Spread,-2]) rotate([0,180,0]) children();
-			}
-		}else{
-			translate([34,0,0]){
-				translate([0,-Spread,-2]) rotate([0,180,0]) children();
-				translate([0,Spread,-2]) rotate([0,180,0]) children();
-			}
-		}	
-	else
-		if (IsAEnd){
-			translate([-8.5,0,0]){
-				translate([0,-Spread,-2]) rotate([0,180,0]) children();
-				translate([0,Spread,-2]) rotate([0,180,0]) children();
-			}
-		}else{
-			translate([18.5,0,0]){
-				translate([0,-Spread,-2]) rotate([0,180,0]) children();
-				translate([0,Spread,-2]) rotate([0,180,0]) children();
-			}
+	if (IsAEnd){
+		translate([BoltOffsetA[Servo_ID],0,0]){
+			translate([0,-ServoBoltSpace[Servo_ID],-2]) rotate([0,180,0]) children();
+			translate([0,ServoBoltSpace[Servo_ID],-2]) rotate([0,180,0]) children();
 		}
+	}else{
+		translate([BoltOffsetB[Servo_ID],0,0]){
+			translate([0,-ServoBoltSpace[Servo_ID],-2]) rotate([0,180,0]) children();
+			translate([0,ServoBoltSpace[Servo_ID],-2]) rotate([0,180,0]) children();
+		}
+	}	
 	
 } // Stager_ServoMountBoltPattern
 
-//Stager_ServoMountBoltPattern(UseLargeServo=true) Bolt4Hole();
+//Stager_ServoMountBoltPattern(IsAEnd=true, Servo_ID=ServoMS75_ID) Bolt4Hole();
+//Stager_ServoMountBoltPattern(IsAEnd=false, Servo_ID=ServoMS75_ID) Bolt4Hole();
 
-module Stager_ServoMount(UseLargeServo=DefaultServoIsLarge){
+module Stager_ServoTop(Servo_ID=DefaultServo){
+	
+	
+	//cube(Servo_Case[Servo_ID]);
+	
+	if (Servo_ID==ServoMG90S_ID){
+		ServoSG90(TopMount=true);
+	}
+	
+	if (Servo_ID==ServoMS75_ID){
+		BoltSpacing=35;
+		WheelOffset_X=6.5;
+		Body_X=28.6;
+		Body_Y=13.4;
+		Ears_X=41;
+		
+		// Body
+		translate([WheelOffset_X,0,-21]) RoundRect(X=Ears_X, Y=Body_Y, Z=21+Overlap, R=1);
+		// Bolts
+		translate([-BoltSpacing/2+WheelOffset_X,0,-1]) rotate([180,0,0]) Bolt6Hole();
+		translate([BoltSpacing/2+WheelOffset_X,0,-1]) rotate([180,0,0]) Bolt6Hole();
+		// Top
+		cylinder(d=Body_Y, h=16);
+		translate([WheelOffset_X,0,0]) RoundRect(X=Body_X, Y=Body_Y, Z=9.5, R=0.25);
+	}
+	
+	if (Servo_ID==ServoMZ996_ID){
+		rotate([0,0,180]) Servo_LD20MG(BottomMount=true,TopAccess=false);
+	}
+
+} // Stager_ServoTop
+
+//Stager_ServoTop();
+
+module Stager_ServoMount(Servo_ID=DefaultServo){
 // copied from Stager3Lib.scad
 
-	Servo_Z=UseLargeServo? -10:-6;
-
-	if (UseLargeServo){
+	Servo_Z=[-6,-7,-10];
+	Base_H=[5,8.5,10];
+	Base_X=[35,45,60];
+	Base_Y=[16,18,25];
+	BaseOffset_X=[5,6.7,10];
+	
 		difference(){
 			union(){
 				// Servo base
-				translate([10,0,-5]) cube([60,25,10],center=true);
+				translate([BaseOffset_X[Servo_ID],0,-Base_H[Servo_ID]/2]) cube([Base_X[Servo_ID],Base_Y[Servo_ID],Base_H[Servo_ID]],center=true);
 				
 				// feet
 				translate([0,0,2]){
-					hull() Stager_ServoMountBoltPattern(IsAEnd=true, UseLargeServo=UseLargeServo) cylinder(d=8, h=2);
-					hull() Stager_ServoMountBoltPattern(IsAEnd=false, UseLargeServo=UseLargeServo) cylinder(d=8, h=2);
+					hull() Stager_ServoMountBoltPattern(IsAEnd=true, Servo_ID=Servo_ID) cylinder(d=8, h=2);
+					hull() Stager_ServoMountBoltPattern(IsAEnd=false, Servo_ID=Servo_ID) cylinder(d=8, h=2);
 				}
 			} // union
 			
 			// Servo
-			rotate([0,0,180]) translate([0,0,Servo_Z]) Servo_LD20MG(BottomMount=true,TopAccess=false);
+			translate([0,0,Servo_Z[Servo_ID]]) Stager_ServoTop(Servo_ID=Servo_ID);
 			
 			// Bolts
-			Stager_ServoMountBoltPattern(IsAEnd=true, UseLargeServo=UseLargeServo) Bolt4ClearHole();
-			Stager_ServoMountBoltPattern(IsAEnd=false, UseLargeServo=UseLargeServo) Bolt4ClearHole();
+			Stager_ServoMountBoltPattern(IsAEnd=true, Servo_ID=Servo_ID) Bolt4ClearHole();
+			Stager_ServoMountBoltPattern(IsAEnd=false, Servo_ID=Servo_ID) Bolt4ClearHole();
 
 		} // difference
-	}else{
-		difference(){
-			union(){
-				// Servo base
-				translate([5,0,-2.5]) cube([35,16,5],center=true);
-				
-				// feet
-				translate([0,0,2]){
-					hull() Stager_ServoMountBoltPattern(IsAEnd=true, UseLargeServo=UseLargeServo) cylinder(d=8, h=2);
-					hull() Stager_ServoMountBoltPattern(IsAEnd=false, UseLargeServo=UseLargeServo) cylinder(d=8, h=2);
-				}
-			} // union
-			
-			// Servo
-			translate([0,0,Servo_Z]) ServoSG90(TopMount=true);
-			
-			// Bolts
-			Stager_ServoMountBoltPattern(IsAEnd=true) Bolt4ClearHole();
-			Stager_ServoMountBoltPattern(IsAEnd=false) Bolt4ClearHole();
-			
-		} // difference
-	} // if (UseLargeServo)
+	
 } // Stager_ServoMount
 
-// Stager_ServoMount(UseLargeServo=false);
+// Stager_ServoMount(Servo_ID=ServoMS75_ID);
+// Stager_ServoMount(Servo_ID=ServoMG90S_ID);
 
-module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks=Default_nLocks, OverCenter=IDXtra+0.8, UseLargeServo=DefaultServoIsLarge){
+module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks=Default_nLocks, OverCenter=IDXtra+0.8, Servo_ID=DefaultServo){
 											
 	BC_r=BoltCircle_d(Tube_OD=Tube_OD)/2;
 	
 	nBolts=4;
 	Bolt_a=35;
-	Servo_X=UseLargeServo? -Tube_OD/2+27:-BC_r+3;
-	Servo_Y=0;
-	Servo_Z=UseLargeServo? -10:-6;
-	ServoWheel_r=UseLargeServo? 6:4;
-	Servo_a=-90+180/nLocks*3-Calc_a(ServoWheel_r+3,-Servo_X);
+	Servo_X=[-BC_r+3,-BC_r+4.5,-Tube_OD/2+27];
+	Servo_Y=[0,0,0];
+	Servo_Z=[-6,-7,-10];
+	ServoWheel_r=[4,4.5,6];
+	Servo_a=-90+180/nLocks*3-Calc_a(ServoWheel_r[Servo_ID]+3,-Servo_X[Servo_ID]);
 						
 	UnLock_a=	Calc_a(11,BC_r);
 	
@@ -435,23 +446,14 @@ module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks
 		rotate([0,0,OverCenter_a]) MagnetHole();
 		
 		// Servo
-		if (UseLargeServo){
-			rotate([0,0,Servo_a]) translate([Servo_X,Servo_Y,0]){
-				translate([0,0,Servo_Z]) rotate([0,0,180]) Servo_LD20MG(BottomMount=true,TopAccess=false);
-					
-			// Bolts
-			Stager_ServoMountBoltPattern(IsAEnd=true, UseLargeServo=UseLargeServo) Bolt4Hole(depth=7);
-			Stager_ServoMountBoltPattern(IsAEnd=false, UseLargeServo=UseLargeServo) Bolt4Hole(depth=7);
-			}
-		}else{
-			rotate([0,0,Servo_a]) translate([Servo_X,Servo_Y,0]){
-				translate([0,0,Servo_Z]) ServoSG90(TopMount=true, HasGear=false);
-					
-			// Bolts
-			Stager_ServoMountBoltPattern(IsAEnd=true, UseLargeServo=UseLargeServo) Bolt4Hole(depth=7);
-			Stager_ServoMountBoltPattern(IsAEnd=false, UseLargeServo=UseLargeServo) Bolt4Hole(depth=7);
-		} // Servo
+		rotate([0,0,Servo_a]) translate([Servo_X[Servo_ID],Servo_Y[Servo_ID],0]){
+			translate([0,0,Servo_Z[Servo_ID]]) Stager_ServoTop(Servo_ID=Servo_ID);
+				
+		// Bolts
+		Stager_ServoMountBoltPattern(IsAEnd=true, Servo_ID=Servo_ID) Bolt4Hole(depth=7);
+		Stager_ServoMountBoltPattern(IsAEnd=false, Servo_ID=Servo_ID) Bolt4Hole(depth=7);
 		}
+		
 	
 		// mounting bolts
 		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+Bolt_a]) translate([0,Skirt_ID/2-Bolt4Inset,0])
@@ -461,11 +463,11 @@ module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks
 		translate([0,Skirt_ID/2,-Overlap]) cylinder(d=5, h=ServoPlate_T+Overlap*2);
 	} // difference
 	
-	if ($preview) rotate([0,0,Servo_a]) translate([Servo_X,Servo_Y,0])
+	if ($preview) rotate([0,0,Servo_a]) translate([Servo_X[Servo_ID],Servo_Y[Servo_ID],0])
 			Stager_ServoMount();
 } // Stager_ServoPlate
 
-// Stager_ServoPlate();
+//Stager_ServoPlate();
 
 module Stager_LockRing(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks){
 	BC_r=Race_BC_d()/2;
@@ -523,16 +525,16 @@ module Stager_LockRing(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks){
 	FullD_Z=5;
 	Bearing_Z=-MainBearing_T-2;
 	
+	
 	difference(){
 		union(){
 			translate([0,0,0.5]) cylinder(d=OD, h=LockHead_H, $fn=$preview? 90:360);
 			
-			
 			translate([0,0,Bearing_Z+MainBearingSplit]) 
 				cylinder(d=MainBearing_ID, h=MainBearing_T-MainBearingSplit+Overlap, $fn=$preview? 90:360);
 			
-			translate([0,0,Bearing_Z+MainBearing_T]) cylinder(d1=MainBearing_ID+3, d2=MainBearing_OD-3, h=2.5+Overlap, $fn=$preview? 90:360);
-
+			Taper_D2=min(MainBearing_OD-3,OD);
+			translate([0,0,Bearing_Z+MainBearing_T]) cylinder(d1=MainBearing_ID+3, d2=Taper_D2, h=2.5+Overlap, $fn=$preview? 90:360);
 		} // union
 		
 		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j])
@@ -997,9 +999,9 @@ module Stager_Mech(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Skirt_ID=Defau
 
 		} // union
 		
-		// Rivet holes
+		// Bolt holes
 		if (nSkirtBolts>0) for (j=[0:nSkirtBolts-1]) rotate([0,0,360/nSkirtBolts*j]) 
-			translate([0,Tube_OD/2,Plate_Z-ServoPlate_T-Skirt_Len+7.5]) rotate([-90,0,0]) Bolt4ClearHole();
+			translate([0,Tube_OD/2,Plate_Z-ServoPlate_T-Skirt_Len+7.5]) rotate([-90,0,0]) Bolt4Hole();
 		
 		// Bolts
 		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+Bolt_a])

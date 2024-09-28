@@ -3,7 +3,7 @@
 // Filename: Rocket9852.scad
 // by David M. Flynn
 // Created: 5/13/2023 
-// Revision: 0.9.16  8/31/2024
+// Revision: 0.9.18  9/25/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -51,6 +51,8 @@
 // Booster Lower Fin Can
 //
 //  ***** History *****
+// 0.9.18  9/25/2024  Added Bolted Booster E-Bay and extention ring.
+// 0.9.17  9/17/2024  Changed to ball bearing version of stager.
 // 0.9.16  8/31/2024  Updated to current standards and practices.
 // 0.9.15  5/5/2024   Updated booster for J800T, 8.5" tube, petal deployment, dome and more
 // 0.9.14  8/26/2023  Added 2mm to alt door X, Added big spring ends
@@ -108,25 +110,31 @@
 //
 // --------------
 //  ** Stager Parts, top of booster **
-// rotate([180,0,0]) Stager_Cup(Tube_OD=Body_OD, nLocks=nLocks, BoltsOn=true, Collar_h=16);
+// rotate([180,0,0]) Stager_Sustainer_Cup(Tube_OD=Body_OD, nLocks=nLocks, MotorTube_OD=MtrTube_OD, Motor_Len=10, nFins=5, StagerCollarLen=16);
+// rotate([180,0,0]) 
+
+
 // rotate([-90,0,0]) Stager_LockRod(Adj=-0.5); // too tight
 // rotate([-90,0,0]) Stager_LockRod(Adj=0.0);
 // rotate([-90,0,0]) Stager_LockRod(Adj=1.0); // print 4
 //
-// Stager_Saucer(Tube_OD=Body_OD, nLocks=nLocks); // Bolts on
+// Stager_Saucer(Tube_OD=Body_OD, nLocks=nLocks);
 //
+// Stager_LockRing(Tube_OD=Body_OD, nLocks=nLocks); 
 // Stager_Mech(Tube_OD=Body_OD, nLocks=nLocks, Skirt_ID=Body_ID, Skirt_Len=Booster_Stager_Skirt_Len, nSkirtBolts=4, ShowLocked=true);
-// Stager_LockRing(Tube_OD=Body_OD, nLocks=nLocks, FlexComp_d=0.0); 
-// Stager_InnerRace(Tube_OD=Body_OD);
-// Stager_BallSpacer(Tube_OD=Body_OD); // print 2
-// rotate([180,0,0]) Stager_Indexer(Tube_OD=Body_OD, nLocks=nLocks);
-// Stager_ServoPlate(Tube_OD=Body_OD, Skirt_ID=Body_ID, nLocks=nLocks, OverCenter=IDXtra+0.8); // Bottom Plate
-// rotate([180,0,0]) Stager_ServoMount(UseLargeServo=true);
+// Stager_OuterBearingCover(Tube_OD=Body_OD, nLocks=nLocks); // Secures Outer Race of Main Bearing
+//
+// rotate([180,0,0]) Stager_Indexer(Tube_OD=Body_OD, nLocks=nLocks); // Secures Inner Race of Main Bearing and has Lock Stops
+// Stager_ServoPlate(Tube_OD=Body_OD, Skirt_ID=Body_ID, nLocks=nLocks, OverCenter=IDXtra+0.2, Servo_ID=ServoMS75_ID);
+// rotate([180,0,0]) Stager_ServoMount(Servo_ID=ServoMS75_ID);
 //
 // -------------
 //  ** Booster Electronics Bay **
 //
-// Electronics_Bay_Booster(TopOnly=false, BottomOnly=false);
+// EB_ExtensionRing(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=10, nBolts=4, BoltInset=7.5);
+// 
+// rotate([180,0,0]) Electronics_Bay_Booster(TopOnly=true, BottomOnly=false);
+// Electronics_Bay_Booster(TopOnly=false, BottomOnly=true);
 //
 //  *** Doors ***
 // rotate([-90,0,0]) EB_AltDoor(Tube_OD=BT98Body_OD);
@@ -191,7 +199,7 @@ use<PetalDeploymentLib.scad>
 use<RailGuide.scad>
 use<FinCan2Lib.scad>
 use<Fins.scad>
-include<Stager3Lib.scad>
+include<Stager75BBLib.scad>
 use<SpringThingBooster.scad>
 use<ElectronicsBayLib.scad>
 
@@ -205,16 +213,15 @@ $fn=$preview? 24:90;
 nFins=5;
 nLocks=3;
 
-// for Stager 98
-Stager_LockRod_X=10;
-Stager_LockRod_Y=5;
-Stager_LockRod_Z=36;
-Stager_LockRod_R=1;
-LockBall_d=3/8 * 25.4; // 3/8" Delrin balls
+// constants for 98mm stager
 Default_nLocks=3;
-CupBoltsPerLock=2;
 DefaultBody_OD=BT98Body_OD;
 DefaultBody_ID=BT98Body_ID;
+DefaultMotorTube_OD=BT54Body_OD;
+DefaultServo=ServoMS75_ID;
+MainBearing_OD=Bearing6809_OD;
+MainBearing_ID=Bearing6809_ID;
+MainBearing_T=Bearing6809_T;
 
 // Sustainer Fin
 Fin_Post_h=12;
@@ -429,6 +436,32 @@ module ShowRocket(){
 
 //ShowRocket();
 
+module Sustainer_Cup(){
+	nBolts=8;
+	BoltHoles=[0,1,3,4,6,7];
+	Bolt_a=180/nBolts;
+	BoltCircle_r=43.5;
+	Collar_H=29;
+	
+	difference(){
+		union(){
+			difference(){
+				Stager_Cup(Tube_OD=Body_OD, nLocks=nLocks, BoltsOn=false, Collar_h=Collar_H);
+				translate([0,0,-2-Overlap]) cylinder(d=90, h=Collar_H-2);
+			} // difference
+			
+			for (j=BoltHoles) rotate([0,0,360/nBolts*j+Bolt_a]) translate([0,BoltCircle_r,Collar_H-4])
+				cylinder(d=8, h=7);
+		} // union
+		
+		for (j=BoltHoles) rotate([0,0,360/nBolts*j+Bolt_a]) translate([0,BoltCircle_r,Collar_H-4])
+			rotate([180,0,0]) Bolt4HeadHole(depth=8,lHead=Collar_H+3);
+	} // difference
+	
+} // Sustainer_Cup
+
+// rotate([180,0,0]) Sustainer_Cup();
+
 module PhantomSustainer(){
 	// Combine with a Drogue_Cup to launch w/o the sustainer
 	Rivet_Z=35;
@@ -600,14 +633,14 @@ module SustainerCup(Offset_a=7.5){
 //  ******************* BOOSTER PARTS *********************
 
 module Electronics_Bay_Booster(TopOnly=false, BottomOnly=false){
-	AltBattTwoBattSWBay=[[0],[90],[180,270]];
+	AltBattTwoBattSWBay=[[90],[0],[180,270]];
 
 	EB_Electronics_BayUniversal(Tube_OD=Body_OD, Tube_ID=Body_ID, DoorAngles=AltBattTwoBattSWBay, Len=EBay_Len, 
 									nBolts=4, BoltInset=7.5, ShowDoors=false,
-									HasFwdIntegratedCoupler=true, HasFwdShockMount=false,
+									HasFwdIntegratedCoupler=false, HasFwdShockMount=false,
 									HasAftIntegratedCoupler=false, HasAftShockMount=false,
 									HasRailGuide=false, RailGuideLen=35,
-									Bolted=false, TopOnly=TopOnly, BottomOnly=BottomOnly); 
+									Bolted=true, TopOnly=TopOnly, BottomOnly=BottomOnly); 
 } // Electronics_Bay_Booster
 
 //Electronics_Bay_Booster();

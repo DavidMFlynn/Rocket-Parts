@@ -155,7 +155,7 @@ PML38Coupler_ID=1.40*25.4;
 PML29Body_OD=32.3; // messured old tube
 PML29Body_ID=29.1;
 
-LOC65Body_OD=67.2;
+LOC65Body_OD=67.6;
 LOC65Body_ID=65;
 LOC65Coupler_OD=64.8;
 LOC65Coupler_ID=63.3;

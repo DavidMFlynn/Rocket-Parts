@@ -3,15 +3,16 @@
 // Filename: SpringEndsLib.scad
 // by David M. Flynn
 // Created: 11/24/2023 
-// Revision: 1.0.13  9/9/2024
+// Revision: 1.0.14  9/18/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 // This is a collection of spring ends used for non-pyro deployment.
 //
 //  ***** History *****
-function SpringEndsLibRev()="SpringEndsLib Rev. 1.0.13";
+function SpringEndsLibRev()="SpringEndsLib Rev. 1.0.14";
 echo(SpringEndsLibRev());
+// 1.0.14  9/18/2024  Refinement of SE_SpringEndTypeA() for 65mm rockets
 // 1.0.13  9/9/2024   Changed SE_SpringEndTop() to work with 65mm tube
 // 1.0.12  8/31/2024  Added SE_SpringEndTypeC()
 // 1.0.11  8/3/2024   Changes to SE_SpringEndTypeB()
@@ -312,6 +313,8 @@ module SE_EBaySpringStop(OD=BT54Body_ID, Al_Tube_Z=20){
 module SE_SpringEndTypeA(Coupler_OD=BT75Coupler_OD, Coupler_ID=BT75Coupler_ID, nRopes=3, Spring_OD=Spring_CS4323_OD){
 // Glues to a short section of coupler tube
 // Requires a short piece of coupler tube
+	Rope_Inset=(Coupler_ID>70)? 3:1.5;
+	Rope_d=4;
 	
 	difference(){
 		union(){
@@ -328,11 +331,13 @@ module SE_SpringEndTypeA(Coupler_OD=BT75Coupler_OD, Coupler_ID=BT75Coupler_ID, n
 		// Retention cord
 		if (nRopes>0) 
 			for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) 
-				translate([Coupler_ID/2-5,0,0]) cylinder(d=4, h=30);
+				translate([Coupler_ID/2-Rope_d/2-Rope_Inset,0,-Overlap]) cylinder(d=Rope_d, h=30);
 	} // difference
 } // SE_SpringEndTypeA
 
 //rotate([180,0,0]) SE_SpringEndTypeA();
+
+//SE_SpringEndTypeA(Coupler_OD=BT65Coupler_OD, Coupler_ID=BT65Coupler_ID, nRopes=3, Spring_OD=SE_Spring_CS4323_OD());
 
 module SE_SpringEndTypeB(Coupler_OD=BT75Coupler_OD, MotorCoupler_OD=BT54Coupler_OD,
 				nRopes=3, UseSmallSpring=true){

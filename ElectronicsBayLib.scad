@@ -4,7 +4,7 @@
 // Filename: ElectronicsBayLib.scad
 // by David M. Flynn
 // Created: 3/31/2024 
-// Revision: 1.3.0  9/9/2024 
+// Revision: 1.3.1  9/21/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -14,8 +14,9 @@
 //
 //  ***** History *****
 //
-function ElectronicsBayLibRev()="ElectronicsBayLib Rev. 1.2.1";
+function ElectronicsBayLibRev()="ElectronicsBayLib Rev. 1.3.1";
 echo(ElectronicsBayLibRev());
+// 1.3.1  9/21/2024  Made integrated coupler 0.4mm bigger.
 // 1.3.0  9/9/2024   Added centering rings to EB_Electronics_BayUniversal(), EB_LowerElectronics_Bay() now calls EB_Electronics_BayUniversal()
 // 1.2.1  9/8/2024   Battery doors are 4mm narrower on small rockets (<70mm OD).
 // 1.2.0  8/27/2024  Major change: EB_Electronics_BayUniversal()
@@ -185,8 +186,8 @@ module EB_ExtensionRing(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, Len=21, nBolts
 //EB_ExtensionRing(Tube_OD=BT65Body_OD, Tube_ID=BT65Body_ID, Len=8, nBolts=4, BoltInset=7.5);
 
 module EB_IntegratedCoupler(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, nBolts=3, BoltInset=7.5, HasShockMount=false){
-	IntegratedCoupler_OD=Tube_ID-IDXtra*2;
-	IntegratedCoupler_ID=Tube_ID-IDXtra*2-6;
+	IntegratedCoupler_OD=Tube_ID;
+	IntegratedCoupler_ID=Tube_ID-6;
 	IntegratedCoupler_Len=HasShockMount? 17:15;
 	
 	Al_Tube_d=12.7;
@@ -297,7 +298,7 @@ module EB_Electronics_BayUniversal(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, D
 	Bolted_ID=Tube_ID-Bolt4Inset*4;
 	BoltCircle_r=Tube_ID/2-Bolt4Inset;
 	
-	CenteringRing_ID=InnerTube_OD+IDXtra*3; // slide thru fit
+	CenteringRing_ID=InnerTube_OD+IDXtra*2; // slide thru fit
 	FwdCenteringRing_OD=HasFwdIntegratedCoupler? Tube_ID-1:Tube_OD-1;
 	AftCenteringRing_OD=HasAftIntegratedCoupler? Tube_ID-1:Tube_OD-1;
 	FwdCenteringRing_Z=HasFwdIntegratedCoupler? Len-5:Len-21;
