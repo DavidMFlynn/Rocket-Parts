@@ -199,7 +199,7 @@ module RailGuideSpacer(OD=PML98Body_OD, H=PML98Body_OD/2+2, Length = 30, BoltSpa
 	} // difference
 } // RailGuideSpacer
 
-//RailGuideSpacer(OD=PML98Body_OD, H=PML98Body_OD/2+2, Length = 30, BoltSpace=12.7);
+//RailGuideSpacer(OD=BT75Body_OD, H=BT75Body_OD/2+2, Length = 30, BoltSpace=12.7);
 
 module RailGuidePost(OD=PML98Body_OD, MtrTube_OD=PML54Body_OD, H=5.5*25.4/2, TubeLen=60,
 						Length = 30, BoltSpace=12.7, AddTaper=false){

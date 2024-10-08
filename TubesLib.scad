@@ -3,7 +3,7 @@
 // Filename: TubesLib.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.16  9/3/2024
+// Revision: 0.9.17  10/4/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-function TubesLib_Rev()="TubesLib 0.9.16";
+function TubesLib_Rev()="TubesLib 0.9.17";
 echo(TubesLib_Rev());
+// 0.9.17  10/4/2024  Added ULine38Body
 // 0.9.16  9/3/2024   Added BT65Body and Coupler
 // 0.9.15  8/21/2024  Geometry changed: Centering ring holes now start at +Y.
 // 0.9.14  4/2/2024   Added ULine75Body
@@ -85,6 +86,9 @@ echo(PML98Coupler_ID=PML98Coupler_ID);
 
 ULine75Body_OD=80.30;
 ULine75Body_ID=76.60; // Works w/ BT75Coupler_OD
+
+ULine38Body_OD=41.68;
+ULine38Body_ID=38.70; // Works w/ BT38Coupler_OD
 
 PML75Body_OD=79.6; // 8/4/2022 Adjusted +0.2 to match QT better
 PML75Body_ID=3.002*25.4;

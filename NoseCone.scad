@@ -71,6 +71,7 @@ module NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13
 	Spring_CS4323_CBL=22; // coil bound length
 	Spring_CS4323_FL=200; // free length
 
+	nBolts=3;
 	nRivets=3;
 	Rivet_d=4;
 	Plate_t=4;
@@ -78,6 +79,7 @@ module NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13
 	Rope_d=4;
 	Tube_d=12.7;
 	CR_z=-3;
+	StopRing_h=2;
 	Spring_OD=Spring_CS4323_OD;
 	Spring_ID=Spring_CS4323_ID;
 	
@@ -169,7 +171,7 @@ module NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13
 	difference(){
 		union(){
 			// Stop ring
-			translate([0,0,-2]) Tube(OD=Body_OD, ID=Body_ID-1, Len=2, myfn=$preview? 36:360);
+			translate([0,0,-StopRing_h]) Tube(OD=Body_OD, ID=Body_ID-1, Len=StopRing_h, myfn=$preview? 36:360);
 			
 			// GPS mount
 			translate([-10,-25, 6]) rotate([-10,0,0]) FW_GPS_Mount();
@@ -180,9 +182,9 @@ module NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13
 			Tube(OD=Body_ID-IDXtra*2, ID=Body_ID-4.4, Len=NC_Base_L, myfn=$preview? 36:360);
 			
 			// Body tube interface
-			translate([0,0,-15]) Tube(OD=Body_ID, ID=Body_ID-4.4, Len=15, myfn=$preview? 36:360);
+			translate([0,0,-StopRing_h-15]) Tube(OD=Body_ID, ID=Body_ID-4.4, Len=15, myfn=$preview? 36:360);
 			// Spring holder
-			translate([0,0,-15]) Tube(OD=Spring_OD+8, ID=Spring_OD, Len=15+Overlap, myfn=$preview? 36:360);
+			translate([0,0,-StopRing_h-15]) Tube(OD=Spring_OD+8, ID=Spring_OD, Len=15+Overlap, myfn=$preview? 36:360);
 				
 			// Stiffener
 			translate([0,0,-5])
@@ -212,10 +214,13 @@ module NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13
 			translate([-8,0,0]) cylinder(d=Tube_d+6, h=28);
 			}
 			
+		//EBay Bolts
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) translate([0,Body_ID/2,-StopRing_h-7.5]) 
+			rotate([-90,0,0]) Bolt4Hole();
 		
 		// Spring
 		translate([0,0,-6]) cylinder(d=Spring_OD, h=3, $fn=$preview? 36:360);
-		translate([0,0,-15-Overlap]) cylinder(d1=Spring_OD+4, d2=Spring_OD, h=8, $fn=$preview? 36:360);
+		translate([0,0,-StopRing_h-15-Overlap]) cylinder(d1=Spring_OD+4, d2=Spring_OD, h=8, $fn=$preview? 36:360);
 		
 		// Tube hole
 		translate([0,0,CR_z+3+Tube_d/2]) rotate([0,90,0]) cylinder(d=Tube_d, h=Body_OD, center=true);

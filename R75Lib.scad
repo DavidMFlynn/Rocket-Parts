@@ -52,22 +52,47 @@ Coupler_ID=BT75Coupler_ID;
 MotorTube_OD=BT54Body_OD;
 MotorTube_ID=BT54Body_ID;
 
-module R75_UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD){
+module R75_UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, HasSpokes=false, Extended=0){
 	Len=25;
+	Wall_t=2.2;
+	nSpokes=7;
 	
 	difference(){
-		Tube(OD=Body_ID, ID=MotorTube_OD+IDXtra*2, Len=Len, myfn=$preview? 36:360);
+		union(){
+			if (!HasSpokes)
+				Tube(OD=Body_ID, ID=MotorTube_OD+IDXtra*2, Len=Len, myfn=$preview? 36:360);
+			else{
+				Tube(OD=Body_ID, ID=Body_ID-Wall_t*2, Len=Len, myfn=$preview? 36:360);
+				translate([0,0,-Extended])
+				Tube(OD=MotorTube_OD+IDXtra*2+Wall_t*2, ID=MotorTube_OD+IDXtra*2, Len=Len+Extended, myfn=$preview? 36:360);
+				
+				if (Extended>0)
+					translate([0,0,-Extended+Len]) 
+					TubeStop(InnerTubeID=MotorTube_OD-3, OuterTubeOD=MotorTube_OD+Wall_t*2, myfn=$preview? 36:360);
+				
+				for (j=[0:nSpokes-1]) rotate([0,0,360/nSpokes*j+180/nSpokes]) hull(){
+					translate([0,MotorTube_OD/2+IDXtra+Wall_t/2,0]) cylinder(d=Wall_t, h=Len);
+					translate([0,Body_ID/2-Wall_t/2,0]) cylinder(d=Wall_t, h=Len);
+				}
+				
+				// Rail guide bolts
+				translate([0, Body_ID/2-Wall_t+Overlap, Len/2]) {
+					translate([0,0,6.35]) rotate([90,0,0]) cylinder(d=12, h=Body_ID/2-MotorTube_OD/2-IDXtra-Wall_t);
+					translate([0,0,-6.35]) rotate([90,0,0]) cylinder(d=12, h=Body_ID/2-MotorTube_OD/2-IDXtra-Wall_t);
+				}
+			} // else
+		} // union
 				
 		// Rail guide bolts
-		translate([Body_ID/2, 0, Len/2]) {
-			translate([0,0,6.35]) rotate([0,90,0]) Bolt6Hole();
-			translate([0,0,-6.35]) rotate([0,90,0]) Bolt6Hole();
+		translate([0, Body_ID/2, Len/2]) {
+			translate([0,0,6.35]) rotate([-90,0,0]) Bolt6Hole();
+			translate([0,0,-6.35]) rotate([-90,0,0]) Bolt6Hole();
 		}
 	} // difference
 } // R75_UpperRailGuideMount
 
 // R75_UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD);
-
+//R75_UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, HasSpokes=true, Extended=15);
 
 module R75_MotorTubeTopper(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID){
 // Z zero is top of motor tube
@@ -148,13 +173,13 @@ module R75_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=3){
 	
 	difference(){
 		union(){
-			STB_BallRetainerTop(BallPerimeter_d=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls,
+			STB_BallRetainerTop(Body_ID=Body_ID, Body_OD=Body_ID, nLockBalls=nLockBalls,
 								HasIntegratedCouplerTube=true, IntegratedCouplerLenXtra=CouplerLenXtra,
 								Outer_OD=Body_OD,
-								Body_ID=Body_ID-IDXtra, HasSecondServo=false, UsesBigServo=false, Engagement_Len=Engagement_Len);
+								HasSecondServo=false, UsesBigServo=false, Engagement_Len=Engagement_Len);
 			
 			translate([0,0,Tube_Z]) 
-				Tube(OD=Body_ID-IDXtra, ID=Body_ID-IDXtra-Wall_t*2, Len=Tube_d/2+Wall_t, myfn=$preview? 90:360);
+				Tube(OD=Body_ID, ID=Body_ID-IDXtra-Wall_t*2, Len=Tube_d/2+Wall_t, myfn=$preview? 90:360);
 			
 			// Shock cord retention
 			difference(){
@@ -208,10 +233,10 @@ module R75_BallRetainerTopTest(Body_OD=Body_OD, Body_ID=Body_ID){
 	
 	difference(){
 		union(){
-			STB_BallRetainerTop(BallPerimeter_d=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls,
+			STB_BallRetainerTop(Body_ID=Body_ID, Body_OD=Body_ID, nLockBalls=nLockBalls,
 								HasIntegratedCouplerTube=true, IntegratedCouplerLenXtra=CouplerLenXtra,
 								Outer_OD=Body_OD,
-								Body_ID=EBay_ID-IDXtra, HasSecondServo=false, UsesBigServo=false, Engagement_Len=Engagement_Len);
+								HasSecondServo=false, UsesBigServo=false, Engagement_Len=Engagement_Len);
 			
 			translate([0,0,Tube_Z]) 
 				Tube(OD=EBay_ID-IDXtra, ID=EBay_ID-IDXtra-Wall_t*2, Len=Tube_d/2+Wall_t, myfn=$preview? 90:360);
@@ -257,7 +282,7 @@ module R75_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false
 	
 	difference(){
 		union(){
-			STB_BallRetainerBottom(BallPerimeter_d=Body_OD, Body_OD=Body_ID, 
+			STB_BallRetainerBottom(Body_ID=Body_ID, Body_OD=Body_ID, 
 					nLockBalls=nLockBalls, HasSpringGroove=false, Engagement_Len=Engagement_Len, HasLargeInnerBearing=false);
 					
 		
