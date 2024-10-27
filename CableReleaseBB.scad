@@ -44,7 +44,7 @@ echo(CableReleaseBBRev());
 // ***********************************
 //  ***** for STL output *****
 //
-// CRBB_ExtensionRod(Len=100);
+// CRBB_ExtensionRod(Len=10);
 // CRBB_LockingPin(LockPin_Len=LockPin_Len, GuidePoint=false);
 // rotate([180,0,0]) CRBB_LockRing(GuidePoint=false);
 // rotate([180,0,0]) CRBB_TopRetainer(CRBB_TopRetainer(LockRing_d=CRBB_LockRingDiameter(), OD=0, HasMountingBolts=true, GuidePoint=false);
@@ -187,9 +187,11 @@ module CRBB_ExtensionRod(Len=100){
 		
 		translate([0,0,-Overlap]) cylinder(d=ID, h=Len+Overlap*2);
 		
+		if (Len>30){
 		translate([0,0,5]) cylinder(d1=ID, d2=LockPin_d-Wall_t*2, h=10);
 		translate([0,0,15-Overlap]) cylinder(d=LockPin_d-Wall_t*2, h=Len-30+Overlap*2);
 		translate([0,0,Len-15-Overlap]) cylinder(d2=ID, d1=LockPin_d-Wall_t*2, h=10);
+		}
 		
 		//cube([20,20,100]);
 	} // difference

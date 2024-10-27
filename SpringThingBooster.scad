@@ -444,7 +444,7 @@ module STB_TubeEnd(Body_ID=BT75Body_ID, nLockBalls=nLockBalls,
 //STB_TubeEnd(Body_ID=BT137Body_ID, nLockBalls=nBT137Balls, Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, Engagement_Len=25);
 
 module STB_TubeEnd2(Body_ID=BT75Body_ID, nLockBalls=nLockBalls, 
-			Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, Engagement_Len=20){
+			Body_OD=BT75Body_OD, Engagement_Len=20){
 
 	// Made for 5.5" rockets w/ tighter ball fit and more contact area.
 	BallPerimeter_d=STB_BallPerimeter_d(Body_ID);
@@ -501,7 +501,7 @@ module STB_TubeEnd2(Body_ID=BT75Body_ID, nLockBalls=nLockBalls,
 	//echo("STB_LockBall_d=",STB_LockBall_d(Body_ID));
 } // STB_TubeEnd2
 
-//rotate([180,0,0]) STB_TubeEnd2(Body_ID=BT137Body_ID, nLockBalls=nBT137Balls, Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, Engagement_Len=20);
+//rotate([180,0,0]) STB_TubeEnd2(Body_ID=BT137Body_ID, nLockBalls=nBT137Balls, Body_OD=BT137Body_OD, Engagement_Len=20);
 
 ArmingHole_d=2.5;
 
@@ -887,7 +887,7 @@ rotate([0,0,STB_Unlocked_a(Body_ID=PML54Body_ID)]){
 STB_ShowMyBalls(Body_ID=PML54Body_ID, nLockBalls=3, InLockedPosition=false);
 /**/
 
-//*
+/*
 STB_BallRetainerBottom(Body_ID=PML75Body_ID, Body_OD=PML75Body_ID, nLockBalls=5, HasSpringGroove=false, Engagement_Len=20);
 
 rotate([0,0,STB_Unlocked_a(Body_ID=PML75Body_ID)])

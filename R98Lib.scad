@@ -3,7 +3,7 @@
 // Filename: R98Lib.scad
 // by David M. Flynn
 // Created: 5/5/2024 
-// Revision: 0.9.2  7/16/2024 
+// Revision: 0.9.3  10/27/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,6 +12,7 @@
 //
 //  ***** History *****
 //
+// 0.9.3  10/27/2024 Updated to current SpringThingBooster
 // 0.9.2  7/16/2024 Added R75_BallRetainerTop
 // 0.9.1  5/7/2024  Added R98C_MotorTubeTopper(), R98C_MotorTubeTopperNL()
 // 0.9.0  5/5/2024  First code, copied from many places
@@ -152,10 +153,15 @@ module R98C_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID){
 	
 	difference(){
 		union(){
-			STB_BallRetainerTop(BallPerimeter_d=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls,
-								HasIntegratedCouplerTube=true, IntegratedCouplerLenXtra=CouplerLenXtra,
-								Outer_OD=Body_OD,
-								Body_ID=Body_ID-IDXtra, HasSecondServo=false, UsesBigServo=true, Engagement_Len=Engagement_Len);
+			STB_BallRetainerTop(Body_ID=Body_ID, Outer_OD=0, Body_OD=Body_ID, nLockBalls=nLockBalls,
+			HasIntegratedCouplerTube=true, nBolts=0,
+			IntegratedCouplerLenXtra=CouplerLenXtra,
+				
+			HasSecondServo=false,
+			UsesBigServo=true,
+			Engagement_Len=Engagement_Len, HasLargeInnerBearing=false);
+			
+		
 				
 			translate([0,0,35.5]) 
 				Tube(OD=Body_ID-IDXtra, ID=Body_ID-IDXtra-6, Len=5, myfn=$preview? 90:360);
@@ -190,12 +196,14 @@ module R98C_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID){
 // rotate([180,0,0]) R98C_BallRetainerTop();
 
 module R98_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID){
+	Engagement_Len=20;
+	
 	difference(){
-		STB_BallRetainerBottom(BallPerimeter_d=Body_OD, Body_OD=Body_ID, 
-				nLockBalls=nLockBalls, HasSpringGroove=false);
+		STB_BallRetainerBottom(Body_ID=Body_ID, Body_OD=Body_ID, nLockBalls=nLockBalls, HasSpringGroove=false, 
+			Engagement_Len=Engagement_Len, HasLargeInnerBearing=false);
 		
 		rotate([0,0,PD_ShockCordAngle()-ShockCord_a]) 
-			PD_PetalHubBoltPattern(OD=Coupler_OD, nPetals=nPetals) Bolt4Hole();
+			PD_PetalHubBoltPattern(OD=Coupler_OD) Bolt4Hole();
 
 	} // difference
 } // R98_BallRetainerBottom

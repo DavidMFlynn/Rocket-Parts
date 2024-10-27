@@ -82,7 +82,8 @@
 //
 //  *** 3 Inch Stager ***
 // rotate([180,0,0]) Stager_Sustainer_Cup(Tube_OD=Body_OD, nLocks=nLocks, MotorTube_OD=MotorTube_OD, Motor_Len=10, nFins=nFins, StagerCollarLen=StagerCollarLen);
-// rotate([-90,0,0]) Stager_LockRod(Adj=-1.0);
+// rotate([-90,0,0]) Stager_LockRod(Adj=-0.5); // too tight 10/17/2024
+// rotate([-90,0,0]) Stager_LockRod(Adj=0.0);
 //
 // Stager_Saucer(Tube_OD=Body_OD, nLocks=nLocks); // Bolts on
 //

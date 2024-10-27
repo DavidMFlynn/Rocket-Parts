@@ -3,7 +3,7 @@
 // Filename: Rocket98C.scad
 // by David M. Flynn
 // Created: 10/23/2023 
-// Revision: 1.2.2  5/7/2024 
+// Revision: 1.2.3  10/27/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -48,6 +48,7 @@
 //
 //  ***** History *****
 //
+// 1.2.3  10/27/2024 Updated for current libraries.
 // 1.2.2  5/7/2024	 Added rope holes to MotorTubeTopper
 // 1.2.1  5/5/2024   Now using R98Lib.scad
 // 1.2.0  12/28/2023 Added CableReleaseBB w/ Guide Point for night launch version
@@ -73,34 +74,35 @@ CouplerLenXtra=-10;
 // SE_SlidingSpringMiddle(OD=Coupler_OD, nRopes=6, SliderLen=30, SpLen=40, SpringStop_Z=20);
 //
 // PD_NC_PetalHub(OD=Coupler_OD, nPetals=nPetals, nRopes=6);
-// rotate([-90,0,0]) PD_PetalSpringHolder(Coupler_OD=Coupler_OD);
+// rotate([-90,0,0]) PD_PetalSpringHolder();
 // rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=ForwardPetalLen, nPetals=nPetals, AntiClimber_h=4);
 //
 // EB_Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=EBay_Len, nBolts=3, BoltInset=7.5, ShowDoors=false, HasSecondBattDoor=true);
 //
 // *** Doors ***
 //
-// rotate([-90,0,0]) AltDoor54(Tube_OD=Body_OD, IsLoProfile=true, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowAlt=true);
+// rotate([-90,0,0]) EB_AltDoor(Tube_OD=Body_OD);
 // 
-// rotate([-90,0,0]) Batt_Door(Tube_OD=Body_OD, InnerTube_OD=0, HasSwitch=true);
-// rotate([-90,0,0]) Batt_Door(Tube_OD=Body_OD, InnerTube_OD=0, HasSwitch=false);
+// rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD, HasSwitch=true, DoubleBatt=false);
+// rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD, HasSwitch=false, DoubleBatt=false);
 //
 // *** Ball Lock ***
 //
-// STB_LockDisk(BallPerimeter_d=Body_OD, nLockBalls=nLockBalls);
+// STB_LockDisk(Body_ID=Body_ID, nLockBalls=nLockBalls, HasLargeInnerBearing=false);
 // rotate([180,0,0]) R98C_BallRetainerTop();
 // R98_BallRetainerBottom();
-// rotate([180,0,0]) STB_TubeEnd(BallPerimeter_d=Body_OD, nLockBalls=nLockBalls, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=20);
+// rotate([180,0,0]) STB_TubeEnd2(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD, Engagement_Len=20);
 //
 // *** petal deployer ***
 //
 // PD_PetalHub(OD=Coupler_OD, nPetals=nPetals, ShockCord_a=PD_ShockCordAngle());
-// rotate([-90,0,0]) PD_PetalSpringHolder(OD=Coupler_OD);
+// rotate([-90,0,0]) PD_PetalSpringHolder();
 // rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=AftPetalLen, nPetals=nPetals, AntiClimber_h=3);
 //
 // rotate([180,0,0]) SpringTop();
 //
 // R98C_MotorTubeTopper();
+//
 //
 // *** Fin Can ***
 /*
@@ -112,7 +114,9 @@ rotate([180,0,0]) FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=Can_Len,
 						Cone_Len=TailCone_Len, 
 						LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
 /**/
+//
 // RocketFin();
+//
 /*
 FC2_MotorRetainer(Body_OD=Body_OD, 
 					MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID,
@@ -120,10 +124,10 @@ FC2_MotorRetainer(Body_OD=Body_OD,
 /**/
 // **************************************
 // *** Night Flight Version Parts ***
-// CRBB_ExtensionRod(Len=90);
+// CRBB_ExtensionRod(Len=100);
 // rotate([180,0,0]) CRBB_LockingPin(LockPin_Len=40, GuidePoint=true);
 // rotate([180,0,0]) CRBB_LockRing(GuidePoint=true);
-// rotate([180,0,0]) CRBB_TopRetainer(LockRing_d=LockRingDiameter(), GuidePoint=true);
+// rotate([180,0,0]) CRBB_TopRetainer(LockRing_d=CRBB_LockRingDiameter(), GuidePoint=true);
 // CRBB_OuterBearingRetainer();
 // rotate([180,0,0]) CRBB_InnerBearingRetainer();
 // rotate([180,0,0]) CRBB_MagnetBracket();
@@ -131,12 +135,12 @@ FC2_MotorRetainer(Body_OD=Body_OD,
 
 // CRBB_TopRetainerEBayEnd(Body_OD=Body_OD, Body_ID=Body_ID);
 //
-// Electronics_BayDual(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoors=false, HasSecondBattDoor=false);
-//
 // PD_NC_PetalHub(OD=Coupler_OD-IDXtra, nPetals=nPetals, nRopes=6, ShockCord_a=60, HasThreadedCore=true);
 //
 // rotate([180,0,0]) R98C_MotorTubeTopperNL();
 // CenteringRing(OD=Coupler_ID, ID=MotorTube_OD+IDXtra*2, Thickness=5, nHoles=5, Offset=0);
+//
+// FinLightBattHolder();
 //
 /*
 rotate([180,0,0]) 
@@ -148,12 +152,9 @@ FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=Can_Len,
 						Cone_Len=TailCone_Len, 
 						LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=true);
 /**/
+//
 // NightLaunchFin();
-/*
-FC2_MotorRetainer(Body_OD=Body_OD, 
-					MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID,
-					Cone_Len=TailCone_Len);
-/**/
+//
 // **************************************
 //
 // rotate([90,0,0]) BoltOnRailGuide(Length = 30, BoltSpace=12.7, RoundEnds=true);
@@ -180,7 +181,7 @@ use<NoseCone.scad>
 use<ElectronicsBayLib.scad>
 use<AltBay.scad>
 use<BatteryHolderLib.scad>
-use<SpringThingBooster.scad> SpringThingBoosterRev();
+use<SpringThingBooster.scad> echo(SpringThingBoosterRev());
 use<PetalDeploymentLib.scad>
 use<SpringThing2.scad>
 use<SpringEndsLib.scad>
@@ -364,6 +365,7 @@ module FinLightBattHolder(){
 	Batt_Y=Coupler_OD/2-10.9;
 	
 	Batt_a=47;
+	RBF_Sw_a=-40;
 	
 	module Pocket(){
 		RoundRect(X=Batt_w+2.4, Y=Batt_t+2.4, Z=Len, R=2+1.2);
@@ -377,8 +379,16 @@ module FinLightBattHolder(){
 			for (j=[0:1]) rotate([0,0,Batt_a*j]) translate([0,Batt_Y,0]) Pocket();
 			Tube(OD=Coupler_OD, ID=Coupler_ID, Len=Len, myfn=$preview? 36:360);
 			Tube(OD=MotorTube_OD+IDXtra*3+2.4, ID=MotorTube_OD+IDXtra*3, Len=Len, myfn=$preview? 36:360);
+			
+			// Remove Before Flight (Switch)
+			rotate([0,0,RBF_Sw_a]) translate([0,Coupler_OD/2-1,Len/2]) rotate([90,0,0]) cylinder(d1=18, d2=11, h=5);
 		} // union
 	
+		// Remove Before Flight (Switch)
+		rotate([0,0,RBF_Sw_a]) translate([0,Coupler_OD/2,Len/2]) rotate([90,0,0]) cylinder(d=8, h=8);
+		rotate([0,0,RBF_Sw_a]) translate([0,Coupler_OD/2,Len/2]) rotate([90,0,0]) rotate([0,0,30]) cylinder(d=11.5, h=2.5, $fn=6);
+		rotate([0,0,RBF_Sw_a]) translate([0,Coupler_OD/2-8,Len/2]) rotate([90,0,0]) cylinder(d=12, h=20);
+		
 		translate([-Coupler_OD/2-1,IDXtra*2,-Overlap]) mirror([0,1,0]) cube([Coupler_OD+2,Coupler_OD/2+1,Len+Overlap*2]);
 		
 		translate([-Coupler_OD/2+10,0,12]) rotate([90,0,0]) Bolt4Hole();
@@ -700,26 +710,20 @@ module RocketFin(){
 				TipOffset=Fin_TipOffset,
 				Bisect=false, Bisect_X=0,
 				HasSpar=false, Spar_d=8, Spar_L=100);
-				
-	if ($preview==false){
-		translate([-Fin_Root_L/2+4,0,0]) 
-			cylinder(d=12, h=0.9); // Neg
-		translate([Fin_Root_L/2-4,0,0]) 
-			cylinder(d=12, h=0.9); // Pos
-	}
 	
 } // RocketFin
 
 //RocketFin();
 
 module NightLaunchFin(){
-	PCB_X=80+5;
-	PCB_Y=8+0.5;
+	PCB_Y=80+5;
+	PCB_X=8+0.5;
 	PCB_Z=3;
 	
 	
 	RocketFin();
 		
+	// No ribs in middle
 	translate([0,0,0.6+PCB_Z/2]) cube([PCB_X,PCB_Y,PCB_Z],center=true);
 	
 } // NightLaunchFin

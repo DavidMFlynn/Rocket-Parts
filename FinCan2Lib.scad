@@ -3,7 +3,7 @@
 // Filename: FinCan2Lib.scad
 // by David M. Flynn
 // Created: 12/24/2023 
-// Revision: 0.9.7  8/24/2024
+// Revision: 0.9.8  10/27/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -15,6 +15,7 @@
 function FinCan2LibRev()="FinCan2Lib 0.9.7";
 echo(FinCan2LibRev());
 //
+// 0.9.8  10/27/2024  Fixed FC2_MotorRetainer() math
 // 0.9.7  8/24/2024   Added HollowFinRoots parameter to FC2_FinCan()
 // 0.9.6  8/21/2024	  Geometry changed: Rail guide/post is now at 0° (+Y) first fin at 180/nFins.
 // 0.9.5  8/13/2024   Fixed calculation for rail guide position
@@ -366,7 +367,7 @@ module FC2_MotorRetainer(Body_OD=BT98Body_OD,
 				} // hull
 				
 				// Trim Top	
-				translate([0,0,-Cone_Len+Nut_Len-Overlap]) cylinder(d=Body_OD+1, h=Cone_Len);
+				translate([0,0,-Cone_Len+Nut_Len-Overlap]) cylinder(d=Body_OD+1, h=Cone_Len+Tail_r);
 			} // difference
 		
 			translate([0,0,-Cone_Len-ExtraLen]) 
@@ -405,6 +406,11 @@ translate([0,0,-0.2]) FC2_MotorRetainer(Body_OD=BT65Body_OD,
 /**/
 /*
 translate([0,0,-0.2]) FC2_MotorRetainer(Body_OD=BT75Body_OD,
+						MotorTube_OD=BT54Body_OD, MotorTube_ID=BT54Body_ID,
+						HasWrenchCuts=false, Cone_Len=40, ExtraLen=0, Extra_OD=2);
+/**/	
+/*
+translate([0,0,-0.2]) FC2_MotorRetainer(Body_OD=BT98Body_OD,
 						MotorTube_OD=BT54Body_OD, MotorTube_ID=BT54Body_ID,
 						HasWrenchCuts=false, Cone_Len=40, ExtraLen=0, Extra_OD=2);
 /**/						
