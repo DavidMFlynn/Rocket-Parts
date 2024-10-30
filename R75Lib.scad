@@ -22,8 +22,8 @@
 // R75_UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD);
 // R75_MotorTubeTopper(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID);
 // R75_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID);  // One small servo w/ shock cord attachment.
-// R75_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false);
-// R75_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=true); // for bottom of ebay
+// R75_BallRetainerBottom(Body_ID=Body_ID, HasPD_Ring=false);
+// R75_BallRetainerBottom(Body_ID=Body_ID, HasPD_Ring=true); // for bottom of ebay
 // R75_PetalHub(Body_OD=Body_OD, Body_ID=Body_ID); // for bottom of ebay
 // R75_NC_Base_PetalHub(Body_OD=Body_OD, Body_ID=Body_ID); // for bottom of nosecone
 //
@@ -272,7 +272,7 @@ module R75_BallRetainerTopTest(Body_OD=Body_OD, Body_ID=Body_ID){
 
 //  R75_BallRetainerTopTest(Body_OD=Body_OD, Body_ID=Body_ID);
 
-module R75_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false){
+module R75_BallRetainerBottom(Body_ID=Body_ID, HasPD_Ring=false){
 	// PD_Ring is required to attach the petal hub because 3 balls isn't good enough and 5 won't line up.
 	
 	Bolt_a=20;// offset between PD_PetalHub and R65_BallRetainerBottom
@@ -302,8 +302,8 @@ module R75_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false
 	} // difference
 } // R75_BallRetainerBottom
 
-// R75_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false);
-// R75_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=true);
+// R75_BallRetainerBottom(Body_ID=Body_ID, HasPD_Ring=false);
+// R75_BallRetainerBottom(Body_ID=Body_ID, HasPD_Ring=true);
 
 
 module R75_PetalHub(Body_OD=Body_OD, Body_ID=Body_ID, Coupler_OD=Coupler_OD){

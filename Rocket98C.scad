@@ -124,6 +124,10 @@ FC2_MotorRetainer(Body_OD=Body_OD,
 /**/
 // **************************************
 // *** Night Flight Version Parts ***
+//
+// rotate([180,0,0]) ElectronicsBay(ThreeDoor=true, TopOnly=true, BottomOnly=false); // Single deploy
+// ElectronicsBay(ThreeDoor=true, TopOnly=false, BottomOnly=true);
+//
 // CRBB_ExtensionRod(Len=100);
 // rotate([180,0,0]) CRBB_LockingPin(LockPin_Len=40, GuidePoint=true);
 // rotate([180,0,0]) CRBB_LockRing(GuidePoint=true);
@@ -730,11 +734,22 @@ module NightLaunchFin(){
 
 // NightLaunchFin();
 
+module ElectronicsBay(ThreeDoor=true, TopOnly=false, BottomOnly=false){
+	Len=162;
+	Doors=ThreeDoor? [[0],[120],[240]]:[[0],[90],[180,270]];
+	ExtraBolts=ThreeDoor? [60]:[];
 
+	EB_Electronics_BayUniversal(Tube_OD=Body_OD, Tube_ID=Body_ID, DoorAngles=Doors, Len=Len, 
+									nBolts=3, BoltInset=7.5, ShowDoors=false,
+									HasFwdIntegratedCoupler=false, HasFwdShockMount=false,
+									HasAftIntegratedCoupler=false, HasAftShockMount=false,
+									HasRailGuide=false, RailGuideLen=35,
+									HasFwdCenteringRing=false, HasAftCenteringRing=false, InnerTube_OD=BT54Body_OD,
+									Bolted=true, ExtraBolts=ExtraBolts, TopOnly=TopOnly, BottomOnly=BottomOnly); 
+} // ElectronicsBay
 
-
-
-
+//ElectronicsBay(ThreeDoor=true, TopOnly=false, BottomOnly=false);
+//ElectronicsBay(ThreeDoor=false, TopOnly=false, BottomOnly=false);
 
 
 

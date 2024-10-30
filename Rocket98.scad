@@ -26,7 +26,7 @@
 //
 // *** Nosecode ***
 /*
-FairingConeOGive(Fairing_OD=R98_Body_OD, 
+FairingConeOGive(Fairing_OD=Body_OD, 
 					FairingWall_T=FairingWall_T,
 					NC_Base=NC_Base, 
 					NC_Len=NC_Len, 
@@ -36,34 +36,21 @@ FairingConeOGive(Fairing_OD=R98_Body_OD,
 /**/
 // rotate([180,0,0]) NoseLockRing(Fairing_OD=Fairing_OD, Fairing_ID =Fairing_ID);
 
-// BluntOgiveWeight(OD=R98_Body_OD, L=NC_Len, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t);
+// BluntOgiveWeight(OD=Body_OD, L=NC_Len, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t);
 
 // *** L3 Nosecone, No Fairing ***
-// BluntOgiveNoseCone(ID=Coupler_OD, OD=R98_Body_OD, L=200, Base_L=13, Tip_R=12, Wall_T=3, Cut_Z=0, LowerPortion=false);
+// BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=200, Base_L=13, Tip_R=12, Wall_T=3, Cut_Z=0, LowerPortion=false);
 //
-// *** Fairing ***
-/*
-F54_FairingHalf(IsLeftHalf=true, 
-				Fairing_OD=Fairing_OD,
-				Wall_T=FairingWall_T,
-				Len=Fairing_Len);
-/**/
-/*
-F54_FairingHalf(IsLeftHalf=false, 
-				Fairing_OD=Fairing_OD,
-				Wall_T=FairingWall_T,
-				Len=Fairing_Len);
-/**/
+
 //F54_SpringEndCap();
-//FairingBaseLockRing(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID-1, Fairing_ID=Fairing_ID, Interface=-IDXtra, BlendToTube=false); // repair part
+//FairingBaseLockRing(Tube_OD=Body_OD, Tube_ID=Body_ID-1, Fairing_ID=Fairing_ID, Interface=-IDXtra, BlendToTube=false); // repair part
 //
 // *** Electronics Bay ***
-// R98_Electronics_Bay2(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, Fairing_ID=Fairing_ID, InnerTube_OD=R98_BayInnerTube_OD);
-// FairingBaseBulkPlate(Tube_ID=R98_Body_ID, Fairing_ID=Fairing_ID, ShockCord_a=-100);
-// rotate([-90,0,0]) CP_Door(Tube_OD=R98_Body_OD, BoltBossInset=3, HasArmingSlot=true);
-// rotate([-90,0,0]) AltDoor54(Tube_OD=R98_Body_OD, IsLoProfile=false, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowAlt=true);
+// R98_Electronics_Bay2(Tube_OD=Body_OD, Tube_ID=Body_ID, Fairing_ID=Fairing_ID, InnerTube_OD=R98_BayInnerTube_OD);
+// FairingBaseBulkPlate(Tube_ID=Body_ID, Fairing_ID=Fairing_ID, ShockCord_a=-100);
+// rotate([-90,0,0]) AltDoor54(Tube_OD=Body_OD, IsLoProfile=false, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowAlt=true);
 // 
-// rotate([-90,0,0]) Batt_Door(Tube_OD=R98_Body_OD, InnerTube_OD=0, HasSwitch=true);
+// rotate([-90,0,0]) Batt_Door(Tube_OD=Body_OD, InnerTube_OD=0, HasSwitch=true);
 // DoubleBatteryHolder(Tube_ID=PML98Body_ID, HasBoltHoles=true); // oops!
 //
 // ----------------------
@@ -80,22 +67,13 @@ F54_FairingHalf(IsLeftHalf=false,
 // rotate([0,90,0]) PD_PetalLockCatch(OD=Coupler_OD, ID=Coupler_ID, Wall_t=1.8, Len=30, LockStop=false);
 // PD_CatchHolder(OD=Coupler_OD, ID=Coupler_ID, Wall_t=1.8, nPetals=3);
 //
-// ----------------------
-//  *** Cable Puller ***
-// ThroughOut();
-// rotate([0,90,0]) SpringBody();
-// CableRetainer();
-// StopAdjuster();
-// CageBottom();
-// AddServo(); // CageTop w/ servo mount
-//
 // -------------------------------------------------------------------------------------------
 //  *** Optional: Ball Lock for base of electronics bay to make this a dual deploy rocket ***
-// STB_LockDisk(BallPerimeter_d=R98_Body_OD, nLockBalls=nLockBalls);
-// rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=R98_Body_OD, Body_OD=R98_Body_ID, nLockBalls=nLockBalls, HasIntegratedCouplerTube=true, Body_ID=R98_Body_ID, HasSecondServo=true, UsesBigServo=true);
-// STB_BallRetainerBottom(BallPerimeter_d=R98_Body_OD, Body_OD=R98_Body_ID, nLockBalls=nLockBalls, HasSpringGroove=false);
-// rotate([180,0,0]) TubeEnd(BallPerimeter_d=R98_Body_OD, nLockBalls=nLockBalls, Body_OD=R98_Body_OD, Body_ID=R98_Body_ID, Skirt_Len=20);
-// STB_SpringEnd(Tube_ID=R98_Body_ID, CouplerTube_ID=BT98Coupler_ID);
+// STB_LockDisk(BallPerimeter_d=Body_OD, nLockBalls=nLockBalls);
+// rotate([180,0,0]) STB_BallRetainerTop(BallPerimeter_d=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls, HasIntegratedCouplerTube=true, Body_ID=Body_ID, HasSecondServo=true, UsesBigServo=true);
+// STB_BallRetainerBottom(BallPerimeter_d=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls, HasSpringGroove=false);
+// rotate([180,0,0]) TubeEnd(BallPerimeter_d=Body_OD, nLockBalls=nLockBalls, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=20);
+// STB_SpringEnd(Tube_ID=Body_ID, CouplerTube_ID=BT98Coupler_ID);
 //
 //
 // *** Fin Can ***
@@ -103,7 +81,22 @@ F54_FairingHalf(IsLeftHalf=false,
 // Rocket98Fin();
 // rotate([180,0,0]) LowerFinCan();
 // rotate([90,0,0]) BoltOnRailGuide(Length = 40, BoltSpace=12.7, RoundEnds=true);
-// rotate([0,-90,0]) TubeBoltedRailGuide(TubeOD=R98_Body_OD, Length = 25, Offset = 5.5);
+// rotate([0,-90,0]) TubeBoltedRailGuide(TubeOD=Body_OD, Length = 25, Offset = 5.5);
+//
+//  ***** Cable Release Deployment Option *****
+//
+// rotate([180,0,0]) CRBB_TopRetainerEBayEnd(Body_OD=Body_OD, Body_ID=Body_ID, Coupler_OD=Coupler_OD, CT_Len=15, StopRing_Len=5, nBolts=4, nServos=2);
+// rotate([180,0,0]) CRBB_SpringEnd(Coupler_OD=Coupler_OD);
+// CRBB_EBayEndCover();
+//
+// CRBB_ExtensionRod(Len=110);
+// rotate([180,0,0]) CRBB_LockingPin(LockPin_Len=25, GuidePoint=true);
+// rotate([180,0,0]) CRBB_LockRing(GuidePoint=true);
+// rotate([180,0,0]) CRBB_TopRetainer(LockRing_d=CRBB_LockRingDiameter(), OD=0, HasMountingBolts=true, GuidePoint=true);
+// CRBB_OuterBearingRetainer();
+// rotate([180,0,0]) CRBB_InnerBearingRetainer(HasServo=false);
+// rotate([180,0,0]) CRBB_MagnetBracket();
+// rotate([180,0,0]) CRBB_TriggerPost();
 //
 // ***********************************
 //  ***** Routines *****
@@ -117,14 +110,13 @@ F54_FairingHalf(IsLeftHalf=false,
 // ***********************************
 include<TubesLib.scad>
 use<RailGuide.scad>
-use<Fairing54.scad>
-use<FinCan.scad>
+use<FinCan2Lib.scad>
 use<NoseCone.scad>
 use<AltBay.scad>
-use<CablePuller.scad>
 use<BatteryHolderLib.scad>
 use<SpringThingBooster.scad>
 use<PetalDeploymentLib.scad>
+use<CableReleaseBB.scad>
 
 //also included
  //include<FairingJointLib.scad>
@@ -147,10 +139,10 @@ R98_Fin_Span=180;
 R98_Fin_TipOffset=120;
 R98_Fin_Chamfer_L=32;
 
-R98_Body_OD=PML98Body_OD;
-R98_Body_ID=PML98Body_ID;
+Body_OD=PML98Body_OD;
+Body_ID=PML98Body_ID;
 Coupler_OD=BT98Coupler_OD;
-R98_Coupler_ID=BT98Coupler_ID;
+Coupler_ID=BT98Coupler_ID;
 R98_MtrTube_OD=PML54Body_OD;
 R98_MtrTube_ID=PML54Body_ID;
 R98_BayInnerTube_OD=BT38Body_OD;
@@ -191,7 +183,7 @@ module ShowRocket98(){
 	NoseCone_Z=Fairing_Z+Fairing_Len+Overlap*2;
 	
 	translate([0,0,NoseCone_Z]){
-		FairingConeOGive(Fairing_OD=R98_Body_OD, 
+		FairingConeOGive(Fairing_OD=Body_OD, 
 						FairingWall_T=FairingWall_T,
 						NC_Base=NC_Base, 
 						NC_Len=NC_Len, 
@@ -209,7 +201,7 @@ module ShowRocket98(){
 	
 	translate([0,0,EBay_Z]) rotate([0,0,30]) R98_Electronics_Bay2();
 	
-	translate([0,0,BodyTube_Z]) color("LightBlue") Tube(OD=R98_Body_OD, ID=R98_Body_ID, 
+	translate([0,0,BodyTube_Z]) color("LightBlue") Tube(OD=Body_OD, ID=Body_ID, 
 			Len=BodyTubeLen-Overlap*2, myfn=$preview? 90:360);
 	
 	translate([0,0,UpperFinCan_Z]) color("White") UpperFinCan();
@@ -217,7 +209,7 @@ module ShowRocket98(){
 	
 	//*
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j])
-		translate([R98_Body_OD/2-R98_Fin_Post_h, 0, R98_Fin_Root_L/2+55]) 
+		translate([Body_OD/2-R98_Fin_Post_h, 0, R98_Fin_Root_L/2+55]) 
 			rotate([0,90,0]) color("Yellow") Rocket98Fin();
 	/**/
 } // ShowRocket98
@@ -226,7 +218,7 @@ module ShowRocket98(){
 
 // L3 test bay: 2x Altimeter Door, 2x Alt Battery, 2x Rocket Servo Battery Door
 
-module R98_Electronics_Bay3(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, 
+module R98_Electronics_Bay3(Tube_OD=Body_OD, Tube_ID=Body_ID, 
 					Fairing_ID=Fairing_ID, InnerTube_OD=BT38Body_OD){
 					
 	// *** 2 Altimeters, 2 Battery Doors w/ Switches, Centering Rings Top and Bottom ***
@@ -318,10 +310,10 @@ module TubeHold(){
 		} // difference
 	} // TubeHold
 	
-//rotate([0,0,45]) translate([0,-R98_Body_OD/2+16,165-6]) TubeHold();
+//rotate([0,0,45]) translate([0,-Body_OD/2+16,165-6]) TubeHold();
 
 			
-module R98_Electronics_Bay4(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, 
+module R98_Electronics_Bay4(Tube_OD=Body_OD, Tube_ID=Body_ID, 
 					Fairing_ID=Fairing_ID, InnerTube_OD=BT38Body_OD){
 					
 	// Make Rainbow One dual deploy
@@ -403,11 +395,11 @@ module R98_Electronics_Bay4(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID,
 } // R98_Electronics_Bay4
 
 // R98_Electronics_Bay4();
-// translate([0,0,81]) rotate([0,0,180]) CP_Door(Tube_OD=R98_Body_OD, BoltBossInset=3, HasArmingSlot=true);
-// translate([0,0,74]) rotate([0,0,90]) Batt_Door(Tube_OD=R98_Body_OD, InnerTube_OD=0, HasSwitch=true);
-// FairingBaseLockRing(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, Fairing_ID=Fairing_ID, Interface=-IDXtra, BlendToTube=false);
+// translate([0,0,81]) rotate([0,0,180]) CP_Door(Tube_OD=Body_OD, BoltBossInset=3, HasArmingSlot=true);
+// translate([0,0,74]) rotate([0,0,90]) Batt_Door(Tube_OD=Body_OD, InnerTube_OD=0, HasSwitch=true);
+// FairingBaseLockRing(Tube_OD=Body_OD, Tube_ID=Body_ID, Fairing_ID=Fairing_ID, Interface=-IDXtra, BlendToTube=false);
 
-module R98_Electronics_Bay2(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, 
+module R98_Electronics_Bay2(Tube_OD=Body_OD, Tube_ID=Body_ID, 
 					Fairing_ID=Fairing_ID, InnerTube_OD=BT38Body_OD){
 					
 	// *** Altimeter, Cable Puller, 2 Battery Doors 1 w/ Switch, Centering Rings Top and Bottom ***
@@ -470,7 +462,7 @@ module R98_Electronics_Bay2(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID,
 //translate([0,0,162]) R98_Electronics_Bay2();
 
 
-module R98_Electronics_Bay5(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, 
+module R98_Electronics_Bay5(Tube_OD=Body_OD, Tube_ID=Body_ID, 
 					Fairing_ID=Fairing_ID, InnerTube_OD=BT38Body_OD){
 					
 	// *** Altimeter, Battery Door w/o Switch, 2 Battery Doors w/ Switches, Centering Rings Top and Bottom ***
@@ -550,7 +542,7 @@ module R98_BallRetainerBottom(){
 	nLockBalls=6;
 	
 	difference(){
-		STB_BallRetainerBottom(BallPerimeter_d=R98_Body_OD, Body_OD=R98_Body_ID,
+		STB_BallRetainerBottom(BallPerimeter_d=Body_OD, Body_OD=Body_ID,
 					nLockBalls=nLockBalls, HasSpringGroove=false);
 		
 		rotate([0,0,5]) 
@@ -564,7 +556,7 @@ module UpperFinCan(){
 	// Upper Half of Fin Can
 	
 	rotate([180,0,0]) 
-		FinCan(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, MtrTube_OD=R98_MtrTube_OD+IDXtra*2, nFins=nFins,
+		FinCan(Tube_OD=Body_OD, Tube_ID=Body_ID, MtrTube_OD=R98_MtrTube_OD+IDXtra*2, nFins=nFins,
 			Post_h=R98_Fin_Post_h, Root_L=R98_Fin_Root_L, Root_W=R98_Fin_Root_W, 
 			Chamfer_L=R98_Fin_Chamfer_L, HasTailCone=false); 
 
@@ -575,7 +567,7 @@ module UpperFinCan(){
 module LowerFinCan(){
 	
 	difference(){
-		FinCan(Tube_OD=R98_Body_OD, Tube_ID=R98_Body_ID, MtrTube_OD=R98_MtrTube_OD+IDXtra*2, nFins=nFins, 
+		FinCan(Tube_OD=Body_OD, Tube_ID=Body_ID, MtrTube_OD=R98_MtrTube_OD+IDXtra*2, nFins=nFins, 
 			Post_h=R98_Fin_Post_h, Root_L=R98_Fin_Root_L, Root_W=R98_Fin_Root_W, 
 			Chamfer_L=R98_Fin_Chamfer_L, 
 			HasTailCone=true,
@@ -584,15 +576,15 @@ module LowerFinCan(){
 					MtrRetainer_Inset=7); // Lower Half of Fin Can
 		
 		translate([0,0,80]) rotate([0,0,-90-180/nFins]) 
-			translate([0,R98_Body_OD/2+2,0]) RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
+			translate([0,Body_OD/2+2,0]) RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
 	} // difference
 		
 
 
 	difference(){
 		translate([0,0,80]) rotate([0,0,-90-180/nFins]) 
-			RailGuidePost(OD=R98_Body_OD, MtrTube_OD=R98_MtrTube_OD+IDXtra*2, H=R98_Body_OD/2+2, TubeLen=70, Length = 40, BoltSpace=12.7);
-		translate([0,0,50]) TrapFin2Slots(Tube_OD=R98_Body_OD, nFins=nFins, 	
+			RailGuidePost(OD=Body_OD, MtrTube_OD=R98_MtrTube_OD+IDXtra*2, H=Body_OD/2+2, TubeLen=70, Length = 40, BoltSpace=12.7);
+		translate([0,0,50]) TrapFin2Slots(Tube_OD=Body_OD, nFins=nFins, 	
 			Post_h=R98_Fin_Post_h, Root_L=R98_Fin_Root_L, Root_W=R98_Fin_Root_W, Chamfer_L=R98_Fin_Chamfer_L);
 	} // difference
 

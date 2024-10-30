@@ -47,17 +47,22 @@ echo(CableReleaseBBRev());
 // CRBB_ExtensionRod(Len=10);
 // CRBB_LockingPin(LockPin_Len=LockPin_Len, GuidePoint=false);
 // rotate([180,0,0]) CRBB_LockRing(GuidePoint=false);
-// rotate([180,0,0]) CRBB_TopRetainer(CRBB_TopRetainer(LockRing_d=CRBB_LockRingDiameter(), OD=0, HasMountingBolts=true, GuidePoint=false);
+// rotate([180,0,0]) CRBB_TopRetainer(LockRing_d=CRBB_LockRingDiameter(), OD=0, HasMountingBolts=true, GuidePoint=false);
 // CRBB_OuterBearingRetainer();
 // rotate([180,0,0]) CRBB_InnerBearingRetainer(HasServo=true);
 // rotate([180,0,0]) CRBB_MagnetBracket();
 // rotate([180,0,0]) CRBB_TriggerPost();
 //
+// CRBB_CenteringRingMount(Tube_ID=BT54Body_ID, Thickness=5, Skirt_Len=12.5, nBolts=5, HasShockcodeAnchor=true, LockRing_d=CRBB_LockRingDiameter());
+//
 /*
- CRBB_TopRetainerEBayEnd(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_OD=BT98Coupler_OD, 
-			HasSpring=true, CT_Len=30, StopRing_Len=5, nBolts=3);
+rotate([180,0,0]) CRBB_TopRetainerEBayEnd(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_OD=BT98Coupler_OD, 
+			CT_Len=15, StopRing_Len=5, nBolts=4, nServos=2);
 /**/
-// CRBB_LockingPin(LockPin_Len=40);
+//
+// CRBB_EBayEndCover();
+// rotate([180,0,0]) CRBB_SpringEnd(Coupler_OD=BT98Coupler_OD);
+// CRBB_LockingPin(LockPin_Len=40, GuidePoint=true);
 //
 // ***********************************
 //  ***** Routines *****
@@ -511,9 +516,16 @@ module CRBB_CenteringRingMount(Tube_ID=BT54Body_ID, Thickness=5, Skirt_Len=0, nB
 
 //CRBB_CenteringRingMount(Tube_ID=BT54Body_ID, Thickness=5, Skirt_Len=12.5, nBolts=5, HasShockcodeAnchor=true, LockRing_d=CRBB_LockRingDiameter());
 
+module CRBB_EBayEndCover(){
+	Cover_OD=LockRing_d+14;
+	
+	Tube(OD=Cover_OD, ID=LockRing_d+10+IDXtra*2, Len=5, myfn=$preview? 90:360);
+	cylinder(d=Cover_OD-1, h=1.2);
+} // CRBB_EBayEndCover
 
+// CRBB_EBayEndCover();
 
-module CRBB_TopRetainerEBayEnd(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_OD=BT98Coupler_OD, HasSpring=true, CT_Len=30, StopRing_Len=5, nBolts=3, nServos=0){
+module CRBB_TopRetainerEBayEnd(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_OD=BT98Coupler_OD, CT_Len=30, StopRing_Len=5, nBolts=3, nServos=0){
 	
 	ET_Len=15;
 	OAL=ET_Len+StopRing_Len+CT_Len;
@@ -523,17 +535,38 @@ module CRBB_TopRetainerEBayEnd(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler
 	
 	nRopes=6;
 	Rope_d=4;	
+	Rope_Inset=(Coupler_OD>70)? 3:1.5;
+	
+	
+	Servo1Angle=24;
+	Servo2Angle=Servo1Angle+360/nLockRingBolts*2;
+	Servo_Z=CT_Len-11;
+	SevoBase_X=12;
+	SevrvoBase_Y=35;
+	ServoBase_Z=Servo_Z+23;
+	
+	SpringPlate_a=Servo1Angle-4;
 
+	module ServoWirePath(){
+		translate([0,24,13]){
+		
+			hull(){
+				translate([0,0,-2.5]) rotate([90,0,0]) cylinder(d=6, h=10);
+				translate([0,0,2.5]) rotate([90,0,0]) cylinder(d=6, h=10);
+			} // hull
+			
+			hull(){
+				translate([1.8,-7.7,0]) rotate([180,0,0]) cylinder(d=2.4, h=15);
+				translate([-1.8,-7.7,0]) rotate([180,0,0]) cylinder(d=2.4, h=15);
+			} // hull
+		}
+	} // ServoWirePath
 	
 	difference(){
 		union(){
 			// Body
-			if (HasSpring){
-				Tube(OD=BT98Body_ID-IDXtra, ID=Body_ID-IDXtra-4.4, Len=OAL, myfn=$preview? 90:360);
-			}else{
-				Tube(OD=BT98Body_ID-IDXtra, ID=Body_ID-IDXtra-4.4, Len=ET_Len+Overlap, myfn=$preview? 90:360);
-				translate([0,0,ET_Len]) Tube(OD=Coupler_OD, ID=Body_ID-4.4, Len=OAL-ET_Len, myfn=$preview? 90:360);
-			}
+			Tube(OD=BT98Body_ID-IDXtra, ID=Body_ID-IDXtra-4.4, Len=ET_Len+Overlap, myfn=$preview? 90:360);
+			translate([0,0,ET_Len]) Tube(OD=Coupler_OD, ID=Body_ID-4.4, Len=OAL-ET_Len, myfn=$preview? 90:360);
 			
 			// Stop ring
 			translate([0,0,ET_Len]) 
@@ -543,81 +576,106 @@ module CRBB_TopRetainerEBayEnd(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler
 			translate([0,0,OAL-Shield_Len]) Tube(OD=LockRing_d+10, ID=LockRing_d+5, Len=Shield_Len, myfn=$preview? 90:360);
 			
 			if (nServos>0)
-			translate([28+6,1,CT_Len-23+19]) cube([12,35,38],center=true);
+				rotate([0,0,Servo1Angle]) translate([34-SevoBase_X/2,1-SevrvoBase_Y/2,Servo_Z]) 
+					cube([SevoBase_X,SevrvoBase_Y,ServoBase_Z]);
 			if (nServos>1)
-			rotate([0,0,180]) translate([28+6,1,CT_Len-23+19]) cube([12,35,38],center=true);
+				rotate([0,0,Servo2Angle]) translate([34-SevoBase_X/2,1-SevrvoBase_Y/2,Servo_Z]) 
+					cube([SevoBase_X,SevrvoBase_Y,ServoBase_Z]);
 			
 		} // union
 		
-		// Bolt holes
+		// Cleanup inside
+		translate([0,0,OAL-Shield_Len]) cylinder(d=LockRing_d+5, h=Shield_Len, $fn=$preview? 90:360);
+		
+		// Bolt holes (E_Bay)
 		if (nBolts>0) for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j])
-			translate([0,Body_OD/2,ET_Len/2]) rotate([-90,0,0]) Bolt4Hole();
+			translate([0,Body_OD/2,ET_Len-7.5]) rotate([-90,0,0]) Bolt4Hole();
 			
 		if (nServos>0)
-			translate([34,-4,CT_Len-23]) {
-				translate([0,24,13])
-				hull(){
-					translate([0,0,-2.5]) rotate([90,0,0]) cylinder(d=4, h=10);
-					translate([0,0,2.5]) rotate([90,0,0]) cylinder(d=4, h=10);
-				}
+			rotate([0,0,Servo1Angle]) translate([34,-4,Servo_Z]) {
+				ServoWirePath();
+				
+				rotate([0,0,90]) 
+					rotate([180,0,0]) ServoSG90(TopMount=false, HasGear=false);
+					
+				translate([0,5,-Overlap]) cube([17,23.2,38],center=true);
+				
+				translate([-SevoBase_X/2-1,4-SevrvoBase_Y/2,-Servo_Z-16-Overlap]) 
+					cube([SevoBase_X+2,SevrvoBase_Y+2,20]);
+			}
+		
+		if (nServos>1)
+			rotate([0,0,Servo2Angle]) translate([34,-4,Servo_Z]) {
+				ServoWirePath();
 				
 			rotate([0,0,90]) 
 				rotate([180,0,0]) ServoSG90(TopMount=false, HasGear=false);
-				}
-		
-		if (nServos>1)
-			rotate([0,0,180]) translate([34,-4,CT_Len-23]) {
-				translate([0,24,13])
-				hull(){
-					translate([0,0,-2.5]) rotate([90,0,0]) cylinder(d=4, h=10);
-					translate([0,0,2.5]) rotate([90,0,0]) cylinder(d=4, h=10);
-				}
 				
-			rotate([0,0,90]) 
-				rotate([180,0,0]) ServoSG90(TopMount=false, HasGear=false);
-				}
+			translate([0,5,-Overlap]) cube([17,23.2,38],center=true);
 			
-		
-		if (nServos>0)
-			translate([28+6,1,CT_Len-23]) cube([17,23,38],center=true);
-			
-		if (nServos>1)
-			rotate([0,0,180]) translate([28+6,1,CT_Len-23]) cube([17,23,38],center=true);
-			
-		if ($preview) rotate([0,0,-90]) translate([0,0,-10]) cube([100,100,OAL+20]);
-	} // difference
-	
-	
-	translate([0,0,OAL-Plate_t])
-	difference(){
-		if (HasSpring){
-			translate([0,0,Plate_t+10]) rotate([180,0,0])
-				SE_SpringEndTypeA(Coupler_OD=Body_ID-1, Coupler_ID=Body_ID-4, nRopes=6);
-		}else{
-			difference(){
-				cylinder(d=Coupler_OD-1, h=Plate_t);
-				translate([0,0,-Overlap]) cylinder(d=36, h=Plate_t+Overlap*2);
-			} // difference
+			translate([-SevoBase_X/2-1,4-SevrvoBase_Y/2,-Servo_Z-16-Overlap]) 
+					cube([SevoBase_X+2,SevrvoBase_Y+2,20]);
 		}
 		
-		translate([0,0,Plate_t-1.4]) CRBB_MountingBoltPattern() Bolt4ButtonHeadHole();
+			
+		//if ($preview) rotate([0,0,-90]) translate([0,0,-30]) cube([100,100,OAL+50]);
+	} // difference
+	
+	//*
+	translate([0,0,OAL-Plate_t]) rotate([0,0,SpringPlate_a])
+	difference(){
+		
+		difference(){
+			cylinder(d=Coupler_OD-1, h=Plate_t);
+			translate([0,0,-Overlap]) cylinder(d=36, h=Plate_t+Overlap*2);
+				
+			
+			// Retention cord
+			for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) 
+				translate([Coupler_OD/2-Rope_d/2-Rope_Inset,0,-Overlap]) cylinder(d=Rope_d, h=10);
+			// Bolt holes for CRBB_SpringEnd
+			for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j+10]) 
+				translate([Coupler_OD/2-Rope_d/2-Rope_Inset,0,Plate_t]) Bolt4Hole();
+			
+		} // difference
+		
+		translate([0,0,Plate_t]) CRBB_MountingBoltPattern() Bolt4ButtonHeadHole();
 		
 		// shock cord path
 		translate([0,-Body_ID/2+6,-5]) hull(){
-			translate([6,0,0]) cylinder(d=4, h=Plate_t*2+1);
-			translate([-6,0,0]) cylinder(d=4, h=Plate_t*2+1);
+			translate([6,0,0]) cylinder(d=4, h=Plate_t*2+3);
+			translate([-6,0,0]) cylinder(d=4, h=Plate_t*2+3);
 		}
 		
-		if ($preview) rotate([0,0,-90]) translate([0,0,-10]) cube([100,100,100]);
+		//if ($preview) rotate([0,0,-90]) translate([0,0,-10]) cube([100,100,100]);
 	} // difference
-	
+	/**/
 } // CRBB_TopRetainerEBayEnd
 
 //translate([0,0,-20]) CRBB_TopRetainerEBayEnd(HasSpring=false, CT_Len=20);
 //CRBB_TopRetainer(LockRing_d=LockRing_d, HasMountingBolts=true, GuidePoint=true);
-/*
+
 //translate([0,0,-20]) 
-CRBB_TopRetainerEBayEnd(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_OD=BT98Coupler_OD, HasSpring=true, CT_Len=15, StopRing_Len=5, nBolts=3, nServos=2);
+//rotate([180,0,0]) CRBB_TopRetainerEBayEnd(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_OD=BT98Coupler_OD, CT_Len=15, StopRing_Len=5, nBolts=4, nServos=2);
+
+module CRBB_SpringEnd(Coupler_OD=BT98Coupler_OD){
+	nRopes=6;
+	Rope_d=4;	
+	Rope_Inset=(Coupler_OD>70)? 3:1.5;
+	
+	OAH=13;
+
+	difference(){
+		SE_SpringEndTypeA(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_OD, nRopes=6);
+		
+		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j-10]) 
+					translate([Coupler_OD/2-Rope_d/2-Rope_Inset,0,10]) rotate([180,0,0]) Bolt4ClearHole();
+					
+		translate([0,0,OAH]) cylinder(d=Coupler_OD+1, h=10);
+	} // difference
+} // CRBB_SpringEnd
+
+//translate([0,0,48.2]) rotate([180,0,0]) CRBB_SpringEnd();
 
 //translate([0,0,-27]) CRBB_OuterBearingRetainer();
 //translate([0,0,-27]) CRBB_InnerBearingRetainer(HasServo=false);

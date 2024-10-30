@@ -252,7 +252,7 @@ module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 	Base_d=MotorTube_OD+4.4+Extra_OD;
 	NomonalThread_d=MotorTube_OD+NominalThreadWall_t*2;
 	MotorTubeHole_d=MotorTube_OD+MotorTubeHoleIDXtra;
-	HollowWall_t=3;
+	HollowWall_t=2.4;
 	Wall_t=1.2;
 	FinBox_W=Fin_Root_W+Wall_t*2;
 	MotorRetainer_Len=33;

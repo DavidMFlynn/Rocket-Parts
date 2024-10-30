@@ -3,7 +3,7 @@
 // Filename: Rocket75D.scad
 // by David M. Flynn
 // Created: 8/6/2023 
-// Revision: 1.3.5  10/8/2024 
+// Revision: 1.3.6  10/29/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -52,6 +52,7 @@
 //
 //  ***** History *****
 //
+// 1.3.6  10/29/2024 Added Vinyl_d to OD of printed parts. New fin shape. Fixed ShowRocket()
 // 1.3.5  10/8/2024  Longer tail cone for 38mm motor.
 // 1.3.4  10/4/2024  Worked on ULine 38mm motor version.
 // 1.3.3  7/26/2024  Updated hardware list. Sorted params, added 3 fin fin data
@@ -72,29 +73,28 @@
 //
 // *** Nosecode ***
 //
-// BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD, L=NC_Len, Base_L=NC_Base_L, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
+// BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD+Vinyl_d, L=NC_Len, Base_L=NC_Base_L, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
 //
-// NC_ShockcordRing75(Body_OD=Body_OD, Body_ID=Body_ID, NC_Base_L=NC_Base_L);
+// NC_ShockcordRing75(Body_OD=Body_OD+Vinyl_d, Body_ID=Body_ID, NC_Base_L=NC_Base_L);
 //
 // *** Single/Dual Deploy Electronics Bay ***
 //
-// rotate([180,0,0]) ElectronicsBay(IsDualDeploy=false, ShowDoors=false, TopOnly=true, BottomOnly=false);
-// ElectronicsBay(IsDualDeploy=false, ShowDoors=false, TopOnly=false, BottomOnly=true);
+DualDeploy=true;
+// rotate([180,0,0]) ElectronicsBay(IsDualDeploy=DualDeploy, ShowDoors=false, TopOnly=true, BottomOnly=false);
+// ElectronicsBay(IsDualDeploy=DualDeploy, ShowDoors=false, TopOnly=false, BottomOnly=true);
 // 
-EBayWall_t=3.5; // *** experimental ***
-//EB_Electronics_Bay3(Tube_OD=Body_OD, Tube_ID=Body_OD-EBayWall_t*2, Len=EBay_Len, nBolts=3, BoltInset=NC_Base_L/2, DualDeploy=true, ShowDoors=false);
 // *** Doors ***
 //
-// rotate([-90,0,0]) EB_AltDoor(Tube_OD=Body_OD);
-// rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD, HasSwitch=true, DoubleBatt=false);
-// rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD, HasSwitch=false, DoubleBatt=false);
+// rotate([-90,0,0]) EB_AltDoor(Tube_OD=Body_OD+Vinyl_d);
+// rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD+Vinyl_d, HasSwitch=true, DoubleBatt=false);
+// rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD+Vinyl_d, HasSwitch=false, DoubleBatt=false);
 //
 // *** Ball Lock ***
 //
 // STB_LockDisk(Body_ID=Body_ID, nLockBalls=nLockBalls); // Print 2
-// rotate([180,0,0]) R75_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID); // Print 2
-// R75_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false); // Forward
-// R75_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=true); // Aft
+// rotate([180,0,0]) R75_BallRetainerTop(Body_OD=Body_OD+Vinyl_d, Body_ID=Body_ID); // Print 2
+// R75_BallRetainerBottom(Body_ID=Body_ID, HasPD_Ring=false); // Forward
+// R75_BallRetainerBottom(Body_ID=Body_ID, HasPD_Ring=true); // Aft
 // rotate([180,0,0]) STB_TubeEnd2(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD, Engagement_Len=20); // Print 2
 //
 // *** petal deployer ***
@@ -119,13 +119,8 @@ EBayWall_t=3.5; // *** experimental ***
 //
 // *** Fin Can ***
 //
-// rotate([180,0,0]) 
-Rocket75D_Fincan(LowerHalfOnly=false, UpperHalfOnly=false);
-//*
-  FC2_MotorRetainer(Body_OD=Body_OD,
-						MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID,
-						HasWrenchCuts=false, Cone_Len=TailCone_Len, ExtraLen=0, Extra_OD=TailConeExtra_OD);
-/**/
+// rotate([180,0,0]) Rocket75D_Fincan(LowerHalfOnly=false, UpperHalfOnly=false);
+// Rocket75D_MotorRetainer();
 //
 // RocketFin();
 //
@@ -139,8 +134,8 @@ Rocket75D_Fincan(LowerHalfOnly=false, UpperHalfOnly=false);
 // ***********************************
 //  ***** for Viewing *****
 //
-// ShowRocket(ShowInternals=false, ShowDoors=true);
-// translate([300,0,0]) ShowRocket(ShowInternals=true, ShowDoors=false);
+// ShowRocket(IsDualDeploy=DualDeploy, ShowInternals=false, ShowDoors=true);
+// translate([300,0,0]) ShowRocket(IsDualDeploy=DualDeploy, ShowInternals=true, ShowDoors=false);
 //
 // ***********************************
 include<TubesLib.scad>
@@ -149,11 +144,8 @@ use<Fins.scad>
 use<NoseCone.scad>
 use<ElectronicsBayLib.scad>
 use<FinCan2Lib.scad>
-use<AltBay.scad>
-use<BatteryHolderLib.scad>
 use<SpringThingBooster.scad>
 use<PetalDeploymentLib.scad>
-use<ThreadLib.scad>
 use<SpringEndsLib.scad>
 use<R75Lib.scad>
 
@@ -167,7 +159,7 @@ Bolt4Inset=4;
 
 // Nosecone param's
 NC_Len=212;
-NC_Tip_r=6;
+NC_Tip_r=4; // was 6
 NC_Wall_t=1.8;
 NC_Base_L=15;
 
@@ -180,9 +172,23 @@ RailGuideLen=35;
 ForwardPetal_Len=200; // Main 'chute and lots of shock cord
 AftPetal_Len=150; // Drogue
 
-
+Vinyl_d=0.5; // added to fin can OD
 
 //*
+// smaller for dual deploy
+nFins=5;
+Fin_Post_h=10;
+Fin_Root_L=190;
+Fin_Root_W=8;
+Fin_Tip_W=3.0;
+Fin_Tip_L=70;
+Fin_Span=70;
+Fin_TipOffset=30;
+Fin_Chamfer_L=22;
+FinInset_Len=5;
+/**/
+
+/*
 // 5 smaller fins
 nFins=5;
 Fin_Post_h=10;
@@ -239,8 +245,6 @@ TailCone_Len=50;
 TailConeExtra_OD=0;
 /**/
 
-
-
 MotorTubeHole_d=MotorTube_OD+IDXtra*3;
 
 RailGuide_h=Body_OD/2+2;
@@ -248,7 +252,11 @@ RailGuide_h=Body_OD/2+2;
 // For display only, not used by parts
 MainBay_Len=12*25.4;
 BodyTubeLen=16*25.4; //18.11*25.4; // 19.25*25.4;
-MotorTubeLen=317; //16.5*25.4; //18*25.4;
+MotorTubeLen=(BodyTubeLen-1.7*25.4);// 317; //16.5*25.4; //18*25.4;
+
+echo(MainBay_Len=MainBay_Len);
+echo(BodyTubeLen=BodyTubeLen);
+echo(MotorTubeLen=MotorTubeLen);
 
 module ShowRocket(IsDualDeploy=true, ShowInternals=false, ShowDoors=false){
 	FinCan_Z=35;
@@ -256,8 +264,10 @@ module ShowRocket(IsDualDeploy=true, ShowInternals=false, ShowDoors=false){
 	MotorTube_Z=FinCan_Z-23;
 	BodyTube_Z=FinCan_Z+Can_Len+Overlap*2;
 	EBay_Z=BodyTube_Z+BodyTubeLen+33.5;
-	UpperBallLock_Z=EBay_Z+EBay_Len+18.5;
-	NoseCone_Z=IsDualDeploy? MainBay_Len+29+EBay_Z+EBay_Len+2+Overlap*2:EBay_Z+EBay_Len+3;
+	UpperBallLock_Z=EBay_Z+EBay_Len+26.5;
+	NoseCone_Z=IsDualDeploy? UpperBallLock_Z+MainBay_Len+12+Overlap*2:EBay_Z+EBay_Len+3;
+	
+	echo(str("Overall Length = ",(NoseCone_Z+NC_Len)/25.4));
 
 	translate([0,0,NoseCone_Z]){
 		rotate([0,0,90]) BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=NC_Len, Base_L=13, 
@@ -282,27 +292,27 @@ module ShowRocket(IsDualDeploy=true, ShowInternals=false, ShowDoors=false){
 			PD_Petals(OD=Coupler_OD, Len=ForwardPetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
 	
 		translate([0,0,UpperBallLock_Z]) rotate([180,0,0]) 
-			R75_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false);
+			R75_BallRetainerBottom(Body_ID=Body_ID, HasPD_Ring=false);
 	} // if (ShowInternals)
 	
+	//*
 	if (!ShowInternals && IsDualDeploy)
 		translate([0,0,UpperBallLock_Z]) rotate([180,0,0])
-			STB_TubeEnd2(BallPerimeter_d=Body_OD, nLockBalls=nLockBalls, Body_OD=Body_OD, 
-								Body_ID=Body_ID, Engagement_Len=20);
-	
+			STB_TubeEnd2(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD, Engagement_Len=20);
+	/**/
 	if (IsDualDeploy)
-		translate([0,0,UpperBallLock_Z]) rotate([180,0,0]) color("Tan") R75_BallRetainerTop();
+		translate([0,0,UpperBallLock_Z]) rotate([180,0,0]) color("Tan") R75_BallRetainerTop(Body_OD=Body_OD+Vinyl_d, Body_ID=Body_ID);
 	
 	translate([0,0,EBay_Z]) 
 			ElectronicsBay(IsDualDeploy=IsDualDeploy, ShowDoors=ShowDoors, TopOnly=false, BottomOnly=false);
 	
 	translate([0,0,BodyTube_Z+BodyTubeLen+15+Overlap*2])
-		color("Tan") R75_BallRetainerTop();
+		color("Tan") R75_BallRetainerTop(Body_OD=Body_OD+Vinyl_d, Body_ID=Body_ID);
 	
 	// Drogue compartment parts
 	if (ShowInternals){
 		translate([0,0,BodyTube_Z+BodyTubeLen+15+Overlap*2-0.2]) 
-			R75_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=true);
+			R75_BallRetainerBottom(Body_ID=Body_ID, HasPD_Ring=true);
 			
 		translate([0,0,BodyTube_Z+BodyTubeLen+15+Overlap*2-19.5]) rotate([0,0,200]) rotate([180,0,0]) 
 			R75_PetalHub(Body_OD=Body_OD, Body_ID=Body_ID);
@@ -321,7 +331,7 @@ module ShowRocket(IsDualDeploy=true, ShowInternals=false, ShowDoors=false){
 	
 	if (ShowInternals==false)
 	translate([0,0,BodyTube_Z+BodyTubeLen+15])
-		STB_TubeEnd2(BallPerimeter_d=Body_OD, nLockBalls=nLockBalls, Body_OD=Body_OD, Body_ID=Body_ID, Engagement_Len=20);
+		STB_TubeEnd2(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD, Engagement_Len=20);
 	
 	if (ShowInternals==false)
 	translate([0,0,BodyTube_Z]) color("LightBlue") 
@@ -337,18 +347,17 @@ module ShowRocket(IsDualDeploy=true, ShowInternals=false, ShowDoors=false){
 		translate([0, Body_OD/2-Fin_Post_h, Fin_Z]) 
 			rotate([-90,0,0]) color("Yellow") RocketFin();
 	
-	translate([0,0,FinCan_Z-0.2]) FC2_MotorRetainer(Body_OD=Body_OD,
-						MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID,
-						HasWrenchCuts=false, Cone_Len=TailCone_Len, ExtraLen=0, Extra_OD=TailConeExtra_OD);
+	translate([0,0,FinCan_Z-0.2]) Rocket75D_MotorRetainer();
 } // ShowRocket
 
 // ShowRocket(IsDualDeploy=false, ShowDoors=true);
+// ShowRocket(IsDualDeploy=true, ShowDoors=true);
 // ShowRocket(IsDualDeploy=false, ShowInternals=true);
 			
 module ElectronicsBay(IsDualDeploy=true, ShowDoors=false, TopOnly=false, BottomOnly=false){
 	DoorAngles=IsDualDeploy? [[0],[],[120,240]]:[[0],[120],[240]];
 	
-	EB_Electronics_BayUniversal(Tube_OD=Body_OD, Tube_ID=Body_ID, DoorAngles=DoorAngles, Len=170, 
+	EB_Electronics_BayUniversal(Tube_OD=Body_OD+Vinyl_d, Tube_ID=Body_ID, DoorAngles=DoorAngles, Len=170, 
 									nBolts=3, BoltInset=7.5, ShowDoors=ShowDoors,
 									HasFwdIntegratedCoupler=false, HasFwdShockMount=false,
 									HasAftIntegratedCoupler=false, HasAftShockMount=false,
@@ -357,14 +366,25 @@ module ElectronicsBay(IsDualDeploy=true, ShowDoors=false, TopOnly=false, BottomO
 									Bolted=true, ExtraBolts=[], TopOnly=TopOnly, BottomOnly=BottomOnly); 
 } // ElectronicsBay
 
+// ElectronicsBay(IsDualDeploy=true, ShowDoors=false, TopOnly=false, BottomOnly=false);
+
 module Rocket75D_Fincan(LowerHalfOnly=false, UpperHalfOnly=false){
-	FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=Can_Len,
+	FC2_FinCan(Body_OD=Body_OD+Vinyl_d, Body_ID=Body_ID, Can_Len=Can_Len,
 				MotorTube_OD=MotorTube_OD, RailGuide_h=RailGuide_h, RailGuideLen=RailGuideLen,
 				nFins=nFins, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 				Fin_Root_W=Fin_Root_W, Fin_Root_L=Fin_Root_L, Fin_Post_h=Fin_Post_h, Fin_Chamfer_L=Fin_Chamfer_L,
 				Cone_Len=TailCone_Len, ThreadedTC=true, Extra_OD=TailConeExtra_OD,
-				LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly, HasWireHoles=false);
+				LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly, HasWireHoles=false, HollowTailcone=true, 
+				HollowFinRoots=false, Wall_t=1.2);
 } // Rocket75D_Fincan
+
+// Rocket75D_Fincan(LowerHalfOnly=false, UpperHalfOnly=false);
+
+module Rocket75D_MotorRetainer(){
+  FC2_MotorRetainer(Body_OD=Body_OD,
+						MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID,
+						HasWrenchCuts=false, Cone_Len=TailCone_Len, ExtraLen=0, Extra_OD=TailConeExtra_OD);
+} // Rocket75D_MotorRetainer
 	
 module RocketFin(){
 	
