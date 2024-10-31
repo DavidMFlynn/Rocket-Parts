@@ -100,7 +100,9 @@
 // rotate([180,0,0]) Sustainer_Cup();
 // rotate([-90,0,0]) Stager_LockRod(Adj=0.5); // Looser
 // rotate([-90,0,0]) Stager_LockRod(Adj=0.0); // too loose
-// rotate([-90,0,0]) Stager_LockRod(Adj=-0.75);
+// rotate([-90,0,0]) Stager_LockRod(Adj=-0.75); // OK
+// rotate([-90,0,0]) Stager_LockRod(Adj=-1.25);
+// rotate([-90,0,0]) Stager_LockRod(Adj=-1.50);
 //
 // Stager_Saucer(Tube_OD=Body_OD, nLocks=nLocks);
 //

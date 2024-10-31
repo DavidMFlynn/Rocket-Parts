@@ -166,7 +166,7 @@ ServoMG90S_ID=0; // 11 gram micro servo
 ServoMS75_ID=1;  // 21 gram mini servo
 ServoMZ996_ID=2; // 55 gram standard servo
 
-//*
+/*
 // constants for 98mm stager
 Default_nLocks=3;
 DefaultBody_OD=BT98Body_OD;
@@ -178,13 +178,13 @@ MainBearing_ID=Bearing6809_ID;
 MainBearing_T=Bearing6809_T;
 /**/
 
-/*
+//*
 // constants for 75mm stager
 Default_nLocks=3;
 DefaultBody_OD=BT75Body_OD;
 DefaultBody_ID=BT75Body_ID;
 DefaultMotorTube_OD=BT54Body_OD;
-DefaultServo=ServoMS75_ID;
+DefaultServo=ServoMG90S_ID; //ServoMS75_ID;
 MainBearing_OD=Bearing6807_OD;
 MainBearing_ID=Bearing6807_ID;
 MainBearing_T=Bearing6807_T;
@@ -278,15 +278,14 @@ module ShowStagerAssy(Tube_OD=DefaultBody_OD, Tube_ID=DefaultBody_ID, nLocks=Def
 	//*
 	
 	
-	// 
-	translate([0,0,Bearing_Z-16.0-ServoPlate_T]) Stager_ServoPlate(Tube_OD=Tube_OD, Skirt_ID=Tube_ID);
+	// translate([0,0,Bearing_Z-16.0-ServoPlate_T]) Stager_ServoPlate(Tube_OD=Tube_OD, Skirt_ID=Tube_ID);
 
 	rotate([0,0,Lock_a]){
 		
 		//translate([0,0,InnerRace_Z]) color("LightBlue") 
 		   //Stager_InnerRace(Tube_OD=Tube_OD);
 		  
-		translate([0,0,Bearing_Z]) color("LightBlue")  
+		translate([0,0,Bearing_Z]) //color("LightBlue")  
 			Stager_Indexer();
 
 		//Stop_Z= 10+Overlap;
@@ -409,7 +408,7 @@ module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks
 	ServoWheel_r=[4,4.5,6];
 	Servo_a=-90+180/nLocks*3-Calc_a(ServoWheel_r[Servo_ID]+3,-Servo_X[Servo_ID]);
 						
-	UnLock_a=	Calc_a(11,BC_r);
+	UnLock_a=Calc_a(11,BC_r);
 	
 	OverCenter_a=-Calc_a(Dist=OverCenter,R=BC_r-1);
 	
@@ -487,6 +486,8 @@ module Stager_LockRing(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks){
 	LockHead_H=LockBall_d+3;
 	Ball_Z=LockHead_H/2;
 	
+	CenterHole_Z=(MainBearing_ID<Large_ID-2)? 2:-2;
+	
 	module LanyardAttachmentPoint(){
 		Ly_OD=Large_ID+1;
 		Ly_t=3.6;
@@ -506,7 +507,7 @@ module Stager_LockRing(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks){
 		} // difference
 	} // LanyardAttachmentPoint
 	
-	translate([0,0,0.5]) LanyardAttachmentPoint();
+	translate([0,0,-3.2+CenterHole_Z]) LanyardAttachmentPoint();
 	
 	module Bearing(){
 		translate([0,Locked_Ball_Y-LockBall_d/2-MR84_Bearing_OD/2,0]){
@@ -525,7 +526,6 @@ module Stager_LockRing(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks){
 	FullD_Z=5;
 	Bearing_Z=-MainBearing_T-2;
 	
-	
 	difference(){
 		union(){
 			translate([0,0,0.5]) cylinder(d=OD, h=LockHead_H, $fn=$preview? 90:360);
@@ -542,15 +542,15 @@ module Stager_LockRing(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks){
 			
 		// center hole
 		translate([0,0,0.5]){
-		translate([0,0,LockHead_H-1]) cylinder(d1=Large_ID, d2=Large_ID+1, h=1+Overlap, $fn=$preview? 90:360); // chamfer
-		translate([0,0,3.6]) cylinder(d=Large_ID, h=LockHead_H-3.6, $fn=$preview? 90:360); // top
+			translate([0,0,LockHead_H-2]) cylinder(d1=Large_ID, d2=Large_ID+2, h=2+Overlap, $fn=$preview? 90:360); // chamfer
+			translate([0,0,CenterHole_Z]) cylinder(d=Large_ID, h=LockHead_H+2, $fn=$preview? 90:360); // top
 		}
 		
 		// Bolts
 		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) 
-			translate([MainBearing_ID/2-Bolt4Inset,0,-MainBearing_T]) rotate([180,0,0]) Bolt4Hole();
+			translate([MainBearing_ID/2-Bolt4Inset,0,-MainBearing_T]) rotate([180,0,0]) Bolt4Hole(depth=9+CenterHole_Z);
 		
-		//cube([100,100,100]);
+		translate([0,0,-20]) cube([100,100,100]);
 	} // difference
 	
 	if ($preview) color("Red") for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j])
@@ -804,7 +804,15 @@ module Stager_Saucer(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks){
 
 // Stager_Saucer();
 
-module Stager_Indexer(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks){
+module Stager_Indexer(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, Servo_ID=DefaultServo){
+	
+	
+	BC_r=BoltCircle_d(Tube_OD=Tube_OD)/2;
+	UnLock_a=Calc_a(11,BC_r);
+	Servo_X=[-BC_r+3,-BC_r+4.5,-Tube_OD/2+27];
+	ServoWheel_r=[4,4.5,6];
+	Servo_a=-90+180/nLocks*3-Calc_a(ServoWheel_r[Servo_ID]+3,-Servo_X[Servo_ID]);
+
 	
 	Thickess=4;
 	Bearing_Z=7; // Bottom of index plate to bottom of bearing
@@ -842,6 +850,10 @@ module Stager_Indexer(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks){
 			// Servo/manual activation
 			rotate([0,0,360/nLocks]) ActivationBlock();
 		} // union
+		
+		// Servo wheel clearance
+		rotate([0,0,Servo_a]) translate([Servo_X[Servo_ID],0,-12]) cylinder(r=ServoWheel_r[Servo_ID], h=10);
+		rotate([0,0,Servo_a-UnLock_a]) translate([Servo_X[Servo_ID],0,-12]) cylinder(r=ServoWheel_r[Servo_ID], h=10);
 		
 		MagnetHole();
 		
