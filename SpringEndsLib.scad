@@ -3,15 +3,16 @@
 // Filename: SpringEndsLib.scad
 // by David M. Flynn
 // Created: 11/24/2023 
-// Revision: 1.0.14  9/18/2024
+// Revision: 1.0.15  11/1/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 // This is a collection of spring ends used for non-pyro deployment.
 //
 //  ***** History *****
-function SpringEndsLibRev()="SpringEndsLib Rev. 1.0.14";
+function SpringEndsLibRev()="SpringEndsLib Rev. 1.0.15";
 echo(SpringEndsLibRev());
+// 1.0.15  11/1/2024  Added SE_SpringEndTypeA2()
 // 1.0.14  9/18/2024  Refinement of SE_SpringEndTypeA() for 65mm rockets
 // 1.0.13  9/9/2024   Changed SE_SpringEndTop() to work with 65mm tube
 // 1.0.12  8/31/2024  Added SE_SpringEndTypeC()
@@ -43,6 +44,10 @@ echo(SpringEndsLibRev());
 //		An end for Spring_CS4323.
 // 		Requires a short piece of coupler tube.
 //
+// SE_SpringEndTypeA2(Coupler_OD=BT75Coupler_OD, Coupler_ID=BT75Coupler_ID, nRopes=6, Spring_OD=SE_Spring_CS11890_OD());
+//      Ropes are inside spring
+//		Requires a short piece of coupler tube.
+//
 // SE_SpringEndTypeB(Coupler_OD=BT75Coupler_OD, MotorCoupler_OD=BT54Coupler_OD, nRopes=3, UseSmallSpring=true);
 // SE_SpringEndTypeC(Coupler_OD=BT137Coupler_OD, Coupler_ID=BT137Coupler_ID, nRopes=5, UseSmallSpring=false);
 //
@@ -56,6 +61,9 @@ echo(SpringEndsLibRev());
 // SE_SpringEndTop(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, nRopeHoles=3, CutOutCenter=false);
 // SE_SpringEndBottom(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, Len=30, nRopeHoles=5, CutOutCenter=false);
 // SE_SpringEndBottom(OD=BT75Coupler_OD, Tube_ID=BT75Coupler_OD-2.4, Len=30, nRopeHoles=5, CutOutCenter=true);
+//
+// CR + Spring holder
+// SE_MtrTubeSpringEnd(Body_ID=ULine75Body_ID, MtrTubeOD=ULine38Body_OD, Spring_OD=SE_Spring_CS11890_OD());
 //
 // ***********************************
 //  ***** Routines *****
@@ -74,7 +82,9 @@ function SE_Spring_CS11890_CL()=Spring_CS11890_CL;
 //
 // ***********************************
 include<TubesLib.scad>
-include<CommonStuffSAEmm.scad>
+
+// Also included
+//include<CommonStuffSAEmm.scad>
 
 Overlap=0.05;
 IDXtra=0.2;
@@ -114,6 +124,47 @@ module SE_SpringSeat(Body_OD=BT54Coupler_ID, Base_H=14){
 } // SE_SpringSeat
 
 //SE_SpringSeat();
+
+module SE_MtrTubeSpringEnd(Body_ID=ULine75Body_ID, MtrTubeOD=ULine38Body_OD, Spring_OD=SE_Spring_CS11890_OD()){
+	Depth=20;
+	CR_t=5;
+	
+	nRopes=6;
+	Rope_d=4;
+	
+	MtrTubeHole_d=MtrTubeOD+IDXtra*2;
+	
+	difference(){
+		union(){
+			// Motor tube sleeve
+			translate([0,0,-Depth+2]) Tube(OD=MtrTubeHole_d+2.4, ID=MtrTubeHole_d, Len=Depth, myfn=$preview? 90:360);
+		
+			CenteringRing(OD=Body_ID, ID=MtrTubeHole_d, Thickness=CR_t, nHoles=0, Offset=0, myfn=$preview? 90:360);
+			
+			// Spring well
+			translate([0,0,-Depth+2]) 
+				CenteringRing(OD=Body_ID-IDXtra, ID=Spring_OD-14, Thickness=Depth-2+Overlap, nHoles=0, Offset=0, myfn=$preview? 90:360);
+		} // union
+		
+		difference(){
+			union(){
+				translate([0,0,-Depth+CR_t]) cylinder(d=Spring_OD, h=5, $fn=$preview? 90:360);
+				translate([0,0,-Depth+CR_t+5-Overlap]) cylinder(d1=Spring_OD, d2=Spring_OD+2, h=Depth, $fn=$preview? 90:360);
+				
+			} // union
+			
+			translate([0,0,-Depth+CR_t-Overlap]) cylinder(d=Spring_OD-10, h=Depth+Overlap*2, $fn=$preview? 90:360);
+			
+		} // difference
+	
+		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) translate([0,MtrTubeOD/2+Rope_d/2+2,-Overlap])
+			cylinder(d=Rope_d, h=CR_t+Overlap*2);
+			
+		if ($preview) translate([0,0,-50]) cube([100,100,100]);
+	} // difference
+} // SE_MtrTubeSpringEnd
+
+//SE_MtrTubeSpringEnd(Body_ID=ULine75Body_ID, MtrTubeOD=ULine38Body_OD, Spring_OD=SE_Spring_CS11890_OD());
 
 module SE_SpringEnd(OD=BT75Coupler_OD, CouplerTube_ID=BT75Coupler_ID, SleeveLen=0, 
 		nSprings=1, nRopeHoles=6, CenterHole_d=SE_Spring_CS4323_ID()){
@@ -313,6 +364,7 @@ module SE_EBaySpringStop(OD=BT54Body_ID, Al_Tube_Z=20){
 module SE_SpringEndTypeA(Coupler_OD=BT75Coupler_OD, Coupler_ID=BT75Coupler_ID, nRopes=3, Spring_OD=Spring_CS4323_OD){
 // Glues to a short section of coupler tube
 // Requires a short piece of coupler tube
+
 	Rope_Inset=(Coupler_ID>70)? 3:1.5;
 	Rope_d=4;
 	
@@ -337,7 +389,38 @@ module SE_SpringEndTypeA(Coupler_OD=BT75Coupler_OD, Coupler_ID=BT75Coupler_ID, n
 
 //rotate([180,0,0]) SE_SpringEndTypeA();
 
+ 
 //SE_SpringEndTypeA(Coupler_OD=BT65Coupler_OD, Coupler_ID=BT65Coupler_ID, nRopes=3, Spring_OD=SE_Spring_CS4323_OD());
+
+module SE_SpringEndTypeA2(Coupler_OD=BT75Coupler_OD, Coupler_ID=BT75Coupler_ID, nRopes=3, Spring_OD=SE_Spring_CS11890_OD()){
+// Glues to a short section of coupler tube
+// Requires a short piece of coupler tube
+
+	Inner_ID=38;
+	SpringEnd_d=min(Spring_OD+8,Coupler_OD);
+	Rope_Inset=3;
+	Rope_d=4;
+	
+	difference(){
+		union(){
+			cylinder(d=SpringEnd_d, h=10+Overlap, $fn=$preview? 90:360);
+			
+			translate([0,0,10]) cylinder(d=Coupler_OD, h=2+Overlap, $fn=$preview? 90:360);
+			translate([0,0,10]) cylinder(d=Coupler_ID, h=7+Overlap, $fn=$preview? 90:360);
+		} // union
+		
+		translate([0,0,-Overlap]) cylinder(d1= Spring_OD+4, d2=Spring_OD, h=10);
+		cylinder(d= Spring_OD, h=13);
+		cylinder(d= Inner_ID, h=20);
+		
+		// Retention cord
+		if (nRopes>0) 
+			for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) 
+				translate([Inner_ID/2+Rope_d/2+Rope_Inset,0,-Overlap]) cylinder(d=Rope_d, h=30);
+	} // difference
+} // SE_SpringEndTypeA2
+
+// SE_SpringEndTypeA2(Coupler_OD=BT75Coupler_OD, Coupler_ID=BT75Coupler_ID, nRopes=6, Spring_OD=SE_Spring_CS11890_OD());
 
 module SE_SpringEndTypeB(Coupler_OD=BT75Coupler_OD, MotorCoupler_OD=BT54Coupler_OD,
 				nRopes=3, UseSmallSpring=true){

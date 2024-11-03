@@ -199,7 +199,7 @@ module CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0, Of
 	difference(){
 		cylinder(d=OD, h=Thickness, $fn=myfn);
 		
-		translate([0,Offset,-Overlap]) cylinder(d=ID, h=Thickness+Overlap*2);
+		translate([0,Offset,-Overlap]) cylinder(d=ID, h=Thickness+Overlap*2, $fn=myfn);
 		if (nHoles>0) for (j=[0:nHoles-1]) rotate([0,0,360/nHoles*j])
 			translate([0,ID/2+(OD/2-ID/2)/2,-Overlap]) cylinder(d=(OD/2-ID/2)/2, h=Thickness+Overlap*2);
 	} // difference

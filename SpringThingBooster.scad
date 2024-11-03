@@ -210,8 +210,9 @@ function STB_SCord_T(p=BT54Body_ID)=lookup(p,[
 
 module STB_LockedStopPosition(Body_ID=BT75Body_ID){
 	BallPerimeter_d=STB_BallPerimeter_d(Body_ID);
+	OverCenterValue=0.2;
 	
-	translate([BearingMR84_OD/2+Dowel_d/2+IDXtra, BallPerimeter_d/2-STB_LockBall_d(Body_ID)-BearingMR84_OD/2,0])
+	translate([BearingMR84_OD/2+Dowel_d/2+OverCenterValue, BallPerimeter_d/2-STB_LockBall_d(Body_ID)-BearingMR84_OD/2,0])
 		children();
 } // STB_LockedStopPosition
 	

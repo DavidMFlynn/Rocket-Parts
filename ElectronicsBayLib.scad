@@ -405,8 +405,8 @@ module EB_Electronics_BayUniversal(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, D
 		if (HasRailGuide) rotate([0,0,RailGuide_a]) 
 			translate([0,Tube_OD/2+2,RailGuide_Z]) RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
 	
-		if (TopOnly) translate([0,0,-Overlap]) cylinder(d=Tube_OD+10, h=Len/2+Overlap);
-		if (BottomOnly) translate([0,0,Len/2]) cylinder(d=Tube_OD+10, h=Len/2+Overlap);
+		if (TopOnly) translate([0,0,-10]) cylinder(d=Tube_OD+10, h=Len/2+10);
+		if (BottomOnly) translate([0,0,Len/2]) cylinder(d=Tube_OD+10, h=Len/2+10);
 
 	} // difference
 	
@@ -428,8 +428,8 @@ module EB_Electronics_BayUniversal(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, D
 				Batt_BayDoorFrame(Tube_OD=Tube_OD, Door_X=EB_BattDoor_X(Tube_OD=Tube_OD), HasSwitch=true, ShowDoor=ShowDoors);
 		} // union
 		
-		if (TopOnly) translate([0,0,-Overlap]) cylinder(d=Tube_OD+10, h=Len/2+Overlap);
-		if (BottomOnly) translate([0,0,Len/2]) cylinder(d=Tube_OD+10, h=Len/2+Overlap);
+		if (TopOnly) translate([0,0,-10]) cylinder(d=Tube_OD+10, h=Len/2+10);
+		if (BottomOnly) translate([0,0,Len/2]) cylinder(d=Tube_OD+10, h=Len/2+10);
 	} // difference
 		
 } // EB_Electronics_BayUniversal

@@ -3,7 +3,7 @@
 // Filename: CableReleaseBB.scad
 // by David M. Flynn
 // Created: 8/27/2022 
-// Revision: 1.1.2  5/2/2024
+// Revision: 1.1.3  11/2/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -30,8 +30,9 @@
 //
 //  ***** History *****
 //
-function CableReleaseBBRev()="CableReleaseBB Rev. 1.1.2";
+function CableReleaseBBRev()="CableReleaseBB Rev. 1.1.3";
 echo(CableReleaseBBRev());
+// 1.1.3  11/2/2024   Added HasOuterPost option to CRBB_TriggerPost()
 // 1.1.2  5/2/2024    Worked on CRBB_TopRetainerEBayEnd
 // 1.1.1  12/29/2023  Fixed dowel holes. Code cleanup. Added CRBB_ prefix
 // 1.1.0  12/28/2023  Added optional GuidePoint for easier assemble.
@@ -52,6 +53,7 @@ echo(CableReleaseBBRev());
 // rotate([180,0,0]) CRBB_InnerBearingRetainer(HasServo=true);
 // rotate([180,0,0]) CRBB_MagnetBracket();
 // rotate([180,0,0]) CRBB_TriggerPost();
+// rotate([180,0,0]) CRBB_TriggerPost(HasOuterPost=true);
 //
 // CRBB_CenteringRingMount(Tube_ID=BT54Body_ID, Thickness=5, Skirt_Len=12.5, nBolts=5, HasShockcodeAnchor=true, LockRing_d=CRBB_LockRingDiameter());
 //
@@ -345,7 +347,7 @@ module CRBB_MagnetBracket(){
 //translate([0,0,-19.5]) CRBB_OuterBearingRetainer();
 //translate([0,0,-19.5]) CRBB_InnerBearingRetainer();
 
-module CRBB_TriggerPost(){
+module CRBB_TriggerPost(HasOuterPost=false){
 	H=5.1;
 	MountingHole=2;
 	Post_H=8;
@@ -364,6 +366,9 @@ module CRBB_TriggerPost(){
 			rotate([0,0,Magnet_a+90]) translate([1, LockRingBoltCircle_d/2-1, -Post_H/2]) hull(){
 				translate([0,-3,0]) cylinder(d=3, h=Post_H, center=true);
 				translate([0,3,0]) cylinder(d=3, h=Post_H, center=true);
+				
+				if (HasOuterPost) translate([0,5,0]) cylinder(d=4, h=Post_H, center=true);
+					
 			}
 		} // union
 		
@@ -376,7 +381,7 @@ module CRBB_TriggerPost(){
 	} // difference
 } // CRBB_TriggerPost
 
-//translate([0,0,-19.5]) CRBB_TriggerPost();
+//translate([0,0,-19.5]) CRBB_TriggerPost(HasOuterPost=true);
 
 
 module CRBB_MountingBoltPattern(nTopBolts=nBalls, LockRing_d=CRBB_LockRingDiameter()){
