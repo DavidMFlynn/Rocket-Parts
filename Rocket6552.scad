@@ -523,7 +523,7 @@ module LowerEBay(ShowDoors=false, TopOnly=false, BottomOnly=false){
 module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 	
 	TailPlate_t=7;
-	WireTube_d=5/16*25.4;
+	WireTube_d=5/16*25.4+IDXtra*2;
 	
 	difference(){
 		union(){

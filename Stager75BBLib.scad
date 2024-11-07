@@ -550,7 +550,7 @@ module Stager_LockRing(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks){
 		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) 
 			translate([MainBearing_ID/2-Bolt4Inset,0,-MainBearing_T]) rotate([180,0,0]) Bolt4Hole(depth=9+CenterHole_Z);
 		
-		translate([0,0,-20]) cube([100,100,100]);
+		if ($preview) translate([0,0,-20]) cube([100,100,100]);
 	} // difference
 	
 	if ($preview) color("Red") for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j])
