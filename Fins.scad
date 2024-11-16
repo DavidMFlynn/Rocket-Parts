@@ -141,7 +141,7 @@ module TrapFin2Shape(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span
 	} // hull
 	
 	// Tip Post, embeds into pod fin can
-	if (HasBluntTip && TipPost_h>0) translate([TipOffset,0,Post_h+Span-Overlap])
+	if (HasBluntTip && TipPost_h>0) translate([0,TipOffset,Post_h+Span-Overlap])
 	hull(){
 		translate([0,-Tip_L/2+Edge_r,0]) cylinder(r=Edge_r, h=TipPost_h);
 		translate([0,-Tip_L/2+Tip_Chamfer,0]) cylinder(d=Tip_W, h=TipPost_h);

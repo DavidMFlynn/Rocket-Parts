@@ -623,6 +623,7 @@ PD_PetalHub(OD=BT137Coupler_OD, Body_OD=BT137Body_OD,
 
 module PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, nRopes=3, ShockCord_a=-1, HasThreadedCore=false,
 				ST_DSpring_ID=SE_Spring_CS4323_ID(), ST_DSpring_OD=SE_Spring_CS4323_OD(), CouplerTube_ID=0){
+				
 	BodyTube_L=(CouplerTube_ID>0)? 10:20;
 	SpringHole_ID=ST_DSpring_ID-IDXtra*2-4.4;
 	CenterHole_d=OD>80? SpringHole_ID : 21;

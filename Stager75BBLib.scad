@@ -472,10 +472,10 @@ module Stager_LockRing(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks){
 	BC_r=Race_BC_d()/2;
 	nBolts=nInnerRaceBolts;
 	OD=Tube_OD-StagerLockInset_Y(Tube_OD=Tube_OD)*2-Stager_LockRod_Y-LockBall_d*2+4;
-	Depth=3;
+	Depth=3.5;
 	Inset=0.0;
 	nSteps=15;
-	Arc_a=Calc_a(9,(OD/2-Inset));
+	Arc_a=Calc_a(LockBall_d,(OD/2-Inset));
 	//echo(Arc_a=Arc_a);
 	Large_ID=OD-16; // center hole ID
 	Small_ID=Race_BC_d()-Bolt4Inset*2;
@@ -510,7 +510,7 @@ module Stager_LockRing(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks){
 	translate([0,0,-3.2+CenterHole_Z]) LanyardAttachmentPoint();
 	
 	module Bearing(){
-		translate([0,Locked_Ball_Y-LockBall_d/2-MR84_Bearing_OD/2,0]){
+		translate([0,Locked_Ball_Y-LockBall_d/2-MR84_Bearing_OD/2+IDXtra,0]){
 			cylinder(d=MR84_Bearing_OD+2, h=MR84_Bearing_T+1, center=true);
 			translate([0,0,-11]) cylinder(d=MR84_Bearing_ID, h=20);}
 		
@@ -554,7 +554,7 @@ module Stager_LockRing(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks){
 	} // difference
 	
 	if ($preview) color("Red") for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j])
-			translate([0, Locked_Ball_Y-LockBall_d/2-MR84_Bearing_OD/2, Ball_Z]) 
+			translate([0, Locked_Ball_Y-LockBall_d/2-MR84_Bearing_OD/2+IDXtra, Ball_Z]) 
 				cylinder(d=MR84_Bearing_OD, h=MR84_Bearing_T, center=true);
 } // Stager_LockRing
 
