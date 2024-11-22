@@ -3,7 +3,7 @@
 // Filename: Rocket75D.scad
 // by David M. Flynn
 // Created: 8/6/2023 
-// Revision: 1.3.6  10/29/2024 
+// Revision: 1.3.7  11/17/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -52,6 +52,7 @@
 //
 //  ***** History *****
 //
+// 1.3.7  11/17/2024 Added R75_UpperRailGuideMount for sustainer.
 // 1.3.6  10/29/2024 Added Vinyl_d to OD of printed parts. New fin shape. Fixed ShowRocket()
 // 1.3.5  10/8/2024  Longer tail cone for 38mm motor.
 // 1.3.4  10/4/2024  Worked on ULine 38mm motor version.
@@ -104,6 +105,7 @@ DualDeploy=true;
 // rotate([-90,0,0]) PD_PetalSpringHolder();  // Print 6
 // rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=ForwardPetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
 // rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=AftPetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
+// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=75, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=0, HasLocks=false);
 //
 // SE_SpringEndTop(OD=Coupler_OD, Tube_ID=Coupler_OD-4.4, nRopeHoles=3, CutOutCenter=true);
 // SE_SlidingSpringMiddle(OD=Coupler_OD, nRopes=3);
@@ -113,9 +115,11 @@ DualDeploy=true;
 //  *** Alt part, scock cord will attach to top of motor, threaded forward closure is required ***
 // rotate([180,0,0]) R75_UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, HasSpokes=true, Extended=20);
 //
-// SE_SpringEndBottom(OD=Coupler_OD, Tube_ID=Coupler_OD-3.6, Len=20, nRopeHoles=3, CutOutCenter=true);
+// SE_SpringEndBottom(OD=Coupler_OD, Tube_ID=Coupler_OD-3.6, Len=15, nRopeHoles=3, CutOutCenter=true);
 // SE_SpringSpacer(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, Len=85); // only needed if body tube is longer than minimum, can also use coupler tube
 // 
+// rotate([180,0,0]) R75_UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, HasSpokes=true, Extended=15);
+//
 // rotate([180,0,0]) S_LowerElectronicsBay(IsDualDeploy=false, ShowDoors=false, TopOnly=true, BottomOnly=false);
 // S_LowerElectronicsBay(IsDualDeploy=false, ShowDoors=false, TopOnly=false, BottomOnly=true);
 //
@@ -127,6 +131,7 @@ DualDeploy=true;
 // Rocket75D_SFincan(LowerHalfOnly=false, UpperHalfOnly=false); // alt. Sustainer version for 2 stage
 //
 // RocketFin();
+// RocketFin(HasSpiralVaseRibs=false); // PETG-CF test fin
 //
 // rotate([90,0,0]) BoltOnRailGuide(Length = RailGuideLen, BoltSpace=12.7, RoundEnds=true, ExtraBack=0);
 // rotate([-90,0,0]) RailGuideSpacer(OD=Body_OD, H=RailGuide_h, Length = RailGuideLen, BoltSpace=12.7);
@@ -224,6 +229,20 @@ MainBearing_T=Bearing6807_T;
 Stager_SkirtLen=46;
 
 //*
+// Max The Red Fins
+nFins=5;
+Fin_Post_h=14;
+Fin_Root_L=180;
+Fin_Root_W=10;
+Fin_Tip_W=3.0;
+Fin_Tip_L=90;
+Fin_Span=120;
+Fin_TipOffset=110;
+Fin_Chamfer_L=32;
+FinInset_Len=5;
+/**/
+
+/*
 // smaller for dual deploy
 nFins=5;
 Fin_Post_h=14;
@@ -575,13 +594,13 @@ module Rocket75D_MotorRetainer(){
 						HasWrenchCuts=false, Cone_Len=TailCone_Len, ExtraLen=0, Extra_OD=TailConeExtra_OD);
 } // Rocket75D_MotorRetainer
 	
-module RocketFin(){
+module RocketFin(HasSpiralVaseRibs=true){
 	
 	TrapFin2(Post_h=Fin_Post_h, Root_L=Fin_Root_L, Tip_L=Fin_Tip_L, Root_W=Fin_Root_W,
 				Tip_W=Fin_Tip_W, Span=Fin_Span, Chamfer_L=Fin_Chamfer_L,
 				TipOffset=Fin_TipOffset,
 				Bisect=false, Bisect_X=0,
-				HasSpar=false, Spar_d=8, Spar_L=100);
+				HasSpar=false, Spar_d=8, Spar_L=100, HasSpiralVaseRibs=HasSpiralVaseRibs);
 				
 	
 } // RocketFin

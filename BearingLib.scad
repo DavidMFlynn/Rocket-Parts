@@ -135,7 +135,7 @@ module OnePieceInnerRace(BallCircle_d=100,
 		cylinder(d=BallCircle_d-Ball_d*0.7,h=Race_w,$fn=myFn);
 		
 		// center hole
-		translate([0,0,-Overlap]) cylinder(d=Race_ID,h=Race_w+Overlap*2);
+		translate([0,0,-Overlap]) cylinder(d=Race_ID,h=Race_w+Overlap*2, $fn=myFn);
 		
 		// ball track, add the 4% elongation to the ball circle
 		translate([0,0,Race_w/2+VOffset]) BallTrack(BallCircle_d=BallCircle_d+(kEL-1)*Ball_d+PreLoadAdj, Ball_d=Ball_d, myFn=myFn);

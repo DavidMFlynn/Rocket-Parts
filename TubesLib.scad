@@ -46,6 +46,8 @@ echo(TubesLib_Rev());
 //
 // BT_RivetFixture(BT_Dia=PML98Body_OD, nRivets=3, Dia=5/32*25.4, Offset=25);
 //
+// CenteringRing(OD=BT54Coupler_OD, ID=ULine38Body_OD, Thickness=5, nHoles=5, Offset=0, myfn=$preview? 90:360); // motor adaptor
+//
 // ***********************************
 //  ***** Routines *****
 //

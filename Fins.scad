@@ -211,7 +211,7 @@ module BisectFin(X_Offset=0, X1=100, Y=10, Z=100, KeepNegXHalf=false){
 module TrapFin2(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100, Chamfer_L=18,
 				TipOffset=0, TipInset=0, HasBluntTip=false, TipPost_h=0,
 				Bisect=false, Bisect_X=0,
-				HasSpar=false, Spar_d=8, Spar_L=100, PrinterBrim_H=0.9){
+				HasSpar=false, Spar_d=8, Spar_L=100, PrinterBrim_H=0.9, HasSpiralVaseRibs=true){
 					
 	Rib_Spacing=20;
 	Perimeter=0.8;
@@ -247,6 +247,7 @@ module TrapFin2(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100,
 		}
 		
 		// make webs with 0.1mm cuts
+		if (HasSpiralVaseRibs)
 		difference(){
 			union(){
 				for (j=[0:nCuts])
