@@ -3,7 +3,7 @@
 // Filename: AltBay.scad
 // by David M. Flynn
 // Created: 6/23/2022 
-// Revision: 0.9.18  9/16/2023
+// Revision: 0.9.19  10/29/2023
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -11,6 +11,7 @@
 // Altimeter Bay for my MissionControl V3
 //
 //  ***** History *****
+// 0.9.19  10/29/2023 Extended bolt boss to edge of frame.
 // 0.9.18  9/16/2023  Added DeepHole_t to Alt_BayFrameHole
 // 0.9.17  5/21/2023  Fixed frame ridge error.
 // 0.9.16  4/29/2023  Now using DoorLib.scad
@@ -195,8 +196,8 @@ module Alt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=BT98Body_ID, DoorXtra_X=0,
 	BoltBossInset=10.5+2;
 	AltOffset_Y=7;
 	
-	echo(Door_X=Door_X);
-	echo(Door_Y=Door_Y);
+	//echo(Door_X=Door_X);
+	//echo(Door_Y=Door_Y);
 	
 	difference(){
 		DoorFrame(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t, 
@@ -216,14 +217,17 @@ module Alt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=BT98Body_ID, DoorXtra_X=0,
 	// Door Bolts
 	difference(){
 		// Bolt bosses
+		Z_Xtra=14;
+		
 		intersection(){
-			translate([0,0,-Door_Y/2-3]) 
-					Tube(OD=Tube_OD-1, ID=Tube_ID-13, Len=Door_Y+6, myfn=$preview? 36:360);
+			
+			translate([0,0,-Door_Y/2-Z_Xtra/2]) 
+					Tube(OD=Tube_OD-1, ID=Tube_ID-13, Len=Door_Y+Z_Xtra, myfn=$preview? 36:360);
 			hull(){
 				translate([0,-Tube_ID/2+Door_t+4,0]) rotate([90,0,0]) 
 					RoundRect(X=8, Y=Door_Y+3, Z=6, R=1);
 				translate([0,-Tube_ID/2,0]) rotate([90,0,0]) 
-					RoundRect(X=12, Y=Door_Y+12, Z=1, R=1);
+					RoundRect(X=12, Y=Door_Y+Z_Xtra, Z=1, R=1);
 			} // hull
 		} // intersection
 		

@@ -3,7 +3,7 @@
 // Filename: Rocket75C.scad
 // by David M. Flynn
 // Created: 8/6/2023 
-// Revision: 1.2.3  4/21/2024 
+// Revision: 1.3.0  7/18/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -51,6 +51,7 @@
 //
 //  ***** History *****
 //
+// 1.3.0  7/18/2024  Changed to 5 Lock Balls and Dual Deploy
 // 1.2.3  4/21/2024  Added screw holes to R75_BallRetainerTop()
 // 1.2.2  4/18/2024  Standardized some parts
 // 1.2.1  3/31/2024  Now uses ElectronicsBayLib.scad
@@ -90,10 +91,10 @@
 //
 // *** Ball Lock ***
 //
-// STB_LockDisk(BallPerimeter_d=Body_OD, nLockBalls=3);
+// STB_LockDisk(BallPerimeter_d=Body_OD, nLockBalls=nLockBalls);
 // rotate([180,0,0]) R75_BallRetainerTop();
 // R75_BallRetainerBottom();
-// rotate([180,0,0]) STB_TubeEnd(BallPerimeter_d=Body_OD, nLockBalls=3, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=20);
+// rotate([180,0,0]) STB_TubeEnd(BallPerimeter_d=Body_OD, nLockBalls=nLockBalls, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=20);
 //
 // *** petal deployer ***
 //
@@ -129,7 +130,7 @@
 						MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID,
 						HasWrenchCuts=false, Cone_Len=35, ExtraLen=0);
 /**/
-// RocketFin();
+// RocketFin(HasSpiralVaseRibs=true);
 //
 // RailButton(); // (4 req) print many
 //
@@ -166,6 +167,8 @@ $fn=$preview? 24:90;
 
 Scale=1.1808;
 echo("Scale on Rocket65 = ",Scale);
+
+nLockBalls=5;
 
 nFins=5;
 Fin_Post_h=10;
@@ -233,7 +236,7 @@ module ShowRocket(ShowInternals=false, DualDeploy=false, ShowDoors=false){
 		//*
 		if (ShowInternals==false)
 			translate([0,0,UpperBallLock_Z]) rotate([180,0,0])
-				STB_TubeEnd(BallPerimeter_d=Body_OD, nLockBalls=3, Body_OD=Body_OD, 
+				STB_TubeEnd(BallPerimeter_d=Body_OD, nLockBalls=nLockBalls, Body_OD=Body_OD, 
 								Body_ID=Body_ID, Skirt_Len=20);
 		/**/
 		translate([0,0,UpperBallLock_Z]) rotate([180,0,0]) color("Tan") R75_BallRetainerTop();
@@ -255,7 +258,7 @@ module ShowRocket(ShowInternals=false, DualDeploy=false, ShowDoors=false){
 	
 	if (ShowInternals==false)
 	translate([0,0,BodyTube_Z+BodyTubeLen+15])
-		STB_TubeEnd(BallPerimeter_d=Body_OD, nLockBalls=3, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=20);
+		STB_TubeEnd(BallPerimeter_d=Body_OD, nLockBalls=nLockBalls, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=20);
 	
 	if (ShowInternals==false)
 	translate([0,0,BodyTube_Z]) color("LightBlue") Tube(OD=Body_OD, ID=Body_ID, 
@@ -281,7 +284,7 @@ module ShowRocket(ShowInternals=false, DualDeploy=false, ShowDoors=false){
 
 module R75_BallRetainerBottom(){
 	difference(){
-		STB_BallRetainerBottom(BallPerimeter_d=Body_OD, Body_OD=Body_ID, nLockBalls=3, HasSpringGroove=false);
+		STB_BallRetainerBottom(BallPerimeter_d=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls, HasSpringGroove=false);
 		
 		rotate([0,0,PD_ShockCordAngle()-ShockCord_a]) PD_PetalHubBoltPattern(OD=Coupler_OD, nPetals=3) Bolt4Hole();
 
@@ -307,7 +310,7 @@ module R75_BallRetainerTop(){
 	difference(){
 		union(){
 			STB_BallRetainerTop(BallPerimeter_d=Body_OD, Body_OD=Body_ID, 
-						nLockBalls=3, 
+						nLockBalls=nLockBalls, 
 						HasIntegratedCouplerTube=true, 
 							IntegratedCouplerLenXtra=CouplerLenXtra, 
 							Body_ID=Body_ID-IDXtra, HasSecondServo=false, UsesBigServo=false, Engagement_Len=Engagement_Len);
@@ -407,20 +410,13 @@ module UpperRailBtnMount75(){
 //UpperRailBtnMount75();
 
 				
-module RocketFin(){
+module RocketFin(HasSpiralVaseRibs=true){
 	
 	TrapFin2(Post_h=Fin_Post_h, Root_L=Fin_Root_L, Tip_L=Fin_Tip_L, Root_W=Fin_Root_W,
 				Tip_W=Fin_Tip_W, Span=Fin_Span, Chamfer_L=Fin_Chamfer_L,
 				TipOffset=Fin_TipOffset,
 				Bisect=false, Bisect_X=0,
-				HasSpar=false, Spar_d=8, Spar_L=100);
-				
-	if ($preview==false){
-		translate([-Fin_Root_L/2+4,0,0]) 
-			cylinder(d=12, h=0.9); // Neg
-		translate([Fin_Root_L/2-4,0,0]) 
-			cylinder(d=12, h=0.9); // Pos
-	}
+				HasSpar=false, Spar_d=8, Spar_L=100, HasSpiralVaseRibs=HasSpiralVaseRibs);
 	
 } // RocketFin
 

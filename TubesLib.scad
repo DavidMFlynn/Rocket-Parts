@@ -3,7 +3,7 @@
 // Filename: TubesLib.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.14  4/2/2024
+// Revision: 0.9.17  10/4/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,11 @@
 //
 //  ***** History *****
 //
-function TubesLib_Rev()="TubesLib 0.9.14";
+function TubesLib_Rev()="TubesLib 0.9.17";
 echo(TubesLib_Rev());
+// 0.9.17  10/4/2024  Added ULine38Body
+// 0.9.16  9/3/2024   Added BT65Body and Coupler
+// 0.9.15  8/21/2024  Geometry changed: Centering ring holes now start at +Y.
 // 0.9.14  4/2/2024   Added ULine75Body
 // 0.9.13  11/28/2023 Added BT190...
 // 0.9.12  9/13/2023  Changed BT75Coupler, smaller, to measured values.
@@ -35,13 +38,15 @@ echo(TubesLib_Rev());
 //
 // MotorRetainer(Tube_OD=BT54Mtr_OD, Tube_ID=BT54Mtr_ID, Mtr_OD=54, MtrAC_OD=58);
 // ShockCordMount(OD=PML98Body_ID, ID=BT54Mtr_OD, AnchorRod_OD=12.7);
-// Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=300, myfn=$preview? 36:360);
-// CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0, Offset=0, myfn=$preview? 36:90);
+// Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=300, myfn=$preview? 90:360);
+// CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0, Offset=0, myfn=$preview? 90:360);
 // ClusterRing(OD=BT137Body_ID, Thickness=5, CenterMotor_OD=BT54Body_OD, ClusterMotor_OD=PML38Body_OD, nClusterMotors=3, Gap=7, Cant_a=2, Cant_Z=300);
 //
 // SplitCenteringRing(OD=BT98Coupler_ID, ID=PML54Body_OD+IDXtra*2);
 //
 // BT_RivetFixture(BT_Dia=PML98Body_OD, nRivets=3, Dia=5/32*25.4, Offset=25);
+//
+// CenteringRing(OD=BT54Coupler_OD, ID=ULine38Body_OD, Thickness=5, nHoles=5, Offset=0, myfn=$preview? 90:360); // motor adaptor
 //
 // ***********************************
 //  ***** Routines *****
@@ -82,7 +87,10 @@ echo(PML98Coupler_ID=PML98Coupler_ID);
 /**/
 
 ULine75Body_OD=80.30;
-ULine75Body_ID=76.60;
+ULine75Body_ID=76.60; // Works w/ BT75Coupler_OD
+
+ULine38Body_OD=41.68;
+ULine38Body_ID=38.70; // Works w/ BT38Coupler_OD
 
 PML75Body_OD=79.6; // 8/4/2022 Adjusted +0.2 to match QT better
 PML75Body_ID=3.002*25.4;
@@ -128,6 +136,11 @@ BT75Coupler_ID=BT75Coupler_OD-1.40*2; // Measured wall
 // echo(BT75Body_OD=BT75Body_OD);
 // echo(BT75Coupler_OD=BT75Coupler_OD);
 
+BT65Body_ID=64.8; // measured
+BT65Body_OD=67.5;
+BT65Coupler_ID=61.3;
+BT65Coupler_OD=64.1;
+
 BT54Mtr_OD=57.20;
 BT54Mtr_ID=54.40;
 BT54Body_OD=57.20;
@@ -148,7 +161,7 @@ PML38Coupler_ID=1.40*25.4;
 PML29Body_OD=32.3; // messured old tube
 PML29Body_ID=29.1;
 
-LOC65Body_OD=67.2;
+LOC65Body_OD=67.6;
 LOC65Body_ID=65;
 LOC65Coupler_OD=64.8;
 LOC65Coupler_ID=63.3;
@@ -188,9 +201,9 @@ module CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0, Of
 	difference(){
 		cylinder(d=OD, h=Thickness, $fn=myfn);
 		
-		translate([0,Offset,-Overlap]) cylinder(d=ID, h=Thickness+Overlap*2);
+		translate([0,Offset,-Overlap]) cylinder(d=ID, h=Thickness+Overlap*2, $fn=myfn);
 		if (nHoles>0) for (j=[0:nHoles-1]) rotate([0,0,360/nHoles*j])
-			translate([ID/2+(OD/2-ID/2)/2,0,-Overlap]) cylinder(d=(OD/2-ID/2)/2, h=Thickness+Overlap*2);
+			translate([0,ID/2+(OD/2-ID/2)/2,-Overlap]) cylinder(d=(OD/2-ID/2)/2, h=Thickness+Overlap*2);
 	} // difference
 } // CenteringRing
 
@@ -251,7 +264,7 @@ module SplitCenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=
 	} // difference
 } // SplitCenteringRing
 
-//SplitCenteringRing(OD=BT98Coupler_ID, ID=PML54Body_OD+IDXtra*2);
+//SplitCenteringRing(OD=BT98Coupler_ID, ID=PML54Body_OD+IDXtra*2, nHoles=3);
 
 module ShockCordMount(OD=PML98Body_ID, ID=BT54Mtr_OD, AnchorRod_OD=12.7){
 	H=20;

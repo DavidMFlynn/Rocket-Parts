@@ -3,16 +3,18 @@
 // David M. Flynn
 // Filename: SG90ServoLib.scad
 // Created: 4/28/2018
-// Rev: 1.1.2 4/27/2023
+// Rev: 1.1.3 10/31/2024
 // Units: millimeters
 // **************************************************
 // History:
-	echo("SG90ServoLib 1.1.2");
-// 1.1.2 4/27/2023 Extended Bolt2Hole depth to 16mm
-// 1.1.1 2/27/2023 Added ServoSG90TopBlock()
-// 1.1.0 8/17/2018 Added SG90ServoWheelBoltPattern and TopMount=false
-// 1.0.1 5/1/2018 Adjusted SG90ServoWheel for better fit.
-// 1.0 4/28/2018 Coppied from LightArmJoint 
+	function SG90ServoLibRev()="SG90ServoLib 1.1.3";
+	echo(SG90ServoLibRev());
+// 1.1.3 10/31/2024 Changed kBody_h to 19 from 16 for MG90S
+// 1.1.2 4/27/2023  Extended Bolt2Hole depth to 16mm
+// 1.1.1 2/27/2023  Added ServoSG90TopBlock()
+// 1.1.0 8/17/2018  Added SG90ServoWheelBoltPattern and TopMount=false
+// 1.0.1 5/1/2018   Adjusted SG90ServoWheel for better fit.
+// 1.0 4/28/2018    Coppied from LightArmJoint 
 // **************************************************
 // Notes:
 //  Mounting of R/C micro servo SG90.
@@ -39,7 +41,7 @@ Overlap=0.05;
 	kBoltCl=28.2;
 	kWidth=12.4;
 	
-	kBody_h=16;
+	kBody_h=19; // was 16 changed to 19 for MG90S
 	kBody_l=23;
 	
 	kTopBox_h=4.5;

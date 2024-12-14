@@ -3,7 +3,7 @@
 // Filename: R75StrapOn.scad
 // by David M. Flynn
 // Created: 9/11/2023 
-// Revision: 0.9.6  3/23/2024 
+// Revision: 0.9.7  7/30/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -45,6 +45,7 @@
 //
 //  ***** History *****
 //
+// 0.9.7  7/30/2024  Changed nosecone base and petals. Can now use FW GPS.
 // 0.9.6  3/23/2024  Added petal lock, adjusted height of LockingPin to 44mm
 // 0.9.5  9/25/2023  Fixed shock cord path
 // 0.9.4  9/16/2023  Ready to test print all
@@ -59,18 +60,12 @@
 //
 // BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=NC_Len, Base_L=NC_Base, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
 //
-// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=111, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=3, HasLocks=true);
+// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=121, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=true);
+//
+// R75_NC_Base_PetalHub(Body_OD=Body_OD, Body_ID=Body_ID, Coupler_OD=Coupler_OD);
+// R75_NC_Base(Body_OD=Body_OD, Body_ID=Body_ID, NC_Base_L=NC_Base, Coupler_OD=Coupler_OD);
+//
 // rotate([-90,0,0]) PD_PetalSpringHolder(OD=Coupler_OD);
-/*
-PD_PetalHub(OD=Coupler_OD, 
-					nPetals=nPetals, 
-					ShockCord_a=PD_ShockCordAngle(),
-					HasNCSkirt=true, 
-						Body_OD=Body_OD,
-						Body_ID=Body_ID,
-						NC_Base=NC_Base, 
-						SkirtLen=10);
-/**/
 //
 // SpringEndTop(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=5);
 // rotate([0,90,0]) PD_PetalLockCatch(OD=Coupler_OD, ID=Coupler_ID, Wall_t=1.8, Len=28, LockStop=false);
@@ -121,6 +116,7 @@ use<SpringThingBooster.scad> SpringThingBoosterRev();
 use<CableReleaseBB.scad>
 use<PetalDeploymentLib.scad>
 use<ThreadLib.scad>
+use<R75Lib.scad>
 
 //also included
  //include<CommonStuffSAEmm.scad>

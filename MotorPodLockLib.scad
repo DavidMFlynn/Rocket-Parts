@@ -3,7 +3,7 @@
 // Filename: MotorPodLockLib.scad
 // by David M. Flynn
 // Created: 11/27/2023 
-// Revision: 0.9.2  12/2/2023 
+// Revision: 0.9.4  11/23/2023 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -14,6 +14,11 @@
 //
 //  ***** History *****
 //
+function MotorPodLockLibRev()="MotorPodLockLib Rev. 0.9.3";
+echo(MotorPodLockLibRev());
+//
+// 0.9.4  11/23/2023 Adjustments to MPL_InlineServoRing
+// 0.9.3  11/14/2023 Inline direct servo version.
 // 0.9.2  12/2/2023  Parameters!
 // 0.9.1  11/28/2023 Needs cleanup, but works. Fixed insertion groove angle on inner race.
 // 0.9.0  11/27/2023 Created library, copied from Rocket9Ball.scad
@@ -48,7 +53,13 @@ MPL_InnerRace(ShowLocked=false, Body_ID=MPL_Body_ID,
 					BallCircle_d=MPL_BallCircle_d, Ball_d=MPL_Ball_d, Race_w=MPL_Race_w,
 					Shelf_t=MPL_Shelf_t, Body_ID=MPL_Body_ID, nBalls=MPL_nLockBalls); 	
 /**/
+// 
 // rotate([180,0,0]) MPL_LockRing(OD=MPL_InnerTube_OD, ID=MPL_InnerTube_ID, Ball_d=MPL_LockBall_d, nBalls=MPL_nLockBalls); // held/released by lock balls
+//
+//  *** Inline Version ***
+// MPL_InlineServoRing(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, LockBall_d=MPL_LockBall_d, nBalls=MPL_nLockBalls);
+// MPL_InlineBallRetainer(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, LockBall_d=MPL_LockBall_d, nBalls=MPL_nLockBalls);
+// MPL_InlineLockRing(Tube_ID=BT98Body_ID, LockBall_d=MPL_LockBall_d, nBalls=MPL_nLockBalls);
 //
 // ************************************
 //  ***** for Viewing *****
@@ -61,7 +72,8 @@ MPL_InnerRace(ShowLocked=false, Body_ID=MPL_Body_ID,
 //
 include<TubesLib.scad>
 use<BearingLib.scad>
-use<CommonStuffSAEmm.scad>
+use<SG90ServoLib.scad>
+// Also includes CommonStuffSAEmm.scad
 
 Vinyl_t=0.5;
 FCCoupler_Len=10.6; // Fin can coupler length + 2 layers
@@ -122,8 +134,6 @@ Dowel_L=10;
 BearingMR84_OD=8;
 BearingMR84_ID=4;
 BearingMR84_W=3;
-
-
 
 module ShowMPL(ShowLocked=false){
 
@@ -433,6 +443,7 @@ module MPL_InnerRace(ShowLocked=false, Body_ID=MPL_Body_ID,
 
 //rotate([0,0,3]) MPL_InnerRace(ShowLocked=false);
 
+
 module MPL_LockBallRetainer(FixedTube_OD=MPL_FixedTube_OD, LockBallCircle_d=MPL_LockBallBC_d, LockBall_d=MPL_LockBall_d, LockBall_Z=MPL_LockBall_Z, 
 			BallCircle_d=MPL_BallCircle_d, Ball_d=MPL_Ball_d, Race_w=MPL_Race_w, Shelf_t=MPL_Shelf_t, Body_ID=MPL_Body_ID, nBalls=MPL_nLockBalls){
 			
@@ -472,24 +483,24 @@ module MPL_LockBallRetainer(FixedTube_OD=MPL_FixedTube_OD, LockBallCircle_d=MPL_
 	} // difference
 } // MPL_LockBallRetainer
 
-//MPL_LockBallRetainer();
+// MPL_LockBallRetainer();
+//MPL_LockBallRetainer(FixedTube_OD=MPL_FixedTube_OD, LockBallCircle_d=MPL_LockBallBC_d, LockBall_d=MPL_LockBall_d, LockBall_Z=MPL_LockBall_Z, BallCircle_d=MPL_BallCircle_d, Ball_d=MPL_Ball_d, Race_w=MPL_Race_w, Shelf_t=MPL_Shelf_t, Body_ID=MPL_Body_ID, nBalls=MPL_nLockBalls);
 
 module MPL_LockRing(OD=MPL_InnerTube_OD, ID=MPL_InnerTube_ID, Ball_d=MPL_LockBall_d, nBalls=MPL_nLockBalls){
 
 	OAL=Ball_d*2+15;
-	Wall_t=5;
-	Slot_w=Ball_d-0.5;
+	Wall_t=3.5;
+	
 	
 	module BallPath(){
 		a=14;
 		Slope=1;
 		Depth=3.2;
+		BallCircle_r=OD/2+Ball_d/2-Depth;
 		
 		for (j=[0:a*2]) translate([0,0,-Slope/2+Slope/(a*2)*j]) hull(){
-			rotate([0,0,a/20*j]) translate([0,OD/2+Overlap,0]) 
-				rotate([90,0,0]) cylinder(d=Slot_w, h=Depth);
-			rotate([0,0,a/20*(j+1)]) translate([0,OD/2+Overlap,0])
-				rotate([90,0,0]) cylinder(d=Slot_w, h=Depth);
+			rotate([0,0,a/20*j]) translate([0,BallCircle_r,0]) sphere(d=Ball_d+IDXtra);
+			rotate([0,0,a/20*(j+1)]) translate([0,BallCircle_r,0]) sphere(d=Ball_d+IDXtra);
 		} // hull
 	} // BallPath
 	
@@ -510,7 +521,7 @@ module MPL_LockRing(OD=MPL_InnerTube_OD, ID=MPL_InnerTube_ID, Ball_d=MPL_LockBal
 				cylinder(d=ID, h=15+Overlap*3, $fn=$preview? 90:360);
 		} // difference
 		
-		translate([0,0,-Ball_d-15-Overlap]) cylinder(d1=ID-Wall_t, d2=ID-Wall_t*2-Overlap, h=Wall_t);
+		translate([0,0,-Ball_d-15-Overlap]) cylinder(d1=ID-Wall_t, d2=ID-Wall_t*2-Overlap, h=Wall_t, $fn=$preview? 90:360);
 		
 		if ($preview) rotate([0,0,180]) translate([0,0,-30]) cube([OD/2+5,OD/2+5,100]);
 	} // difference
@@ -518,6 +529,7 @@ module MPL_LockRing(OD=MPL_InnerTube_OD, ID=MPL_InnerTube_ID, Ball_d=MPL_LockBal
 } // MPL_LockRing
 
 // MPL_LockRing();
+// MPL_LockRing(OD=BT75Coupler_OD, ID=BT75Coupler_ID, Ball_d=MPL_LockBall_d, nBalls=MPL_nLockBalls);
 
 /*
 translate([0,0,10]) rotate([0,0,-7]) MPL_LockRing();
@@ -542,8 +554,206 @@ difference(){
 
 // ShowFixedBodyTube();
 
+// *************************************************
+//
+//  ***** Inline Version *****
+//
+// *************************************************
 
+// use MPL_LockRing(OD=MPL_InnerTube_OD, ID=MPL_InnerTube_ID, Ball_d=MPL_LockBall_d, nBalls=MPL_nLockBalls);
+MPLIL_Bolt_a=-8;
 
+module MPL_InlineLockRing(Tube_ID=BT75Body_ID, LockBall_d=MPL_LockBall_d, nBalls=MPL_nLockBalls){
+	// Outer race and lock bearings
+	
+	Ball_d=6; // 5/16*25.4;
+	BallCircle_d=Tube_ID+10+Ball_d;
+	Race_OD=BallCircle_d+Ball_d+BearingMR84_OD;
+	PreLoad=-0.25;
+	Race_W=9; // 11;
+	LockRing_h=14;
+	LockStopOffset=6;
+	
+	module LockBearing(){
+		hull(){
+			cylinder(d=BearingMR84_OD+2, h=BearingMR84_W+1, center=true);
+			translate([0,5,0]) cylinder(d=BearingMR84_OD+6, h=BearingMR84_W+1, center=true);
+		} // hull
+		
+		cylinder(d=BearingMR84_ID, h=LockRing_h+1, center=true);
+		
+		hull(){
+			translate([0,-BearingMR84_OD/2-LockBall_d/2,0]) sphere(d=LockBall_d+1);
+			translate([LockBall_d,-BearingMR84_OD/2-LockBall_d/2+3,0]) sphere(d=LockBall_d+1);
+		}
+	} // LockBearing
+	
+	module LockStop(Stop_h=10){
+		Stop_w=8;
+		Stop_t=4;
+		
+		
+		translate([0,0,-Stop_h])
+		hull(){
+			translate([0,-Stop_w/2,0]) cylinder(d=Stop_t, h=Stop_h+Overlap);
+			translate([0,Stop_w/2,0]) cylinder(d=Stop_t, h=Stop_h+Overlap);
+			translate([0,-1,0]) cylinder(d=Stop_t, h=Stop_h*2);
+		} // hull
+	
+	} // LockStop
+	
+	module MagnetHole(){
+		Magnet_d=3/16*25.4;
+		
+		translate([0,0,-5]) rotate([0,90,0]) cylinder(d=Magnet_d, h=6, center=true);
+	} // MagnetHole
+	
+	OnePieceOuterRace(BallCircle_d=BallCircle_d, Race_OD=Race_OD, 
+									Ball_d=Ball_d, Race_w=Race_W, 
+									PreLoadAdj=PreLoad, VOffset=0, 
+									BI=true, myFn=$preview? 90:360);
+		
+	LockRing_ID=Tube_ID+LockBall_d*2-5;
+	translate([0,0,-LockRing_h])
+	difference(){
+		union(){
+			Tube(OD=Race_OD, ID=LockRing_ID, Len=LockRing_h+Overlap, myfn=$preview? 90:360);
+			
+			for (j=[0:nBalls-1]) rotate([0,0,360/nBalls*(j+0.25)]) translate([0,LockRing_ID/2+LockStopOffset,0]) LockStop();
+			for (j=[0:1]) rotate([0,0,180*(j-0.1)]) translate([0,LockRing_ID/2+LockStopOffset,0]) LockStop(Stop_h=6); // unlock
+		} // union
+		
+		rotate([0,0,360/nBalls*0.25]) translate([0,LockRing_ID/2+LockStopOffset,0]) MagnetHole();
+		 
+		for (j=[0:nBalls-1]) rotate([0,0,360/nBalls*j]) translate([0,Tube_ID/2+LockBall_d+BearingMR84_OD/2-3,LockRing_h/2]) LockBearing();
+		
+		if ($preview) rotate([0,0,180]) translate([0,0,-Overlap]) cube([100,100,100]);
+	} // difference
+} // MPL_InlineLockRing
+
+// MPL_InlineLockRing(Tube_ID=BT98Body_ID, LockBall_d=MPL_LockBall_d, nBalls=MPL_nLockBalls);
+
+module MPL_InlineBallRetainer(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, LockBall_d=MPL_LockBall_d, nBalls=MPL_nLockBalls){
+	// Inner race and ball retainer, goes between 2 pieces of body tube.
+
+	Ball_d=6; // 5/16*25.4;
+	BallCircle_d=Tube_ID+10+Ball_d;
+	PreLoad=-0.25;
+	Race_W=9; //11;
+	LockRing_h=14;
+	Race_ID=Tube_ID+IDXtra*2;
+	
+	OnePieceInnerRace(BallCircle_d=BallCircle_d, 
+					Race_ID=Race_ID, Ball_d=Ball_d,
+						Race_w=Race_W, 
+						PreLoadAdj=PreLoad, 
+						VOffset=0, BI=true, myFn=$preview? 90:360);
+			
+    translate([0,0,-LockRing_h])
+	difference(){
+		Tube(OD=Tube_ID+LockBall_d*2-6, ID=Race_ID, Len=LockRing_h+Overlap, myfn=$preview? 90:360);
+		
+		for (j=[0:nBalls-1]) rotate([0,0,360/nBalls*j]) translate([0,Tube_ID/2+LockBall_d/2-2.7,LockRing_h/2]){
+			rotate([-90,0,0]) cylinder(d=LockBall_d+IDXtra*3, h=20);
+			rotate([-90,0,0]) cylinder(d=LockBall_d-IDXtra*3, h=20, center=true);
+			sphere(d=LockBall_d+IDXtra*3);
+		}
+			
+		if ($preview) rotate([0,0,180]) translate([0,0,-Overlap]) cube([100,100,100]);
+	} // difference
+						
+	translate([0,0,Race_W-Overlap]) Tube(OD=Tube_OD+4.4, ID=Tube_OD, Len=15, myfn=$preview? 90:360);
+	
+	difference(){
+		translate([0,0,-LockRing_h-15]) Tube(OD=Tube_OD+4.4, ID=Tube_OD, Len=15+Overlap, myfn=$preview? 90:360);
+		// Bolts
+		for (j=[0:nBalls-1]) rotate([0,0,360/nBalls*j+MPLIL_Bolt_a]) translate([0, (Tube_OD+IDXtra*2+4.4)/2, -LockRing_h-7.5])
+			rotate([-90,0,0]) Bolt4Hole();
+	} // difference
+	
+	// Key
+	translate([0,(Tube_OD+IDXtra*2+4.4)/2-0.25,-LockRing_h-15]) cylinder(d=3.5, h=15+Overlap);
+	
+	
+	
+	if ($preview) for (j=[0:nBalls-1]) rotate([0,0,360/nBalls*j]) 
+		translate([0, Tube_ID/2+LockBall_d/2, -LockRing_h+LockRing_h/2]) color("Red") sphere(d=LockBall_d);
+	
+} // MPL_InlineBallRetainer
+
+// MPL_InlineBallRetainer(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, LockBall_d=MPL_LockBall_d, nBalls=MPL_nLockBalls);
+
+module MPL_InlineServoRing(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, LockBall_d=MPL_LockBall_d, nBalls=MPL_nLockBalls){
+	Ball_d=6; // 5/16*25.4;
+	BallCircle_d=Tube_ID+10+Ball_d;
+	Race_OD=BallCircle_d+Ball_d+BearingMR84_OD;
+	LockRing_h=14;
+	Servo_Y=11.5;
+	Servo_a=-5; // Rotates servo about its shaft
+	ServoLock_a=-24; // was -21.6
+	Stop_X=4.7; // Stop_t + over center of 0.7mm
+	LockRing_ID=Tube_ID+LockBall_d*2-5;
+	LockStopOffset=6;
+	
+	module LockStop(){
+		Stop_w=8;
+		Stop_t=4;
+		Stop_h=10;
+		
+		translate([0,0,-Stop_h])
+		hull(){
+			translate([0,-Stop_w/2,0]) cylinder(d=Stop_t, h=Stop_h+Overlap);
+			translate([0,Stop_w/2,0]) cylinder(d=Stop_t, h=Stop_h+Overlap);
+			translate([0,0,-4]) cylinder(d=Stop_t, h=Stop_h+4);
+		} // hull
+	
+	} // LockStop
+	
+	module MagnetHole(){
+		Magnet_d=3/16*25.4;
+		
+		translate([0,0,-5]) rotate([0,90,0]) cylinder(d=Magnet_d, h=6, center=true);
+	} // MagnetHole
+	
+	// Inner ring
+	difference(){
+		translate([0,0,-LockRing_h-15]) Tube(OD=Tube_OD+IDXtra*4+8.8, ID=Tube_OD+IDXtra*2+4.4, Len=15, myfn=$preview? 90:360);
+	
+		// Key
+		translate([0,(Tube_OD+IDXtra*2+4.4)/2,-LockRing_h-15-Overlap]) cylinder(d=4, h=15+Overlap*2);
+		
+		// Bolts
+		for (j=[0:nBalls-1]) rotate([0,0,360/nBalls*j+MPLIL_Bolt_a]) translate([0, (Tube_OD+IDXtra*4+8.8)/2+1.5, -LockRing_h-7.5])
+			rotate([-90,0,0]) Bolt4ButtonHeadHole();
+	} // difference
+	
+	translate([0,0,-LockRing_h])
+	difference(){
+		union(){
+			// Plate
+			translate([0,0,-15]) Tube(OD=Race_OD, ID=Tube_OD+9, Len=4, myfn=$preview? 90:360);
+			
+			// Stops
+			for (j=[0:nBalls-1]) rotate([0,0,360/nBalls*(j+0.25)]) translate([Stop_X,LockRing_ID/2+LockStopOffset,-1]) LockStop();
+			
+			// Servo mount
+			for (j=[0:1]) rotate([0,0,180*j+ServoLock_a]) translate([0,Tube_OD/2+Servo_Y,-17.5]) 
+				rotate([0,0,Servo_a]) {
+					ServoSG90TopBlock(Xtra_Len=4, Xtra_Width=4, Xtra_Height=1.5);
+					//translate([-13.25,-15, 2.5]) cube([36.5,8,4]);
+				}
+		} // union
+		
+		rotate([0,0,360/nBalls*0.25+180]) translate([Stop_X,LockRing_ID/2+LockStopOffset,0]) MagnetHole();
+		
+		for (j=[0:1]) rotate([0,0,180*j+ServoLock_a]) translate([0,Tube_OD/2+Servo_Y,-17.6]) 
+			rotate([0,0,Servo_a]) ServoSG90(TopMount=false);
+	} // difference
+	
+	
+} //MPL_InlineServoRing
+
+// MPL_InlineServoRing(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, LockBall_d=MPL_LockBall_d, nBalls=MPL_nLockBalls);
 
 
 

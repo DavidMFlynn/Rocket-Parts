@@ -86,7 +86,24 @@
 // STB_DrillingJig(BT_ID=PML54Body_ID, CT_OD=ROmega_Coupler_OD); 
 //
 // rotate([180,0,0]) BoosterFinCan();
-// RocketOmegaBoosterFin()
+// RocketOmegaBoosterFin();
+
+//  ***** NEW BOOSTER PARTS *****
+//
+// PD_Booster_PetalHub(OD=BT54Coupler_OD, nPetals=2, nRopes=2, ShockCord_a=-1, HasThreadedCore=true, ST_DSpring_ID=SE_Spring_CS4323_ID(), ST_DSpring_OD=SE_Spring_CS4323_OD(), CouplerTube_ID=0);
+// rotate([180,0,0])PD_Petals(OD=BT54Coupler_OD, Len=50, nPetals=2, Wall_t=1.8, AntiClimber_h=0, HasLocks=true, Lock_Span_a=180);
+// rotate([0,90,0]) translate([0,0,2])PD_PetalLockCatch(OD=BT54Coupler_OD, ID=BT54Coupler_ID, Wall_t=1.8, Len=27, LockStop=false);
+// PD_CatchHolder(OD=BT54Coupler_OD, ID=BT54Coupler_ID, Wall_t=1.8, nPetals=2, HasBasePlate=true);
+//
+HasGuidePoint=false;
+// rotate([180,0,0]) CRBB_LockingPin(LockPin_Len=23, GuidePoint=HasGuidePoint);
+// rotate([180,0,0]) CRBB_LockRing(GuidePoint=HasGuidePoint);
+// rotate([180,0,0]) CRBB_TopRetainer(LockRing_d=CRBB_LockRingDiameter(), OD=BT54Body_ID, GuidePoint=HasGuidePoint);
+// CRBB_OuterBearingRetainer();
+// rotate([180,0,0]) CRBB_InnerBearingRetainer(HasServo=true);
+// rotate([180,0,0]) CRBB_MagnetBracket();
+// rotate([180,0,0]) CRBB_TriggerPost();
+// CRBB_CenteringRingMount(Tube_ID=BT54Body_ID, Thickness=5, Skirt_Len=15.5, nBolts=5, HasShockcodeAnchor=true, LockRing_d=CRBB_LockRingDiameter());
 //
 // ***********************************
 //  ***** Routines *****
@@ -106,6 +123,8 @@
 //
 // ***********************************
 include<TubesLib.scad>
+use<CableReleaseBB.scad>
+use<PetalDeploymentLib.scad>
 use<SpringThing2.scad>
 use<Fairing54.scad>
 use<NoseCone.scad>

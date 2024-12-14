@@ -51,25 +51,25 @@ module Servo_LD20MG(BottomMount=true,TopAccess=true){
 	translate([-Servo_Shaft_Offset,0,0]){
 	// body
 	if (BottomMount==true){
-		translate([-Servo_x/2,-Servo_w/2,-Servo_h1])cube([Servo_x,Servo_w,Servo_h1+Overlap]);
+		translate([-Servo_x/2,-Servo_w/2,-Servo_h1]) cube([Servo_x,Servo_w,Servo_h1+Overlap]);
 	} else{
-		translate([-Servo_Body_l/2,-Servo_w/2,-Servo_h1])cube([Servo_Body_l,Servo_w,Servo_h1+Overlap]);
+		translate([-Servo_Body_l/2,-Servo_w/2,-Servo_h1]) cube([Servo_Body_l,Servo_w,Servo_h1+Overlap]);
 	}
 	
 	// top
 	if (BottomMount==true){
-		translate([-Servo_x/2,-Servo_w/2,0])cube([Servo_x,Servo_w,Servo_Deck_h+Overlap]);
-		translate([-Servo_Body_l/2,-Servo_w/2,Servo_Deck_h])cube([Servo_Body_l,Servo_w,Servo_TopStep_h+Overlap]);
+		translate([-Servo_x/2,-Servo_w/2,0]) cube([Servo_x,Servo_w,Servo_Deck_h+Overlap]);
+		translate([-Servo_Body_l/2,-Servo_w/2,Servo_Deck_h]) cube([Servo_Body_l, Servo_w, Servo_TopStep_h+Overlap]);
 		// gussets
 		hull(){
-			translate([-Servo_x/2,-0.8,Servo_Deck_h])cube([Servo_x,1.6,0.01]);
-			translate([-Servo_Body_l/2,-0.8,Servo_Deck_h+2.4])cube([Servo_Body_l,1.6,0.01]);
+			translate([-Servo_x/2,-0.8,Servo_Deck_h]) cube([Servo_x,1.6,0.01]);
+			translate([-Servo_Body_l/2,-0.8,Servo_Deck_h+2.4]) cube([Servo_Body_l,1.6,0.01]);
 		} // hull
 	} else
 	if (TopAccess==true){
-		translate([-Servo_x/2,-Servo_w/2,0])cube([Servo_x,Servo_w,19]);
+		translate([-Servo_x/2,-Servo_w/2,0]) cube([Servo_x, Servo_w, 19]);
 	} else {
-	translate([-Servo_x/2,-Servo_w/2,0])cube([Servo_x,Servo_w,14]);
+	translate([-Servo_x/2,-Servo_w/2,0]) cube([Servo_x, Servo_w, 14]);
 	}
 	
 	// Bolt holes
@@ -79,10 +79,10 @@ module Servo_LD20MG(BottomMount=true,TopAccess=true){
 	translate([Servo_BoltSpace2/2,-Servo_BoltSpace/2,0]) Bolt4Hole();
 		
 	if (BottomMount==true){
-		translate([-Servo_BoltSpace2/2,Servo_BoltSpace/2,0]) rotate([180,0,0])Bolt4Hole();
-		translate([-Servo_BoltSpace2/2,-Servo_BoltSpace/2,0]) rotate([180,0,0])Bolt4Hole();
-		translate([Servo_BoltSpace2/2,Servo_BoltSpace/2,0]) rotate([180,0,0])Bolt4Hole();
-		translate([Servo_BoltSpace2/2,-Servo_BoltSpace/2,0]) rotate([180,0,0])Bolt4Hole();
+		translate([-Servo_BoltSpace2/2,Servo_BoltSpace/2,0]) rotate([180,0,0]) Bolt4Hole(depth=20);
+		translate([-Servo_BoltSpace2/2,-Servo_BoltSpace/2,0]) rotate([180,0,0]) Bolt4Hole(depth=20);
+		translate([Servo_BoltSpace2/2,Servo_BoltSpace/2,0]) rotate([180,0,0]) Bolt4Hole(depth=20);
+		translate([Servo_BoltSpace2/2,-Servo_BoltSpace/2,0]) rotate([180,0,0]) Bolt4Hole(depth=20);
 	} else{
 		translate([-Servo_BoltSpace2/2,Servo_BoltSpace/2,0]) Bolt4Hole();
 		translate([-Servo_BoltSpace2/2,-Servo_BoltSpace/2,0]) Bolt4Hole();

@@ -3,7 +3,7 @@
 // Filename: Fairing137.scad
 // by David M. Flynn
 // Created: 1/26/2023 
-// Revision: 1.0.1  2/4/2023
+// Revision: 1.0.2  6/30/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -17,7 +17,8 @@
 //
 //  ***** History *****
 //
-echo("Fairing137 1.0.1");
+echo("Fairing137 1.0.2");
+// 1.0.2   6/30/2024  Moved GoPro Camera stuff to GoProCamLib.scad
 // 1.0.1   2/4/2023   Test w/ PML98 tube, Fixed lanyard foot
 // 1.0.0   1/26/2023  Copied from Fairing54 Rev 1.1.0
 //
@@ -55,6 +56,7 @@ echo("Fairing137 1.0.1");
 // ***********************************
 
 use<Fairing54.scad>
+use<GoProCamLib.scad>
 include<FairingJointLib.scad>
 	//include<TubesLib.scad>
 	//include<CommonStuffSAEmm.scad>
@@ -70,56 +72,6 @@ F54_Spring_CBL=14;
 F54_SpringEndCap_OD=F54_Spring_OD+3;
 
 // *********************************
-
-module GoProHero11Black(Xtra=IDXtra*3, Xtra_Z=0, IncludeVP=true, BackAccess=false){
-	Cam_X=72+Xtra;
-	Cam_Y=51+Xtra;
-	Cam_Z=28+Xtra;
-	Cam_R=6+Xtra/2;
-	LensBoss_XY=32.2+Xtra;
-	LensBoss_Z=Cam_Z+6;
-	
-	translate([0,0,-Xtra_Z]) RoundRect(X=Cam_X, Y=Cam_Y, Z=Cam_Z+Xtra_Z, R=Cam_R);
-	if (BackAccess) translate([0,0,-50])
-		RoundRect(X=Cam_X+1, Y=Cam_Y+1, Z=51, R=Cam_R);
-	
-	translate([Cam_X/2-LensBoss_XY/2, Cam_Y/2-LensBoss_XY/2, 0])
-		RoundRect(X=LensBoss_XY, Y=LensBoss_XY, Z=LensBoss_Z, R=Cam_R);
-		
-	// Buttons
-	if (BackAccess){
-		translate([0,0,Cam_Z/2]) rotate([0,90,0]) cylinder(d=6, h=100);
-		translate([-12,0,Cam_Z/2]) rotate([-90,0,0]) cylinder(d=6, h=100);
-		}
-	
-	// Picture button
-	
-	translate([-12,Cam_Y/2,0]) hull(){
-		RoundRect(X=16+Xtra/2,Y=2+Xtra/2,Z=21+Xtra/2,R=1);
-		translate([-8-Xtra/4+1,Xtra/4,21+Xtra/2]) sphere(r=1);
-		translate([8+Xtra/4-1,Xtra/4,21+Xtra/2]) sphere(r=1);
-		translate([-8-Xtra/4+1,-Xtra/4,21+Xtra/2]) sphere(r=1);
-		translate([8+Xtra/4-1,-Xtra/4,21+Xtra/2]) sphere(r=1);
-		}
-	if (BackAccess)
-		translate([-12,Cam_Y/2,-50]) RoundRect(X=16,Y=2,Z=21+50,R=1);
-		
-	// Batt door latch
-	translate([-Cam_X/2+1, -Cam_Y/2+Cam_R*0.7, -Xtra/2]) cylinder(d=5+Xtra/2, h=Cam_Z-2+Xtra/2);
-	if (BackAccess)
-		translate([-Cam_X/2+1, -Cam_Y/2+Cam_R*0.7, -50]) cylinder(d=5, h=Cam_Z-2+50);
-	
-	// View Path
-	if (IncludeVP)
-	translate([Cam_X/2-LensBoss_XY/2, Cam_Y/2-LensBoss_XY/2, LensBoss_Z-Overlap]){
-	RoundRect(X=LensBoss_XY-5, Y=LensBoss_XY-5, Z=1, R=Cam_R);
-		hull(){
-			translate([0,0,1-Overlap]) RoundRect(X=LensBoss_XY-5, Y=LensBoss_XY-5, Z=1, R=Cam_R);
-			translate([0,0,30]) RoundRect(X=LensBoss_XY+35, Y=LensBoss_XY+35, Z=1, R=Cam_R);
-		}}
-} // GoProHero11Black
-
-//GoProHero11Black(BackAccess=true);
 
 module ShowGoProFairingAdaptor(){
 	SkirtXtra=42;
@@ -157,7 +109,7 @@ module GoProFairingAdaptor(){
 		
 		difference(){
 			translate([0,CameraOffset_Y,CameraOffset_Z]) rotate([155,0,0]) 
-				GoProHero11Black(Xtra=IDXtra*3, IncludeVP=true, BackAccess=true);
+				GoProHero11Black(Xtra=IDXtra*3, Xtra_Z=0, IncludeVP=true, BackAccess=true);
 				
 			translate([0,0,-35]) Tube(OD=PML98Body_OD, ID=PML98Body_OD-6, Len=CameraOffset_Z-3, myfn=$preview? 36:360);
 			//cylinder(d=PML98Body_OD, h=CameraOffset_Z);
