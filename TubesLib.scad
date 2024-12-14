@@ -89,6 +89,8 @@ echo(PML98Coupler_ID=PML98Coupler_ID);
 
 ULine203Body_OD=209.55; // 8 inch mailing tube
 ULine203Body_ID=203.2;
+ULine203Coupler_OD=ULine203Body_ID-1;
+ULine203Coupler_ID=ULine203Coupler_OD-4.4;
 
 ULine75Body_OD=80.30;
 ULine75Body_ID=76.60; // Works w/ BT75Coupler_OD

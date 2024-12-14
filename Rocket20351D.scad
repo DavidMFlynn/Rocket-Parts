@@ -21,12 +21,33 @@
 //
 // NC_ShockcordRingDual(Tube_OD=Body_OD, Tube_ID=Body_ID, NC_ID=0, NC_Base_L=NoseconeBase_Len, nRivets=nNoseconeRivets, nBolts=0);
 //
+			
+// rotate([180,0,0]) EBay(TopOnly=true, BottomOnly=false, ShowDoors=false);
+// EBay(TopOnly=false, BottomOnly=true, ShowDoors=false);
+//  *** Doors ***
+// rotate([-90,0,0]) EB_AltDoor(Tube_OD=Body_OD);
+// rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD, HasSwitch=false, DoubleBatt=false);
+// rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD, HasSwitch=true, DoubleBatt=false);
+//
+// STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD, Engagement_Len=Engagement_Len);
+// R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID);
+// STB_LockDisk(Body_ID=Body_ID, nLockBalls=nLockBalls, HasLargeInnerBearing=true);
+// R203_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false);
+//
+//  *** Petal Deployer ***
+// R203_PetalHub(); // Lower 
+// PD_NC_PetalHub(OD=Coupler_OD, nPetals=nPetals, nRopes=nPetals, ShockCord_a=-1, HasThreadedCore=false, ST_DSpring_ID=SE_Spring_CS4323_ID(), ST_DSpring_OD=SE_Spring_CS4323_OD(), CouplerTube_ID=0); // upper
+// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=DroguePetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=5.0, HasLocks=false, Lock_Span_a=0);
+// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=MainPetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=5.0, HasLocks=false, Lock_Span_a=0);
+// rotate([-90,0,0]) PD_PetalSpringHolder(); // print 15
+//
 // FinCan(LowerHalfOnly=false, UpperHalfOnly=false);
 // Rocket_Fin();
 //
 // *******************************************************
 //  ***** for Viewing *****
 //
+// ShowRocket(ShowInternals=false);
 //
 // *******************************************************
 include<TubesLib.scad>
@@ -37,19 +58,29 @@ use<Fins.scad>
 use<FinCan2Lib.scad>
 use<SpringThingBooster.scad>
 use<SpringEndsLib.scad>
+use<ElectronicsBayLib.scad>
+use<PetalDeploymentLib.scad>
+use<R203Lib.scad>
 
 //include<CommonStuffSAEmm.scad>
 
 Overlap=0.05;
 IDXtra=0.2;
-$fn=$preview? 24:90;
+$fn=$preview? 36:90;
 
 Nosecone_Len=400;
 NoseconeBase_Len=15;
 NoseconeTip_R=15;
 NoseconeWall_t=2.2;
 nNoseconeRivets=7;
+nEBay_Bolts=7;
+EBayBoltInset=8;
 
+nLockBalls=7;
+Engagement_Len=30;
+nPetals=7;
+DroguePetal_Len=150;
+MainPetal_Len=200;
 
 nFins=5;
 Fin_Post_h=20;
@@ -68,25 +99,98 @@ Coupler_OD=ULine203Body_ID-1.10;
 MotorTube_OD=BT75Body_OD;
 MotorTube_ID=BT75Body_ID;
 
+UpperBody_Len=300;
+EBay_Len=162;
+LowerBody_Len=900;
 FinCan_Len=Fin_Root_L+Fin_Inset*2;
+MotorTube_Len=600;
 Cone_Len=140;
 
+MotorRetainer_OD=MotorTube_OD+5;
+MotorRetainer_Len=40;
+
+
+
 module ShowRocket(ShowInternals=false){
-	Fin_Z=FinCan_Len/2;
+	FinCan_Z=0;
+	Fin_Z=FinCan_Z+FinCan_Len/2;
+	LowerBody_Z=FinCan_Z+FinCan_Len;
+	LowerBallLock_Z=LowerBody_Z+LowerBody_Len;
+	EBay_Z=LowerBallLock_Z+49.05;
+	UpperBallLock_Z=EBay_Z+EBay_Len+49.05;
+	UpperBody_Z=UpperBallLock_Z;
+	NoseCone_Z=UpperBody_Z+UpperBody_Len+3;
 	
-	FinCan();
+	translate([0,0,NoseCone_Z]){
+		BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD, L=Nosecone_Len, Base_L=NoseconeBase_Len, 
+				nRivets=nNoseconeRivets, Tip_R=NoseconeTip_R, Wall_T=NoseconeWall_t, 
+				Cut_Z=0, Transition_OD=Body_OD, LowerPortion=false);
+		
+		color("Tan") rotate([0,0,90]) 
+			NC_ShockcordRingDual(Tube_OD=Body_OD, Tube_ID=Body_ID, NC_ID=0, NC_Base_L=NoseconeBase_Len, 
+				nRivets=nNoseconeRivets, nBolts=0);
+	}
 	
+	if (!ShowInternals) translate([0,0,UpperBody_Z+0.2]) color("LightBlue") 
+		Tube(OD=Body_OD, ID=Body_ID, Len=UpperBody_Len-0.4, myfn=90);
+		
+	translate([0,0,UpperBallLock_Z-Engagement_Len/2]) rotate([180,0,0]) {
+		if (!ShowInternals) color("Gray")
+			STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD, Engagement_Len=Engagement_Len);
+		
+		color("Green") R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID);
+		if (ShowInternals)
+			color("Green") R203_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false);
+			
+	}	
+		
+	translate([0,0,EBay_Z]) rotate([0,0,10]) EBay();
+	
+	translate([0,0,LowerBallLock_Z+Engagement_Len/2]){
+		if (!ShowInternals) color("Gray")
+			STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD, Engagement_Len=Engagement_Len);
+		
+		color("Green") R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID);
+		if (ShowInternals)
+			color("Green") R203_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false);
+			
+	}
+	
+	if (!ShowInternals) translate([0,0,LowerBody_Z+0.2]) color("LightBlue") 
+		Tube(OD=Body_OD, ID=Body_ID, Len=LowerBody_Len-0.4, myfn=90);
+		
+	//*
+	translate([0,0,FinCan_Z]) FinCan();
+	translate([0,0,FinCan_Z-Cone_Len-5]) color("Gray") 
+		Tube(OD=MotorRetainer_OD, ID=MotorTube_OD, Len=MotorRetainer_Len, myfn=90);
+		
+	
+	//*
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j+180/nFins])
 		translate([0, Body_OD/2-Fin_Post_h, Fin_Z]) 
 			rotate([-90,0,0]) color("LightGreen") Rocket_Fin();
-	
+	/**/
 } // ShowRocket
 
-// ShowRocket();
+// ShowRocket(ShowInternals=false);
+// ShowRocket(ShowInternals=true);
+
+module EBay(TopOnly=false, BottomOnly=false, ShowDoors=false){
+	
+	R20351D_Doors=$preview? [[],[45],[-45]]:[[0,180],[45,180+45],[-45,-90,180-45,180-90]]; // Altimeters, Alt_Batts, SW_Bats
+	
+	EB_Electronics_BayUniversal(Tube_OD=Body_OD, Tube_ID=Body_ID, DoorAngles=R20351D_Doors, Len=EBay_Len, 
+									nBolts=nEBay_Bolts, BoltInset=EBayBoltInset, ShowDoors=ShowDoors,
+									HasFwdIntegratedCoupler=false, HasFwdShockMount=false,
+									HasAftIntegratedCoupler=false, HasAftShockMount=false,
+									HasRailGuide=false, RailGuideLen=35,
+									HasFwdCenteringRing=true, HasAftCenteringRing=true, InnerTube_OD=BT54Body_OD,
+									Bolted=true, ExtraBolts=[], TopOnly=TopOnly, BottomOnly=BottomOnly);
+} // EBay
+
+// EBay();
 
 module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
-	MotorRetainer_OD=MotorTube_OD+5;
-	MotorRetainer_Len=40;
 	
 	Cutout_d=60;
 	Cutout_Depth=35;

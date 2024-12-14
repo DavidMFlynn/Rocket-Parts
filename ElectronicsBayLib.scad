@@ -298,11 +298,12 @@ module EB_Electronics_BayUniversal(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, D
 	Bolted_ID=Tube_ID-Bolt4Inset*4;
 	BoltCircle_r=Tube_ID/2-Bolt4Inset;
 	
+	CenteringRing_t=5;
 	CenteringRing_ID=InnerTube_OD+IDXtra*2; // slide thru fit
 	FwdCenteringRing_OD=HasFwdIntegratedCoupler? Tube_ID-1:Tube_OD-1;
 	AftCenteringRing_OD=HasAftIntegratedCoupler? Tube_ID-1:Tube_OD-1;
-	FwdCenteringRing_Z=HasFwdIntegratedCoupler? Len-5:Len-21;
-	AftCenteringRing_Z=HasAftIntegratedCoupler? 0:16;
+	FwdCenteringRing_Z=HasFwdIntegratedCoupler? Len-CenteringRing_t:Len-BoltInset*2-CenteringRing_t-1;
+	AftCenteringRing_Z=HasAftIntegratedCoupler? 0:BoltInset*2+1;
 	
 	function Calc_a(Dist=1,R=2)=Dist/(R*2*PI)*360;
 	
@@ -317,10 +318,10 @@ module EB_Electronics_BayUniversal(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, D
 	difference(){
 		union(){
 			if (HasFwdCenteringRing) translate([0,0,FwdCenteringRing_Z])
-				CenteringRing(OD=FwdCenteringRing_OD, ID=CenteringRing_ID, Thickness=5, nHoles=5, Offset=0);
+				CenteringRing(OD=FwdCenteringRing_OD, ID=CenteringRing_ID, Thickness=CenteringRing_t, nHoles=5, Offset=0);
 			
 			if (HasAftCenteringRing) translate([0,0,AftCenteringRing_Z])
-				CenteringRing(OD=AftCenteringRing_OD, ID=CenteringRing_ID, Thickness=5, nHoles=5, Offset=0);
+				CenteringRing(OD=AftCenteringRing_OD, ID=CenteringRing_ID, Thickness=CenteringRing_t, nHoles=5, Offset=0);
 				
 			translate([0,0,Body_Z]) Tube(OD=Tube_OD, ID=Tube_ID, Len=Body_Len, myfn=$preview? 36:360);
 			
