@@ -75,6 +75,7 @@
 // *** Nosecode ***
 //
 // BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD+Vinyl_d, L=NC_Len, Base_L=NC_Base_L, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
+// BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD+Vinyl_d, L=NC_Len, Base_L=NC_Base_L, Tip_R=NC_Tip_r, Wall_T=NC_WallCF_t, Cut_Z=0, LowerPortion=false);
 //
 // NC_ShockcordRing75(Body_OD=Body_OD+Vinyl_d, Body_ID=Body_ID, NC_Base_L=NC_Base_L);
 //
@@ -126,6 +127,9 @@ DualDeploy=true;
 // *** Fin Can ***
 //
 // rotate([180,0,0]) Rocket75D_Fincan(LowerHalfOnly=false, UpperHalfOnly=false);
+// 
+rotate([180,0,0]) Rocket75D_Fincan(LowerHalfOnly=true, UpperHalfOnly=false, Hollow=true);
+//
 // Rocket75D_MotorRetainer();
 //
 // Rocket75D_SFincan(LowerHalfOnly=false, UpperHalfOnly=false); // alt. Sustainer version for 2 stage
@@ -200,6 +204,7 @@ Bolt4Inset=4;
 NC_Len=212;
 NC_Tip_r=4; // was 6
 NC_Wall_t=1.8;
+NC_WallCF_t=1.4;
 NC_Base_L=15;
 
 EBay_Len=162;
@@ -228,7 +233,7 @@ MainBearing_T=Bearing6807_T;
 
 Stager_SkirtLen=46;
 
-//*
+/*
 // Max The Red Fins
 nFins=5;
 Fin_Post_h=14;
@@ -242,7 +247,7 @@ Fin_Chamfer_L=32;
 FinInset_Len=5;
 /**/
 
-/*
+//*
 // smaller for dual deploy
 nFins=5;
 Fin_Post_h=14;
@@ -539,15 +544,15 @@ module S_LowerElectronicsBay(IsDualDeploy=false, ShowDoors=false, TopOnly=false,
 
 // S_LowerElectronicsBay(IsDualDeploy=false, ShowDoors=false, TopOnly=false, BottomOnly=false);
 
-module Rocket75D_Fincan(LowerHalfOnly=false, UpperHalfOnly=false){
+module Rocket75D_Fincan(LowerHalfOnly=false, UpperHalfOnly=false, Hollow=true){
 	// for single stage version
 	FC2_FinCan(Body_OD=Body_OD+Vinyl_d, Body_ID=Body_ID, Can_Len=FinCan_Len,
 				MotorTube_OD=MotorTube_OD, RailGuide_h=RailGuide_h, RailGuideLen=RailGuideLen,
 				nFins=nFins, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 				Fin_Root_W=Fin_Root_W, Fin_Root_L=Fin_Root_L, Fin_Post_h=Fin_Post_h, Fin_Chamfer_L=Fin_Chamfer_L,
 				Cone_Len=TailCone_Len, ThreadedTC=true, Extra_OD=TailConeExtra_OD,
-				LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly, HasWireHoles=false, HollowTailcone=true, 
-				HollowFinRoots=true, Wall_t=1.2);
+				LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly, HasWireHoles=false, HollowTailcone=Hollow, 
+				HollowFinRoots=Hollow, Wall_t=1.2);
 } // Rocket75D_Fincan
 
 // Rocket75D_Fincan(LowerHalfOnly=false, UpperHalfOnly=false);

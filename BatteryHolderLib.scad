@@ -85,6 +85,26 @@ CK_RotSw_Face_h=0.6;
 CK_RotSw_Access_d=8;
 CK_RotSw_AO_h=15;
 
+module BlueRavenBoltPattern(){
+
+	// copied from BlueRavenMount
+	Edge=2;
+	Base_T=2;
+	PCB_X=1.77*25.4;
+	PCB_Y=0.79*25.4;
+	PCB_T=1.5;
+	PCB_Back_Z=2.5;
+	PCB_R=0.1*25.4;
+	H1_X=1.63*25.4;
+	H1_Y=0.65*25.4;
+	H2_X=0.48*25.4;
+	H2_Y=0.15*25.4;
+
+		translate([PCB_X/2-H2_X, PCB_Y/2-H2_Y, Base_T+PCB_Back_Z]) children();
+		translate([PCB_X/2-H1_X, PCB_Y/2-H1_Y, Base_T+PCB_Back_Z]) children();
+
+} // BlueRavenBoltPattern
+
 module BlueRavenMount(){
 	Edge=2;
 	Base_T=2;
@@ -109,8 +129,7 @@ module BlueRavenMount(){
 			translate([PCB_X/2-H1_X, PCB_Y/2-H1_Y, 0]) cylinder(d=6, h=Base_T+PCB_Back_Z);
 		} // union
 		
-		translate([PCB_X/2-H2_X, PCB_Y/2-H2_Y, Base_T+PCB_Back_Z]) Bolt4Hole();
-		translate([PCB_X/2-H1_X, PCB_Y/2-H1_Y, Base_T+PCB_Back_Z]) Bolt4Hole();
+		BlueRavenBoltPattern() Bolt4Hole();
 	
 	} // difference
 	
@@ -183,6 +202,33 @@ module MiniBoosterEBay(OD=BT54Body_OD, Coupler_OD=BT54Body_ID, ID=BT54Coupler_ID
 
 //MiniBoosterEBay();
 
+module RocketServoRevCBoltPattern(){
+	// copied from RocketServoHolderRevC
+	PCB_X=14.8;
+	PCB_Y=60.5;
+	PCB_Z=1.65;
+	PCB_BackSpace_Z=2.2;
+	Sup1_Y=7;
+	Sup1a_Y=23;
+	Sup2_Y=46.5;
+	Sup_w=3;
+	
+	Screw2_Y=11.5;
+	Screw1_Y=52.0;
+	Screw_Offset=1.8;
+	
+	Foot_Xtra=5;
+	Base_t=2.1;
+	
+	OAH=Base_t+PCB_BackSpace_Z+PCB_Z;
+	Spacing_X=PCB_X+Foot_Xtra-1;
+	
+	translate([-PCB_X/2-Screw_Offset, -PCB_Y/2+Screw1_Y, OAH]) children();
+	translate([PCB_X/2+Screw_Offset, -PCB_Y/2+Screw2_Y, OAH]) children();
+
+	
+} // RocketServoRevCBoltPattern
+
 module RocketServoHolderRevC(IsDouble=false){
 	PCB_X=14.8;
 	PCB_Y=60.5;
@@ -220,11 +266,11 @@ module RocketServoHolderRevC(IsDouble=false){
 			translate([0,0,Base_t]) RoundRect(X=PCB_X+IDXtra*2, Y=PCB_Y+IDXtra*2, Z=PCB_BackSpace_Z+PCB_Z+Overlap, R=0.1);
 			
 			// bolt holes
-			translate([-PCB_X/2-Screw_Offset, -PCB_Y/2+Screw1_Y, OAH]) Bolt4Hole();
-			translate([PCB_X/2+Screw_Offset, -PCB_Y/2+Screw2_Y, OAH]) Bolt4Hole();
+			RocketServoRevCBoltPattern() Bolt4Hole();
 			
 			translate([0, -PCB_Y/2+3.5, Base_t+0.6]) Bolt4ButtonHeadHole();
 			translate([0, PCB_Y/2-7, Base_t+0.6]) Bolt4ButtonHeadHole();
+		
 		} // for
 	} // difference
 	
@@ -254,7 +300,7 @@ module RocketServoHolderRevC(IsDouble=false){
 } // RocketServoHolderRevC
 
 //RocketServoHolderRevC();
-//RocketServoHolderRevC(IsDouble=true);
+// RocketServoHolderRevC(IsDouble=false);
 
 module RocketServoHolder(IsDouble=false){
 	PCB_X=14.8;

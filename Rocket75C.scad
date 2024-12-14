@@ -130,7 +130,7 @@
 						MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID,
 						HasWrenchCuts=false, Cone_Len=35, ExtraLen=0);
 /**/
-// RocketFin();
+// RocketFin(HasSpiralVaseRibs=true);
 //
 // RailButton(); // (4 req) print many
 //
@@ -410,20 +410,13 @@ module UpperRailBtnMount75(){
 //UpperRailBtnMount75();
 
 				
-module RocketFin(){
+module RocketFin(HasSpiralVaseRibs=true){
 	
 	TrapFin2(Post_h=Fin_Post_h, Root_L=Fin_Root_L, Tip_L=Fin_Tip_L, Root_W=Fin_Root_W,
 				Tip_W=Fin_Tip_W, Span=Fin_Span, Chamfer_L=Fin_Chamfer_L,
 				TipOffset=Fin_TipOffset,
 				Bisect=false, Bisect_X=0,
-				HasSpar=false, Spar_d=8, Spar_L=100);
-				
-	if ($preview==false){
-		translate([-Fin_Root_L/2+4,0,0]) 
-			cylinder(d=12, h=0.9); // Neg
-		translate([Fin_Root_L/2-4,0,0]) 
-			cylinder(d=12, h=0.9); // Pos
-	}
+				HasSpar=false, Spar_d=8, Spar_L=100, HasSpiralVaseRibs=HasSpiralVaseRibs);
 	
 } // RocketFin
 

@@ -185,7 +185,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 			if (RailGuide_h>5)
 			translate([0,0,RailGuide_Z]) 
 				RailGuidePost(OD=Body_OD, MtrTube_OD=MotorTubeHole_d, H=RailGuide_h, 
-					TubeLen=RailGuideTube_Len, Length = RailGuideLen, BoltSpace=12.7, AddTaper=true);
+					TubeLen=RailGuideTube_Len, Length = RailGuideLen, BoltSpace=12.7, AddTaper=false, Wall_t=Wall_t);
 					
 			// Rail button bolt boss
 			if (RailGuide_h==1)

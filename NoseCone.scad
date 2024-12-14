@@ -612,7 +612,9 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, Tip_R=5, Ha
 		
 		// Make Skirt fit coupler tube
 		translate([0,0,-Overlap]) cylinder(d=ID, h=Base_L+Overlap*2, $fn=$preview? 90:720);
+		
 		// Taper so no support is needed
+		if (OD-Wall_T*2<ID)
 		translate([0,0,Base_L]) cylinder(d1=ID, d2=OD-Wall_T*2, h=Wall_T, $fn=$preview? 90:720);
 		
 		if (Base_L>12 && nRivets>0) translate([0,0,Base_L/2])

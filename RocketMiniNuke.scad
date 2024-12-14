@@ -3,7 +3,7 @@
 // Filename: RocketMiniNuke.scad
 // by David M. Flynn
 // Created: 11/11/2023 
-// Revision: 0.9.0  11/11/2024 
+// Revision: 0.9.1  12/3/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,10 +12,16 @@
 //
 //  ***** History *****
 //
+// 0.9.1  12/3/2024  Added ElectronicsMount
 // 0.9.0  11/11/2024 First code
 //
 // ***********************************
 //  ***** for STL output *****
+//
+// ElectronicsMount();
+//
+// ForwardShell(TopOnly=true, BottomOnly=false);
+// ForwardShell(TopOnly=false, BottomOnly=true);
 //
 // rotate([180,0,0]) AftShell();
 //
@@ -26,22 +32,19 @@
 // MN_PetalHub();
 // rotate([180,0,0]) PD_Petals(OD=BT98Coupler_OD, Len=Petal_Len, nPetals=3, Wall_t=1.8, AntiClimber_h=4, HasLocks=false, Lock_Span_a=0);
 //
-//  *** 75mm Inline Pod Lock system ***
-// MPL_InlineBallRetainer(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, LockBall_d=MPL_LockBall_d, nBalls=MPL_nLockBalls);
-// rotate([180,0,0]) MPL_LockRing(OD=BT75Coupler_OD, ID=BT75Coupler_ID, Ball_d=MPL_LockBall_d, nBalls=MPL_nLockBalls);
-// rotate([180,0,0]) MPL_InlineLockRing(Tube_ID=BT75Body_ID, LockBall_d=MPL_LockBall_d, nBalls=MPL_nLockBalls);
-// MPL_InlineServoRing(Tube_OD=BT75Body_OD, Tube_ID=BT75Body_ID, LockBall_d=MPL_LockBall_d, nBalls=MPL_nLockBalls);
-//
 //  *** 98mm Inline Pod Lock system ***
 // MPL_InlineBallRetainer(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, LockBall_d=MPL_LockBall_d, nBalls=MPL_nLockBalls);
 // rotate([180,0,0]) MPL_LockRing(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Ball_d=MPL_LockBall_d, nBalls=MPL_nLockBalls);
 // rotate([180,0,0]) MPL_InlineLockRing(Tube_ID=BT98Body_ID, LockBall_d=MPL_LockBall_d, nBalls=MPL_nLockBalls);
 // MPL_InlineServoRing(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, LockBall_d=MPL_LockBall_d, nBalls=MPL_nLockBalls);
 //
+// rotate([-90,0,0]) FlatFin();
 // RingFin();
 //
 // ThrustRing();
 // rotate([180,0,0]) TheButt();
+//
+// rotate([90,0,0]) BoltOnRailGuide(Length = 30, BoltSpace=12.7, RoundEnds=true, ExtraBack=0);
 //
 // ***********************************
 //  ***** Routines *****
@@ -54,11 +57,12 @@
 // ***********************************
 include<TubesLib.scad>
 use<RailGuide.scad>
-use<ElectronicsBayLib.scad>
-use<SpringThingBooster.scad>
+use<BatteryHolderLib.scad>
+//use<ElectronicsBayLib.scad>
+//use<SpringThingBooster.scad>
 use<PetalDeploymentLib.scad>
 use<SpringEndsLib.scad>			echo(SpringEndsLibRev());
-use<R75Lib.scad>
+//use<R75Lib.scad>
 use<AT-RMS-Lib.scad>
 use<MotorPodLockLib.scad> 		echo(MotorPodLockLibRev());
 use<ThreadLib.scad>
@@ -121,9 +125,12 @@ module ShowRocket(ShowInternals=false){
 	Motor_Z=60;
 	Fin_Z=45;
 	CenterLine_Z=Fin_Z+FinLength+Body_Ext/2+139;
+	Electronics_Z=CenterLine_Z+80;
 	LockRing_Z=CenterLine_Z-(Body_OD/2+Body_Ext/2)*AftPointy-33+LowerPodCoupler_Len;
 	
 	Petal_Z=LockRing_Z+Petal_Len+18;
+	
+	translate([0,0,Electronics_Z]) rotate([0,0,60]) ElectronicsMount();
 	
 	translate([0,0,CenterLine_Z+0.2]) ForwardShell();
 	//*
@@ -209,31 +216,56 @@ module ShowRocket(ShowInternals=false){
 
 // ShowRocket(true);
 
+module ElectronicsMount(){
+	TopRing_Z=50;
+	difference(){
+		union(){
+			Tube(OD=MotorPodBody_OD+IDXtra*2+4.4, ID=MotorPodBody_OD+IDXtra*2, Len=15, myfn=$preview? 90:360);
+			translate([0,0,TopRing_Z]) Tube(OD=MotorPodBody_OD+IDXtra*2+4.4, ID=MotorPodBody_OD+IDXtra*2, Len=15, myfn=$preview? 90:360);
+			translate([0,0,15-Overlap]) 
+				Tube(OD=MotorPodBody_OD+IDXtra*2+4.4, ID=MotorPodBody_OD+IDXtra*4, Len=TopRing_Z-15+Overlap*2, myfn=$preview? 90:360);
+		} // union
+			
+		translate([MotorPodBody_OD/2+1, 0, 24.5]) rotate([0,90,0]) BlueRavenBoltPattern() Bolt4Hole();
+		translate([0,-MotorPodBody_OD/2-0.5,32.75]) rotate([90,0,0]) RocketServoRevCBoltPattern() Bolt4Hole();
+	} // difference
+	
+	translate([0,-MotorPodBody_OD/2-0.5,32.75]) rotate([90,0,0]) RocketServoHolderRevC(IsDouble=false);
+	translate([0,MotorPodBody_OD/2+11.4,0]) SingleBatteryPocket(ShowBattery=false);
+	translate([MotorPodBody_OD/2+1, 0, 24.5]) rotate([0,90,0]) BlueRavenMount();
+	
+} // ElectronicsMount
+
+// ElectronicsMount();
+
 module SpringEnd(OD=MotorPodBody_OD, Tube_ID=MotorPodBody_ID){
 	// Connects shock cord and spring to Pod Tube.
 	
 	Al_Tube_d=12.7;
 	Spring_ID=SE_Spring_CS4323_ID();
 	Spring_OD=SE_Spring_CS4323_OD();
+	Shoulder_Len=8;
 	nRopes=3;
 	Rope_d=4;
+	Rope_Y=(OD-15)/2-Rope_d/2-4;
 	
 	difference(){
 		union(){
 			Tube(OD=OD, ID=OD-15, Len=Al_Tube_d+3, myfn=$preview? 90:360);
 			
-			Tube(OD=OD, ID=Spring_ID-Rope_d*2-6, Len=3, myfn=$preview? 90:360);
-			translate([0,0,-6]) Tube(OD=Tube_ID, ID=OD-12, Len=6, myfn=$preview? 90:360);
+			Tube(OD=OD, ID=Spring_ID-6, Len=3, myfn=$preview? 90:360);
+			translate([0,0,-Shoulder_Len]) Tube(OD=Tube_ID, ID=OD-12, Len=Shoulder_Len+Overlap, myfn=$preview? 90:360);
 		} // union
 		
-		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j+30]) translate([0,Spring_ID/2-Rope_d,0]) cylinder(d=Rope_d, h=10, center=true);
+		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j+30]) 
+			translate([0,Rope_Y,0]) cylinder(d=Rope_d, h=10, center=true);
 		
 		translate([0,0,Al_Tube_d/2+1]) rotate([90,0,0]) cylinder(d=Al_Tube_d+IDXtra, h=OD+1, center=true);
 		
 		translate([0,0,-6-Overlap]) cylinder(d=SE_Spring_CS11890_OD(), h=6+Overlap, $fn=$preview? 90:360);
 	} // difference
 	
-	translate([0,0,-6]) Tube(OD=Spring_OD+4.4, ID=Spring_OD, Len=7, myfn=$preview? 90:360);
+	translate([0,0,-Shoulder_Len]) Tube(OD=Spring_OD+4.4, ID=Spring_OD, Len=Shoulder_Len+Overlap, myfn=$preview? 90:360);
 
 } // SpringEnd
 
@@ -241,20 +273,36 @@ module SpringEnd(OD=MotorPodBody_OD, Tube_ID=MotorPodBody_ID){
 // rotate([180,0,0]) SpringEnd(OD=MotorPodBody_OD, Tube_ID=MotorPodBody_ID);
 
 module SpringMiddle(OD=Coupler_OD){
+	// Custom slider
 	// Between 2 small springs
 	Spring_ID=SE_Spring_CS4323_ID();
 	Spring_OD=SE_Spring_CS4323_OD();
+
+	nRopes=3;
+	Rope_d=4;
+	Rope_Y=(OD-15)/2-Rope_d/2-4;
 	
-	OAH=25;
+	OAH=30;
+	MidPlate_Z=10;
 	
-	Tube(OD=Spring_ID, ID=Spring_ID-4.4, Len=OAH, myfn=$preview? 90:360);
+	// Forward Spring: Inside
+	translate([0,0,OAH/2-2]) Tube(OD=Spring_ID, ID=Spring_ID-4.4, Len=OAH/2, myfn=$preview? 90:360);
+	
+	// Aft Spring: Outside
+	Tube(OD=Spring_OD+4.4, ID=Spring_OD, Len=MidPlate_Z+Overlap, myfn=$preview? 90:360);
+	
 	Tube(OD=OD, ID=OD-4.4, Len=OAH, myfn=$preview? 90:360);
 	
-	translate([0,0,OAH/2-2])
+	translate([0,0,MidPlate_Z])
 	difference(){
 		cylinder(d=OD-1, h=4);
-		translate([0,0,-Overlap]) cylinder(d=Spring_ID-1, h=4+Overlap*2);
-	}
+		
+		translate([0,0,-Overlap]) cylinder(d=Spring_ID-4.4, h=4+Overlap*2);
+		
+		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j+30]) 
+			translate([0,Rope_Y,-Overlap]) cylinder(d=Rope_d*2, h=10, center=true);
+
+	} // difference
 	
 } // SpringMiddle
 
@@ -354,7 +402,7 @@ module ForwardShell(TopOnly=false, BottomOnly=false){
 				cylinder(d=D, h=1);
 				translate([0,0,H/2]) rotate_extrude() translate([D/2-H/2,0,0]) circle(d=H);
 			} // hull
-			rotate([0,0,rands(0,180,1)[0]]) translate([-D/2,-Slot_w/2,1]) cube([D,Slot_w,3]);
+			rotate([0,0,rands(0,90,1)[0]+45]) translate([-D/2,-Slot_w/2,1]) cube([D,Slot_w,3]);
 		} // difference
 	} // PanHead
 	
@@ -727,16 +775,17 @@ module FlatFinSocket(){
 
 module FlatFin(){
 	
-	intersection(){
+	
 		difference(){
 			union(){
 				// Root
 				translate([-FinTip_W/2, MotorPodBody_OD/2+5, -FinLength+80])  cube([FinTip_W,10,FinRoot_L-55]);
+				
 				hull(){
 					// Root
 					translate([-FinTip_W/2, MotorPodBody_OD/2+15, -FinLength+25])  cube([FinTip_W,Overlap,FinRoot_L]);
 					// Tip
-					translate([-FinTip_W/2, Body_OD/2-RingFin_Thickness, -FinLength+25]) cube([FinTip_W,Overlap,FinTip_L]);
+					translate([-FinTip_W/2, Body_OD/2-RingFin_Thickness, -FinLength+25]) mirror([0,1,0]) cube([FinTip_W,1,FinTip_L]);
 				} // hull
 				
 				hull() translate([0,-RingFin_Thickness,0]) OuterFinBoltPattern() rotate([180,0,0]) cylinder(d=10, h=4);
@@ -746,8 +795,7 @@ module FlatFin(){
 			
 		} // difference
 	
-		translate([0,0,-FinLength]) cylinder(d=Body_OD-RingFin_Thickness*2, h=150, $fn=$preview? 90:360);
-	} // intersection
+		
 } // FlatFin
 
 // rotate([-90,0,0]) FlatFin();
@@ -804,7 +852,14 @@ module RingFin(){
 				rotate([0,0,-20]) rotate([90,0,0]) RoundRect(X=3, Y=90, Z=Body_OD/2+20, R=3);
 			}
 		
-		for (j=[0:nFins-1]) rotate([0,0,360/nFins*j]) OuterFinBoltPattern() Bolt6ButtonHeadHole();
+		
+		for (j=[0:nFins-1]) rotate([0,0,360/nFins*j]){
+			OuterFinBoltPattern() Bolt6ButtonHeadHole();/*
+			hull() OuterFinBoltPattern(){
+				translate([0,0,-RingFin_Thickness+0.25]) rotate([180,0,0]) cylinder(d=10, h=Overlap);
+				translate([0,0,-RingFin_Thickness-1]) rotate([180,0,0]) cylinder(d=16, h=Overlap);
+			}/**/
+		}
 		
 		
 		// Rail guide bolts
