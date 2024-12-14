@@ -3,7 +3,7 @@
 // Filename: TubesLib.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.17  10/4/2024
+// Revision: 0.9.18  12/13/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-function TubesLib_Rev()="TubesLib 0.9.17";
+function TubesLib_Rev()="TubesLib 0.9.18";
 echo(TubesLib_Rev());
+// 0.9.18  12/13/2024 Added ULine203Body <<-- measure and update
 // 0.9.17  10/4/2024  Added ULine38Body
 // 0.9.16  9/3/2024   Added BT65Body and Coupler
 // 0.9.15  8/21/2024  Geometry changed: Centering ring holes now start at +Y.
@@ -85,6 +86,9 @@ echo(PML98Body_ID=PML98Body_ID);
 echo(PML98Coupler_OD=PML98Coupler_OD);
 echo(PML98Coupler_ID=PML98Coupler_ID);
 /**/
+
+ULine203Body_OD=209.55; // 8 inch mailing tube
+ULine203Body_ID=203.2;
 
 ULine75Body_OD=80.30;
 ULine75Body_ID=76.60; // Works w/ BT75Coupler_OD

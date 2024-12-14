@@ -82,7 +82,7 @@ ThreadPitch=2.5;
 NominalThreadWall_t=ThreadPitch+1.5; // added to motor tube radius
 
 module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
-				MotorTube_OD=BT54Body_OD, RailGuide_h=BT98Body_OD/2+2,
+				MotorTube_OD=BT54Body_OD, RailGuide_h=BT98Body_OD/2+2, RailGuide_z=0,
 				nFins=5, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 				Fin_Root_W=14, Fin_Root_L=130, Fin_Post_h=14, Fin_Chamfer_L=32,
 				Cone_Len=65, ThreadedTC=true, Extra_OD=0, RailGuideLen=30,
@@ -91,7 +91,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 				
 	FinBox_W=Fin_Root_W+IDXtra*2+Wall_t*2;
 	RailGuideTube_Len=(RailGuideLen-5)*2;
-	RailGuide_Z=RailGuideTube_Len/2;
+	RailGuide_Z=(RailGuide_z==0)? RailGuideTube_Len/2:RailGuide_z;
 	MotorTubeHole_d=MotorTube_OD+MotorTubeHoleIDXtra;
 	FinInset_Len=(Can_Len-Fin_Root_L)/2;
 	Coupler_Len=10;
