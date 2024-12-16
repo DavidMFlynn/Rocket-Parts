@@ -335,6 +335,7 @@ module SE_BigSpringReceiver(OD=BT137Coupler_ID, Len=75, Spring_Z=10){
 module SE_EBaySpringStop(OD=BT54Body_ID, Al_Tube_Z=20){
 	Al_Tube_d=12.7;
 	Len=40;
+	Spring_OD=SE_Spring_CS4323_OD();
 	
 	difference(){
 		union(){
@@ -351,9 +352,9 @@ module SE_EBaySpringStop(OD=BT54Body_ID, Al_Tube_Z=20){
 		}
 		
 		translate([0,0,Al_Tube_Z+Al_Tube_d/2+4]) {
-			cylinder(d=SE_Spring_CS4323_OD(), h=5);
-			translate([0,0,4]) cylinder(d1=SE_Spring_CS4323_OD(), d2=SE_Spring_CS4323_OD()+2, h=6);
-			translate([0,0,4+6-Overlap]) cylinder(d=SE_Spring_CS4323_OD()+2,h=Len);
+			cylinder(d=Spring_OD, h=5);
+			translate([0,0,4]) cylinder(d1=Spring_OD, d2=Spring_OD+2, h=6);
+			translate([0,0,4+6-Overlap]) cylinder(d=Spring_OD+2,h=Len);
 			}
 	} // difference
 	
@@ -361,7 +362,7 @@ module SE_EBaySpringStop(OD=BT54Body_ID, Al_Tube_Z=20){
 
 // SE_EBaySpringStop(OD=BT54Body_ID, Al_Tube_Z=10);
 
-module SE_SpringEndTypeA(Coupler_OD=BT75Coupler_OD, Coupler_ID=BT75Coupler_ID, nRopes=3, Spring_OD=Spring_CS4323_OD){
+module SE_SpringEndTypeA(Coupler_OD=BT75Coupler_OD, Coupler_ID=BT75Coupler_ID, nRopes=3, Spring_OD=SE_Spring_CS4323_OD()){
 // Glues to a short section of coupler tube
 // Requires a short piece of coupler tube
 

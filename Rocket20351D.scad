@@ -21,7 +21,12 @@
 //
 // NC_ShockcordRingDual(Tube_OD=Body_OD, Tube_ID=Body_ID, NC_ID=0, NC_Base_L=NoseconeBase_Len, nRivets=nNoseconeRivets, nBolts=0);
 //
-			
+// SE_SlidingBigSpringMiddle(OD=Coupler_OD, SliderLen=80, Extension=0); // print 2
+// SE_SpringEndTypeA(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, nRopes=6, Spring_OD=SE_Spring_CS11890_OD());
+// SE_SpringEndTypeC(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, nRopes=6, UseSmallSpring=false);
+// CenteringRing(OD=Body_ID, ID=MotorTube_OD, Thickness=10, nHoles=6, Offset=0, myfn=$preview? 90:360);
+// rotate([180,0,0]) R203_MotorTubeTopper();
+//	
 // rotate([180,0,0]) EBay(TopOnly=true, BottomOnly=false, ShowDoors=false);
 // EBay(TopOnly=false, BottomOnly=true, ShowDoors=false);
 //  *** Doors ***
@@ -36,7 +41,7 @@
 //
 //  *** Petal Deployer ***
 // R203_PetalHub(); // Lower 
-// PD_NC_PetalHub(OD=Coupler_OD, nPetals=nPetals, nRopes=nPetals, ShockCord_a=-1, HasThreadedCore=false, ST_DSpring_ID=SE_Spring_CS4323_ID(), ST_DSpring_OD=SE_Spring_CS4323_OD(), CouplerTube_ID=0); // upper
+// PD_NC_PetalHub(OD=Coupler_OD, nPetals=nPetals, nRopes=nPetals, ShockCord_a=-1, HasThreadedCore=false, ST_DSpring_ID=SE_Spring_CS11890_ID(), ST_DSpring_OD=SE_Spring_CS11890_OD(), CouplerTube_ID=0); // upper
 // rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=DroguePetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=5.0, HasLocks=false, Lock_Span_a=0);
 // rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=MainPetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=5.0, HasLocks=false, Lock_Span_a=0);
 // rotate([-90,0,0]) PD_PetalSpringHolder(); // print 15
@@ -84,26 +89,28 @@ MainPetal_Len=200;
 
 nFins=5;
 Fin_Post_h=20;
-Fin_Root_L=380;
-Fin_Root_W=16;
+Fin_Root_L=420;
+Fin_Root_W=18;
 Fin_Tip_W=5;
 Fin_Tip_L=140;
-Fin_Span=200;
-Fin_TipOffset=50;
-Fin_Chamfer_L=50;
+Fin_Span=180;
+Fin_TipOffset=80;
+Fin_Chamfer_L=60;
 Fin_Inset=10;
 
 Body_OD=ULine203Body_OD;
 Body_ID=ULine203Body_ID;
 Coupler_OD=ULine203Body_ID-1.10;
+Coupler_ID=Coupler_OD-4.4;
+
 MotorTube_OD=BT75Body_OD;
 MotorTube_ID=BT75Body_ID;
 
-UpperBody_Len=300;
+UpperBody_Len=400;
 EBay_Len=162;
-LowerBody_Len=900;
+LowerBody_Len=48*25.4;
 FinCan_Len=Fin_Root_L+Fin_Inset*2;
-MotorTube_Len=600;
+MotorTube_Len=48*25.4;
 Cone_Len=140;
 
 MotorRetainer_OD=MotorTube_OD+5;
@@ -114,6 +121,7 @@ MotorRetainer_Len=40;
 module ShowRocket(ShowInternals=false){
 	FinCan_Z=0;
 	Fin_Z=FinCan_Z+FinCan_Len/2;
+	MotorTube_Z=FinCan_Z-Cone_Len+15;
 	LowerBody_Z=FinCan_Z+FinCan_Len;
 	LowerBallLock_Z=LowerBody_Z+LowerBody_Len;
 	EBay_Z=LowerBallLock_Z+49.05;
@@ -131,9 +139,22 @@ module ShowRocket(ShowInternals=false){
 				nRivets=nNoseconeRivets, nBolts=0);
 	}
 	
+	if (ShowInternals) translate([0,0,NoseCone_Z-120])
+		SE_SlidingBigSpringMiddle(OD=Coupler_OD, SliderLen=80, Extension=0);
+		
+	if (ShowInternals) translate([0,0,NoseCone_Z-120-50]){
+		rotate([180,0,0]) color("Tan")
+			PD_NC_PetalHub(OD=Coupler_OD, nPetals=nPetals, nRopes=nPetals, ShockCord_a=-1, 
+				HasThreadedCore=false, ST_DSpring_ID=SE_Spring_CS11890_ID(), 
+				ST_DSpring_OD=SE_Spring_CS11890_OD(), CouplerTube_ID=Coupler_ID);
+			
+		translate([0,0,-10]) rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=MainPetal_Len, nPetals=nPetals, Wall_t=1.8, 
+			AntiClimber_h=5.0, HasLocks=false, Lock_Span_a=0);
+	}
+	
 	if (!ShowInternals) translate([0,0,UpperBody_Z+0.2]) color("LightBlue") 
 		Tube(OD=Body_OD, ID=Body_ID, Len=UpperBody_Len-0.4, myfn=90);
-		
+	//*	
 	translate([0,0,UpperBallLock_Z-Engagement_Len/2]) rotate([180,0,0]) {
 		if (!ShowInternals) color("Gray")
 			STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD, Engagement_Len=Engagement_Len);
@@ -143,9 +164,11 @@ module ShowRocket(ShowInternals=false){
 			color("Green") R203_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false);
 			
 	}	
-		
+	/**/
+	
 	translate([0,0,EBay_Z]) rotate([0,0,10]) EBay();
 	
+	//*	
 	translate([0,0,LowerBallLock_Z+Engagement_Len/2]){
 		if (!ShowInternals) color("Gray")
 			STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD, Engagement_Len=Engagement_Len);
@@ -156,14 +179,44 @@ module ShowRocket(ShowInternals=false){
 			
 	}
 	
+	if (ShowInternals) translate([0,0,LowerBallLock_Z-0.2]){
+		rotate([180,0,0]) R203_PetalHub();
+		translate([0,0,-10]) rotate([180,0,0])
+			PD_Petals(OD=Coupler_OD, Len=DroguePetal_Len, nPetals=nPetals, Wall_t=1.8,
+									AntiClimber_h=5.0, HasLocks=false, Lock_Span_a=0);
+									
+		translate([0,0,-DroguePetal_Len-110]){
+			SE_SpringEndTypeA(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, nRopes=6, 
+								Spring_OD=SE_Spring_CS11890_OD());
+			translate([0,0,12.5]) color("LightBlue") 
+				Tube(OD=Coupler_OD, ID=Coupler_ID, Len=75, myfn=90);
+		}
+		translate([0,0,-DroguePetal_Len-210]){
+			SE_SlidingBigSpringMiddle(OD=Coupler_OD, SliderLen=80, Extension=0);
+			translate([0,0,-50]) rotate([180,0,0]) SE_SpringEndTypeC(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, nRopes=6, UseSmallSpring=false);
+		}
+	}
+	
+	if (ShowInternals) translate([0,0,MotorTube_Z+MotorTube_Len]) color("Orange")
+		R203_MotorTubeTopper();
+	
+	if (ShowInternals) translate([0,0,LowerBody_Z+200]) color("Orange")
+		CenteringRing(OD=Body_ID, ID=MotorTube_OD, Thickness=10, nHoles=6, Offset=0, myfn=$preview? 90:360);
+		
+	if (ShowInternals) translate([0,0,LowerBody_Z+400]) color("Orange")
+		CenteringRing(OD=Body_ID, ID=MotorTube_OD, Thickness=10, nHoles=6, Offset=0, myfn=$preview? 90:360);
+	
 	if (!ShowInternals) translate([0,0,LowerBody_Z+0.2]) color("LightBlue") 
 		Tube(OD=Body_OD, ID=Body_ID, Len=LowerBody_Len-0.4, myfn=90);
-		
+	/**/
 	//*
 	translate([0,0,FinCan_Z]) FinCan();
+	
 	translate([0,0,FinCan_Z-Cone_Len-5]) color("Gray") 
 		Tube(OD=MotorRetainer_OD, ID=MotorTube_OD, Len=MotorRetainer_Len, myfn=90);
 		
+	if (ShowInternals) translate([0,0,MotorTube_Z]) color("LightBlue")
+		Tube(OD=MotorTube_OD, ID=MotorTube_ID, Len=MotorTube_Len, myfn=90);
 	
 	//*
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j+180/nFins])
@@ -172,7 +225,8 @@ module ShowRocket(ShowInternals=false){
 	/**/
 } // ShowRocket
 
-// ShowRocket(ShowInternals=false);
+// 
+ShowRocket(ShowInternals=false);
 // ShowRocket(ShowInternals=true);
 
 module EBay(TopOnly=false, BottomOnly=false, ShowDoors=false){

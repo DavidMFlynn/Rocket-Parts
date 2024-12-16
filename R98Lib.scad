@@ -29,7 +29,7 @@
 //
 // ***********************************
 include<TubesLib.scad>
-use<SpringThingBooster.scad> SpringThingBoosterRev();
+use<SpringThingBooster.scad> echo(SpringThingBoosterRev());
 use<PetalDeploymentLib.scad>
 use<SpringEndsLib.scad>
 

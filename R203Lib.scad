@@ -17,6 +17,7 @@
 // ***********************************
 //  ***** for STL output *****
 //
+// R203_MotorTubeTopper();
 // R203_PetalHub(Body_OD=Coupler_OD);
 // R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID);
 // R203_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false);
@@ -46,6 +47,72 @@ Body_ID=ULine203Body_ID;
 
 Coupler_OD=ULine203Coupler_OD;
 //Coupler_ID=ULine203Coupler_ID;
+
+MotorTube_OD=BT75Body_OD;
+MotorTube_ID=BT75Body_ID;
+
+module R203_MotorTubeTopper(){
+// Z zero is top of motor tube
+// Sits on top of motor tube
+// Has Rail Guide bolt holes
+// Has centering ring
+// Has shock cord attachment tube
+// Has spring holder
+
+	Al_Tube_d=12.7;
+	Al_Tube_Z=-Al_Tube_d/2-5;
+	
+	ST_DSpring_OD=SE_Spring_CS11890_OD();
+	ST_DSpring_ID=SE_Spring_CS11890_ID();
+	
+	Skirt_Len=30;
+	nRopes=6;
+	Rope_d=4;
+	RopeHoleBC_r=(MotorTube_OD+8)/2+Rope_d/2+1;
+
+	difference(){
+		union(){
+			translate([0,0,-Skirt_Len]) 
+				Tube(OD=MotorTube_ID, ID=MotorTube_ID-4.4, Len=Skirt_Len+Overlap, myfn=$preview? 36:360);
+			translate([0,0,-Skirt_Len]) 
+				Tube(OD=MotorTube_OD+IDXtra*3+4.4, ID=MotorTube_OD+IDXtra*3, 
+						Len=Skirt_Len+Overlap, myfn=$preview? 36:360);
+			// Outer ring
+			translate([0,0,-Skirt_Len]) 
+				Tube(OD=Body_ID, ID=Body_ID-4.4, Len=Skirt_Len+Overlap, myfn=$preview? 36:360);
+			CenteringRing(OD=Body_ID, ID=MotorTube_ID-4.4, Thickness=10, nHoles=6, Offset=0);
+			//translate([0,0,4]) 
+			//	Tube(OD=ST_DSpring_OD+8, ID=ST_DSpring_OD, Len=8, myfn=$preview? 36:360);
+			
+			// Rail guide bolt boss
+			translate([Body_ID/2-1, 0, -9]) hull(){
+				translate([0,0,6.35]) rotate([0,-90,0]) cylinder(d=20, h=12);
+				translate([0,0,-6.35]) rotate([0,-90,0]) cylinder(d=20, h=12);
+			} // hull
+		} // union
+	
+		//translate([0,0,-20]) Tube(OD=MotorTube_ID, ID=MotorTube_ID-6, Len=21, myfn=$preview? 36:360);
+		
+		//translate([0,0,3]) cylinder(d=ST_DSpring_OD, h=4+Overlap);
+		//translate([0,0,7]) cylinder(d1=ST_DSpring_OD, d2=ST_DSpring_OD+4, h=5+Overlap);
+		
+		//translate([0,0,Al_Tube_Z]) rotate([90,0,0]) cylinder(d=Al_Tube_d+IDXtra, h=Body_OD, center=true);
+		
+		// Rail guide bolts
+		translate([Body_ID/2, 0, -9]) {
+			translate([0,0,6.35]) rotate([0,90,0]) Bolt6Hole();
+			translate([0,0,-6.35]) rotate([0,90,0]) Bolt6Hole();
+		}
+		
+		// Rope holes
+		//for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j+180/nRopes]) 
+		//	translate([0,RopeHoleBC_r,-Overlap]) cylinder(d=Rope_d, h=5+Overlap*2);
+		
+	} // difference
+
+} // R203_MotorTubeTopper
+
+// R203_MotorTubeTopper();
 
 module R203_PetalHub(Body_OD=Coupler_OD){
 	// Bolts to bottom of electronics bay
