@@ -41,13 +41,16 @@
 //
 //  *** Petal Deployer ***
 // R203_PetalHub(); // Lower 
-// PD_NC_PetalHub(OD=Coupler_OD, nPetals=nPetals, nRopes=nPetals, ShockCord_a=-1, HasThreadedCore=false, ST_DSpring_ID=SE_Spring_CS11890_ID(), ST_DSpring_OD=SE_Spring_CS11890_OD(), CouplerTube_ID=0); // upper
+// PD_NC_PetalHub(OD=Coupler_OD, nPetals=nPetals, HasReplaceableSpringHolder=true, nRopes=nPetals, ShockCord_a=-1, HasThreadedCore=false, ST_DSpring_ID=SE_Spring_CS11890_ID(), ST_DSpring_OD=SE_Spring_CS11890_OD(), CouplerTube_ID=0); // upper
 // rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=DroguePetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=5.0, HasLocks=false, Lock_Span_a=0);
 // rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=MainPetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=5.0, HasLocks=false, Lock_Span_a=0);
 // rotate([-90,0,0]) PD_PetalSpringHolder(); // print 15
+// PD_HubSpringHolder();
 //
 // FinCan(LowerHalfOnly=false, UpperHalfOnly=false);
 // Rocket_Fin();
+//
+// TubeTest(OD=Body_OD, ID=Body_ID);
 //
 // *******************************************************
 //  ***** for Viewing *****
@@ -115,8 +118,6 @@ Cone_Len=140;
 
 MotorRetainer_OD=MotorTube_OD+5;
 MotorRetainer_Len=40;
-
-
 
 module ShowRocket(ShowInternals=false){
 	FinCan_Z=0;
@@ -225,8 +226,7 @@ module ShowRocket(ShowInternals=false){
 	/**/
 } // ShowRocket
 
-// 
-ShowRocket(ShowInternals=false);
+// ShowRocket(ShowInternals=false);
 // ShowRocket(ShowInternals=true);
 
 module EBay(TopOnly=false, BottomOnly=false, ShowDoors=false){

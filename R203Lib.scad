@@ -119,6 +119,7 @@ module R203_PetalHub(Body_OD=Coupler_OD){
 	difference(){
 		PD_PetalHub(OD=Coupler_OD, 
 					nPetals=nPetals, 
+					HasReplaceableSpringHolder=true,
 					HasBolts=true,
 					nBolts=nPetals,
 					ShockCord_a=-1,
