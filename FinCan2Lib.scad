@@ -3,18 +3,19 @@
 // Filename: FinCan2Lib.scad
 // by David M. Flynn
 // Created: 12/24/2023 
-// Revision: 0.9.8  10/27/2024
+// Revision: 0.9.9  12/17/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 //
-//  This file is sample code.
+// Fin can with lots of options.
 //
 //  ***** History *****
 //
-function FinCan2LibRev()="FinCan2Lib 0.9.7";
+function FinCan2LibRev()="FinCan2Lib 0.9.9";
 echo(FinCan2LibRev());
 //
+// 0.9.9  12/17/2024  Fixed some FC2_TailCone() issues
 // 0.9.8  10/27/2024  Fixed FC2_MotorRetainer() math
 // 0.9.7  8/24/2024   Added HollowFinRoots parameter to FC2_FinCan()
 // 0.9.6  8/21/2024	  Geometry changed: Rail guide/post is now at 0° (+Y) first fin at 180/nFins.
@@ -271,7 +272,11 @@ module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 			
 			translate([0,0,-Overlap]) 
 				cylinder(d=Interface_OD, h=FinInset_Len+FinAlignment_Len+Overlap, $fn=$preview? 90:360);
+				
 		} // union
+		
+		// Trim Top
+		translate([0,0,1]) cylinder(d=Body_OD+2, h=Body_OD/2);
 		
 		// Hollow core
 		if (MakeHollow) difference(){
@@ -298,10 +303,9 @@ module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 			}
 			
 			// Fin Boxes
-			for (j=[0:nFins]) rotate([0,0,360/nFins*j]) 
-				translate([0,-FinBox_W/2,-Cone_Len]) 
-					cube([Body_OD/2,FinBox_W,Cone_Len+Tail_r+FinInset_Len+FinAlignment_Len+Overlap*2]);
-					
+			for (j=[0:nFins]) rotate([0,0,360/nFins*j+180/nFins]) 
+				translate([-FinBox_W/2,0,-Cone_Len]) 
+					cube([FinBox_W, Body_OD/2, Cone_Len+Tail_r+FinInset_Len+FinAlignment_Len+Overlap*2]);		
 	
 		} // difference
 		
@@ -324,6 +328,10 @@ module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 		if ($preview) translate([3,3,-Cone_Len-Overlap]) cube([Body_OD/2,Body_OD/2,Cone_Len+10]);
 	} // difference
 	
+	// Lower centering ring
+	translate([0,0,-3])
+		CenteringRing(OD=Body_OD-1, ID=MotorTubeHole_d, Thickness=6, nHoles=nFins, Offset=0);
+
 	if (Threaded) difference(){
 		translate([0,0,-Cone_Len+Nut_Len-10]) 
 			ExternalThread(Pitch=ThreadPitch, Dia_Nominal=NomonalThread_d, 
@@ -340,6 +348,12 @@ rotate([180,0,0]) FC2_TailCone(Body_OD=BT75Body_OD, MotorTube_OD=BT54Body_OD,
 				nFins=5,
 				Fin_Root_W=12, Fin_Root_L=100, Fin_Post_h=10, Fin_Chamfer_L=22,
 				Threaded=true, Cone_Len=40, Interface_OD=BT75Body_ID, FinInset_Len=5, MakeHollow=false, Extra_OD=2);
+/**/
+/*
+FC2_TailCone(Body_OD=ULine203Body_OD, MotorTube_OD=BT75Body_OD,
+				nFins=5,
+				Fin_Root_W=16, Fin_Root_L=400, Fin_Post_h=20, Fin_Chamfer_L=60,
+				Threaded=false, Cone_Len=120, Interface_OD=ULine203Body_ID, FinInset_Len=10, MakeHollow=true, Extra_OD=0);
 /**/
 
 module FC2_MotorRetainer(Body_OD=BT98Body_OD,

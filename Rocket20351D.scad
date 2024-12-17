@@ -50,7 +50,10 @@
 // rotate([-90,0,0]) PD_PetalSpringHolder(); // print 15
 // PD_HubSpringHolder();
 //
-// FinCan(LowerHalfOnly=false, UpperHalfOnly=false);
+// 
+// FinCan(LowerHalfOnly=false, UpperHalfOnly=true, FinCanOnly=false);
+// FinCan(LowerHalfOnly=true, UpperHalfOnly=false, FinCanOnly=false);
+// rotate([180,0,0]) FinCan(LowerHalfOnly=false, UpperHalfOnly=false, FinCanOnly=true);
 // Rocket_Fin();
 //
 // TubeTest(OD=Body_OD, ID=Body_ID);
@@ -247,11 +250,12 @@ module EBay(TopOnly=false, BottomOnly=false, ShowDoors=false){
 
 // EBay();
 
-module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
+module FinCan(LowerHalfOnly=false, UpperHalfOnly=false, FinCanOnly=false){
 	
 	Cutout_d=60;
 	Cutout_Depth=35;
 	IncludeDecor=false;
+	RailGuide_Z=IncludeDecor? FinCan_Len-40:40;
 	
 	module Decor(D=Cutout_d){
 		hull(){
@@ -272,20 +276,22 @@ module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 	
 	difference(){
 		FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=FinCan_Len,
-				MotorTube_OD=MotorTube_OD, RailGuide_h=Body_OD/2+2, RailGuide_z=FinCan_Len-40,
+				MotorTube_OD=MotorTube_OD, RailGuide_h=Body_OD/2+2, RailGuide_z=RailGuide_Z,
 				nFins=nFins, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 				Fin_Root_W=Fin_Root_W, Fin_Root_L=Fin_Root_L, Fin_Post_h=Fin_Post_h, Fin_Chamfer_L=Fin_Chamfer_L,
 				Cone_Len=Cone_Len, ThreadedTC=false, Extra_OD=0, RailGuideLen=40,
 				LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly, HasWireHoles=false, 
-				HollowTailcone=false, 
+				HollowTailcone=true, 
 				HollowFinRoots=true, Wall_t=2.2);
 				
 		// Motor Retainer
-		translate([0,0,-Cone_Len-5]) cylinder(d=MotorRetainer_OD, h=MotorRetainer_Len);
+		translate([0,0,-Cone_Len-8]) cylinder(d=MotorRetainer_OD, h=MotorRetainer_Len);
 		translate([0,0,-Cone_Len-Overlap]) cylinder(d=Body_OD, h=5);
 		
 		if (IncludeDecor) Decor(D=Cutout_d);
 
+		if (FinCanOnly) cylinder(d=Body_OD+6, h=FinCan_Len+30);
+		if (LowerHalfOnly) mirror([0,0,1]) cylinder(d=Body_OD+1, h=Cone_Len);
 	} // difference
 	
 	if (IncludeDecor)
