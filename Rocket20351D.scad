@@ -3,7 +3,7 @@
 // Filename: Rocket20351D.scad
 // by David M. Flynn
 // Created: 12/13/2024
-// Revision: 0.9.0  12/13/2024
+// Revision: 0.9.1  12/17/2024
 // Units: mm
 // *******************************************************
 //  ***** Notes *****
@@ -15,6 +15,7 @@
 //
 //  ***** History *****
 //
+// 0.9.1  12/17/2024   3 part fin can
 // 0.9.0  12/13/2024   First code
 //
 // *******************************************************
@@ -61,7 +62,8 @@
 // *******************************************************
 //  ***** for Viewing *****
 //
-// ShowRocket(ShowInternals=false);
+// 
+ShowRocket(ShowInternals=false);
 //
 // *******************************************************
 include<TubesLib.scad>
@@ -124,6 +126,11 @@ Cone_Len=140;
 
 MotorRetainer_OD=MotorTube_OD+5;
 MotorRetainer_Len=40;
+
+echo(UpperBody_Len=UpperBody_Len);
+echo(EBay_Len=EBay_Len);
+echo(LowerBody_Len=LowerBody_Len);
+echo(FinCan_Len=FinCan_Len);
 
 module ShowRocket(ShowInternals=false){
 	FinCan_Z=0;
