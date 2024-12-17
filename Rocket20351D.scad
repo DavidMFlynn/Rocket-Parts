@@ -31,6 +31,7 @@
 // CenteringRing(OD=Body_ID, ID=MotorTube_OD, Thickness=10, nHoles=6, Offset=0, myfn=$preview? 90:360);
 // rotate([180,0,0]) R203_MotorTubeTopper();
 //	
+//  *** Electronics Bay ***
 // rotate([180,0,0]) EBay(TopOnly=true, BottomOnly=false, ShowDoors=false);
 // EBay(TopOnly=false, BottomOnly=true, ShowDoors=false);
 //  *** Doors ***
@@ -38,6 +39,7 @@
 // rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD, HasSwitch=false, DoubleBatt=false);
 // rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD, HasSwitch=true, DoubleBatt=false);
 //
+//  *** Ball Lock Unit ***
 // STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD, Engagement_Len=Engagement_Len);
 // R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID);
 // STB_LockDisk(Body_ID=Body_ID, nLockBalls=nLockBalls, HasLargeInnerBearing=true);
@@ -57,13 +59,14 @@
 // rotate([180,0,0]) FinCan(LowerHalfOnly=false, UpperHalfOnly=false, FinCanOnly=true);
 // Rocket_Fin();
 //
+// rotate([90,0,0]) BoltOnRailGuide(Length = 40, BoltSpace=12.7, RoundEnds=true, ExtraBack=0);
+//
 // TubeTest(OD=Body_OD, ID=Body_ID);
 //
 // *******************************************************
 //  ***** for Viewing *****
 //
-// 
-ShowRocket(ShowInternals=false);
+// ShowRocket(ShowInternals=false);
 //
 // *******************************************************
 include<TubesLib.scad>
