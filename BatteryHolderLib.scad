@@ -397,7 +397,7 @@ module Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, HasSwitch=fal
 	
 	DoorFrame(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t, Tube_OD=Tube_OD, HasSixBolts=false, HasBoltBosses=true);
 	
-	if ($preview&&ShowDoor)  
+	if (ShowDoor)  
 		Batt_Door(Tube_OD=Tube_OD, Door_X=Door_X, InnerTube_OD=0, HasSwitch=HasSwitch);
 		
 } // Batt_BayDoorFrame

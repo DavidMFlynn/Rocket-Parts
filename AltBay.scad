@@ -242,7 +242,7 @@ module Alt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=BT98Body_ID, DoorXtra_X=0,
 		
 	} // difference
 	
-	if ($preview&&ShowDoor) AltDoor54(Tube_OD=Tube_OD, DoorXtra_X=DoorXtra_X, DoorXtra_Y=DoorXtra_Y);
+	if (ShowDoor) AltDoor54(Tube_OD=Tube_OD, DoorXtra_X=DoorXtra_X, DoorXtra_Y=DoorXtra_Y);
 } // Alt_BayDoorFrame
 
 //Alt_BayDoorFrame(ShowDoor=false);

@@ -35,15 +35,15 @@ echo(FinsRev());
 // Fin(Root_L=200, Root_W=6, Tip_W=2.5, Span=90, Chamfer_a=15);
 //
 //
-// TrapFin2(Post_h=10, Root_L=180, Tip_L=120, Root_W=10, Tip_W=5.0, Span=120, Chamfer_L=18, TipOffset=0, Bisect=false, Bisect_X=0, PrinterBrim_H=0.9);
+// TrapFin2(Post_h=10, Root_L=180, Tip_L=120, Root_W=10, Tip_W=5.0, Span=120, Chamfer_L=18, TipOffset=0, Bisect=false, Bisect_X=0, PrinterBrim_H=0.9, HasSpiralVaseRibs=true);
 //
 // *** Examples ***
-// TrapFin2(Post_h=10, Root_L=240, Tip_L=50, Root_W=12, Tip_W=7.0, Span=150, Chamfer_L=24, TipOffset=60, PrinterBrim_H=0.9);
+// TrapFin2(Post_h=10, Root_L=240, Tip_L=50, Root_W=12, Tip_W=7.0, Span=150, Chamfer_L=24, TipOffset=60, PrinterBrim_H=0.9, HasSpiralVaseRibs=true);
 //
 // OAL = Root_L + (-Root_L/2 + TipOffset + Tip_L/2) = 260mm
-// TrapFin2(Post_h=10, Root_L=200, Tip_L=80, Root_W=14, Tip_W=5.0, Span=180, Chamfer_L=32, TipOffset=120, PrinterBrim_H=0.9);
+// TrapFin2(Post_h=10, Root_L=200, Tip_L=80, Root_W=14, Tip_W=5.0, Span=180, Chamfer_L=32, TipOffset=120, PrinterBrim_H=0.9, HasSpiralVaseRibs=true);
 //
-// TrapFin2(Post_h=14, Root_L=400, Tip_L=150, Root_W=20, Tip_W=8.0, Span=270, Chamfer_L=44, TipOffset=80, Bisect=false, Bisect_X=0, HasSpar=true, Spar_d=8.0, Spar_L=180, PrinterBrim_H=0.9);
+// TrapFin2(Post_h=14, Root_L=400, Tip_L=150, Root_W=20, Tip_W=8.0, Span=270, Chamfer_L=44, TipOffset=80, Bisect=false, Bisect_X=0, HasSpar=true, Spar_d=8.0, Spar_L=180, PrinterBrim_H=0.9, HasSpiralVaseRibs=true);
 //
 // ***********************************
 //  ***** Routines *****

@@ -9,6 +9,9 @@
 //  ***** Notes *****
 //
 // A big fat mailing tube rocket. Level 3 in 7000 feet AGL.
+// Five Fins, Single Stage, Dual Deploy, Redundant Electronics, Non-Pyro Deployment
+// Mailing tube 203mm inside diameter.
+// PETG+CF fins and nosecone
 //
 //  ***** History *****
 //
@@ -167,7 +170,7 @@ module ShowRocket(ShowInternals=false){
 	}	
 	/**/
 	
-	translate([0,0,EBay_Z]) rotate([0,0,10]) EBay();
+	translate([0,0,EBay_Z]) rotate([0,0,10]) EBay(ShowDoors=!ShowInternals);
 	
 	//*	
 	translate([0,0,LowerBallLock_Z+Engagement_Len/2]){
@@ -248,6 +251,7 @@ module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 	
 	Cutout_d=60;
 	Cutout_Depth=35;
+	IncludeDecor=false;
 	
 	module Decor(D=Cutout_d){
 		hull(){
@@ -280,10 +284,11 @@ module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 		translate([0,0,-Cone_Len-5]) cylinder(d=MotorRetainer_OD, h=MotorRetainer_Len);
 		translate([0,0,-Cone_Len-Overlap]) cylinder(d=Body_OD, h=5);
 		
-		Decor(D=Cutout_d);
+		if (IncludeDecor) Decor(D=Cutout_d);
 
 	} // difference
 	
+	if (IncludeDecor)
 	difference(){
 		intersection(){
 			cylinder(d=Body_OD-1, h=FinCan_Len);
@@ -302,7 +307,7 @@ module Rocket_Fin(){
 	TrapFin2(Post_h=Fin_Post_h, Root_L=Fin_Root_L, Tip_L=Fin_Tip_L,
 			Root_W=Fin_Root_W, Tip_W=Fin_Tip_W,
 			Span=Fin_Span, Chamfer_L=Fin_Chamfer_L,
-					TipOffset=Fin_TipOffset);
+					TipOffset=Fin_TipOffset, PrinterBrim_H=0.8, HasSpiralVaseRibs=false);
 
 } // Rocket_Fin
 
