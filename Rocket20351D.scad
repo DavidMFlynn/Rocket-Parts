@@ -18,6 +18,20 @@
 // 0.9.1  12/17/2024   3 part fin can
 // 0.9.0  12/13/2024   First code
 //
+//  ***** Hardware *****
+//
+// #4-40 x 1/4" BHCS 			(28ea, Petal spring holders)
+// #4-40 x 1/2" SHCS			(28ea, Ball Locks)
+// #6-32 x 3/4" BHCS			(4ea, Rail Guides)
+//
+// 1/2" Delrin Ball				(14ea, Ball Locks)
+// 4mm x 10mm Dowel				(14ea, Ball Locks)
+// 4mm x 20mm Dowel				(4ea, Ball Locks)
+// MR84 Ball Bearing			(14ea, Ball Locks)
+// 6808 Ball Bearing			(2ea, Ball Locks)
+// CS3715 Spring				(14ea, Petal Springs)
+// CS11890 Spring				(4ea, Deployment Springs)
+//
 // *******************************************************
 //  ***** for STL output *****
 //
