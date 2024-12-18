@@ -3,7 +3,7 @@
 // Filename: NoseCone.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.16  12/17/2024
+// Revision: 0.9.17  12/18/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-function NoseConeRev()="NoseCone Rev. 0.9.16";
+function NoseConeRev()="NoseCone Rev. 0.9.17";
 echo(NoseConeRev());
+// 0.9.17  12/18/2024 Added OgiveTailConeShape() and OgiveTailCone()
 // 0.9.16  12/17/2024 Added functions NC_OGiveArcOffset(R=10,L=50) and NC_OGiveTipX0(R=10,L=50,Tip_R)
 // 0.9.15  9/12/2024  Modified NC_ShockcordRing75() to work w/ 65mm body tube
 // 0.9.14  9/2/2024   Added custom nosecone ID (NC_ID=0) parameter to NC_ShockcordRingDual
@@ -41,6 +42,8 @@ echo(NoseConeRev());
 // BluntConeNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=180, Base_L=21, nRivets=3, Tip_R=15, HasThreadedTip=false, Wall_T=3);
 // OgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=170, Base_L=21, Wall_T=3);
 //
+// OgiveTailCone(Ogive_L=150, Body_D=100, End_D=66, Wall_T=3); // Truncated tangent ogive used to make a tail cone
+//
 // BluntOgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=280, Base_L=5, nRivets=3, Tip_R=5, Wall_T=3, Cut_Z=130, Transition_OD=PML98Body_OD, LowerPortion=false);
 // 
 // Splice_BONC(OD=58, H=10, L=160, Base_L=5, Tip_R=5, Wall_T=2.2, Cut_Z=80);  // fix a failed print
@@ -57,6 +60,7 @@ function NC_OGiveTipX0(R=10,L=50,Tip_R)=L-sqrt((NC_OGiveArcOffset(R,L)-Tip_R)*(N
 // BluntConeShape(L=100, D=50, Base_L=2, Tip_R=5); //Spherically blunted conic
 // OgiveShape(L=100, D=50, Base_L=2, Tip_R=5); // tangent ogive
 // BluntOgiveShape(L=150, D=50, Base_L=10, Tip_R=5); // Spherically blunted tangent ogive
+// OgiveTailConeShape(Ogive_L=150, Body_D=100, End_D=66, Thickness=0); // truncated tangent ogive
 //
 // ***********************************
 
@@ -528,7 +532,7 @@ module OgiveShape(L=100, D=50, Base_L=2){
 	if (Base_L>0) square([R,Base_L+Overlap]);
 } // OgiveShape
 
-//rotate_extrude() OgiveShape();
+// rotate_extrude() OgiveShape();
 
 module OgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Wall_T=3){
 	R=OD/2;
@@ -554,7 +558,37 @@ module OgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Wall_T=3){
 	
 } // OgiveNoseCone
 
-//OgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=180, Base_L=21, Wall_T=3);
+// OgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=180, Base_L=21, Wall_T=3);
+
+module OgiveTailConeShape(Ogive_L=150, Body_D=100, End_D=66, Thickness=0){
+	R=Body_D/2;
+	End_R=End_D/2;
+	p=NC_OGiveArcOffset(R,Ogive_L);
+	X0=NC_OGiveTipX0(R,Ogive_L,End_R);
+	
+	intersection(){
+		square([R,Ogive_L-X0]); // keep first quadrant only
+		translate([-p+R, 0, 0]) circle(r=p-Thickness, $fn=$preview? 180:720);
+	} // intersection
+} // OgiveTailConeShape
+
+// OgiveTailConeShape();
+
+module OgiveTailCone(Ogive_L=150, Body_D=100, End_D=66, Wall_T=3){
+	// Truncated tangent ogive used to make a tail cone
+	
+	difference(){
+		rotate_extrude($fn=$preview? 90:720) 
+			OgiveTailConeShape(Ogive_L=Ogive_L, Body_D=Body_D, End_D=End_D, Thickness=0);
+			
+		if (Wall_T>0)
+		translate([0,0,-Overlap])
+			rotate_extrude($fn=$preview? 90:720) 
+				OgiveTailConeShape(Ogive_L=Ogive_L, Body_D=Body_D, End_D=End_D-1, Thickness=Wall_T);
+	} // difference
+} // OgiveTailCone
+
+// OgiveTailCone();
 
 module BluntOgiveShape(L=150, D=50, Base_L=10, Tip_R=5, Thickness=0){
 	// Spherically blunted tangent ogive
@@ -565,16 +599,10 @@ module BluntOgiveShape(L=150, D=50, Base_L=10, Tip_R=5, Thickness=0){
 	translate([0,Base_L,0])
 	difference(){
 		hull(){
-			
-			difference(){
-				intersection(){
-					square([R,L]); // keep first quadrant only
-					translate([-p+R, 0, 0]) circle(r=p-Thickness, $fn=$preview? 180:720);
-				} // intersection
-				
-				// Cut off top
-				translate([0, L-X0, 0]) square([D, D]);
-			} // difference
+			intersection(){
+				square([R,L-X0]); // keep first quadrant only
+				translate([-p+R, 0, 0]) circle(r=p-Thickness, $fn=$preview? 180:720);
+			} // intersection
 			
 			// Tip
 			translate([0, L-X0, 0]) circle(r=Tip_R-Thickness, $fn=$preview? 180:720);

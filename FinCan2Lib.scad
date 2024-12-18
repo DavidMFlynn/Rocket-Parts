@@ -3,7 +3,7 @@
 // Filename: FinCan2Lib.scad
 // by David M. Flynn
 // Created: 12/24/2023 
-// Revision: 0.9.9  12/17/2024
+// Revision: 0.9.10  12/18/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,9 +12,10 @@
 //
 //  ***** History *****
 //
-function FinCan2LibRev()="FinCan2Lib 0.9.9";
+function FinCan2LibRev()="FinCan2Lib 0.9.10";
 echo(FinCan2LibRev());
 //
+// 0.9.10  12/18/2024 Added Ogive tail cone option
 // 0.9.9  12/17/2024  Fixed some FC2_TailCone() issues
 // 0.9.8  10/27/2024  Fixed FC2_MotorRetainer() math
 // 0.9.7  8/24/2024   Added HollowFinRoots parameter to FC2_FinCan()
@@ -68,6 +69,7 @@ FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 // ***********************************
 
 include<TubesLib.scad>
+use<NoseCone.scad> echo(NoseConeRev()); // OgiveTailCone();
 use<Fins.scad>
 use<RailGuide.scad>
 include<CommonStuffSAEmm.scad>
@@ -88,7 +90,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 				Fin_Root_W=14, Fin_Root_L=130, Fin_Post_h=14, Fin_Chamfer_L=32,
 				Cone_Len=65, ThreadedTC=true, Extra_OD=0, RailGuideLen=30,
 				LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false, HollowTailcone=false, 
-				HollowFinRoots=false, Wall_t=1.2){
+				HollowFinRoots=false, Wall_t=1.2, OgiveTailCone=false){
 				
 	FinBox_W=Fin_Root_W+IDXtra*2+Wall_t*2;
 	RailGuideTube_Len=(RailGuideLen-5)*2;
@@ -179,7 +181,8 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 						Fin_Root_W=Fin_Root_W, Fin_Root_L=Fin_Root_L, 
 						Fin_Post_h=Fin_Post_h, Fin_Chamfer_L=Fin_Chamfer_L,
 						Threaded=ThreadedTC, Cone_Len=Cone_Len, Interface_OD=Body_OD-1,
-						FinInset_Len=(Can_Len-Fin_Root_L)/2, MakeHollow=HollowTailcone, Extra_OD=Extra_OD);
+						FinInset_Len=(Can_Len-Fin_Root_L)/2, 
+						MakeHollow=HollowTailcone, Extra_OD=Extra_OD, Ogive=OgiveTailCone);
 			/**/
 			
 			// Rail guide bolt boss
@@ -242,7 +245,8 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 				nFins=5,
 				Fin_Root_W=12, Fin_Root_L=100, Fin_Post_h=10, Fin_Chamfer_L=22,
-				Threaded=true, Cone_Len=65, Interface_OD=Body_ID, FinInset_Len=5, MakeHollow=false, Extra_OD=0){
+				Threaded=true, Cone_Len=65, Interface_OD=Body_ID, FinInset_Len=5, 
+				MakeHollow=false, Extra_OD=0, Ogive=false, Ogive_Len=400){
 				
 	
 	FinAlignment_Len=0;
@@ -261,6 +265,9 @@ module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 	//echo(Interface_OD=Interface_OD);
 	difference(){
 		union(){
+			if (Ogive){
+				rotate([180,0,0]) OgiveTailCone(Ogive_L=Ogive_Len, Body_D=Body_OD, End_D=66, Wall_T=3);
+			}else{
 			hull(){
 				translate([0,0,-Cone_Len]) cylinder(d=Base_d, h=2, $fn=$preview? 90:360);
 				
@@ -269,6 +276,7 @@ module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 					translate([0,0,Overlap]) cylinder(d=Body_OD+1,h=50);
 				}
 			} // hull
+			}
 			
 			translate([0,0,-Overlap]) 
 				cylinder(d=Interface_OD, h=FinInset_Len+FinAlignment_Len+Overlap, $fn=$preview? 90:360);
@@ -358,7 +366,7 @@ FC2_TailCone(Body_OD=ULine203Body_OD, MotorTube_OD=BT75Body_OD,
 
 module FC2_MotorRetainer(Body_OD=BT98Body_OD,
 						MotorTube_OD=BT54Body_OD, MotorTube_ID=BT54Body_ID,
-						HasWrenchCuts=false, Cone_Len=65, ExtraLen=0, Extra_OD=0){
+						HasWrenchCuts=false, Cone_Len=65, ExtraLen=0, Extra_OD=0, Ogive=false){
 	
 	
 	AftClosure_h=10;
