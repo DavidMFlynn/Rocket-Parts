@@ -3,7 +3,7 @@
 // Filename: NoseCone.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.15  9/12/2024
+// Revision: 0.9.16  12/17/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,24 +12,25 @@
 //
 //  ***** History *****
 //
-function NoseConeRev()="NoseCone Rev. 0.9.15";
+function NoseConeRev()="NoseCone Rev. 0.9.16";
 echo(NoseConeRev());
-// 0.9.15  9/12/2024 Modified NC_ShockcordRing75() to work w/ 65mm body tube
-// 0.9.14  9/2/2024  Added custom nosecone ID (NC_ID=0) parameter to NC_ShockcordRingDual
-// 0.9.13  8/30/2024 Added HasThreadedTip parameter to BluntOgiveNoseCone for attaching a weight
-// 0.9.12  3/31/2024 Added skirt bolt holes (nBolts) to NC_ShockcordRingDual()
-// 0.9.11 12/3/2023  Added NC_ShockcordRing75
-// 0.9.10 11/20/2023 Added nRivets=3 parameter
-// 0.9.9  10/22/2023 fixed BluntOgiveNoseCone skirt
-// 0.9.8  10/21/2023 fixed BluntOgiveNoseCone thicness again
-// 0.9.7  2/23/2023  Added HasUBolt to NoseconeBase, fixed nosecode inside again.
-// 0.9.6  1/4/2023   Added Bulkplate_BONC, Splice_BONC
-// 0.9.5  10/19/2022 edited Transition_OD
-// 0.9.4  9/18/2022  More fixes, optioned HasRivets
-// 0.9.3  9/8/2022   Added base radius to BluntConeNoseCone. 
-// 0.9.2  7/25/2022  Using offset for nosecone wall. Added BluntConeNoseCone and OgiveNoseCone. 
-// 0.9.1  6/24/2022  Thinner wall nosecone, added Wall_T
-// 0.9.0  6/13/2022  First code.
+// 0.9.16  12/17/2024 Added functions NC_OGiveArcOffset(R=10,L=50) and NC_OGiveTipX0(R=10,L=50,Tip_R)
+// 0.9.15  9/12/2024  Modified NC_ShockcordRing75() to work w/ 65mm body tube
+// 0.9.14  9/2/2024   Added custom nosecone ID (NC_ID=0) parameter to NC_ShockcordRingDual
+// 0.9.13  8/30/2024  Added HasThreadedTip parameter to BluntOgiveNoseCone for attaching a weight
+// 0.9.12  3/31/2024  Added skirt bolt holes (nBolts) to NC_ShockcordRingDual()
+// 0.9.11 12/3/2023   Added NC_ShockcordRing75
+// 0.9.10 11/20/2023  Added nRivets=3 parameter
+// 0.9.9  10/22/2023  fixed BluntOgiveNoseCone skirt
+// 0.9.8  10/21/2023  fixed BluntOgiveNoseCone thicness again
+// 0.9.7  2/23/2023   Added HasUBolt to NoseconeBase, fixed nosecode inside again.
+// 0.9.6  1/4/2023    Added Bulkplate_BONC, Splice_BONC
+// 0.9.5  10/19/2022  edited Transition_OD
+// 0.9.4  9/18/2022   More fixes, optioned HasRivets
+// 0.9.3  9/8/2022    Added base radius to BluntConeNoseCone. 
+// 0.9.2  7/25/2022   Using offset for nosecone wall. Added BluntConeNoseCone and OgiveNoseCone. 
+// 0.9.1  6/24/2022   Thinner wall nosecone, added Wall_T
+// 0.9.0  6/13/2022   First code.
 //
 // ***********************************
 //  ***** for STL output *****
@@ -49,6 +50,9 @@ echo(NoseConeRev());
 //
 // ***********************************
 //  ***** Routines *****
+//
+function NC_OGiveArcOffset(R=10,L=50)=(R*R+L*L)/(2*R); // p:center of arc = -p+R or p-R
+function NC_OGiveTipX0(R=10,L=50,Tip_R)=L-sqrt((NC_OGiveArcOffset(R,L)-Tip_R)*(NC_OGiveArcOffset(R,L)-Tip_R)-(NC_OGiveArcOffset(R,L)-R)*(NC_OGiveArcOffset(R,L)-R)); // X0:End of Ogive portion = L-X0
 //
 // BluntConeShape(L=100, D=50, Base_L=2, Tip_R=5); //Spherically blunted conic
 // OgiveShape(L=100, D=50, Base_L=2, Tip_R=5); // tangent ogive
@@ -510,7 +514,7 @@ module ElipticalShape(L=100, D=50, Base_L=2){
 module OgiveShape(L=100, D=50, Base_L=2){
 	// tangent ogive
 	R=D/2;
-	p=(R*R+L*L)/(2*R);
+	p=NC_OGiveArcOffset(R,L);
 	
 	translate([0,Base_L,0])
 	difference(){
@@ -528,7 +532,7 @@ module OgiveShape(L=100, D=50, Base_L=2){
 
 module OgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Wall_T=3){
 	R=OD/2;
-	p=(R*R+L*L)/(2*R);
+	p=NC_OGiveArcOffset(R,L);
 	
 	difference(){
 		rotate_extrude($fn=$preview? 90:720) 
@@ -555,8 +559,8 @@ module OgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Wall_T=3){
 module BluntOgiveShape(L=150, D=50, Base_L=10, Tip_R=5, Thickness=0){
 	// Spherically blunted tangent ogive
 	R=D/2;
-	p=(R*R+L*L)/(2*R);
-	X0 = L-sqrt((p-Tip_R)*(p-Tip_R)-(p-R)*(p-R));
+	p=NC_OGiveArcOffset(R,L);
+	X0 = NC_OGiveTipX0(R,L,Tip_R); //L-sqrt((p-Tip_R)*(p-Tip_R)-(p-R)*(p-R));
 	
 	translate([0,Base_L,0])
 	difference(){
@@ -568,6 +572,7 @@ module BluntOgiveShape(L=150, D=50, Base_L=10, Tip_R=5, Thickness=0){
 					translate([-p+R, 0, 0]) circle(r=p-Thickness, $fn=$preview? 180:720);
 				} // intersection
 				
+				// Cut off top
 				translate([0, L-X0, 0]) square([D, D]);
 			} // difference
 			
@@ -575,6 +580,7 @@ module BluntOgiveShape(L=150, D=50, Base_L=10, Tip_R=5, Thickness=0){
 			translate([0, L-X0, 0]) circle(r=Tip_R-Thickness, $fn=$preview? 180:720);
 		} // hull
 	
+		// Remove left side
 		translate([-D, -Overlap, 0]) square([D, L+Overlap*2]);
 	} // difference
 	
@@ -583,13 +589,12 @@ module BluntOgiveShape(L=150, D=50, Base_L=10, Tip_R=5, Thickness=0){
 } // BluntOgiveShape
 
 //rotate_extrude() 
-//offset(-3) BluntOgiveShape(L=190, D=137, Base_L=1, Tip_R=15);
+//offset(-3) BluntOgiveShape(L=190, D=137, Base_L=0, Tip_R=15);
 
 module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, Tip_R=5, HasThreadedTip=false, Wall_T=3, Cut_Z=0, Transition_OD=58, LowerPortion=false){
 
 	R=OD/2;
-	p=(R*R+L*L)/(2*R);
-	X0 = L-sqrt((p-Tip_R)*(p-Tip_R)-(p-R)*(p-R));
+	p=NC_OGiveArcOffset(R,L);
 	ThreadedTipDepth=40;
 	
 	difference(){
@@ -745,8 +750,7 @@ module Bulkplate_BONC(OD=58, T=10, L=160, Base_L=5, Tip_R=5, Wall_T=2.2, Cut_Z=8
 
 module BluntOgiveWeight(OD=58, L=160, Tip_R=5, Wall_T=3){
 	R=OD/2;
-	p=(R*R+L*L)/(2*R);
-	X0 = L-sqrt((p-Tip_R)*(p-Tip_R)-(p-R)*(p-R));
+	p=NC_OGiveArcOffset(R,L);
 	
 	Weight_d=20;
 	
@@ -758,15 +762,12 @@ module BluntOgiveWeight(OD=58, L=160, Tip_R=5, Wall_T=3){
 		translate([0,0,55+42]) cylinder(d=Weight_d, h=L/2);
 		
 		translate([0,0,55])
-		#for (j=[0:4]) rotate([0,0,360/5*j]) translate([Weight_d*0.9,0,0]) 
-			cylinder(d=Weight_d, h=40);
+			for (j=[0:4]) rotate([0,0,360/5*j]) translate([Weight_d*0.9,0,0]) 
+				cylinder(d=Weight_d, h=40);
 		
 		// cut off bottom
 		cylinder(d=200,h=55+Overlap);
-		
-		//cylinder(d=Wall_T*3, h=L-X0+Tip_R-Wall_T*2);
-		//translate([0,0,L-X0]) sphere(r=Tip_R-Wall_T,$fn=$preview? 36:360);
-		
+				
 		if ($preview==true) translate([0,-100,-1]) cube([100,100,200]);
 				
 	} // difference
