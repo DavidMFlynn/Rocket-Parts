@@ -35,7 +35,10 @@
 // *******************************************************
 //  ***** for STL output *****
 //
-// BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD, L=Nosecone_Len, Base_L=NoseconeBase_Len, nRivets=nNoseconeRivets, Tip_R=NoseconeTip_R, Wall_T=NoseconeWall_t, Cut_Z=0, Transition_OD=Body_OD, LowerPortion=false);
+// BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD, L=Nosecone_Len, Base_L=NoseconeBase_Len, nRivets=nNoseconeRivets, Tip_R=NoseconeTip_R, Wall_T=NoseconeWall_t, Cut_d=0, LowerPortion=false);
+
+// BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD, L=Nosecone_Len, Base_L=NoseconeBase_Len, nRivets=nNoseconeRivets, Tip_R=NoseconeTip_R, HasThreadedTip=false, Wall_T=NoseconeWall_t, Cut_d=Body_OD-40, LowerPortion=false); // tip
+// BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD, L=Nosecone_Len, Base_L=NoseconeBase_Len, nRivets=nNoseconeRivets, Tip_R=NoseconeTip_R, HasThreadedTip=false, Wall_T=NoseconeWall_t, Cut_d=Body_OD-40, LowerPortion=true); // base
 //
 // NC_ShockcordRingDual(Tube_OD=Body_OD, Tube_ID=Body_ID, NC_ID=0, NC_Base_L=NoseconeBase_Len, nRivets=nNoseconeRivets, nBolts=0);
 //
@@ -101,10 +104,19 @@ Overlap=0.05;
 IDXtra=0.2;
 $fn=$preview? 36:90;
 
+/*
+// a short nose cone
 Nosecone_Len=400;
 NoseconeBase_Len=15;
 NoseconeTip_R=15;
 NoseconeWall_t=2.2;
+/**/
+
+Nosecone_Len=700;
+NoseconeBase_Len=15;
+NoseconeTip_R=15;
+NoseconeWall_t=2.2;
+
 nNoseconeRivets=7;
 nEBay_Bolts=7;
 EBayBoltInset=8;
@@ -163,7 +175,7 @@ module ShowRocket(ShowInternals=false){
 	translate([0,0,NoseCone_Z]){
 		BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD, L=Nosecone_Len, Base_L=NoseconeBase_Len, 
 				nRivets=nNoseconeRivets, Tip_R=NoseconeTip_R, Wall_T=NoseconeWall_t, 
-				Cut_Z=0, Transition_OD=Body_OD, LowerPortion=false);
+				Cut_d=0, LowerPortion=false);
 		
 		color("Tan") rotate([0,0,90]) 
 			NC_ShockcordRingDual(Tube_OD=Body_OD, Tube_ID=Body_ID, NC_ID=0, NC_Base_L=NoseconeBase_Len, 

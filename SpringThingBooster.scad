@@ -3,7 +3,7 @@
 // Filename: SpringThingBooster.scad
 // by David M. Flynn
 // Created: 2/26/2023
-// Revision: 1.4.2   12/14/2024
+// Revision: 1.4.3   12/19/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -36,9 +36,10 @@
 //  Steel Dowel Pin 4mm (Undersized) x 16mm (3 Req.)
 //
 //  ***** History *****
-function SpringThingBoosterRev()="SpringThingBooster Rev. 1.4.2";
+function SpringThingBoosterRev()="SpringThingBooster Rev. 1.4.3";
 echo(SpringThingBoosterRev());
 
+// 1.4.3   12/19/2024 Fixed arming hole depth.
 // 1.4.2   12/14/2024 Removed STB_TubeEnd and renamed STB_TubeEnd2
 // 1.4.1   10/5/2024  Tighter ball path. No extra extension.
 // 1.4.0   10/4/2024  BallPerimeter_d is now calculated from the body tube ID.
@@ -424,14 +425,22 @@ module STB_TubeEnd(Body_ID=BT75Body_ID, nLockBalls=nLockBalls,
 } // STB_TubeEnd
 
 //rotate([180,0,0]) STB_TubeEnd(Body_ID=BT137Body_ID, nLockBalls=nBT137Balls, Body_OD=BT137Body_OD, Engagement_Len=20);
+// STB_TubeEnd(Body_ID=ULine203Body_ID, nLockBalls=7, Body_OD=ULine203Body_OD, Engagement_Len=30);
 
 ArmingHole_d=2.5;
+
+module STB_ManualDisArmingHole(Body_ID=BT75Body_ID, nLockBalls=nLockBalls){
+	rotate([0,0,360/nLockBalls]) translate([0, STB_LockPinBC_d(Body_ID)/2, -LockDiskHole_H/2+2])
+		rotate([0,90,0]) cylinder(d=ArmingHole_d, h=Body_ID/2);
+} // STB_ManualDisArmingHole
+
+// STB_ManualDisArmingHole();	
 
 module STB_ManualArmingHole(Body_ID=BT75Body_ID){
 
 	rotate([0,0,STB_Unlocked_a(Body_ID)]) 
 		translate([0,STB_LockPinBC_d(Body_ID)/2,LockDiskHole_H/2-2])
-			rotate([0,-90,0]) cylinder(d=ArmingHole_d, h=50);
+			rotate([0,-90,0]) cylinder(d=ArmingHole_d, h=Body_ID/2);
 } // STB_ManualArmingHole
 	
 //STB_ManualArmingHole();
@@ -684,12 +693,6 @@ STB_BallRetainerTop(Body_ID=BT137Body_ID, Outer_OD=BT137Body_OD, Body_OD=BT137Bo
 			Engagement_Len=25, HasLargeInnerBearing=true);
 	/**/		
 
-module STB_ManualDisArmingHole(Body_ID=BT75Body_ID, nLockBalls=nLockBalls){
-	rotate([0,0,360/nLockBalls]) translate([0, STB_LockPinBC_d(Body_ID)/2, -LockDiskHole_H/2+2])
-		rotate([0,90,0]) cylinder(d=ArmingHole_d, h=50);
-} // STB_ManualDisArmingHole
-
-// STB_ManualDisArmingHole();	
 		
 module STB_BallRetainerBottom(Body_ID=BT75Body_ID, Body_OD=BT75Body_ID, nLockBalls=nLockBalls, HasSpringGroove=true, Engagement_Len=20, HasLargeInnerBearing=false){
 

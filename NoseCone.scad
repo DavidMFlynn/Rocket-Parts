@@ -3,7 +3,7 @@
 // Filename: NoseCone.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.17  12/18/2024
+// Revision: 0.9.18  12/19/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-function NoseConeRev()="NoseCone Rev. 0.9.17";
+function NoseConeRev()="NoseCone Rev. 0.9.18";
 echo(NoseConeRev());
+// 0.9.18  12/19/2024 Fix the two part nose cone problem?, In BluntOgiveNoseCone() the cut parameter has been changed to Cut_d
 // 0.9.17  12/18/2024 Added OgiveTailConeShape() and OgiveTailCone()
 // 0.9.16  12/17/2024 Added functions NC_OGiveArcOffset(R=10,L=50) and NC_OGiveTipX0(R=10,L=50,Tip_R)
 // 0.9.15  9/12/2024  Modified NC_ShockcordRing75() to work w/ 65mm body tube
@@ -44,7 +45,7 @@ echo(NoseConeRev());
 //
 // OgiveTailCone(Ogive_L=150, Body_D=100, End_D=66, Wall_T=3); // Truncated tangent ogive used to make a tail cone
 //
-// BluntOgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=280, Base_L=5, nRivets=3, Tip_R=5, Wall_T=3, Cut_Z=130, Transition_OD=PML98Body_OD, LowerPortion=false);
+// BluntOgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=350, Base_L=15, nRivets=3, Tip_R=5, HasThreadedTip=false, Wall_T=2.2, Cut_d=0, LowerPortion=false); // Cut_d=PML98Body_OD-20 is good
 // 
 // Splice_BONC(OD=58, H=10, L=160, Base_L=5, Tip_R=5, Wall_T=2.2, Cut_Z=80);  // fix a failed print
 // Bulkplate_BONC(OD=58, T=10, L=160, Base_L=5, Tip_R=5, Wall_T=2.2, Cut_Z=80);
@@ -619,11 +620,15 @@ module BluntOgiveShape(L=150, D=50, Base_L=10, Tip_R=5, Thickness=0){
 //rotate_extrude() 
 //offset(-3) BluntOgiveShape(L=190, D=137, Base_L=0, Tip_R=15);
 
-module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, Tip_R=5, HasThreadedTip=false, Wall_T=3, Cut_Z=0, Transition_OD=58, LowerPortion=false){
+module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, Tip_R=5, HasThreadedTip=false, Wall_T=3, 
+							Cut_d=0, LowerPortion=false){
 
 	R=OD/2;
 	p=NC_OGiveArcOffset(R,L);
 	ThreadedTipDepth=40;
+	//echo(NC_OGiveTipX0(R,L,Cut_d/2));
+	Cut_Z=Base_L+L-NC_OGiveTipX0(R,L,Cut_d/2);
+	echo(Cut_Z=Cut_Z);
 	
 	difference(){
 		difference(){
@@ -655,15 +660,17 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, Tip_R=5, Ha
 		
 		if ($preview==true) translate([0,-OD/2-1,-1]) cube([OD/2+1,OD/2+1,L+2]);
 			
-		if (Cut_Z!=0 && LowerPortion==false)
+		if (Cut_d!=0 && LowerPortion==false)
 			translate([0,0, -Overlap]) cylinder(d=OD+1, h=Cut_Z+Overlap, $fn=90);
 		
-		if (Cut_Z!=0 && LowerPortion)
+		if (Cut_d!=0 && LowerPortion)
 			translate([0,0,Cut_Z]) cylinder(d=OD+1, h=Base_L+L-Cut_Z+Overlap);
 		
 	} // difference
 	
-	if (Cut_Z!=0 && LowerPortion)
+	GluingflangeHeight=7;
+	
+	if (Cut_d!=0 && LowerPortion)
 		difference(){
 			union(){
 				// gluing flange
@@ -673,55 +680,56 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, Tip_R=5, Ha
 					
 				// connect outer shell to gluing flange	
 				intersection(){
-					translate([0,0,Cut_Z-7]) cylinder(d=OD, h=12, $fn=$preview? 90:360);
+					translate([0,0,Cut_Z-7]) cylinder(d=OD, h=7, $fn=$preview? 90:360);
 					rotate_extrude($fn=$preview? 90:360) 
 						offset(-1) BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
 				}
 			} // union
 			
 			// Remove lower part
-			translate([0,0, -Overlap]) cylinder(d=OD+1, h=Cut_Z-5);
+			translate([0,0, -Overlap]) cylinder(d=OD+1, h=Cut_Z-GluingflangeHeight);
 			// Remove upper part
-			translate([0,0,Cut_Z+5]) cylinder(d=OD+1, h=L-Cut_Z+Overlap);
+			translate([0,0,Cut_Z+GluingflangeHeight]) cylinder(d=OD+1, h=L-Cut_Z+Overlap);
 			// Clean up inside
-			translate([0,0,Cut_Z-6]) cylinder(d=OD/2, h=12);
+			translate([0,0,Cut_Z-GluingflangeHeight-1]) cylinder(d=Wall_T*6, h=GluingflangeHeight*2+2);
 			
-			// this needs fixed, should be calculated, 
-			//Transition_OD=OD*0.7-Wall_T*2+16; // works for 102mm OD x 350mm L Cut @180mm
-			//Transition_OD=OD*((Cut_Z-Base_L)/(L-Base_L));
-			translate([0,0,Cut_Z-7]) 
-				cylinder(d1=Transition_OD, d2=Transition_OD-12, h=8, $fn=$preview? 90:360);
+			// taper so no support is needed
+			translate([0,0,Cut_Z-GluingflangeHeight-Overlap*2]) 
+				cylinder(d1=Cut_d-Wall_T, d2=Cut_d-Wall_T*4-IDXtra*4, h=GluingflangeHeight+Overlap*4, $fn=$preview? 90:360);
 			
+			// inside of gluing flange
 			rotate_extrude($fn=$preview? 90:360) 
-				offset(-Wall_T-2.2-IDXtra*2) BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
+				offset(-Wall_T*2-IDXtra*2) BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
 			
 			if ($preview==true) translate([0,-OD/2-1,-1]) cube([OD/2+2,OD/2+2,L+2]);
 		} // difference
 	
 } // BluntOgiveNoseCone
 
-//BluntOgiveNoseCone(ID=BT75Coupler_OD, OD=BT75Body_OD, L=220, Base_L=13, Tip_R=7, Wall_T=1.8, Cut_Z=0, LowerPortion=false);
+//BluntOgiveNoseCone(ID=BT75Coupler_OD, OD=BT75Body_OD, L=220, Base_L=13, Tip_R=7, Wall_T=1.8, Cut_d=0, LowerPortion=false);
 
-//BluntOgiveNoseCone(ID=BT75Coupler_OD, OD=BT75Body_OD, L=220, Base_L=13, Tip_R=6, Wall_T=1.8, Cut_Z=120, Transition_OD=BT75Body_OD-17, LowerPortion=true);
+//BluntOgiveNoseCone(ID=BT75Coupler_OD, OD=BT75Body_OD, L=220, Base_L=13, Tip_R=6, Wall_T=1.8, Cut_d=BT75Body_OD/2, Transition_OD=BT75Body_OD-17, LowerPortion=true);
 
-//BluntOgiveNoseCone(ID=BT54Coupler_OD, OD=BT54Body_OD, L=190, 	Base_L=20, Tip_R=10, Wall_T=2.2, Cut_Z=0, LowerPortion=false);
+//BluntOgiveNoseCone(ID=BT54Coupler_OD, OD=BT54Body_OD, L=190, 	Base_L=20, Tip_R=10, Wall_T=2.2, Cut_d=0, LowerPortion=false);
 /*
-BluntOgiveNoseCone(ID=BT137Body_ID, 
-					OD=PML98Body_OD,
-					Base_L=5,
-					L=400, 
-					Wall_T=7,
-					Tip_R=16,
-					Cut_Z=190, LowerPortion=true);
-/**/
-
-/*
+translate([0,0,0.2])
 BluntOgiveNoseCone(ID=PML98Body_ID, 
 					OD=PML98Body_OD,
+					Base_L=15,
 					L=350, 
 					Wall_T=2.2,
 					Tip_R=5,
-					Cut_Z=180, LowerPortion=true);
+					Cut_d=PML98Body_OD-20, LowerPortion=false);
+/**/
+
+//*
+BluntOgiveNoseCone(ID=PML98Body_ID, 
+					OD=PML98Body_OD,
+					Base_L=15,
+					L=350, 
+					Wall_T=2.8,
+					Tip_R=5,
+					Cut_d=PML98Body_OD-20, LowerPortion=true);
 /**/
 //BluntOgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=180, Base_L=21, Tip_R=23, Wall_T=3);
 
