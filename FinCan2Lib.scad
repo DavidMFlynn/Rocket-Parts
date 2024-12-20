@@ -90,7 +90,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 				Fin_Root_W=14, Fin_Root_L=130, Fin_Post_h=14, Fin_Chamfer_L=32,
 				Cone_Len=65, ThreadedTC=true, Extra_OD=0, RailGuideLen=30,
 				LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false, HollowTailcone=false, 
-				HollowFinRoots=false, Wall_t=1.2, OgiveTailCone=false){
+				HollowFinRoots=false, Wall_t=1.2, OgiveTailCone=false, Ogive_Len=400, OgiveCut_d=BT54Body_OD+8){
 				
 	FinBox_W=Fin_Root_W+IDXtra*2+Wall_t*2;
 	RailGuideTube_Len=(RailGuideLen-5)*2;
@@ -182,7 +182,8 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 						Fin_Post_h=Fin_Post_h, Fin_Chamfer_L=Fin_Chamfer_L,
 						Threaded=ThreadedTC, Cone_Len=Cone_Len, Interface_OD=Body_OD-1,
 						FinInset_Len=(Can_Len-Fin_Root_L)/2, 
-						MakeHollow=HollowTailcone, Extra_OD=Extra_OD, Ogive=OgiveTailCone);
+						MakeHollow=HollowTailcone, Extra_OD=Extra_OD, 
+						Ogive=OgiveTailCone, Ogive_Len=Ogive_Len, OgiveCut_d=OgiveCut_d);
 			/**/
 			
 			// Rail guide bolt boss
@@ -245,8 +246,8 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 				nFins=5,
 				Fin_Root_W=12, Fin_Root_L=100, Fin_Post_h=10, Fin_Chamfer_L=22,
-				Threaded=true, Cone_Len=65, Interface_OD=Body_ID, FinInset_Len=5, 
-				MakeHollow=false, Extra_OD=0, Ogive=false, Ogive_Len=400){
+				Threaded=true, Cone_Len=65, Interface_OD=BT98Body_ID, FinInset_Len=5, 
+				MakeHollow=false, Extra_OD=0, Ogive=false, Ogive_Len=400, OgiveCut_d=BT54Body_OD+8){
 				
 	
 	FinAlignment_Len=0;
@@ -261,12 +262,23 @@ module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 	Wall_t=1.2;
 	FinBox_W=Fin_Root_W+Wall_t*2;
 	MotorRetainer_Len=33;
+	Cut_d=OgiveCut_d;
+	Cut_Z=Ogive_Len-NC_OGiveTipX0(Body_OD/2,Ogive_Len,Cut_d/2);
 	
+	echo(Cut_d=Cut_d);
+	translate([0,0,-Cut_Z-1]) cylinder(d=Cut_d, h=1);
 	//echo(Interface_OD=Interface_OD);
 	difference(){
 		union(){
 			if (Ogive){
-				rotate([180,0,0]) OgiveTailCone(Ogive_L=Ogive_Len, Body_D=Body_OD, End_D=66, Wall_T=3);
+				if (MakeHollow){
+					rotate([180,0,0]) OgiveTailCone(Ogive_L=Ogive_Len, Body_D=Body_OD, End_D=Cut_d, Wall_T=HollowWall_t);
+					
+					// Motor tube
+					translate([0,0,-Cut_Z]) cylinder(d=Cut_d, h=Cut_Z);
+				}else{
+					rotate([180,0,0]) hull() OgiveTailCone(Ogive_L=Ogive_Len, Body_D=Body_OD, End_D=Cut_d, Wall_T=3);
+				}
 			}else{
 			hull(){
 				translate([0,0,-Cone_Len]) cylinder(d=Base_d, h=2, $fn=$preview? 90:360);
@@ -278,6 +290,7 @@ module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 			} // hull
 			}
 			
+			if (!Ogive)
 			translate([0,0,-Overlap]) 
 				cylinder(d=Interface_OD, h=FinInset_Len+FinAlignment_Len+Overlap, $fn=$preview? 90:360);
 				
@@ -287,7 +300,7 @@ module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 		translate([0,0,1]) cylinder(d=Body_OD+2, h=Body_OD/2);
 		
 		// Hollow core
-		if (MakeHollow) difference(){
+		if (MakeHollow && !Ogive) difference(){
 			union(){
 				hull(){
 					translate([0,0,-Cone_Len]) cylinder(d=Base_d-HollowWall_t*2, h=1, $fn=$preview? 90:360);
@@ -301,9 +314,11 @@ module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 				translate([0,0,-Overlap]) cylinder(d=Body_OD-HollowWall_t*2, h=FinInset_Len+FinAlignment_Len+Overlap*2, $fn=$preview? 90:360);
 			} // union
 		
+			if (!Ogive)
 			translate([0,0,-Cone_Len-Overlap]) 
 				cylinder(d=MotorTubeHole_d+HollowWall_t*2, h=Cone_Len+Tail_r+FinInset_Len+FinAlignment_Len+Overlap*2);
 			
+			if (!Ogive)
 			if (Threaded) {
 				translate([0,0,-Cone_Len-Overlap]) cylinder(d=Body_OD, h=Nut_Len+HollowWall_t+Overlap);
 			} else {
@@ -311,6 +326,7 @@ module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 			}
 			
 			// Fin Boxes
+			if (!Ogive)
 			for (j=[0:nFins]) rotate([0,0,360/nFins*j+180/nFins]) 
 				translate([-FinBox_W/2,0,-Cone_Len]) 
 					cube([FinBox_W, Body_OD/2, Cone_Len+Tail_r+FinInset_Len+FinAlignment_Len+Overlap*2]);		
@@ -324,16 +340,23 @@ module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 							Root_L=Fin_Root_L, Root_W=Fin_Root_W, Chamfer_L=Fin_Chamfer_L);
 		
 		
-		// Motor tube
-		translate([0,0,-Cone_Len-Overlap]) 
-			cylinder(d=MotorTubeHole_d, h=Cone_Len+Tail_r+FinInset_Len+FinAlignment_Len+Overlap*2);
+		// Motor tube hole
+		if (Ogive){
+			translate([0,0,-Cut_Z-Overlap]) 
+				cylinder(d=MotorTubeHole_d, h=Cut_Z+Overlap*2);
+		}else{
+			translate([0,0,-Cone_Len-Overlap]) 
+				cylinder(d=MotorTubeHole_d, h=Cone_Len+Tail_r+FinInset_Len+FinAlignment_Len+Overlap*2);
+		}
 	
 		// Rail button bolt hole
-		translate([-Body_OD/2,0,10]) rotate([0,-90,0]) Bolt8Hole();
+		//translate([-Body_OD/2,0,10]) rotate([0,-90,0]) Bolt8Hole();
 		
 		if (Threaded) translate([0,0,-Cone_Len-Overlap]) cylinder(d=Body_OD, h=Nut_Len);
 		
-		if ($preview) translate([3,3,-Cone_Len-Overlap]) cube([Body_OD/2,Body_OD/2,Cone_Len+10]);
+		if ($preview) 
+			if (Ogive) { translate([3,3,-Cut_Z-Overlap]) cube([Body_OD/2,Body_OD/2,Cut_Z+10]);}
+			else {translate([3,3,-Cone_Len-Overlap]) cube([Body_OD/2,Body_OD/2,Cone_Len+10]);}
 	} // difference
 	
 	// Lower centering ring
@@ -351,6 +374,13 @@ module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 	}
 } // FC2_TailCone
 
+//*
+FC2_TailCone(Body_OD=ULine203Body_OD, MotorTube_OD=BT75Body_OD,
+				nFins=5,
+				Fin_Root_W=12, Fin_Root_L=100, Fin_Post_h=10, Fin_Chamfer_L=22,
+				Threaded=false, Cone_Len=65, Interface_OD=ULine203Body_ID, FinInset_Len=5, 
+				MakeHollow=true, Extra_OD=0, Ogive=true, Ogive_Len=240, OgiveCut_d=BT75Body_OD+8);
+/**/			
 /*
 rotate([180,0,0]) FC2_TailCone(Body_OD=BT75Body_OD, MotorTube_OD=BT54Body_OD,
 				nFins=5,

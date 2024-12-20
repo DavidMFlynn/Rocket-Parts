@@ -35,9 +35,10 @@
 // *******************************************************
 //  ***** for STL output *****
 //
-// BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD, L=Nosecone_Len, Base_L=NoseconeBase_Len, nRivets=nNoseconeRivets, Tip_R=NoseconeTip_R, Wall_T=NoseconeWall_t, Cut_d=0, LowerPortion=false);
+// BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD, L=Nosecone_Len, Base_L=NoseconeBase_Len, nRivets=nNoseconeRivets, Tip_R=NoseconeTip_R, HasThreadedTip=false, Wall_T=NoseconeWall_t, Cut_d=0, LowerPortion=false); // one piece
 
-// BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD, L=Nosecone_Len, Base_L=NoseconeBase_Len, nRivets=nNoseconeRivets, Tip_R=NoseconeTip_R, HasThreadedTip=false, Wall_T=NoseconeWall_t, Cut_d=Body_OD-40, LowerPortion=false); // tip
+// translate([0,0,0.2]) BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD, L=Nosecone_Len, Base_L=NoseconeBase_Len, nRivets=nNoseconeRivets, Tip_R=NoseconeTip_R, HasThreadedTip=false, Wall_T=NoseconeWall_t, Cut_d=Body_OD-40, LowerPortion=false, FillTip=true); // tip
+//
 // BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD, L=Nosecone_Len, Base_L=NoseconeBase_Len, nRivets=nNoseconeRivets, Tip_R=NoseconeTip_R, HasThreadedTip=false, Wall_T=NoseconeWall_t, Cut_d=Body_OD-40, LowerPortion=true); // base
 //
 // NC_ShockcordRingDual(Tube_OD=Body_OD, Tube_ID=Body_ID, NC_ID=0, NC_Base_L=NoseconeBase_Len, nRivets=nNoseconeRivets, nBolts=0);
@@ -115,7 +116,7 @@ NoseconeWall_t=2.2;
 Nosecone_Len=700;
 NoseconeBase_Len=15;
 NoseconeTip_R=15;
-NoseconeWall_t=2.2;
+NoseconeWall_t=2.4;
 
 nNoseconeRivets=7;
 nEBay_Bolts=7;
@@ -292,7 +293,10 @@ module FinCan(LowerHalfOnly=false, UpperHalfOnly=false, FinCanOnly=false){
 	Cutout_Depth=35;
 	IncludeDecor=false;
 	RailGuide_Z=IncludeDecor? FinCan_Len-40:40;
-	
+	Ogive_Len=200;
+	Cut_d=MotorRetainer_OD+4.4;
+	Cut_Z=Ogive_Len-NC_OGiveTipX0(Body_OD/2,Ogive_Len,Cut_d/2);
+
 	module Decor(D=Cutout_d){
 		hull(){
 			translate([0,Body_OD/2,FinCan_Len-65-Fin_Inset-Cutout_d/2]) sphere(d=D);
@@ -311,23 +315,27 @@ module FinCan(LowerHalfOnly=false, UpperHalfOnly=false, FinCanOnly=false){
 	} // Decor
 	
 	difference(){
-		FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=FinCan_Len,
+		union(){
+			FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=FinCan_Len,
 				MotorTube_OD=MotorTube_OD, RailGuide_h=Body_OD/2+2, RailGuide_z=RailGuide_Z,
 				nFins=nFins, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 				Fin_Root_W=Fin_Root_W, Fin_Root_L=Fin_Root_L, Fin_Post_h=Fin_Post_h, Fin_Chamfer_L=Fin_Chamfer_L,
 				Cone_Len=Cone_Len, ThreadedTC=false, Extra_OD=0, RailGuideLen=40,
 				LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly, HasWireHoles=false, 
 				HollowTailcone=true, 
-				HollowFinRoots=true, Wall_t=2.2);
+				HollowFinRoots=true, Wall_t=2.2, OgiveTailCone=true, Ogive_Len=Ogive_Len, OgiveCut_d=Cut_d);
+				
+			translate([0,0,-Cut_Z]) cylinder(d=Cut_d, h=MotorRetainer_Len);
+		} // union
 				
 		// Motor Retainer
-		translate([0,0,-Cone_Len-8]) cylinder(d=MotorRetainer_OD, h=MotorRetainer_Len);
-		translate([0,0,-Cone_Len-Overlap]) cylinder(d=Body_OD, h=5);
+		translate([0,0,-Cut_Z-8]) cylinder(d=MotorRetainer_OD, h=MotorRetainer_Len);
+		//translate([0,0,-Cone_Len-Overlap]) cylinder(d=Body_OD, h=5);
 		
 		if (IncludeDecor) Decor(D=Cutout_d);
 
 		if (FinCanOnly) cylinder(d=Body_OD+6, h=FinCan_Len+30);
-		if (LowerHalfOnly) mirror([0,0,1]) cylinder(d=Body_OD+1, h=Cone_Len);
+		if (LowerHalfOnly) mirror([0,0,1]) cylinder(d=Body_OD+1, h=Cut_Z+1);
 	} // difference
 	
 	if (IncludeDecor)

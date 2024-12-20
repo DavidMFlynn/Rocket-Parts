@@ -3,7 +3,7 @@
 // Filename: NoseCone.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.18  12/19/2024
+// Revision: 0.9.19  12/20/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-function NoseConeRev()="NoseCone Rev. 0.9.18";
+function NoseConeRev()="NoseCone Rev. 0.9.19";
 echo(NoseConeRev());
+// 0.9.19  12/20/2024 Added function Ogive_Cut_Z(), added FillTip parameter to BluntOgiveNoseCone()
 // 0.9.18  12/19/2024 Fix the two part nose cone problem?, In BluntOgiveNoseCone() the cut parameter has been changed to Cut_d
 // 0.9.17  12/18/2024 Added OgiveTailConeShape() and OgiveTailCone()
 // 0.9.16  12/17/2024 Added functions NC_OGiveArcOffset(R=10,L=50) and NC_OGiveTipX0(R=10,L=50,Tip_R)
@@ -45,7 +46,7 @@ echo(NoseConeRev());
 //
 // OgiveTailCone(Ogive_L=150, Body_D=100, End_D=66, Wall_T=3); // Truncated tangent ogive used to make a tail cone
 //
-// BluntOgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=350, Base_L=15, nRivets=3, Tip_R=5, HasThreadedTip=false, Wall_T=2.2, Cut_d=0, LowerPortion=false); // Cut_d=PML98Body_OD-20 is good
+// BluntOgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=350, Base_L=15, nRivets=3, Tip_R=5, HasThreadedTip=false, Wall_T=2.2, Cut_d=0, LowerPortion=false, FillTip=false); // Cut_d=PML98Body_OD-20 is good
 // 
 // Splice_BONC(OD=58, H=10, L=160, Base_L=5, Tip_R=5, Wall_T=2.2, Cut_Z=80);  // fix a failed print
 // Bulkplate_BONC(OD=58, T=10, L=160, Base_L=5, Tip_R=5, Wall_T=2.2, Cut_Z=80);
@@ -55,8 +56,18 @@ echo(NoseConeRev());
 // ***********************************
 //  ***** Routines *****
 //
+// Calculate p value, the radius of the ogive
 function NC_OGiveArcOffset(R=10,L=50)=(R*R+L*L)/(2*R); // p:center of arc = -p+R or p-R
-function NC_OGiveTipX0(R=10,L=50,Tip_R)=L-sqrt((NC_OGiveArcOffset(R,L)-Tip_R)*(NC_OGiveArcOffset(R,L)-Tip_R)-(NC_OGiveArcOffset(R,L)-R)*(NC_OGiveArcOffset(R,L)-R)); // X0:End of Ogive portion = L-X0
+//
+// Calculate tip to sphere center distance for spherically blunted ogive
+// =L-sqrt((p-Tip_R)*(p-Tip_R)-(p-R)*(p-R));
+function NC_OGiveTipX0(R=10,L=50,Tip_R)=L-sqrt( (NC_OGiveArcOffset(R,L)-Tip_R) * (NC_OGiveArcOffset(R,L)-Tip_R)
+			- (NC_OGiveArcOffset(R,L)-R) * (NC_OGiveArcOffset(R,L)-R)); // X0:End of Ogive portion = L-X0
+//		
+// Calculate base to end length for a given end radius
+function Ogive_Cut_Z(Ogive_L=150, R=100, End_R=66) = sqrt(NC_OGiveArcOffset(R,Ogive_L)*NC_OGiveArcOffset(R,Ogive_L)-
+	(NC_OGiveArcOffset(R,Ogive_L)-(R-End_R))*(NC_OGiveArcOffset(R,Ogive_L)-(R-End_R)));
+//
 //
 // BluntConeShape(L=100, D=50, Base_L=2, Tip_R=5); //Spherically blunted conic
 // OgiveShape(L=100, D=50, Base_L=2, Tip_R=5); // tangent ogive
@@ -563,12 +574,11 @@ module OgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, Wall_T=3){
 
 module OgiveTailConeShape(Ogive_L=150, Body_D=100, End_D=66, Thickness=0){
 	R=Body_D/2;
-	End_R=End_D/2;
 	p=NC_OGiveArcOffset(R,Ogive_L);
-	X0=NC_OGiveTipX0(R,Ogive_L,End_R);
+	Cut_Z=Ogive_Cut_Z(Ogive_L=Ogive_L, R=R, End_R=End_D/2);
 	
 	intersection(){
-		square([R,Ogive_L-X0]); // keep first quadrant only
+		square([R,Cut_Z]); // keep first quadrant only
 		translate([-p+R, 0, 0]) circle(r=p-Thickness, $fn=$preview? 180:720);
 	} // intersection
 } // OgiveTailConeShape
@@ -589,7 +599,7 @@ module OgiveTailCone(Ogive_L=150, Body_D=100, End_D=66, Wall_T=3){
 	} // difference
 } // OgiveTailCone
 
-// OgiveTailCone();
+// OgiveTailCone(Ogive_L=250, Body_D=210, End_D=86, Wall_T=3);
 
 module BluntOgiveShape(L=150, D=50, Base_L=10, Tip_R=5, Thickness=0){
 	// Spherically blunted tangent ogive
@@ -597,11 +607,17 @@ module BluntOgiveShape(L=150, D=50, Base_L=10, Tip_R=5, Thickness=0){
 	p=NC_OGiveArcOffset(R,L);
 	X0 = NC_OGiveTipX0(R,L,Tip_R); //L-sqrt((p-Tip_R)*(p-Tip_R)-(p-R)*(p-R));
 	
+	// calculate tangent point
+	Yt=(Tip_R*(p-R))/(p-Tip_R);
+	Xt=X0-sqrt(Tip_R*Tip_R-Yt*Yt);
+	echo(Xt=Xt);
+	
 	translate([0,Base_L,0])
 	difference(){
 		hull(){
 			intersection(){
-				square([R,L-X0]); // keep first quadrant only
+				square([R,L-Xt]);// clip at tangent point, keep first quadrant only
+				//square([R,L-X0]); 
 				translate([-p+R, 0, 0]) circle(r=p-Thickness, $fn=$preview? 180:720);
 			} // intersection
 			
@@ -621,14 +637,15 @@ module BluntOgiveShape(L=150, D=50, Base_L=10, Tip_R=5, Thickness=0){
 //offset(-3) BluntOgiveShape(L=190, D=137, Base_L=0, Tip_R=15);
 
 module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, Tip_R=5, HasThreadedTip=false, Wall_T=3, 
-							Cut_d=0, LowerPortion=false){
+							Cut_d=0, LowerPortion=false, FillTip=false){
 
 	R=OD/2;
 	p=NC_OGiveArcOffset(R,L);
 	ThreadedTipDepth=40;
+	Tip_Z=Base_L+L-NC_OGiveTipX0(R,L,Tip_R);
 	//echo(NC_OGiveTipX0(R,L,Cut_d/2));
-	Cut_Z=Base_L+L-NC_OGiveTipX0(R,L,Cut_d/2);
-	echo(Cut_Z=Cut_Z);
+	Cut_Z=Base_L+Ogive_Cut_Z(Ogive_L=L, R=R, End_R=Cut_d/2);
+	//echo(Cut_Z=Cut_Z);
 	
 	difference(){
 		difference(){
@@ -637,6 +654,15 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, Tip_R=5, Ha
 			// Remove inside
 			difference(){
 				rotate_extrude($fn=$preview? 90:720) BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R, Thickness=Wall_T);
+				
+				if (FillTip) difference(){
+					translate([0,0,Tip_Z-Wall_T*2]) cylinder(r=Tip_R, h=Tip_R+Wall_T*2);
+					
+					hull(){
+						translate([0,0,Tip_Z-Wall_T]) sphere(r=Tip_R-Wall_T, $fn=$preview? 36:90);
+						translate([0,0,Tip_Z-Wall_T*3]) sphere(r=Tip_R, $fn=$preview? 36:90);
+					} // hull
+				} // difference
 				
 				if (HasThreadedTip)
 					translate([0,0,Base_L+L-Tip_R-ThreadedTipDepth]) cylinder(d=OD, h=ThreadedTipDepth+Tip_R);
@@ -658,13 +684,13 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, Tip_R=5, Ha
 		if (Base_L>12 && nRivets>0) translate([0,0,Base_L/2])
 			RivetPattern(BT_Dia=OD, nRivets=nRivets, Dia=5/32*25.4);
 		
-		if ($preview==true) translate([0,-OD/2-1,-1]) cube([OD/2+1,OD/2+1,L+2]);
-			
 		if (Cut_d!=0 && LowerPortion==false)
 			translate([0,0, -Overlap]) cylinder(d=OD+1, h=Cut_Z+Overlap, $fn=90);
 		
 		if (Cut_d!=0 && LowerPortion)
 			translate([0,0,Cut_Z]) cylinder(d=OD+1, h=Base_L+L-Cut_Z+Overlap);
+			
+		if ($preview==true) translate([0,-OD/2-1,-1]) cube([OD/2+1,OD/2+1,L+Base_L]);
 		
 	} // difference
 	
@@ -695,7 +721,7 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, Tip_R=5, Ha
 			
 			// taper so no support is needed
 			translate([0,0,Cut_Z-GluingflangeHeight-Overlap*2]) 
-				cylinder(d1=Cut_d-Wall_T, d2=Cut_d-Wall_T*4-IDXtra*4, h=GluingflangeHeight+Overlap*4, $fn=$preview? 90:360);
+				cylinder(d1=Cut_d-Wall_T, d2=Cut_d-Wall_T*4-IDXtra*8, h=GluingflangeHeight+Overlap*4, $fn=$preview? 90:360);
 			
 			// inside of gluing flange
 			rotate_extrude($fn=$preview? 90:360) 
@@ -719,10 +745,10 @@ BluntOgiveNoseCone(ID=PML98Body_ID,
 					L=350, 
 					Wall_T=2.2,
 					Tip_R=5,
-					Cut_d=PML98Body_OD-20, LowerPortion=false);
+					Cut_d=PML98Body_OD-20, LowerPortion=false, FillTip=true);
 /**/
 
-//*
+/*
 BluntOgiveNoseCone(ID=PML98Body_ID, 
 					OD=PML98Body_OD,
 					Base_L=15,
