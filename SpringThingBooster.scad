@@ -370,7 +370,7 @@ module STB_TubeEnd(Body_ID=BT75Body_ID, nLockBalls=nLockBalls,
 	BallPerimeter_d=STB_BallPerimeter_d(Body_ID);
 	ThinWall_t=1.8; // 2 perimeters at thinnest wall, was 2.2
 	ChamferLen=6;
-	Ring_OD=BallPerimeter_d+ThinWall_t*2;
+	Ring_OD=Body_OD+ThinWall_t*2;
 	RingLen=Engagement_Len+10-ChamferLen;
 	DepthExtra=0.5;
 	
@@ -379,6 +379,7 @@ module STB_TubeEnd(Body_ID=BT75Body_ID, nLockBalls=nLockBalls,
 			translate([0,0,-Engagement_Len/2-10]) 
 				Tube(OD=Ring_OD, ID=Body_ID+IDXtra*3, Len=RingLen+Overlap, myfn=$preview? 90:360);
 			
+			// Engagement end
 			translate([0,0,Engagement_Len/2-ChamferLen])
 			difference(){
 				cylinder(d1=Ring_OD, d2=Body_OD, h=ChamferLen, $fn=$preview? 90:360);
@@ -387,6 +388,7 @@ module STB_TubeEnd(Body_ID=BT75Body_ID, nLockBalls=nLockBalls,
 					cylinder(d=Body_ID+IDXtra*3, h=ChamferLen+Overlap*2, $fn=$preview? 90:360);
 			} // difference
 			
+			// Tube end
 			translate([0,0,-Engagement_Len/2-10-ChamferLen+1])
 			difference(){
 				cylinder(d2=Ring_OD, d1=Body_OD+IDXtra*2+1.2, h=ChamferLen-1, $fn=$preview? 90:360);

@@ -51,6 +51,7 @@ echo(SpringEndsLibRev());
 // SE_SpringEndTypeB(Coupler_OD=BT75Coupler_OD, MotorCoupler_OD=BT54Coupler_OD, nRopes=3, UseSmallSpring=true);
 // SE_SpringEndTypeC(Coupler_OD=BT137Coupler_OD, Coupler_ID=BT137Coupler_ID, nRopes=5, UseSmallSpring=false);
 //
+// SE_SlidingBigSpringMiddle(OD=BT137Coupler_OD, SliderLen=50, Extension=0)
 // SE_SlidingSpringMiddle(OD=BT98Coupler_OD, nRopes=6, SliderLen=40, SpLen=40, SpringStop_Z=20, UseSmallSpring=true);
 // SE_SlidingSpringMiddle(OD=BT98Coupler_OD, nRopes=6, SliderLen=40, SpLen=40, SpringStop_Z=20, UseSmallSpring=true);
 // SE_SlidingSpringMiddle(OD=BT75Coupler_OD, nRopes=3, UseSmallSpring=true);
@@ -495,10 +496,63 @@ module SE_SlidingBigSpringMiddle(OD=BT137Coupler_OD, SliderLen=50, Extension=0){
 	nRibs=6;
 	SpringSocket_H=15;
 	SpringSocketFlange_H=2;
+	ThreePartSlide=(SliderLen>50)? true:false;
 	
 	// Outside tube
-	Tube(OD=OD, ID=OD-Wall_t*2, 
+	if (ThreePartSlide){
+		Tube(OD=OD, ID=OD-Wall_t*2, 
+			Len=20, myfn=$preview? 90:360);
+			
+		// lower chamfer
+		translate([0,0,20-Overlap]) difference(){
+			hull(){
+				cylinder(d=OD, h=Overlap, $fn=$preview? 90:360);
+				translate([0,0,1+Overlap]) cylinder(d=OD-1, h=Overlap, $fn=$preview? 90:360);
+			} // hull
+			
+			hull(){
+				translate([0,0,-Overlap]) 
+					cylinder(d=OD-Wall_t*2, h=Overlap, $fn=$preview? 90:360);
+				translate([0,0,1+Overlap])
+					cylinder(d=OD-Wall_t*2-1-Overlap*2, h=Overlap*2, $fn=$preview? 90:360);
+			} // hull
+			
+			translate([0,0,1-Overlap])
+					cylinder(d=OD-Wall_t*2-1, h=1, $fn=$preview? 90:360);
+		}
+		
+		//*
+		// middle
+		translate([0,0,21])
+			Tube(OD=OD-1, ID=OD-Wall_t*2-1, 
+				Len=SliderLen-42, myfn=$preview? 90:360);
+		/**/
+		
+		// upper chamfer
+		translate([0,0,SliderLen-21-Overlap]) difference(){
+			hull(){
+				cylinder(d=OD-1, h=Overlap, $fn=$preview? 90:360);
+				translate([0,0,1+Overlap]) cylinder(d=OD, h=Overlap, $fn=$preview? 90:360);
+			} // hull
+			
+			hull(){
+				translate([0,0,-Overlap]) 
+					cylinder(d=OD-Wall_t*2-1, h=Overlap, $fn=$preview? 90:360);
+				translate([0,0,1-Overlap])
+					cylinder(d=OD-Wall_t*2, h=Overlap*4, $fn=$preview? 90:360);
+			} // hull
+			
+			translate([0,0,-1-Overlap])
+					cylinder(d=OD-Wall_t*2-1, h=2, $fn=$preview? 90:360);
+		}
+		
+		translate([0,0,SliderLen-20])	
+		Tube(OD=OD, ID=OD-Wall_t*2, 
+			Len=20, myfn=$preview? 90:360);
+	}else{
+		Tube(OD=OD, ID=OD-Wall_t*2, 
 			Len=SliderLen, myfn=$preview? 90:360);
+	}
 			
 	// Outside spring tube
 	Tube(OD=Hub_OD, ID=Hub_OD-Wall_t*2, 
@@ -530,7 +584,7 @@ module SE_SlidingBigSpringMiddle(OD=BT137Coupler_OD, SliderLen=50, Extension=0){
 	translate([0,0,SliderLen+Extension]) rotate([180,0,0]) SpringSocket();
 } // SE_SlidingBigSpringMiddle
 
-// SE_SlidingBigSpringMiddle();
+// SE_SlidingBigSpringMiddle(SliderLen=60);
 
 
 module SE_SlidingSpringMiddle(OD=BT98Coupler_OD, nRopes=6, SliderLen=40, SpLen=40, SpringStop_Z=20, UseSmallSpring=true){
