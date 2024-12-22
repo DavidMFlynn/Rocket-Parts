@@ -247,7 +247,7 @@ module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 				nFins=5,
 				Fin_Root_W=12, Fin_Root_L=100, Fin_Post_h=10, Fin_Chamfer_L=22,
 				Threaded=true, Cone_Len=65, Interface_OD=BT98Body_ID, FinInset_Len=5, 
-				MakeHollow=false, Extra_OD=0, Ogive=false, Ogive_Len=400, OgiveCut_d=BT54Body_OD+8){
+				MakeHollow=false, Extra_OD=0, Ogive=false, Ogive_Len=400, OgiveCut_d=63+4.8){
 				
 	
 	FinAlignment_Len=0;
@@ -263,21 +263,21 @@ module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 	FinBox_W=Fin_Root_W+Wall_t*2;
 	MotorRetainer_Len=33;
 	Cut_d=OgiveCut_d;
-	Cut_Z=Ogive_Len-NC_OGiveTipX0(Body_OD/2,Ogive_Len,Cut_d/2);
+	Cut_Z=Ogive_Cut_Z(Ogive_L=Ogive_Len, R=Body_OD/2, End_R=Cut_d/2);
 	
 	echo(Cut_d=Cut_d);
-	translate([0,0,-Cut_Z-1]) cylinder(d=Cut_d, h=1);
+	//translate([0,0,-Cut_Z-1]) cylinder(d=Cut_d, h=1);
 	//echo(Interface_OD=Interface_OD);
 	difference(){
 		union(){
 			if (Ogive){
 				if (MakeHollow){
-					rotate([180,0,0]) OgiveTailCone(Ogive_L=Ogive_Len, Body_D=Body_OD, End_D=Cut_d, Wall_T=HollowWall_t);
+					rotate([180,0,0]) OgiveTailCone(Ogive_L=Ogive_Len, Body_D=Body_OD, End_D=Cut_d, Wall_T=2.4);
 					
 					// Motor tube
 					translate([0,0,-Cut_Z]) cylinder(d=Cut_d, h=Cut_Z);
 				}else{
-					rotate([180,0,0]) hull() OgiveTailCone(Ogive_L=Ogive_Len, Body_D=Body_OD, End_D=Cut_d, Wall_T=3);
+					rotate([180,0,0]) hull() OgiveTailCone(Ogive_L=Ogive_Len, Body_D=Body_OD, End_D=Cut_d, Wall_T=2.4);
 				}
 			}else{
 			hull(){
@@ -374,7 +374,7 @@ module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 	}
 } // FC2_TailCone
 
-//*
+/*
 FC2_TailCone(Body_OD=ULine203Body_OD, MotorTube_OD=BT75Body_OD,
 				nFins=5,
 				Fin_Root_W=12, Fin_Root_L=100, Fin_Post_h=10, Fin_Chamfer_L=22,

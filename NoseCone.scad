@@ -38,8 +38,8 @@ echo(NoseConeRev());
 // ***********************************
 //  ***** for STL output *****
 // NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13);
-// NC_ShockcordRingDual(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, NC_ID=0, NC_Base_L=25, nRivets=6, nBolts=0);
-// NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_ID=0, NC_Base_L=15, nRivets=3, nBolts=0);
+// NC_ShockcordRingDual(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, NC_ID=0, NC_Base_L=25, nRivets=6, nBolts=0, Flat=false);
+// NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_ID=0, NC_Base_L=15, nRivets=3, nBolts=0, Flat=false);
 //
 // BluntConeNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=180, Base_L=21, nRivets=3, Tip_R=15, HasThreadedTip=false, Wall_T=3);
 // OgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=170, Base_L=21, Wall_T=3);
@@ -260,25 +260,25 @@ module NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_ID=0, N
 	// Has spring end and resess for spring into nosecone
 	// Mount for Featherweight GPS tracker
 
-// Bigger Spring
-Spring_CS11890_OD=70.5;
-Spring_CS11890_ID=64.7;
-Spring_CS11890_FL=225;
-Spring_CS11890_CL=33;
+	// Bigger Spring
+	Spring_CS11890_OD=70.5;
+	Spring_CS11890_ID=64.7;
+	Spring_CS11890_FL=225;
+	Spring_CS11890_CL=33;
 
-// Big Spring
-Spring_CS4009_OD=2.328*25.4;
-Spring_CS4009_ID=2.094*25.4;
-Spring_CS4009_FL=18.5*25.4;
-Spring_CS4009_CL=1.64*25.4;
-// Small Spring
-Spring_CS4323_OD=44.30;
-Spring_CS4323_ID=40.50;
-Spring_CS4323_CBL=22; // coil bound length
-Spring_CS4323_FL=200; // free length
-Nosecone_ID=(NC_ID==0)? Tube_ID-IDXtra*2:NC_ID-IDXtra*2;
+	// Big Spring
+	Spring_CS4009_OD=2.328*25.4;
+	Spring_CS4009_ID=2.094*25.4;
+	Spring_CS4009_FL=18.5*25.4;
+	Spring_CS4009_CL=1.64*25.4;
+	// Small Spring
+	Spring_CS4323_OD=44.30;
+	Spring_CS4323_ID=40.50;
+	Spring_CS4323_CBL=22; // coil bound length
+	Spring_CS4323_FL=200; // free length
+	Nosecone_ID=(NC_ID==0)? Tube_ID-IDXtra*2:NC_ID-IDXtra*2;
 
-	Plate_t=4;
+	Plate_t=(Tube_OD>130)? 10:6;
 	nHoles=6;
 	Rivet_d=4;
 	Tube_d=12.7;
@@ -390,8 +390,8 @@ Nosecone_ID=(NC_ID==0)? Tube_ID-IDXtra*2:NC_ID-IDXtra*2;
 	difference(){
 		union(){
 			// GPS mount
-			rotate([0,0,-45]) translate([-4,-Spring_OD/2-16,6]) rotate([-10,0,8]) FW_GPS_Mount();
-			rotate([0,0,32]) translate([0,-Spring_OD/2-13,20]) FW_GPS_Batt_Mount();
+			rotate([0,0,-45]) translate([-4,-Spring_OD/2-16,Plate_t]) rotate([-10,0,8]) FW_GPS_Mount();
+			rotate([0,0,32]) translate([0,-Spring_OD/2-13,Plate_t+14]) FW_GPS_Batt_Mount();
 			
 			// Stop ring
 			translate([0,0,CR_z+Mod_Z]) Tube(OD=Tube_OD, ID=ID, Len=3, myfn=$preview? 90:360);
@@ -405,7 +405,7 @@ Nosecone_ID=(NC_ID==0)? Tube_ID-IDXtra*2:NC_ID-IDXtra*2;
 				
 			// Stiffener Plate
 			translate([0,0,-5])
-				cylinder(d=Tube_ID-1, h=6);
+				cylinder(d=Tube_ID-1, h=Plate_t);
 				
 			// Tube holder
 			hull(){
@@ -420,7 +420,7 @@ Nosecone_ID=(NC_ID==0)? Tube_ID-IDXtra*2:NC_ID-IDXtra*2;
 		
 		if (nBolts>0){
 			for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j])
-				translate([0,-Tube_ID/2-1,-3-BodyTube_L/2+Mod_Z]) rotate([90,0,0]) Bolt4Hole();
+				translate([0,-Tube_ID/2-1,-3-BodyTube_L/2+Mod_Z]) rotate([90,0,0]) Bolt4Hole(depth=20);
 		}
 		
 		//translate([-4,-34,4]) FW_GPS_SW_Hole(-9);

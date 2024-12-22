@@ -3,7 +3,7 @@
 // Filename: R203Lib.scad
 // by David M. Flynn
 // Created: 12/14/2024 
-// Revision: 0.9.0  12/14/2024 
+// Revision: 0.9.2  12/22/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,11 +12,14 @@
 //
 //  ***** History *****
 //
+// 0.9.2  12/22/2024  Fixes to R203_BallRetainerTop
+// 0.9.1  12/21/2024  Added a cusomized version of PD_NC_PetalHub R203_NC_PetalHub
 // 0.9.0  12/14/2024  Copied from R137Lib 0.9.0 
 //
 // ***********************************
 //  ***** for STL output *****
 //
+// R203_NC_PetalHub();
 // R203_MotorTubeTopper();
 // R203_PetalHub(Body_OD=Coupler_OD);
 // R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID);
@@ -46,10 +49,68 @@ Body_OD=ULine203Body_OD;
 Body_ID=ULine203Body_ID;
 
 Coupler_OD=ULine203Coupler_OD;
-//Coupler_ID=ULine203Coupler_ID;
+Coupler_ID=ULine203Coupler_ID;
 
 MotorTube_OD=BT75Body_OD;
 MotorTube_ID=BT75Body_ID;
+
+
+module R203_NC_PetalHub(){
+	OD=Coupler_OD;
+	nPetals=nPetals;
+	nRopes=nPetals;
+	Spring_ID=SE_Spring_CS11890_ID();
+	Spring_OD=SE_Spring_CS11890_OD();
+	CouplerTube_ID=Coupler_ID;
+				
+	BodyTube_L=10;
+	SpringHole_ID=Spring_ID-IDXtra*2-4.4;
+	CenterHole_d=SpringHole_ID;
+	
+	
+	// Body tube interface
+	if (CouplerTube_ID==0)
+	translate([0,0,-BodyTube_L]) 
+		Tube(OD=OD, ID=OD-4.4, Len=BodyTube_L+1, myfn=$preview? 90:360);
+									
+	difference(){
+		union(){
+			PD_PetalHub(OD=OD, nPetals=nPetals, HasReplaceableSpringHolder=true,
+							HasBolts=false, ShockCord_a=-1);
+			
+			translate([0,0,-BodyTube_L])
+				Tube(OD=Spring_ID-IDXtra*2, 
+						ID=Spring_ID-IDXtra*2-4.4, Len=BodyTube_L+1, myfn=$preview? 90:360);
+						
+						
+			// Coupler tube interface
+			translate([0,0,-BodyTube_L]) 
+				cylinder(d=Coupler_ID, h=BodyTube_L+1, $fn=$preview? 90:360);
+		} // union
+			
+		// Center Hole
+		translate([0,0,-BodyTube_L-Overlap]) 
+			cylinder(d=SpringHole_ID, h=BodyTube_L+Overlap*2, $fn=$preview? 90:360);
+		translate([0,0,-Overlap]) 
+			cylinder(d=CenterHole_d, h=10, $fn=$preview? 90:360);
+			
+		if (CouplerTube_ID>0){
+			translate([0,0,-BodyTube_L-Overlap]) 
+				cylinder(d=Spring_OD, h=BodyTube_L, $fn=$preview? 90:360);
+			translate([0,0,-BodyTube_L-Overlap]) 
+				cylinder(d1=Spring_OD+5, d2=Spring_OD, h=BodyTube_L-5, $fn=$preview? 90:360);
+		}
+			
+		// Retention cord
+		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*(j+0.5)]) {
+				translate([0,OD/2-6,-BodyTube_L-Overlap]) cylinder(d=4, h=30);
+				translate([0,OD/2-6,5]) cylinder(d=8, h=30);
+			}
+	} // difference
+	
+} // R203_NC_PetalHub
+
+// R203_NC_PetalHub();
 
 module R203_MotorTubeTopper(){
 // Z zero is top of motor tube
@@ -139,9 +200,15 @@ module R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID){
 	Skirt_Len=16;
 	TubeInset=Tube_d/2+3;
 	Tube_Z=XtraLen+39+Skirt_Len-TubeInset;
-	Tube_a=-30;
+	Tube_a=-38.5;
 	TubeSlot_w=34;
 	TubeOffset_X=0;	
+	
+	// copied from STB
+	LockDisk_H=10; // length of dowel pins
+	LockDiskHole_H=LockDisk_H+1;
+	Plate_T=3;
+	Top_H=LockDiskHole_H/2+Plate_T;
 	
 	difference(){
 		union(){
@@ -181,12 +248,17 @@ module R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID){
 			} // difference
 		} // union
 	
+		// Bolt holes
+		translate([0,0,Top_H]) 
+			STB_BR_BoltPattern(Body_ID=Body_ID, Body_OD=Body_ID, nLockBalls=nLockBalls) 
+				Bolt4HeadHole(depth=8, lHead=20);
+				
 		translate([TubeOffset_X,0,Tube_Z]) rotate([90,0,Tube_a]) 
 			cylinder(d=Tube_d, h=Body_OD, center=true);
 			
 			
 		// Bolt holes in skirt
-		for (j=[0:nEBayBolts-1]) rotate([0,0,360/nEBayBolts*j+10]) 
+		for (j=[0:nEBayBolts-1]) rotate([0,0,360/nEBayBolts*j+25]) 
 			translate([0,Body_OD/2,XtraLen+39.0+EBayBoltInset])
 				rotate([-90,0,0]) Bolt4Hole();
 			

@@ -3,7 +3,7 @@
 // Filename: SpringThingBooster.scad
 // by David M. Flynn
 // Created: 2/26/2023
-// Revision: 1.4.3   12/19/2024
+// Revision: 1.4.4   12/21/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -39,6 +39,7 @@
 function SpringThingBoosterRev()="SpringThingBooster Rev. 1.4.3";
 echo(SpringThingBoosterRev());
 
+// 1.4.4   12/21/2024 Fixes to STB_BallRetainerTop: thicker floor 5mm, Gap filler calc changed
 // 1.4.3   12/19/2024 Fixed arming hole depth.
 // 1.4.2   12/14/2024 Removed STB_TubeEnd and renamed STB_TubeEnd2
 // 1.4.1   10/5/2024  Tighter ball path. No extra extension.
@@ -427,6 +428,36 @@ module STB_TubeEnd(Body_ID=BT75Body_ID, nLockBalls=nLockBalls,
 //rotate([180,0,0]) STB_TubeEnd(Body_ID=BT137Body_ID, nLockBalls=nBT137Balls, Body_OD=BT137Body_OD, Engagement_Len=20);
 // STB_TubeEnd(Body_ID=ULine203Body_ID, nLockBalls=7, Body_OD=ULine203Body_OD, Engagement_Len=30);
 
+module STB_TubeEndDrillingJig(Body_ID=ULine203Body_ID, nLockBalls=7, 
+			Body_OD=ULine203Body_OD, Engagement_Len=30){
+	// fixes an error, one time thing
+
+	difference(){
+		rotate([0,0,180/nLockBalls]) translate([-40,Body_OD/2-20,-Engagement_Len/2]) cube([80,30,40]);
+		
+		STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nLockBalls, 
+			Body_OD=Body_OD, Engagement_Len=Engagement_Len);
+			
+		STB_ManualDisArmingHole(Body_ID=Body_ID, nLockBalls=nLockBalls);
+		STB_ManualArmingHole(Body_ID=Body_ID);
+			
+		translate([0,0,-Engagement_Len/2-Overlap]) difference(){
+			cylinder(d=Body_OD, h=50, $fn=$preview? 90:360);
+			cylinder(d=Body_OD-0.2, h=50, $fn=$preview? 90:360);
+			}
+			
+		rotate([0,0,180/nLockBalls]){
+			translate([-30,Body_OD/2+2,Engagement_Len/2+4]) rotate([-90,0,0]) Bolt4Hole(depth=30);
+			translate([30,Body_OD/2+2,Engagement_Len/2+4]) rotate([-90,0,0]) Bolt4Hole(depth=30);
+			translate([-30,Body_OD/2,Engagement_Len/2+4]) rotate([90,0,0]) Bolt4ClearHole(depth=30);
+			translate([30,Body_OD/2,Engagement_Len/2+4]) rotate([90,0,0]) Bolt4ClearHole(depth=30);
+			}
+	} // difference
+
+} // STB_TubeEndDrillingJig
+
+//rotate([180,0,0]) STB_TubeEndDrillingJig();
+
 ArmingHole_d=2.5;
 
 module STB_ManualDisArmingHole(Body_ID=BT75Body_ID, nLockBalls=nLockBalls){
@@ -455,7 +486,7 @@ module STB_BallRetainerTop(Body_ID=BT75Body_ID, Outer_OD=0, Body_OD=BT75Body_ID,
 			
 	BallPerimeter_d=STB_BallPerimeter_d(Body_ID);
 	Ball_d=STB_LockBall_d(Body_ID);
-	Plate_T=3;
+	Plate_T=(Body_ID>150)? 5:3;
 	LockDisk_d=STB_LockPinBC_d(Body_ID)+BearingMR84_OD;
 	
 	Top_H=LockDiskHole_H/2+Plate_T;
@@ -533,8 +564,10 @@ module STB_BallRetainerTop(Body_ID=BT75Body_ID, Outer_OD=0, Body_OD=BT75Body_ID,
 					Tube(OD=Body_ID, ID=Body_ID-6, Len=IntCouplerLen+13, myfn=$preview? 90:360);
 					
 				// gap filler
-				translate([0,0,Engagement_Len/2-5]) 
-					Tube(OD=Body_ID-1, ID=Body_ID-6, Len=6, myfn=$preview? 90:360);
+				translate([0,0,Top_H-1]) 
+					Tube(OD=Body_ID-1, ID=Body_ID-6, Len=10, myfn=$preview? 90:360);
+					
+				// Body Tube
 				translate([0,0,Engagement_Len/2]) 
 					Tube(OD=OuterRing_OD, ID=Body_ID-4.4, Len=IntCouplerLen, myfn=$preview? 90:360);
 				}
@@ -653,6 +686,15 @@ module STB_BallRetainerTop(Body_ID=BT75Body_ID, Outer_OD=0, Body_OD=BT75Body_ID,
 			
 
 } // STB_BallRetainerTop
+
+/*
+STB_BallRetainerTop(Body_ID=ULine203Body_ID, Outer_OD=ULine203Body_OD, Body_OD=ULine203Body_ID, nLockBalls=6,
+HasIntegratedCouplerTube=true,
+			IntegratedCouplerLenXtra=-10,
+			HasSecondServo=false,
+			UsesBigServo=true,
+			Engagement_Len=30);
+/**/
 
 /*
 STB_BallRetainerTop(Body_ID=BT98Body_ID, Outer_OD=BT98Body_OD, Body_OD=BT98Body_ID, nLockBalls=6,

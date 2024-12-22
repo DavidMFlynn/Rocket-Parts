@@ -88,16 +88,28 @@ echo(PML98Coupler_OD=PML98Coupler_OD);
 echo(PML98Coupler_ID=PML98Coupler_ID);
 /**/
 
-ULine203Body_OD=210.50; // 8 inch mailing tube
+// ULine 1.5  inch mailing tube
+ULine38Body_OD=41.68;
+ULine38Body_ID=38.70; // Works w/ BT38Coupler_OD
+
+// ULine 3 inch mailing tube
+ULine75Body_OD=80.30;
+ULine75Body_ID=76.60; // Works w/ BT75Coupler_OD
+
+// ULine 4 inch mailing tube
+// Verification needed
+ULine102Body_OD=106;
+ULine102Body_ID=102.2;
+
+// ULine 6 inch mailing tube
+
+// ULine 8 inch mailing tube
+ULine203Body_OD=210.50;
 ULine203Body_ID=ULine203Body_OD-3.4*2; // wall_t=3.4
 ULine203Coupler_OD=ULine203Body_ID-1;  // no actual coupler tube exists
 ULine203Coupler_ID=ULine203Coupler_OD-4.4;
 
-ULine75Body_OD=80.30;
-ULine75Body_ID=76.60; // Works w/ BT75Coupler_OD
 
-ULine38Body_OD=41.68;
-ULine38Body_ID=38.70; // Works w/ BT38Coupler_OD
 
 PML75Body_OD=79.6; // 8/4/2022 Adjusted +0.2 to match QT better
 PML75Body_ID=3.002*25.4;

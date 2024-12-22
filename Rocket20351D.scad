@@ -3,7 +3,7 @@
 // Filename: Rocket20351D.scad
 // by David M. Flynn
 // Created: 12/13/2024
-// Revision: 0.9.1  12/17/2024
+// Revision: 0.9.2  12/20/2024
 // Units: mm
 // *******************************************************
 //  ***** Notes *****
@@ -15,6 +15,7 @@
 //
 //  ***** History *****
 //
+// 0.9.2  12/20/2024   Flat nosecone base (no support)
 // 0.9.1  12/17/2024   3 part fin can
 // 0.9.0  12/13/2024   First code
 //
@@ -41,7 +42,10 @@
 //
 // BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD, L=Nosecone_Len, Base_L=NoseconeBase_Len, nRivets=nNoseconeRivets, Tip_R=NoseconeTip_R, HasThreadedTip=false, Wall_T=NoseconeWall_t, Cut_d=Body_OD-40, LowerPortion=true); // base
 //
-// NC_ShockcordRingDual(Tube_OD=Body_OD, Tube_ID=Body_ID, NC_ID=0, NC_Base_L=NoseconeBase_Len, nRivets=nNoseconeRivets, nBolts=0);
+/*
+  NC_ShockcordRingDual(Tube_OD=Body_OD, Tube_ID=Body_ID, NC_ID=0, NC_Base_L=NoseconeBase_Len, 
+						nRivets=nNoseconeRivets, nBolts=nEBay_Bolts, Flat=true);
+/**/
 //
 // SE_SlidingBigSpringMiddle(OD=Coupler_OD, SliderLen=80, Extension=0); // print 2
 // SE_SpringEndTypeA(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, nRopes=6, Spring_OD=SE_Spring_CS11890_OD());
@@ -52,6 +56,7 @@
 //  *** Electronics Bay ***
 // rotate([180,0,0]) EBay(TopOnly=true, BottomOnly=false, ShowDoors=false);
 // EBay(TopOnly=false, BottomOnly=true, ShowDoors=false);
+// CenteringRing(OD=Body_ID, ID=EBayTube_OD, Thickness=EBayCR_t, nHoles=8, Offset=0, myfn=$preview? 90:360);
 //  *** Doors ***
 // rotate([-90,0,0]) EB_AltDoor(Tube_OD=Body_OD);
 // rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD, HasSwitch=false, DoubleBatt=false);
@@ -59,22 +64,22 @@
 //
 //  *** Ball Lock Unit ***
 // rotate([180,0,0]) STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD, Engagement_Len=Engagement_Len);
-// R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID);
+// rotate([180,0,0]) R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID);
 // STB_LockDisk(Body_ID=Body_ID, nLockBalls=nLockBalls, HasLargeInnerBearing=true);
 // R203_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false);
 //
 //  *** Petal Deployer ***
 // R203_PetalHub(); // Lower 
-// PD_NC_PetalHub(OD=Coupler_OD, nPetals=nPetals, HasReplaceableSpringHolder=true, nRopes=nPetals, ShockCord_a=-1, HasThreadedCore=false, ST_DSpring_ID=SE_Spring_CS11890_ID(), ST_DSpring_OD=SE_Spring_CS11890_OD(), CouplerTube_ID=0); // upper
+// R203_NC_PetalHub(); // upper
 // rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=DroguePetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=5.0, HasLocks=false, Lock_Span_a=0);
 // rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=MainPetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=5.0, HasLocks=false, Lock_Span_a=0);
 // rotate([-90,0,0]) PD_PetalSpringHolder(); // print 15
 // PD_HubSpringHolder();
 //
 // 
-// FinCan(LowerHalfOnly=false, UpperHalfOnly=true, FinCanOnly=false);
-// FinCan(LowerHalfOnly=true, UpperHalfOnly=false, FinCanOnly=false);
-// rotate([180,0,0]) FinCan(LowerHalfOnly=false, UpperHalfOnly=false, FinCanOnly=true);
+// FinCan(LowerHalfOnly=false, UpperHalfOnly=true, TailConeOnly=false);
+// FinCan(LowerHalfOnly=true, UpperHalfOnly=false, TailConeOnly=false);
+// rotate([180,0,0]) FinCan(LowerHalfOnly=false, UpperHalfOnly=false, TailConeOnly=true);
 // Rocket_Fin();
 //
 // rotate([90,0,0]) BoltOnRailGuide(Length = 40, BoltSpace=12.7, RoundEnds=true, ExtraBack=0);
@@ -143,19 +148,22 @@ Body_OD=ULine203Body_OD;
 Body_ID=ULine203Body_ID;
 Coupler_OD=ULine203Body_ID-1.10;
 Coupler_ID=Coupler_OD-4.4;
+EBayTube_OD=BT75Body_OD;
 
 MotorTube_OD=BT75Body_OD;
 MotorTube_ID=BT75Body_ID;
 
 UpperBody_Len=400;
-EBay_Len=162;
+EBay_Len=172;
+EBayCR_t=6;
 LowerBody_Len=48*25.4;
 FinCan_Len=Fin_Root_L+Fin_Inset*2;
 MotorTube_Len=48*25.4;
 Cone_Len=140;
+OgiveBoatTail=false;
 
-MotorRetainer_OD=MotorTube_OD+5;
-MotorRetainer_Len=40;
+MotorRetainer_OD=84.2;
+MotorRetainer_Len=35;
 
 echo(UpperBody_Len=UpperBody_Len);
 echo(EBay_Len=EBay_Len);
@@ -165,7 +173,7 @@ echo(FinCan_Len=FinCan_Len);
 module ShowRocket(ShowInternals=false){
 	FinCan_Z=0;
 	Fin_Z=FinCan_Z+FinCan_Len/2;
-	MotorTube_Z=FinCan_Z-Cone_Len+15;
+	MotorTube_Z=OgiveBoatTail? FinCan_Z-163-15:FinCan_Z-Cone_Len+15;
 	LowerBody_Z=FinCan_Z+FinCan_Len;
 	LowerBallLock_Z=LowerBody_Z+LowerBody_Len;
 	EBay_Z=LowerBallLock_Z+49.05;
@@ -256,7 +264,7 @@ module ShowRocket(ShowInternals=false){
 	//*
 	translate([0,0,FinCan_Z]) FinCan();
 	
-	translate([0,0,FinCan_Z-Cone_Len-5]) color("Gray") 
+	translate([0,0,MotorTube_Z-MotorRetainer_Len+15]) color("Gray") 
 		Tube(OD=MotorRetainer_OD, ID=MotorTube_OD, Len=MotorRetainer_Len, myfn=90);
 		
 	if (ShowInternals) translate([0,0,MotorTube_Z]) color("LightBlue")
@@ -273,6 +281,7 @@ module ShowRocket(ShowInternals=false){
 // ShowRocket(ShowInternals=true);
 
 module EBay(TopOnly=false, BottomOnly=false, ShowDoors=false){
+	TubeStop_Z=EBayBoltInset*2+EBayCR_t+0.3;
 	
 	R20351D_Doors=$preview? [[],[45],[-45]]:[[0,180],[45,180+45],[-45,-90,180-45,180-90]]; // Altimeters, Alt_Batts, SW_Bats
 	
@@ -281,21 +290,29 @@ module EBay(TopOnly=false, BottomOnly=false, ShowDoors=false){
 									HasFwdIntegratedCoupler=false, HasFwdShockMount=false,
 									HasAftIntegratedCoupler=false, HasAftShockMount=false,
 									HasRailGuide=false, RailGuideLen=35,
-									HasFwdCenteringRing=true, HasAftCenteringRing=true, InnerTube_OD=BT54Body_OD,
+									HasFwdCenteringRing=false, HasAftCenteringRing=false, InnerTube_OD=BT54Body_OD,
 									Bolted=true, ExtraBolts=[], TopOnly=TopOnly, BottomOnly=BottomOnly);
+									
+	// Bottom centering ring stop
+	if (!TopOnly) translate([0,0,TubeStop_Z]) 
+		TubeStop(InnerTubeID=Coupler_ID, OuterTubeOD=Body_OD, myfn=$preview? 36:360);
+		
+	// Top centering ring stop
+	if (!BottomOnly) translate([0,0,EBay_Len-TubeStop_Z]) rotate([180,0,0])
+		TubeStop(InnerTubeID=Coupler_ID, OuterTubeOD=Body_OD, myfn=$preview? 36:360);
 } // EBay
 
 // EBay();
 
-module FinCan(LowerHalfOnly=false, UpperHalfOnly=false, FinCanOnly=false){
+module FinCan(LowerHalfOnly=false, UpperHalfOnly=false, TailConeOnly=false){
 	
 	Cutout_d=60;
 	Cutout_Depth=35;
 	IncludeDecor=false;
 	RailGuide_Z=IncludeDecor? FinCan_Len-40:40;
-	Ogive_Len=200;
+	Ogive_Len=240;
 	Cut_d=MotorRetainer_OD+4.4;
-	Cut_Z=Ogive_Len-NC_OGiveTipX0(Body_OD/2,Ogive_Len,Cut_d/2);
+	Cut_Z=OgiveBoatTail? Ogive_Cut_Z(Ogive_L=Ogive_Len, R=Body_OD/2, End_R=Cut_d/2):Cone_Len;
 
 	module Decor(D=Cutout_d){
 		hull(){
@@ -323,18 +340,21 @@ module FinCan(LowerHalfOnly=false, UpperHalfOnly=false, FinCanOnly=false){
 				Cone_Len=Cone_Len, ThreadedTC=false, Extra_OD=0, RailGuideLen=40,
 				LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly, HasWireHoles=false, 
 				HollowTailcone=true, 
-				HollowFinRoots=true, Wall_t=2.2, OgiveTailCone=true, Ogive_Len=Ogive_Len, OgiveCut_d=Cut_d);
+				HollowFinRoots=true, Wall_t=2.2, OgiveTailCone=OgiveBoatTail, Ogive_Len=Ogive_Len, OgiveCut_d=Cut_d);
 				
-			translate([0,0,-Cut_Z]) cylinder(d=Cut_d, h=MotorRetainer_Len);
+			if (OgiveBoatTail) translate([0,0,-Cut_Z]) cylinder(d=Cut_d, h=MotorRetainer_Len);
 		} // union
 				
 		// Motor Retainer
-		translate([0,0,-Cut_Z-8]) cylinder(d=MotorRetainer_OD, h=MotorRetainer_Len);
+		translate([0,0,-Cut_Z-8]){
+			cylinder(d=MotorRetainer_OD, h=MotorRetainer_Len);
+			cylinder(d=MotorTube_OD+IDXtra*2, h=MotorRetainer_Len+8+Overlap);
+		}
 		//translate([0,0,-Cone_Len-Overlap]) cylinder(d=Body_OD, h=5);
 		
 		if (IncludeDecor) Decor(D=Cutout_d);
 
-		if (FinCanOnly) cylinder(d=Body_OD+6, h=FinCan_Len+30);
+		if (TailConeOnly) cylinder(d=Body_OD+6, h=FinCan_Len+30);
 		if (LowerHalfOnly) mirror([0,0,1]) cylinder(d=Body_OD+1, h=Cut_Z+1);
 	} // difference
 	
