@@ -3,16 +3,20 @@
 // Filename: RocketRotiserieDrive.scad
 // by David M. Flynn
 // Created: 12/21/2024
-// Revision: 0.9.0  12/210/2024
+// Revision: 0.9.1  12/22/2024
 // Units: mm
 // *******************************************************
 //  ***** Notes *****
 //
 // To Do: Chuck, table mount
 //
+// Sun=15t, Planets=24t, Ring=63t, 5.2:1 Reduction, 27.04:1 Reduction for 2 stages
+// Motor: 24v, 4000RPM / 27.04 = 147RPM
+//
 //  ***** History *****
 //
-// 0.9.0  12/210/2024   First code
+// 0.9.1  12/22/2024   Fixed sun gear, triangular planet carriers, 2nd Stage
+// 0.9.0  12/21/2024   First code
 //
 // *******************************************************
 //  ***** for STL output *****
@@ -27,12 +31,31 @@
 // PlanetCarrier();
 // MotorMount();
 //
-// Chuck(OD=ULine102Body_ID);
-// Chuck(OD=ULine203Body_ID);
+//  *** 2nd Stage ***
+//
+// ReducerRingGear();
+// SecondStageSun();
+// PlanetCarrier(CenterHole_r=PitchRadius(nSunTeeth)+6);
+//
+//  *** Tooling ***
+//
+// ThreadedMount();
+//
+// Chuck2(OD=ULine102Body_ID, nLocks=4);
+// Chuck2(OD=ULine203Body_ID, nLocks=6);
+// ChuckLock();
+//
+// *******************************************************
+//  ***** Routines *****
+//
+function PitchRadius(T=15)=PlanetaryPitch*T/360;
+//
 //
 // *******************************************************
 //  ***** for Viewing *****
 //
+// ShowPlanets();
+// ShowSecondStage();
 // ShowDrive();
 //
 // *******************************************************
@@ -63,6 +86,7 @@ R8_Bearing_t=7.9;
 PlanetBB_OD=R8_Bearing_OD;
 PlanetBB_ID=R8_Bearing_ID;
 PlanetBB_t=R8_Bearing_t;
+R8_BearingMod=-0.3; // Reduce the diameter of the bearing posts, 0 is too tight
 
 // 6810-2RS
 DriveBearing_OD=65;
@@ -74,7 +98,8 @@ DriveSidePlanetCarrier_t=6;
 
 Bolt4Inset=4;
 
-function PitchRadius(T=15)=PlanetaryPitch*T/360;
+ChuckMount_Pitch=5; // Thread Pitch
+ChuckMount_d=50;	// Thread nominal diameter
 
 module ShaftSpacer(){
 	T=1;
@@ -123,7 +148,7 @@ module ChuckLock(){
 
 //translate([3,44,14]) rotate([0,-90,0]) translate([-10,0,0]) color("Tan") ChuckLock();
 
-module Chuck2(OD=ULine203Body_ID, nLocks=6){
+module Chuck2(OD=ULine203Body_ID, nLocks=6, Threaded=true){
 	// Press-in friction fit chuck
 	
 	ChuckMountPlate_d=80;
@@ -149,6 +174,8 @@ module Chuck2(OD=ULine203Body_ID, nLocks=6){
 		union(){
 			// Hub
 			cylinder(d=ChuckMountPlate_d-1, h=ChuckMountPlate_t);
+			if (Threaded) cylinder(d=ChuckMount_d+10, h=20);
+			
 			
 			// Rim
 			difference(){
@@ -168,13 +195,17 @@ module Chuck2(OD=ULine203Body_ID, nLocks=6){
 				translate([-10,OD/2-3-Block_Y,0]) cube([20,Block_Y,18]);
 		} // union
 		
+		if (Threaded) ChuckInternalThread(Len=30);
+		
 		// Locks
 		for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j]) translate([0,OD/2,0]) Lock();
 		
 		// Remove Center 
+		if (!Threaded)
 		translate([0,0,-Overlap]) cylinder(d=DriveBearing_OD, h=ChuckMountPlate_t+Overlap*2);
 		
 		// Hub bolts
+		if (!Threaded)
 		for (j=[0:nChuckMountingBolts-1]) rotate([0,0,360/nChuckMountingBolts*j]) 
 			translate([0,ChuckMountPlate_d/2-Bolt4Inset,ChuckMountPlate_t])
 				Bolt4HeadHole();
@@ -183,7 +214,7 @@ module Chuck2(OD=ULine203Body_ID, nLocks=6){
 	} // difference
 } // Chuck2
 
-//Chuck2(OD=ULine102Body_ID, nLocks=4);
+// Chuck2(OD=ULine102Body_ID, nLocks=4);
 				
 module Chuck(OD=ULine203Body_ID){
 	// Press-in friction fit chuck
@@ -220,6 +251,45 @@ module Chuck(OD=ULine203Body_ID){
 
 //Chuck(OD=ULine102Body_ID);
 
+
+module ChuckInternalThread(Len=30){
+	ThreadIDXtra=1.0;
+	
+	translate([0,0,-Overlap]) 
+		ExternalThread(Pitch=ChuckMount_Pitch, Dia_Nominal=ChuckMount_d+ThreadIDXtra, 
+					Length=Len+Overlap*2, Step_a=$preview? 20:5, TrimEnd=false, TrimRoot=false);
+} // ChuckInternalThread
+
+// ChuckInternalThread(Len=30);
+
+module ThreadedMount(){
+
+	
+	ChuckMount_Len=30;
+	nChuckMountingBolts=8;
+	ChuckMountPlate_d=80;
+	CenterHole_d=ChuckMount_d-ChuckMount_Pitch*2-6;
+	Plate_t=5;
+	
+	difference(){
+		union(){
+			ExternalThread(Pitch=ChuckMount_Pitch, Dia_Nominal=ChuckMount_d, 
+						Length=ChuckMount_Len, Step_a=$preview? 20:5, TrimEnd=true,TrimRoot=false);
+			cylinder(d=ChuckMountPlate_d, h=Plate_t);
+		} // union
+		
+		// center hole
+		translate([0,0,-Overlap]) cylinder(d=CenterHole_d, h=ChuckMount_Len+Overlap*2);
+		
+		for (j=[0:nChuckMountingBolts-1]) rotate([0,0,360/nChuckMountingBolts*j]) 
+			translate([0,ChuckMountPlate_d/2-Bolt4Inset,Plate_t])
+				Bolt4ButtonHeadHole();
+	} // difference
+	
+} // ThreadedMount
+
+// ThreadedMount();
+
 module OutputShaft(){
 	Shaft_Len=24;
 	ChuckMountPlate_d=80;
@@ -232,6 +302,9 @@ module OutputShaft(){
 			translate([0,0,3+DriveBearing_t]) cylinder(d=DriveBearing_ID+4, h=6);
 			translate([0,0,Shaft_Len-ChuckMountPlate_t]) cylinder(d=ChuckMountPlate_d,h=ChuckMountPlate_t);
 		} // union
+		
+		// center hole
+		translate([0,0,-Overlap]) cylinder(d=DriveBearing_ID-Bolt4Inset*4-2, h=Shaft_Len+Overlap*2);
 		
 		for (j=[0:nDriveBolts]) rotate([0,0,360/nDriveBolts*j])
 		  translate([DriveBearing_ID/2-Bolt4Inset,0,6+DriveBearing_t])
@@ -322,6 +395,29 @@ module OutputBearingPlate(){
 
 // translate([0,0,GearWidth+DriveSidePlanetCarrier_t+2.2]) OutputBearingPlate();
 
+module ReducerRingGear(){
+	Plate_d=150;
+	RingGear_OD=134;
+	nBolts=16;
+	Ring_t=GearWidth+PlanetCarrier_t+DriveSidePlanetCarrier_t+8;
+	
+	RingGear(Pitch=PlanetaryPitch, nTeeth=nPlanetTeeth, nTeethPinion=nSunTeeth, Thickness=Ring_t);
+	
+	difference(){
+		cylinder(d=Plate_d, h=Ring_t);
+		
+		translate([0,0,-Overlap]) cylinder(d=RingGear_OD, h=Ring_t+Overlap*2);
+		
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) translate([0,Plate_d/2-Bolt4Inset,Ring_t])
+				Bolt4Hole();
+				
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*(j+0.5)]) translate([0,Plate_d/2-Bolt4Inset,8])
+				Bolt4HeadHole(lHead=Ring_t);
+	} // difference
+} // ReducerRingGear
+
+// ReducerRingGear();
+
 module MotorMount(){
 	Plate_t=7;
 	Plate_d=150;
@@ -334,11 +430,12 @@ module MotorMount(){
 	translate([0,0,-PlanetCarrier_t-2])
 		RingGear(Pitch=PlanetaryPitch, nTeeth=nPlanetTeeth, nTeethPinion=nSunTeeth, Thickness=Ring_t);
 		
-		translate([0,0,-PlanetCarrier_t-2])
+	translate([0,0,-PlanetCarrier_t-2])
 		difference(){
 			cylinder(d=Plate_d, h=Ring_t);
 			
 			translate([0,0,-Overlap]) cylinder(d=RingGear_OD, h=Ring_t+Overlap*2);
+			
 			for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) translate([0,Plate_d/2-Bolt4Inset,Ring_t])
 				Bolt4Hole();
 		} // difference
@@ -362,23 +459,25 @@ module MotorMount(){
 
 // MotorMount();
 
-
-
 module DrivePlate(){
 	Plate_t=DriveSidePlanetCarrier_t;
+	Xtra_r=IDXtra;
 	
 	difference(){
 		union(){
-			cylinder(r=PitchRadius(nSunTeeth)+PitchRadius(nPlanetTeeth)+PlanetBB_ID, h=Plate_t);
+			hull() for (j=[0:nPlanets]) rotate([0,0,360/nPlanets*j])
+				translate([PitchRadius(nSunTeeth)+PitchRadius(nPlanetTeeth)+Xtra_r,0,0])
+					cylinder(d=R8_Bearing_OD-2, h=Plate_t);
+
 			for (j=[0:nPlanets]) rotate([0,0,360/nPlanets*j])
-				translate([PitchRadius(nSunTeeth)+PitchRadius(nPlanetTeeth),0,0]) {
-					cylinder(d=R8_Bearing_ID, h=Plate_t+1+PlanetBB_t/2);
+				translate([PitchRadius(nSunTeeth)+PitchRadius(nPlanetTeeth)+Xtra_r,0,0]) {
+					cylinder(d=R8_Bearing_ID+R8_BearingMod, h=Plate_t+1+PlanetBB_t/2);
 					cylinder(d=R8_Bearing_ID+4, h=Plate_t+1);
 				}
 		} // union
 		
 		for (j=[0:nPlanets]) rotate([0,0,360/nPlanets*j])
-				translate([PitchRadius(nSunTeeth)+PitchRadius(nPlanetTeeth),0,0])
+				translate([PitchRadius(nSunTeeth)+PitchRadius(nPlanetTeeth)+Xtra_r,0,0])
 			rotate([180,0,0]) Bolt4Hole();
 			
 		for (j=[0:nDriveBolts]) rotate([0,0,360/nDriveBolts*j])
@@ -391,31 +490,59 @@ module DrivePlate(){
 
 // translate([0,0,DriveSidePlanetCarrier_t+1+GearWidth]) rotate([180,0,0]) DrivePlate();
 
-module PlanetCarrier(){
+module SecondStageSun(){
+	Plate_t=5;
+	Gear_H=GearWidth+PlanetCarrier_t+4;
+	
+	difference(){
+		union(){
+			cylinder(d=DriveBearing_ID, h=Plate_t);
+			translate([0,0,Plate_t-Overlap]) 
+				SunGear(nTeeth=nSunTeeth, Thickness=Gear_H, HasSpline=false);
+		} // union
+		
+		translate([0,0,-Overlap]) cylinder(d=18.3, h=Plate_t+Gear_H+Overlap*2);
+		
+		for (j=[0:nDriveBolts]) rotate([0,0,360/nDriveBolts*j])
+			translate([DriveBearing_ID/2-Bolt4Inset,0,Plate_t])
+				Bolt4ButtonHeadHole();
+	} // difference
+	
+} // SecondStageSun
+
+// SecondStageSun();
+
+module PlanetCarrier(CenterHole_r=PitchRadius(nSunTeeth)){
   // Input/Motor side
   
+	Xtra_r=IDXtra;
+	
 	Plate_t=PlanetCarrier_t;
 	
 	difference(){
 		union(){
-			cylinder(r=PitchRadius(nSunTeeth)+PitchRadius(nPlanetTeeth)+PlanetBB_ID, h=Plate_t);
+			hull() for (j=[0:nPlanets]) rotate([0,0,360/nPlanets*j])
+				translate([PitchRadius(nSunTeeth)+PitchRadius(nPlanetTeeth)+Xtra_r,0,0])
+					cylinder(d=R8_Bearing_OD-2, h=Plate_t);
+					
 			for (j=[0:nPlanets]) rotate([0,0,360/nPlanets*j])
-				translate([PitchRadius(nSunTeeth)+PitchRadius(nPlanetTeeth),0,0]) {
-					cylinder(d=R8_Bearing_ID, h=Plate_t+GearWidth-R8_Bearing_t+1+PlanetBB_t/2);
+				translate([PitchRadius(nSunTeeth)+PitchRadius(nPlanetTeeth)+Xtra_r,0,0]) {
+					cylinder(d=R8_Bearing_ID+R8_BearingMod, h=Plate_t+GearWidth-R8_Bearing_t+1+PlanetBB_t/2);
 					cylinder(d=R8_Bearing_ID+4, h=Plate_t+GearWidth-R8_Bearing_t+1);
 				}
 		} // union
 		
 		for (j=[0:nPlanets]) rotate([0,0,360/nPlanets*j])
-				translate([PitchRadius(nSunTeeth)+PitchRadius(nPlanetTeeth),0,0])
+				translate([PitchRadius(nSunTeeth)+PitchRadius(nPlanetTeeth)+Xtra_r,0,0])
 			rotate([180,0,0]) Bolt4HeadHole();
-		translate([0,0,-Overlap]) cylinder(r=PitchRadius(nSunTeeth), h=Plate_t+Overlap*2);
+			
+		translate([0,0,-Overlap]) cylinder(r=CenterHole_r, h=Plate_t+Overlap*2);
 	} // difference
 } // PlanetCarrier
 
 // translate([0,0,-4]) PlanetCarrier();
 
-module SunGear(nTeeth=nSunTeeth, Thickness=GearWidth){
+module SunGear(nTeeth=nSunTeeth, Thickness=GearWidth, HasSpline=true){
 	nSplineTeeth=20;
 	Spline_ID=16.5;
 	Spline_OD=18.5;
@@ -433,11 +560,12 @@ module SunGear(nTeeth=nSunTeeth, Thickness=GearWidth){
 			hub_diameter=15,
 			bore_diameter=Spline_ID,
 			circles=0,
-			backlash=0.2,
+			backlash=0.4,
 			twist=0,
 			involute_facets=0,
 			flat=false);
 		
+		if (HasSpline)
 		translate([0,0,-Overlap]) for (j=[0:nSplineTeeth-1]) rotate([0,0,360/nSplineTeeth*j])
 			translate([0,Spline_ID/2,0]) hull(){
 				cylinder(d=Spline_OD-Spline_ID, h=Thickness+Overlap*2);
@@ -459,14 +587,32 @@ module BB_Planet(){
 	} // difference
 } // BB_Planet
 
-module ShowDrive(){
-	
-	translate([0,0,GearWidth+DriveSidePlanetCarrier_t+1]) color("Tan") ShaftSpacer();
-	SunGear();
+module ShowPlanets(){
 	for (j=[0:nPlanets-1]) rotate([0,0,360/nPlanets*j])
 		translate([PitchRadius(nSunTeeth)+PitchRadius(nPlanetTeeth),0,0]) 
 			rotate([0,0,180/nPlanetTeeth]) 
 				BB_Planet();
+} // ShowPlanets
+
+
+module ShowSecondStage(){
+translate([0,0,DriveSidePlanetCarrier_t+1+GearWidth]){
+	SecondStageSun();
+	translate([0,0,5+1]) PlanetCarrier(CenterHole_r=PitchRadius(nSunTeeth)+6);
+	translate([0,0,5+1+PlanetCarrier_t+1]) ShowPlanets();
+	translate([0,0,5+1+PlanetCarrier_t+1+GearWidth+DriveSidePlanetCarrier_t+1]) rotate([180,0,0]) DrivePlate();
+	//translate([0,0,GearWidth+PlanetCarrier_t+DriveSidePlanetCarrier_t+4]) 
+	translate([0,0,1.2]) ReducerRingGear();
+	}
+} // ShowSecondStage
+
+module ShowDrive(){
+	
+	translate([0,0,GearWidth+DriveSidePlanetCarrier_t+1]) color("Tan") ShaftSpacer();
+	SunGear();
+	ShowPlanets();
+				
+	//*
 	difference(){
 		union(){
 			translate([0,0,GearWidth+DriveSidePlanetCarrier_t+1]) OutputShaft();
@@ -481,7 +627,7 @@ module ShowDrive(){
 		translate([-10,10,-50]) rotate([0,0,90]) cube([100,100,100]);
 	} // difference
 	
-	
+	/**/
 	
 				
 	translate([0,0,-4]) PlanetCarrier();
