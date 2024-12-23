@@ -3,7 +3,7 @@
 // Filename: RocketRotiserieDrive.scad
 // by David M. Flynn
 // Created: 12/21/2024
-// Revision: 0.9.1  12/22/2024
+// Revision: 0.9.2  12/23/2024
 // Units: mm
 // *******************************************************
 //  ***** Notes *****
@@ -15,16 +15,17 @@
 //
 //  ***** History *****
 //
+// 0.9.2  12/23/2024   Added bolt offfset (ForSecondRing=true) to OutputBearingPlate()
 // 0.9.1  12/22/2024   Fixed sun gear, triangular planet carriers, 2nd Stage
 // 0.9.0  12/21/2024   First code
 //
 // *******************************************************
 //  ***** for STL output *****
 //
-// ShaftSpacer();
+// ShaftSpacer(Thickness=3);
 // rotate([180,0,0]) OutputShaft();
 // BearingClamp();
-// OutputBearingPlate();
+// OutputBearingPlate(ForSecondRing=false);
 // DrivePlate();
 // SunGear();
 // BB_Planet();
@@ -33,6 +34,7 @@
 //
 //  *** 2nd Stage ***
 //
+// OutputBearingPlate(ForSecondRing=true);
 // ReducerRingGear();
 // SecondStageSun();
 // PlanetCarrier(CenterHole_r=PitchRadius(nSunTeeth)+6);
@@ -101,8 +103,8 @@ Bolt4Inset=4;
 ChuckMount_Pitch=5; // Thread Pitch
 ChuckMount_d=50;	// Thread nominal diameter
 
-module ShaftSpacer(){
-	T=1;
+module ShaftSpacer(Thickness=1){
+	T=Thickness;
 	
 	difference(){
 		cylinder(d=DriveBearing_ID+6, h=T);
@@ -365,11 +367,12 @@ module Feet(){
 	} // difference
 } // Feet
 
-module OutputBearingPlate(){
+module OutputBearingPlate(ForSecondRing=false){
 	Plate_t=DriveBearing_t+2;
 	Plate_d=150;
 	nBolts=16;
 	nBearingRetainerBolts=8;
+	Offset_a=ForSecondRing? 0.5:0;
 	
 	difference(){
 		union(){
@@ -378,13 +381,14 @@ module OutputBearingPlate(){
 		} // union
 		
 		
-		
-		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) translate([0,Plate_d/2-Bolt4Inset,Plate_t])
+		// Ring Gear Bolts
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*(j+Offset_a)]) translate([0,Plate_d/2-Bolt4Inset,Plate_t])
 				Bolt4HeadHole();
 				
 		translate([0,0,-Overlap]) cylinder(d=DriveBearing_OD-1, h=Plate_t+Overlap*2);
 		translate([0,0,2]) cylinder(d=DriveBearing_OD+IDXtra, h=Plate_t);
 		
+		// Bearing Retainer Bolts
 		for (j=[0:nBearingRetainerBolts-1]) rotate([0,0,360/nBearingRetainerBolts*j]) 
 			translate([0,DriveBearing_OD/2+Bolt4Inset,Plate_t])
 				Bolt4Hole();
