@@ -14,9 +14,13 @@
 //
 // I used a surplus motor I had in a box. 
 // To fit your motor edit: MotorHoles() and SunGear().
+// Looks like about 4RPM is good for coating a 4" tube, 1.8 volts and less than an 1 amp.
+// Going with 3 stages. Should be able to use a 5V 2A wall wort.
 //
-// Sun=15t, Planets=24t, Ring=63t, 5.2:1 Reduction, 27.04:1 Reduction for 2 stages
-// Motor: 24v, 4000RPM / 27.04 = 147RPM max.
+// Sun=15t, Planets=24t, Ring=63t, 5.2:1 Reduction,
+//	 27.04:1 Reduction for 2 stages, 
+//   140.608:1 Reduction for 3 stages
+// Motor: 24v 4.5A max., 4000RPM / 27.04 = 147RPM max. / 140.608 = 28RPM max.
 //
 //  *** Hardware ***
 // #4-40 x 3/8" BHCS	16 Bearing Clamps
@@ -47,7 +51,7 @@
 // DrivePlate();		// Print 2
 // SunGear();
 // BB_Planet();			// Print 6
-// PlanetCarrier(); 	// Print 2
+// PlanetCarrier();
 // MotorMount();
 // Foot(XtraHeight=5); // print 6
 //
@@ -592,6 +596,7 @@ module SecondStageSun(){
 		} // union
 		
 		translate([0,0,-Overlap]) cylinder(d=18.3, h=Plate_t+Gear_H+Overlap*2);
+		translate([0,0,-Overlap]) cylinder(d1=22, d2=18.3, h=Plate_t+Overlap*2);
 		
 		for (j=[0:nDriveBolts]) rotate([0,0,360/nDriveBolts*j])
 			translate([DriveBearing_ID/2-Bolt4Inset,0,Plate_t])
