@@ -140,8 +140,9 @@ module R203_MotorTubeTopper(){
 						Len=Skirt_Len+Overlap, myfn=$preview? 36:360);
 			// Outer ring
 			translate([0,0,-Skirt_Len]) 
-				Tube(OD=Body_ID, ID=Body_ID-4.4, Len=Skirt_Len+Overlap, myfn=$preview? 36:360);
-			CenteringRing(OD=Body_ID, ID=MotorTube_ID-4.4, Thickness=10, nHoles=6, Offset=0);
+				Tube(OD=Body_ID, ID=Body_ID-4.4, Len=Skirt_Len+Overlap, myfn=$preview? 90:720);
+				
+			CenteringRing(OD=Body_ID, ID=MotorTube_ID-4.4, Thickness=10, nHoles=6, Offset=0, myfn=$preview? 90:720);
 			//translate([0,0,4]) 
 			//	Tube(OD=ST_DSpring_OD+8, ID=ST_DSpring_OD, Len=8, myfn=$preview? 36:360);
 			
@@ -312,6 +313,33 @@ module R203_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=fals
 
 // R203_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false);
 
+module R203_SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, HasPD_Ring=false){
+	Engagemnet_Len=10;
+	Plate_t=6;
+	ID=Coupler_ID-16;
+	
+	difference(){
+		union(){
+			cylinder(d=Coupler_ID, h=Plate_t+Engagemnet_Len, $fn=$preview? 90:360);
+			cylinder(d=Coupler_OD, h=Plate_t, $fn=$preview? 90:360);
+		} // union
+		
+		// Remove Center
+		translate([0,0,-Overlap]) cylinder(d=ID, h=Plate_t+Engagemnet_Len+Overlap*2, $fn=$preview? 90:360);
+		translate([0,0,Plate_t]) cylinder(d1=ID, d2=Coupler_ID-4.4, h=Engagemnet_Len+Overlap, $fn=$preview? 90:360);
+		
+		if (HasPD_Ring){
+			translate([0,0,Plate_t])
+				PD_PetalHubBoltPattern(OD=Coupler_OD, nBolts=6) Bolt4HeadHole(lHead=Plate_t+Engagemnet_Len);
+			
+		}else{
+			translate([0,0,Plate_t])
+				PD_PetalHubBoltPattern(OD=Coupler_OD, nBolts=nPetals) Bolt4HeadHole(lHead=Plate_t+Engagemnet_Len);
+		}
+	} // difference
+} // R203_SkirtRing
+
+// R203_SkirtRing();
 
 
 
