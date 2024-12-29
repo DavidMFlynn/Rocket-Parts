@@ -3,7 +3,7 @@
 // Filename: RocketRotiserieDrive.scad
 // by David M. Flynn
 // Created: 12/21/2024
-// Revision: 1.0.0  12/24/2024
+// Revision: 1.0.1  12/29/2024
 // Units: mm
 // *******************************************************
 //  ***** Notes *****
@@ -36,6 +36,7 @@
 //
 //  ***** History *****
 //
+// 1.0.1  12/29/2024   Added threaded option to Chuck(), friction fit chuck
 // 1.0.0  12/24/2024   A better foot. Printed and tested.
 // 0.9.2  12/23/2024   Added bolt offset (ForSecondRing=true) to OutputBearingPlate()
 // 0.9.1  12/22/2024   Fixed sun gear, triangular planet carriers, 2nd Stage
@@ -70,11 +71,13 @@
 // Chuck2(OD=ULine203Body_ID, nLocks=6, Threaded=true);
 // ChuckLock();
 //
+// Chuck(OD=BT54Body_ID);
+//
 // *******************************************************
 //  ***** Routines *****
 //
 function PitchRadius(T=15)=PlanetaryPitch*T/360;
-// Chuck(OD=ULine203Body_ID); // Bolt on friction fit
+// Chuck(OD=ULine203Body_ID, Threaded=true); // Bolt on friction fit
 // ChuckInternalThread(Len=30);
 // Legs();
 // MotorHoles();
@@ -245,7 +248,7 @@ module Chuck2(OD=ULine203Body_ID, nLocks=6, Threaded=true){
 
 // Chuck2(OD=ULine102Body_ID, nLocks=4);
 				
-module Chuck(OD=ULine203Body_ID){
+module Chuck(OD=ULine203Body_ID, Threaded=true){
 	// Press-in friction fit chuck
 	
 	ChuckMountPlate_d=80;
@@ -267,18 +270,24 @@ module Chuck(OD=ULine203Body_ID){
 			cylinder(d=OD-1, h=3);
 		} // union
 		
+		if (Threaded) ChuckInternalThread(Len=30);
+		
 		// Remove Center 
-		translate([0,0,-Overlap]) cylinder(d=DriveBearing_OD, h=ChuckMountPlate_t+Overlap*2);
+		if (!Threaded)
+			translate([0,0,-Overlap]) cylinder(d=DriveBearing_OD, h=ChuckMountPlate_t+Overlap*2);
 		
 		// Hub bolts
-		for (j=[0:nChuckMountingBolts-1]) rotate([0,0,360/nChuckMountingBolts*j]) 
-			translate([0,ChuckMountPlate_d/2-Bolt4Inset,ChuckMountPlate_t])
-				Bolt4HeadHole();
+		if (!Threaded)
+			for (j=[0:nChuckMountingBolts-1]) rotate([0,0,360/nChuckMountingBolts*j]) 
+				translate([0,ChuckMountPlate_d/2-Bolt4Inset,ChuckMountPlate_t])
+					Bolt4HeadHole();
 		
 	} // difference
 } // Chuck
 
-//Chuck(OD=ULine102Body_ID);
+// Chuck(OD=ULine102Body_ID);
+
+// Chuck(OD=BT54Body_ID);
 
 
 module ChuckInternalThread(Len=30){
@@ -286,7 +295,7 @@ module ChuckInternalThread(Len=30){
 	
 	translate([0,0,-Overlap]) 
 		ExternalThread(Pitch=ChuckMount_Pitch, Dia_Nominal=ChuckMount_d+ThreadIDXtra, 
-					Length=Len+Overlap*2, Step_a=$preview? 20:5, TrimEnd=false, TrimRoot=false);
+					Length=Len+Overlap*2, Step_a=$preview? 10:2, TrimEnd=false, TrimRoot=false);
 } // ChuckInternalThread
 
 // ChuckInternalThread(Len=30);

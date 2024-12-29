@@ -3,7 +3,7 @@
 // Filename: Rocket102UL.scad
 // by David M. Flynn
 // Created: 12/27/2024
-// Revision: 1.0.1  12/28/2024
+// Revision: 1.0.2  12/29/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -29,15 +29,16 @@
 // #6-32 x 3/4" Button Head Cap Screw (4 req) Rail Guides
 // #4-40 x 1/2" Socket Head Cap Screw (12 req) Ball Lock
 // #4-40 x 3/8" Button Head Cap Screw (14 req) Doors
-// #4-40 x 3/8" Socket Head Cap Screw (3 req) PetalHub
+// #4-40 x 3/8" Socket Head Cap Screw (6 req) PetalHub
 // #4-40 x 1/4" Button Head Cap Screw (4 req) Altimeter
-// #4-40 x 1/4" Button Head Cap Screw (12 req) Petals
-// #4-40 x 3/8" Button Socket Head Cap Screw (8 req) Servos
-// 1/2" x 0.035" wall Aluminum tubing 2ea 92mm, 2ea 80mm Shock cord mounts
-// MR84-2RS Bearing (16 req) Ball Lock
+// #4-40 x 1/4" Button Head Cap Screw (24 req) Petals
+// #4-40 x 3/8" Button Head Cap Screw (8 req) Servos
+// 1/2" x 0.035" wall x 99mm long Aluminum tubing (3 req) Shock cord mounts
+// MR84-2RS Bearing (12 req) Ball Lock
+// 6806-2RS Bearing (2 req) Ball Lock
 // 3/8" Delrin Ball (12 req) Ball Lock
 // 4mm Dia. x 10mm Undersize Steel Dowel (12 req) Ball Lock
-// 4mm Dia. x 16mm Undersize Steel Dowel (6 req) Ball Lock
+// 4mm Dia. x 16mm Undersize Steel Dowel (4 req) Ball Lock
 // 3/16" Dia x 1/8" Disc Magnet N42 (4 req) Ball Lock
 // HX5010 or Eqiv. Standard Servo (2 req) Ball Lock
 // C&K Rotary Switch (2 req) Battery Door
@@ -49,6 +50,7 @@
 //
 //  ***** History *****
 //
+// 1.0.2  12/29/2024 Changed to large bearing for ball locks, updated hardware list.
 // 1.0.1  12/28/2024 Cleaning up and printing 1st Art.
 // 1.0.0  12/27/2024 Copied Rocket98C Rev: 1.2.3
 //
