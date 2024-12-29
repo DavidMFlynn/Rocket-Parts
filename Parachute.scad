@@ -54,6 +54,16 @@ PrintingOffset_X=0;
 //Arc_r=800; //160mm x 200mm, 16"
 //
 // --------------------------------------------------------------
+// *** Drogue 'Chute ***
+// Make 6 panels
+/*
+Pointyness=0.44; Panel_Y=2; SeamAllowance=0;
+nPanels=6;
+Arc_r=14*25.4; Apex_Y=220; Hole_X=28;  // 6 Panels 186mm x 310mm, 14"
+Center_r=Apex_Y+45;
+/**/
+//PrintingOffset_X=100; PrintingOffset_Y=-130;// Page 1
+// --------------------------------------------------------------
 // *** First Article Test ***
 // Make 8 panels
 // This worked well made a nice 20 inch 8 panel parachute. (2.1 sqft)
@@ -92,7 +102,7 @@ Center_r=Apex_Y+52;
 // Make 12 Panels
 // 1.4oz Rip-Stop Nylon, 3mm Polypropylene rope (knit, cheep from Amazon)
 // 11 sqft
-//*
+/*
 Pointyness=0.4; Panel_Y=2; SeamAllowance=7;
 nPanels=12;
 Arc_r=750; Apex_Y=610; Hole_X=33; //12 Panels 300mm x 610mm, 45" Dia., 5" Center Hole
@@ -150,7 +160,7 @@ Center_r=Apex_Y+114;
 // ---------------------------------------------------------------------------
 //
 
-//*
+/*
 //for (j=[0:nPanels-1]) rotate([0,0,360/nPanels*j]) translate([0,-Center_r,0]) // show full circle
 //
 translate([PrintingOffset_X,PrintingOffset_Y+SeamAllowance,0]) // offset for pdf
@@ -179,32 +189,73 @@ nPanels=8;
 Diameter=20*25.4; // 63 inches in diameter
 CenterHole_d=3.0*25.4;
 echo(Diameter=Diameter);
+/**/
 
-SeamAllowance=7;
+/*
+nPanels=6;
+Diameter=14*25.4; // 63 inches in diameter
+R=Diameter/2;
+CenterHole_d=2.5*25.4;
+echo(Diameter=Diameter);
+/**/
+/*
+SeamAllowance=6;
 Panel_w=Diameter*PI/nPanels;
 Apex_w=CenterHole_d*PI/nPanels;
-Arc_r=Diameter/2*1.73;
-echo(Arc_r=Arc_r);
-Apex_Y=(Diameter/2-CenterHole_d/2)*1.4;
+Skirt_Y=(R-R*0.707)*2*PI/4;
+Center_Y=Skirt_Y+R*0.707;
+echo(R=R);
+Apex_Y=Center_Y-CenterHole_d/2;
 echo(Apex_Y=Apex_Y);
 
-//for (j=[0:nPanels-1]) rotate([0,0,360/nPanels*j]) translate([0,-Diameter/1.825,0]) // show full circle
-//translate([PrintingOffset_X,PrintingOffset_Y+SeamAllowance,0]) // offset for pdf
-//offset(delta=SeamAllowance) // comment out when showing full circle
+//for (j=[0:nPanels-1]) rotate([0,0,360/nPanels*j]) translate([0,-Center_Y,0]) // show full circle
+translate([PrintingOffset_X,PrintingOffset_Y+SeamAllowance,0]) // offset for pdf
+offset(delta=SeamAllowance) // comment out when showing full circle
 P_ShapeTest();
 	
 module P_ShapeTest(){
 	
-	hull(){
-		intersection(){
-			translate([-Arc_r+Panel_w/2, 0, 0]) circle(r=Arc_r);
-			translate([Arc_r-Panel_w/2, 0, 0]) circle(r=Arc_r);
-			translate([-Panel_w/2,0,0]) square([Panel_w, Apex_Y/2]);
-		}
+	difference(){
+		hull(){
+			intersection(){
+				translate([Panel_w/2-R, 0, 0]) circle(r=R);
+				translate([-Panel_w/2+R, 0, 0]) circle(r=R);
+				translate([-Panel_w/2,0,0]) square([Panel_w, Apex_Y]);
+			}
+			
+			translate([0,Center_Y,0]) circle(d=1);
+		} // hull
 		
-		translate([-Apex_w/2,Apex_Y-1,0]) square([Apex_w,1]);
-	} // hull
-	
-} // P_Shape
+		translate([0,Center_Y,0]) color("Orange") circle(d=CenterHole_d);
+	} // difference
+} // P_ShapeTest
+
+//P_ShapeTest();
 
 /**/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
