@@ -3,7 +3,7 @@
 // Filename: SpringThingBooster.scad
 // by David M. Flynn
 // Created: 2/26/2023
-// Revision: 1.4.4   12/21/2024
+// Revision: 1.4.5   12/28/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -38,7 +38,8 @@
 //  ***** History *****
 function SpringThingBoosterRev()="SpringThingBooster Rev. 1.4.3";
 echo(SpringThingBoosterRev());
-
+//
+// 1.4.5   12/28/2024 Added Bearing6806 as large bearing for ULine102Body_ID
 // 1.4.4   12/21/2024 Fixes to STB_BallRetainerTop: thicker floor 5mm, Gap filler calc changed
 // 1.4.3   12/19/2024 Fixed arming hole depth.
 // 1.4.2   12/14/2024 Removed STB_TubeEnd and renamed STB_TubeEnd2
@@ -137,6 +138,11 @@ Bearing6808_ID=40;
 Bearing6808_OD=52;
 Bearing6808_W=7;
 
+Bearing6806_ID=30;
+Bearing6806_OD=42;
+Bearing6806_W=7;
+
+
 nLockBalls=3;
 nBT137Balls=7;
 
@@ -231,8 +237,11 @@ module STB_LockDisk(Body_ID=BT75Body_ID, nLockBalls=nLockBalls, HasLargeInnerBea
 	
 	MagnetOvershoot_a=STB_CalcChord_a(Dia=BallPerimeter_d-STB_LockBall_d(Body_ID)*2, Dist=0.6);
 	
-	Bearing_OD=HasLargeInnerBearing? Bearing6808_OD:BearingMR84_OD;
-	Bearing_W=HasLargeInnerBearing? Bearing6808_W:BearingMR84_W;
+	BigBearing_OD=(Body_ID>120)? Bearing6808_OD:Bearing6806_OD;
+	BigBearing_W=(Body_ID>120)? Bearing6808_W:Bearing6806_W;
+	
+	Bearing_OD=HasLargeInnerBearing? BigBearing_OD:BearingMR84_OD;
+	Bearing_W=HasLargeInnerBearing? BigBearing_W:BearingMR84_W;
 	
 	difference(){
 		union(){
@@ -293,6 +302,8 @@ module STB_LockDisk(Body_ID=BT75Body_ID, nLockBalls=nLockBalls, HasLargeInnerBea
 				}
 	} // difference
 } // STB_LockDisk
+
+// STB_LockDisk(Body_ID=ULine102Body_ID, nLockBalls=6, HasLargeInnerBearing=true);
 
 //STB_LockDisk();
 //STB_LockDisk(Body_ID=BT137Body_ID, nLockBalls=7, HasLargeInnerBearing=true);
@@ -425,6 +436,8 @@ module STB_TubeEnd(Body_ID=BT75Body_ID, nLockBalls=nLockBalls,
 	//echo("STB_LockBall_d=",STB_LockBall_d(Body_ID));
 } // STB_TubeEnd
 
+// rotate([180,0,0]) STB_TubeEnd(Body_ID=ULine102Body_ID, nLockBalls=6, Body_OD=ULine102Body_OD, Engagement_Len=20);
+			
 //rotate([180,0,0]) STB_TubeEnd(Body_ID=BT137Body_ID, nLockBalls=nBT137Balls, Body_OD=BT137Body_OD, Engagement_Len=20);
 // STB_TubeEnd(Body_ID=ULine203Body_ID, nLockBalls=7, Body_OD=ULine203Body_OD, Engagement_Len=30);
 
@@ -497,7 +510,11 @@ module STB_BallRetainerTop(Body_ID=BT75Body_ID, Outer_OD=0, Body_OD=BT75Body_ID,
 	Servo_r=BallPerimeter_d/2-STB_LockBall_d(Body_ID)-BearingMR84_OD/2-ServoArm_Len;
 	IntCouplerLen=UsesBigServo? IntegratedCouplerLenXtra+24:IntegratedCouplerLenXtra+13;
 	
-	Bearing_ID=Bearing6808_ID;
+	BigBearing_ID=(Body_ID>120)? Bearing6808_ID:Bearing6806_ID;
+	BigBearing_OD=(Body_ID>120)? Bearing6808_OD:Bearing6806_OD;
+	BigBearing_W=(Body_ID>120)? Bearing6808_W:Bearing6806_W;
+
+	Bearing_ID=BigBearing_ID;
 	OuterRing_OD=(Outer_OD==0)? BallPerimeter_d:Outer_OD;
 	
 	module ServoPosition(SecondServo=false){
@@ -517,11 +534,12 @@ module STB_BallRetainerTop(Body_ID=BT75Body_ID, Outer_OD=0, Body_OD=BT75Body_ID,
 	
 	module BigServoPosition(SecondServo=false){
 		SecondServo_a=SecondServo? 360/nLockBalls*3:0;
+		ServoRotation_a=HasLargeInnerBearing? -16:0;
 		
-		Servo_a=360/nLockBalls-STB_CalcChord_a(Dia=Servo_r*2, Dist=BearingMR84_OD/2+6);
+		Servo_a=360/nLockBalls-STB_CalcChord_a(Dia=Servo_r*2, Dist=BearingMR84_OD/2+6)+15;
 		
 		rotate([0,0,Servo_a+SecondServo_a])
-			translate([0, Servo_r-2, Servo_Z+9]) rotate([0,0,-135]) rotate([180,0,0]) children();
+			translate([0, Servo_r-2, Servo_Z+9]) rotate([0,0,-135+ServoRotation_a]) rotate([180,0,0]) children();
 		
 		//#translate([-10,4,4]) cylinder(d=10, h=3);
 	} // BigServoPosition
@@ -688,7 +706,16 @@ module STB_BallRetainerTop(Body_ID=BT75Body_ID, Outer_OD=0, Body_OD=BT75Body_ID,
 } // STB_BallRetainerTop
 
 /*
-STB_BallRetainerTop(Body_ID=ULine203Body_ID, Outer_OD=ULine203Body_OD, Body_OD=ULine203Body_ID, nLockBalls=6,
+STB_BallRetainerTop(Body_ID=ULine102Body_ID, Outer_OD=ULine102Body_OD, Body_OD=ULine102Body_ID, nLockBalls=6,
+HasIntegratedCouplerTube=true,
+			IntegratedCouplerLenXtra=-10,
+			HasSecondServo=false,
+			UsesBigServo=true,
+			Engagement_Len=30, HasLargeInnerBearing=true);
+/**/
+
+/*
+STB_BallRetainerTop(Body_ID=ULine203Body_ID, Outer_OD=ULine203Body_OD, Body_OD=ULine203Body_ID, nLockBalls=7,
 HasIntegratedCouplerTube=true,
 			IntegratedCouplerLenXtra=-10,
 			HasSecondServo=false,
@@ -748,7 +775,11 @@ module STB_BallRetainerBottom(Body_ID=BT75Body_ID, Body_OD=BT75Body_ID, nLockBal
 	
 	//echo(Bottom_H=Bottom_H);
 	
-	Bearing_ID=Bearing6808_ID;
+	BigBearing_ID=(Body_ID>120)? Bearing6808_ID:Bearing6806_ID;
+	BigBearing_OD=(Body_ID>120)? Bearing6808_OD:Bearing6806_OD;
+	BigBearing_W=(Body_ID>120)? Bearing6808_W:Bearing6806_W;
+
+	Bearing_ID=BigBearing_ID;
 		
 	difference(){
 		translate([0,0,-Bottom_H]) 
@@ -838,7 +869,14 @@ module STB_BallRetainerBottom(Body_ID=BT75Body_ID, Body_OD=BT75Body_ID, nLockBal
 			rotate([0,90,0]) cylinder(d=Magnet_d, h=Magnet_h+Overlap*2, center=true);
 	} // difference
 } // STB_BallRetainerBottom
-
+/*
+STB_BallRetainerBottom(Body_ID=ULine102Body_ID, Body_OD=ULine102Body_ID, nLockBalls=6, HasSpringGroove=false, Engagement_Len=20, HasLargeInnerBearing=true);
+rotate([0,0,STB_Unlocked_a(ULine102Body_ID)]){
+	STB_LockDisk(Body_ID=ULine102Body_ID, nLockBalls=6, HasLargeInnerBearing=true);
+	STB_ShowLockBearings(Body_ID=ULine102Body_ID, nLockBalls=6);
+	}
+STB_ShowMyBalls(Body_ID=ULine102Body_ID, nLockBalls=6, InLockedPosition=false);
+/**/
 /*
 STB_BallRetainerBottom(Body_ID=BT137Body_ID, Body_OD=BT137Body_ID, nLockBalls=nBT137Balls, HasSpringGroove=false, Engagement_Len=25, HasLargeInnerBearing=true);
 rotate([0,0,STB_Unlocked_a(Body_ID)]){

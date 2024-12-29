@@ -48,11 +48,16 @@
 /**/
 //
 // R203_SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, HasPD_Ring=false);
+// rotate([180,0,0]) R203_PusherRing(OA_Len=50, Engagemnet_Len=10, Wall_t=4);
 // SE_SlidingBigSpringMiddle(OD=Coupler_OD, SliderLen=80, Extension=0); // print 2
 // rotate([180,0,0]) SE_SpringEndTypeA(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, nRopes=6, Spring_OD=SE_Spring_CS11890_OD());
 // SE_SpringEndTypeC(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, nRopes=6, UseSmallSpring=false);
 // CenteringRing(OD=Body_ID, ID=MotorTube_OD, Thickness=10, nHoles=6, Offset=0, myfn=$preview? 90:360);
 // rotate([180,0,0]) R203_MotorTubeTopper();
+//
+//  *** Coupler Tubes ***
+// Tube(OD=Coupler_OD, ID=Coupler_ID, Len=50, myfn=$preview? 90:720);
+// Tube(OD=Coupler_OD, ID=Coupler_ID, Len=75, myfn=$preview? 90:720);
 //	
 //  *** Electronics Bay ***
 // rotate([180,0,0]) EBay(TopOnly=true, BottomOnly=false, ShowDoors=false);
@@ -72,8 +77,8 @@
 //  *** Petal Deployer ***
 // R203_PetalHub(); // Lower 
 // R203_NC_PetalHub(); // upper
-// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=DroguePetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=5.0, HasLocks=false, Lock_Span_a=0);
-// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=MainPetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=5.0, HasLocks=false, Lock_Span_a=0);
+// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=DroguePetal_Len, nPetals=nPetals, Wall_t=2.4, AntiClimber_h=5.0, HasLocks=false, Lock_Span_a=0);
+// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=MainPetal_Len, nPetals=nPetals, Wall_t=2.4, AntiClimber_h=5.0, HasLocks=false, Lock_Span_a=0);
 // rotate([-90,0,0]) PD_PetalSpringHolder(); // print 15
 // PD_HubSpringHolder();
 //
@@ -84,6 +89,7 @@
 // Rocket_Fin();
 //
 // rotate([90,0,0]) BoltOnRailGuide(Length = 40, BoltSpace=12.7, RoundEnds=true, ExtraBack=0);
+// rotate([-90,0,0]) RailGuideSpacer(OD=Body_OD, H=Body_OD/2+2, Length = 40, BoltSpace=12.7);
 //
 // TubeTest(OD=Body_OD, ID=Body_ID);
 //

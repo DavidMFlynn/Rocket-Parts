@@ -3,7 +3,7 @@
 // Filename: TubesLib.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.19  12/18/2024
+// Revision: 0.9.21  12/28/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,10 @@
 //
 //  ***** History *****
 //
-function TubesLib_Rev()="TubesLib 0.9.18";
+function TubesLib_Rev()="TubesLib 0.9.21";
 echo(TubesLib_Rev());
+// 0.9.21  12/28/2024 Added BodyDrillingJig()
+// 0.9.20  12/27/2024 Updated ULine203Body, now fits correctly using PETG-CF, add 0.5% for PETG?
 // 0.9.19  12/18/2024 Updated ULine203Body
 // 0.9.18  12/13/2024 Added ULine203Body
 // 0.9.17  10/4/2024  Added ULine38Body
@@ -50,10 +52,14 @@ echo(TubesLib_Rev());
 //
 // CenteringRing(OD=BT54Coupler_OD, ID=ULine38Body_OD, Thickness=5, nHoles=5, Offset=0, myfn=$preview? 90:360); // motor adaptor
 //
+// BodyDrillingJig(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, nBolts=5, BoltInset=7.5);
+//
 // ***********************************
 //  ***** Routines *****
 //
-// TubeTest(OD=BT137Body_OD, ID=BT137Body_ID); // for test fitting tubes
+// TubeTest(OD=BT137Body_OD, ID=BT137Body_ID, TestOD=false); // for test fitting tubes
+// TubeTest(OD=ULine102Body_OD, ID=ULine102Body_ID);
+//
 // Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=300, myfn=$preview? 36:360);
 // TubeStop(InnerTubeID=PML54Coupler_ID, OuterTubeOD=PML54Body_OD, myfn=$preview? 36:360);
 // CenteringRing(OD=PML98Body_ID, ID=PML54Body_OD, Thickness=5, nHoles=0);
@@ -97,15 +103,22 @@ ULine75Body_OD=80.30;
 ULine75Body_ID=76.60; // Works w/ BT75Coupler_OD
 
 // ULine 4 inch mailing tube
-// Verification needed
-ULine102Body_OD=106;
+ULine102Body_OD=106.1;
 ULine102Body_ID=102.2;
+
 
 // ULine 6 inch mailing tube
 
 // ULine 8 inch mailing tube
-ULine203Body_OD=210.50;
-ULine203Body_ID=ULine203Body_OD-3.4*2; // wall_t=3.4
+ULine203Body_OD=210.0; // + IDXtra = Snug fit w/ PETG-CF?
+ULine203Body_ID=203.7; // snug fit w/ PETG-CF
+//echo(ULine203Body_ID=ULine203Body_ID);
+//TubeTest(OD=ULine203Body_OD+IDXtra, ID=ULine203Body_ID, TestOD=true); 
+// should be a tight fit, tests with PETG-CF
+//  210.5+IDXtra is too loose, 
+//  210.0+IDXtra fits snug
+//  209.5+IDXtra doesn't fit
+
 ULine203Coupler_OD=ULine203Body_ID-1;  // no actual coupler tube exists
 ULine203Coupler_ID=ULine203Coupler_OD-4.4;
 
@@ -188,12 +201,43 @@ LOC65Coupler_ID=63.3;
 LOC29Body_OD=30.9;
 LOC29Body_ID=29;
 
-module TubeTest(OD=ULine75Body_OD, ID=ULine75Body_ID){
-	Tube(OD=OD, ID=ID-1, Len=5, myfn=$preview? 36:360);
-	Tube(OD=ID, ID=ID-4.4, Len=10, myfn=$preview? 36:360);
+module TubeTest(OD=ULine75Body_OD, ID=ULine75Body_ID, TestOD=false){
+	
+	if (TestOD){
+		Tube(OD=OD+4.4, ID=ID, Len=5, myfn=$preview? 36:360);
+		Tube(OD=OD+4.4, ID=OD, Len=10, myfn=$preview? 36:360);
+	}else{
+		Tube(OD=OD, ID=ID-1, Len=5, myfn=$preview? 36:360);
+		// Tests the ID
+		Tube(OD=ID, ID=ID-4.4, Len=10, myfn=$preview? 36:360);
+	}
 } // TubeTest
 
 //TubeTest();
+
+module BodyDrillingJig(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, nBolts=5, BoltInset=7.5){
+	Plate_t=3;
+	
+	difference(){
+		union(){
+			translate([0,0,-Plate_t]) cylinder(d=Tube_OD+8, h=Plate_t);
+			// Inner ring
+			translate([0,0,-Overlap]) 
+				Tube(OD=Tube_ID-IDXtra, ID=Tube_ID-IDXtra-4.4, Len=BoltInset+4, myfn=$preview? 90:360);
+			// Outer ring, fits w/o touching so the vinyl doesn't get messed up.
+			translate([0,0,-Overlap]) 
+				Tube(OD=Tube_OD+IDXtra*5+4.4, ID=Tube_OD+IDXtra*5, Len=BoltInset+4, myfn=$preview? 90:360);
+		} // union
+		
+		// Center hole
+		translate([0,0,-Plate_t-Overlap]) cylinder(d=Tube_ID-10, h=Plate_t+Overlap*2);
+		
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) translate([0,Tube_OD/2+4,BoltInset])
+			rotate([-90,0,0]) Bolt4ClearHole(depth=20);
+	} // difference
+} // BodyDrillingJig
+
+// BodyDrillingJig();
 
 module MotorRetainer(Tube_OD=BT54Mtr_OD, Tube_ID=BT54Mtr_ID, Mtr_OD=54, MtrAC_OD=58){
 	OAH=33;

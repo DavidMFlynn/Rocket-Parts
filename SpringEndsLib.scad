@@ -389,7 +389,8 @@ module SE_SpringEndTypeA(Coupler_OD=BT75Coupler_OD, Coupler_ID=BT75Coupler_ID, n
 	} // difference
 } // SE_SpringEndTypeA
 
-//rotate([180,0,0]) SE_SpringEndTypeA();
+//rotate([180,0,0]) 
+SE_SpringEndTypeA();
 
  
 //SE_SpringEndTypeA(Coupler_OD=BT65Coupler_OD, Coupler_ID=BT65Coupler_ID, nRopes=3, Spring_OD=SE_Spring_CS4323_OD());

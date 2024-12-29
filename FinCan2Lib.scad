@@ -396,7 +396,7 @@ FC2_TailCone(Body_OD=ULine203Body_OD, MotorTube_OD=BT75Body_OD,
 
 module FC2_MotorRetainer(Body_OD=BT98Body_OD,
 						MotorTube_OD=BT54Body_OD, MotorTube_ID=BT54Body_ID,
-						HasWrenchCuts=false, Cone_Len=65, ExtraLen=0, Extra_OD=0, Ogive=false){
+						HasWrenchCuts=false, Cone_Len=65, ExtraLen=0, Extra_OD=0, Extra_ID=0, Ogive=false){
 	
 	
 	AftClosure_h=10;
@@ -435,7 +435,7 @@ module FC2_MotorRetainer(Body_OD=BT98Body_OD,
 			cylinder(d=MotorTube_OD+MT_Extra_OD, h=Cone_Len);
 	
 		translate([0,0,-Cone_Len+Nut_Len-12+Overlap])
-			ExternalThread(Pitch=ThreadPitch, Dia_Nominal=NomonalThread_d+InternalThreadIDXtra, 
+			ExternalThread(Pitch=ThreadPitch, Dia_Nominal=NomonalThread_d+InternalThreadIDXtra+Extra_ID, 
 							Length=15, Step_a=$preview? 10:2, TrimEnd=true, TrimRoot=false);
 		
 		// Spanner Wrench

@@ -341,6 +341,17 @@ module R203_SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, HasPD_Ring=f
 
 // R203_SkirtRing();
 
+module R203_PusherRing(OA_Len=50, Engagemnet_Len=10, Wall_t=4){
+	
+	
+	Tube(OD=Coupler_OD, ID=Coupler_ID, Len=OA_Len, myfn=$preview? 90:720);
+	translate([0,0,Engagemnet_Len]) 
+		Tube(OD=Coupler_OD, ID=Coupler_OD-Wall_t*2, Len=OA_Len-Engagemnet_Len, myfn=$preview? 90:720);
+	
+} // R203_PusherRing
+
+// rotate([180,0,0]) R203_PusherRing();
+
 
 
 
