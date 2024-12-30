@@ -146,7 +146,7 @@ module ServoHX5010TopBlock(Xtra_Len=4, Xtra_Width=4, Xtra_Height=0){
 //ServoHX5010TopBlock();
 //ServoHX5010TopBlock(Xtra_Len=0, Xtra_Width=2.4, Xtra_Height=6);
 
-module Servo_HX5010(BottomMount=true,TopAccess=true,Xtra_w=0.2, Xtra_h=1){
+module Servo_HX5010(BottomMount=true,TopAccess=true,Xtra_w=0.2, Xtra_h=1, XtraTop=0){
 	Servo_Shaft_Offset=9.4; // this moves double
 	Servo_BoltSpace=10;
 	Servo_BoltSpace2=49.4;
@@ -169,7 +169,7 @@ module Servo_HX5010(BottomMount=true,TopAccess=true,Xtra_w=0.2, Xtra_h=1){
 	// top
 	if (BottomMount==true){
 		translate([-Servo_x/2,-Servo_w/2-Xtra_w/2,0]) cube([Servo_x,Servo_w+Xtra_w,Servo_Deck_h+Overlap]);
-		translate([-Servo_Body_l/2,-Servo_w/2-Xtra_w/2,Servo_Deck_h]) cube([Servo_Body_l,Servo_w+Xtra_w,Servo_TopStep_h+Overlap]);
+		translate([-Servo_Body_l/2,-Servo_w/2-Xtra_w/2,Servo_Deck_h]) cube([Servo_Body_l,Servo_w+Xtra_w, Servo_TopStep_h+XtraTop+Overlap]);
 		// gussets
 		hull(){
 			translate([-Servo_x/2,-0.8,Servo_Deck_h])cube([Servo_x,1.6,0.01]);
@@ -197,8 +197,8 @@ module Servo_HX5010(BottomMount=true,TopAccess=true,Xtra_w=0.2, Xtra_h=1){
 	
 	if (BottomMount==true){
 		// servo wheel
-		translate([Servo_Shaft_Offset,0,Servo_Deck_h+Servo_TopStep_h-Overlap])
-			cylinder(d=21.3,h=Servo_TopOfWheel-Servo_Deck_h-Servo_TopStep_h+Overlap);
+		translate([Servo_Shaft_Offset,0,Servo_Deck_h+Servo_TopStep_h+XtraTop-Overlap])
+			cylinder(d=21.3,h=Servo_TopOfWheel-Servo_Deck_h-Servo_TopStep_h+XtraTop+Overlap);
 	} else {
 		translate([Servo_Shaft_Offset,0,0]) cylinder(d=21.3,h=19.6);
 	}
@@ -208,7 +208,7 @@ module Servo_HX5010(BottomMount=true,TopAccess=true,Xtra_w=0.2, Xtra_h=1){
 	}
 } // Servo_HX5010
 
-//Servo_HX5010(BottomMount=true,TopAccess=false, Xtra_w=1.2, Xtra_h=1);
+//Servo_HX5010(BottomMount=true,TopAccess=false, Xtra_w=1.2, Xtra_h=0, XtraTop=-1);
 //Servo_HX5010(BottomMount=true,TopAccess=false, Xtra_w=1.2, Xtra_h=0);
 //Servo_HX5010(BottomMount=false,TopAccess=true, Xtra_w=1.2, Xtra_h=1);
 

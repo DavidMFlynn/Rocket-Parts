@@ -86,8 +86,8 @@
 // PD_PetalHub(OD=Body_ID-BodyTubeAnnulus, HasBolts=true, nBolts=6, nPetals=nPetals, HasReplaceableSpringHolder=true, ShockCord_a=-2);
 // rotate([-90,0,0]) PD_PetalSpringHolder();
 // PD_HubSpringHolder();
-// rotate([180,0,0]) PD_Petals(OD=Body_ID-BodyTubeAnnulus, Len=ForwardPetalLen, nPetals=nPetals, AntiClimber_h=4);
-// rotate([180,0,0]) PD_Petals(OD=Body_ID-BodyTubeAnnulus, Len=AftPetalLen, nPetals=nPetals, AntiClimber_h=4);
+// rotate([180,0,0]) PD_Petals(OD=Body_ID-BodyTubeAnnulus, Len=ForwardPetalLen, nPetals=nPetals, Wall_t=2.4, AntiClimber_h=4);
+// rotate([180,0,0]) PD_Petals(OD=Body_ID-BodyTubeAnnulus, Len=AftPetalLen, nPetals=nPetals, Wall_t=2.4, AntiClimber_h=4);
 //
 //  *** Spring Handling ***
 //

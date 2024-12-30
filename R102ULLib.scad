@@ -196,7 +196,7 @@ module R102UL_MotorTubeTopper(HasPassThru=true){
 module R102UL_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=3){
 	Tube_d=12.7;
 	Tube_Z=31;
-	Tube_a=-10;
+	Tube_a=-15;
 	TubeSlot_w=35;
 	TubeOffset_X=0;
 	Engagement_Len=20;
@@ -221,14 +221,21 @@ module R102UL_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=3){
 			// Shock cord retention
 			difference(){
 				union(){
-					rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z]) 
-						rotate([90,0,0]) cylinder(d=Tube_d+6, h=Body_ID-2, center=true);
+					hull(){
+						rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z+Tube_d/2+3+Overlap*2.5]) 
+							cube([Tube_d+6, Body_ID-2, Overlap], center=true);
+						
+						rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z]) 
+							rotate([90,0,0]) cylinder(d=Tube_d+6, h=Body_ID-2, center=true);
+					} // hull
+					
 					rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z-12.2])
 						cube([Tube_d-3, Body_ID-2, 21], center=true);
 				} // union
 				
 				rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z]) 
-					rotate([90,0,0]) cylinder(d=Tube_d+7, h=TubeSlot_w, center=true);
+					rotate([90,0,0]) cylinder(d=Tube_d*3, h=TubeSlot_w, center=true);
+					
 				rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z-12.2])
 					cube([Tube_d-1, TubeSlot_w,21.1], center=true);
 					
@@ -239,7 +246,7 @@ module R102UL_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=3){
 		translate([TubeOffset_X,0,Tube_Z]) rotate([90,0,Tube_a]) cylinder(d=Tube_d, h=Body_OD, center=true);
 		
 		//Bolt holes for nosecone and ball lock
-		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+10]){
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+5]){
 			translate([0, -Body_OD/2-1, Engagement_Len/2+Skirt_H+CouplerLenXtra+BoltInset]) rotate([90,0,0]) Bolt4Hole();
 		} // for
 	} // difference

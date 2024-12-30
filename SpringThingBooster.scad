@@ -3,7 +3,7 @@
 // Filename: SpringThingBooster.scad
 // by David M. Flynn
 // Created: 2/26/2023
-// Revision: 1.4.5   12/28/2024
+// Revision: 1.4.6   12/29/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -36,9 +36,10 @@
 //  Steel Dowel Pin 4mm (Undersized) x 16mm (3 Req.)
 //
 //  ***** History *****
-function SpringThingBoosterRev()="SpringThingBooster Rev. 1.4.3";
+function SpringThingBoosterRev()="SpringThingBooster Rev. 1.4.6";
 echo(SpringThingBoosterRev());
 //
+// 1.4.6   12/29/2024 Fixed a booboo
 // 1.4.5   12/28/2024 Added Bearing6806 as large bearing for ULine102Body_ID
 // 1.4.4   12/21/2024 Fixes to STB_BallRetainerTop: thicker floor 5mm, Gap filler calc changed
 // 1.4.3   12/19/2024 Fixed arming hole depth.
@@ -534,12 +535,12 @@ module STB_BallRetainerTop(Body_ID=BT75Body_ID, Outer_OD=0, Body_OD=BT75Body_ID,
 	
 	module BigServoPosition(SecondServo=false){
 		SecondServo_a=SecondServo? 360/nLockBalls*3:0;
-		ServoRotation_a=HasLargeInnerBearing? -16:0;
+		ServoRotation_a=HasLargeInnerBearing? -25:0;
 		
-		Servo_a=360/nLockBalls-STB_CalcChord_a(Dia=Servo_r*2, Dist=BearingMR84_OD/2+6)+15;
+		Servo_a=360/nLockBalls-STB_CalcChord_a(Dia=Servo_r*2, Dist=BearingMR84_OD/2+6);
 		
 		rotate([0,0,Servo_a+SecondServo_a])
-			translate([0, Servo_r-2, Servo_Z+9]) rotate([0,0,-135+ServoRotation_a]) rotate([180,0,0]) children();
+			translate([0, Servo_r, Servo_Z+9]) rotate([0,0,-135+ServoRotation_a]) rotate([180,0,0]) children();
 		
 		//#translate([-10,4,4]) cylinder(d=10, h=3);
 	} // BigServoPosition
@@ -552,6 +553,7 @@ module STB_BallRetainerTop(Body_ID=BT75Body_ID, Outer_OD=0, Body_OD=BT75Body_ID,
 		}
 	} // ServoArm
 	
+	// Show Servo Arm
 	if ($preview) if (UsesBigServo){
 		translate([0,0,-24]) BigServoPosition() rotate([0,0,20]) ServoArm();
 		if (HasSecondServo)
@@ -632,7 +634,7 @@ module STB_BallRetainerTop(Body_ID=BT75Body_ID, Outer_OD=0, Body_OD=BT75Body_ID,
 				Bolt4HeadHole(depth=8, lHead=20);
 		
 		// Shock Cord
-		if (HasLargeInnerBearing==false)
+		if (!HasLargeInnerBearing)
 			translate([0,0,-Overlap]) hull() 
 				STB_ShockCordHolePattern(Body_ID=Body_ID, Body_OD=Body_OD)
 					cylinder(d=STB_SCord_T(Body_ID), h=Top_H+Overlap*2);
@@ -658,7 +660,7 @@ module STB_BallRetainerTop(Body_ID=BT75Body_ID, Outer_OD=0, Body_OD=BT75Body_ID,
 		// Servo
 		if (UsesBigServo){
 			BigServoPosition() translate([0,0,7.4])  rotate([0,0,180])
-				Servo_HX5010(BottomMount=true,TopAccess=false, Xtra_w=1, Xtra_h=0);
+				Servo_HX5010(BottomMount=true, TopAccess=false, Xtra_w=1, Xtra_h=0, XtraTop=-2);
 				
 			if (HasSecondServo)
 				BigServoPosition(SecondServo=true) translate([0,0,7.4])  rotate([0,0,180])
@@ -711,7 +713,10 @@ HasIntegratedCouplerTube=true,
 			IntegratedCouplerLenXtra=-10,
 			HasSecondServo=false,
 			UsesBigServo=true,
-			Engagement_Len=30, HasLargeInnerBearing=true);
+			Engagement_Len=20, HasLargeInnerBearing=true);
+			
+STB_LockDisk(Body_ID=ULine102Body_ID, nLockBalls=6, HasLargeInnerBearing=true);	
+	
 /**/
 
 /*
