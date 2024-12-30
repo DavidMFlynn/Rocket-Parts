@@ -195,7 +195,7 @@ module R203_PetalHub(Body_OD=Coupler_OD){
 // translate([0,0,-20]) rotate([180,0,0]) R203_PetalHub();
 // R203_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=true);
 
-module R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID){
+module R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, Xtra_r=0.0){
 	XtraLen=-5;
 	Tube_d=12.7;
 	Skirt_Len=16;
@@ -218,7 +218,7 @@ module R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID){
 			IntegratedCouplerLenXtra=XtraLen,
 			HasSecondServo=true,
 			UsesBigServo=true,
-			Engagement_Len=Engagement_Len, HasLargeInnerBearing=true);
+			Engagement_Len=Engagement_Len, HasLargeInnerBearing=true, Xtra_r=Xtra_r);
 			
 			// Extend Coupler
 			translate([0,0,XtraLen+39]) 
@@ -269,7 +269,7 @@ module R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID){
 
 // rotate([180,0,0]) R203_BallRetainerTop();
 
-module R203_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false){
+module R203_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false, Xtra_r=0.0){
 	// PD_Ring is required to attach the petal hub because 3 balls isn't good enough and 5 won't line up.
 	
 	Bolt_a=0;// offset between PD_PetalHub and R65_BallRetainerBottom
@@ -281,7 +281,7 @@ module R203_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=fals
 		union(){
 			STB_BallRetainerBottom(Body_ID=Body_ID, Body_OD=Body_ID, 
 					nLockBalls=nLockBalls, HasSpringGroove=false, 
-					Engagement_Len=Engagement_Len, HasLargeInnerBearing=true);
+					Engagement_Len=Engagement_Len, HasLargeInnerBearing=true, Xtra_r=Xtra_r);
 		
 				
 		//*

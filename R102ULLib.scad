@@ -3,7 +3,7 @@
 // Filename: R102ULLib.scad
 // by David M. Flynn
 // Created: 5/5/2024 
-// Revision: 0.9.4  12/27/2024 
+// Revision: 0.9.5  12/30/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,6 +12,7 @@
 //
 //  ***** History *****
 //
+// 0.9.5  12/30/2024 Better ball lock w/ 6806 bearing.
 // 0.9.4  12/27/2024 Updated for ULine 4 inch tubes
 // 0.9.3  10/27/2024 Updated to current SpringThingBooster
 // 0.9.2  7/16/2024 Added R75_BallRetainerTop
@@ -38,8 +39,7 @@ Overlap=0.05;
 IDXtra=0.2;
 $fn=$preview? 36:90;
 
-ShockCord_a=17;
-CouplerLenXtra=-10;
+CouplerLenXtra=0;
 nLockBalls=6;
 nPetals=3;
 nRopes=6;
@@ -193,36 +193,37 @@ module R102UL_MotorTubeTopper(HasPassThru=true){
 // R102UL_MotorTubeTopper();
 
 
-module R102UL_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=3){
+module R102UL_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=3, Xtra_r=0.0){
 	Tube_d=12.7;
-	Tube_Z=31;
+	
 	Tube_a=-15;
 	TubeSlot_w=35;
 	TubeOffset_X=0;
 	Engagement_Len=20;
 	BoltInset=7.5;
 	Skirt_H=24;
+	EBayInterface_Z=Engagement_Len/2+Skirt_H+CouplerLenXtra;
+	Top_Z=EBayInterface_Z+BoltInset*2+1;
+	Tube_Z=Top_Z-Tube_d/2-3;
 	
 	difference(){
 		union(){
-			STB_BallRetainerTop(Body_ID=Body_ID, Outer_OD=0, Body_OD=Body_ID, nLockBalls=nLockBalls,
-			HasIntegratedCouplerTube=true, nBolts=0,
-			IntegratedCouplerLenXtra=CouplerLenXtra,
-				
-			HasSecondServo=false,
-			UsesBigServo=true,
-			Engagement_Len=Engagement_Len, HasLargeInnerBearing=true);
+			STB_BallRetainerTop(Body_ID=Body_ID, Outer_OD=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls,
+								HasIntegratedCouplerTube=true, nBolts=0,
+								IntegratedCouplerLenXtra=CouplerLenXtra,
+								HasSecondServo=false,UsesBigServo=true,
+								Engagement_Len=Engagement_Len, HasLargeInnerBearing=true, Xtra_r=Xtra_r);
 			
 		
-				
-			translate([0,0,35.5]) 
-				Tube(OD=Body_ID, ID=Body_ID-IDXtra-6, Len=5, myfn=$preview? 90:360);
+			// Extend skirt
+			translate([0,0,Top_Z-15]) 
+				Tube(OD=Body_ID, ID=Body_ID-IDXtra-6, Len=15, myfn=$preview? 90:360);
 			
 			// Shock cord retention
 			difference(){
 				union(){
 					hull(){
-						rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z+Tube_d/2+3+Overlap*2.5]) 
+						rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Top_Z-Overlap/2]) 
 							cube([Tube_d+6, Body_ID-2, Overlap], center=true);
 						
 						rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z]) 
@@ -247,32 +248,31 @@ module R102UL_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=3){
 		
 		//Bolt holes for nosecone and ball lock
 		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+5]){
-			translate([0, -Body_OD/2-1, Engagement_Len/2+Skirt_H+CouplerLenXtra+BoltInset]) rotate([90,0,0]) Bolt4Hole();
+			translate([0, -Body_OD/2-1, EBayInterface_Z+BoltInset]) rotate([90,0,0]) Bolt4Hole();
 		} // for
 	} // difference
 } // R102UL_BallRetainerTop
 
 // rotate([180,0,0]) R102UL_BallRetainerTop();
 
-module R102UL_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID){
+module R102UL_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, Xtra_r=0.0){
 	Engagement_Len=20;
 	
 	difference(){
 		STB_BallRetainerBottom(Body_ID=Body_ID, Body_OD=Body_ID, nLockBalls=nLockBalls, HasSpringGroove=false, 
-			Engagement_Len=Engagement_Len, HasLargeInnerBearing=true);
+			Engagement_Len=Engagement_Len, HasLargeInnerBearing=true, Xtra_r=Xtra_r);
 		
-		rotate([0,0,PD_ShockCordAngle()-ShockCord_a]) 
+		rotate([0,0,180/nLockBalls]) 
 			PD_PetalHubBoltPattern(OD=Coupler_OD, nBolts=nPetals) Bolt4Hole();
 			
 		// a second set of holes, 6 total
-		rotate([0,0,PD_ShockCordAngle()-ShockCord_a+360/nLockBalls]) 
+		rotate([0,0,180/nLockBalls+360/nLockBalls]) 
 			PD_PetalHubBoltPattern(OD=Coupler_OD, nBolts=nPetals) Bolt4Hole();
 
 	} // difference
 } // R102UL_BallRetainerBottom
 
 // translate([0,0,-9]) rotate([180,0,0]) R102UL_BallRetainerBottom();
-//rotate([0,0,152]) PD_PetalHub(Coupler_OD=Coupler_OD, nPetals=nPetals, ShockCord_a=PD_ShockCordAngle());
 
 
 

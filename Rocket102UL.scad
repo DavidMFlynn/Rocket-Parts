@@ -3,14 +3,14 @@
 // Filename: Rocket102UL.scad
 // by David M. Flynn
 // Created: 12/27/2024
-// Revision: 1.0.2  12/29/2024
+// Revision: 1.0.3  12/30/2024
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 //
 //  A ULine 4 inch mailing tube version of Rocket98
 //  Rocket with 102mm Body and 54mm motor. 
-//  Printing mostly with TINMORRY PETG-CF Black
+//  Printing with TINMORRY PETG-CF Black for fins, fin can and nosecone.
 //
 //  Dual deploy:
 //   Mission Control V3 / RocketServo
@@ -50,6 +50,7 @@
 //
 //  ***** History *****
 //
+// 1.0.3  12/30/2024 Fixes to lengths of Electronics bay and Ball Locks.
 // 1.0.2  12/29/2024 Changed to large bearing for ball locks, updated hardware list.
 // 1.0.1  12/28/2024 Cleaning up and printing 1st Art.
 // 1.0.0  12/27/2024 Copied Rocket98C Rev: 1.2.3
@@ -64,20 +65,19 @@
 //
 // rotate([180,0,0]) ElectronicsBay(TopOnly=true, BottomOnly=false);
 // ElectronicsBay(TopOnly=false, BottomOnly=true);
-// CenteringRing(OD=Body_ID, ID=ULine38Body_OD, Thickness=4, nHoles=5); // print 2
+// CenteringRing(OD=Body_ID, ID=ULine38Body_OD+IDXtra, Thickness=4, nHoles=5); // print 2
 //
 // *** Doors ***
 //
 // rotate([-90,0,0]) EB_AltDoor(Tube_OD=Body_OD);
 // rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD, HasSwitch=true, DoubleBatt=false);
 // rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD, HasSwitch=false, DoubleBatt=false);
-// translate([0,0,41]) CenteringRing(OD=Body_ID, ID=ULine38Body_OD, Thickness=4, nHoles=5);
 //
 // *** Ball Lock ***
 //
-// STB_LockDisk(Body_ID=Body_ID, nLockBalls=nLockBalls, HasLargeInnerBearing=true);
-// rotate([180,0,0]) R102UL_BallRetainerTop(nBolts=nEBayBolts);
-// R102UL_BallRetainerBottom();
+// STB_LockDisk(Body_ID=Body_ID, nLockBalls=nLockBalls, HasLargeInnerBearing=true, Xtra_r=0.2);
+// rotate([180,0,0]) R102UL_BallRetainerTop(nBolts=nEBayBolts, Xtra_r=0.2);
+// R102UL_BallRetainerBottom(Xtra_r=0.2);
 // rotate([180,0,0]) STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD, Engagement_Len=20);
 //
 // *** petal deployer ***
@@ -179,7 +179,7 @@ EBayBoltInset=7.5;
 
 ForwardPetalLen=200;
 ForwardTubeLen=310;
-EBay_Len=162;
+EBay_Len=164;
 AftPetalLen=150;
 MotorTubeLen=24*25.4;
 BodyTubeLen=850;
@@ -301,9 +301,9 @@ module NoseCone(){
 
 // NoseCone();
 
-module ElectronicsBay(TopOnly=false, BottomOnly=false, ShowDoors=true){
+module ElectronicsBay(TopOnly=false, BottomOnly=false, ShowDoors=false){
 	Len=EBay_Len;
-	TubeStop_Z=19;
+	TubeStop_Z=20;
 	Doors=[[0],[90],[180,270]];
 
 	EB_Electronics_BayUniversal(Tube_OD=Body_OD, Tube_ID=Body_ID, DoorAngles=Doors, Len=Len, 
@@ -323,7 +323,7 @@ module ElectronicsBay(TopOnly=false, BottomOnly=false, ShowDoors=true){
 } // ElectronicsBay
 
 //ElectronicsBay(TopOnly=false, BottomOnly=false);
-//translate([0,0,15]) CenteringRing(OD=Body_ID, ID=ULine38Body_OD, Thickness=4, nHoles=5);
+//translate([0,0,16]) CenteringRing(OD=Body_ID, ID=ULine38Body_OD, Thickness=4, nHoles=5);
 
 module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 	FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=Can_Len, 
