@@ -50,7 +50,7 @@
 //
 //  ***** History *****
 //
-// 1.0.3  12/30/2024 Fixes to lengths of Electronics bay and Ball Locks.
+// 1.0.3  12/30/2024 Fixes to lengths of Electronics bay and Ball Locks. Taller EBay. FC1
 // 1.0.2  12/29/2024 Changed to large bearing for ball locks, updated hardware list.
 // 1.0.1  12/28/2024 Cleaning up and printing 1st Art.
 // 1.0.0  12/27/2024 Copied Rocket98C Rev: 1.2.3
@@ -84,8 +84,9 @@
 //
 // PD_NC_PetalHub(OD=Body_ID-BodyTubeAnnulus, nPetals=nPetals, HasReplaceableSpringHolder=true, nRopes=nRopes, ShockCord_a=-1, HasThreadedCore=false, ST_DSpring_ID=SE_Spring_CS4323_ID(), ST_DSpring_OD=SE_Spring_CS4323_OD(), CouplerTube_ID=0);
 // PD_PetalHub(OD=Body_ID-BodyTubeAnnulus, HasBolts=true, nBolts=6, nPetals=nPetals, HasReplaceableSpringHolder=true, ShockCord_a=-2);
-// rotate([-90,0,0]) PD_PetalSpringHolder();
+// rotate([-90,0,0]) PD_PetalSpringHolder2();
 // PD_HubSpringHolder();
+// PD_Petals2(OD=Body_ID-BodyTubeAnnulus, Len=50, nPetals=nPetals, Wall_t=2.4, AntiClimber_h=4);
 // rotate([180,0,0]) PD_Petals(OD=Body_ID-BodyTubeAnnulus, Len=ForwardPetalLen, nPetals=nPetals, Wall_t=2.4, AntiClimber_h=4);
 // rotate([180,0,0]) PD_Petals(OD=Body_ID-BodyTubeAnnulus, Len=AftPetalLen, nPetals=nPetals, Wall_t=2.4, AntiClimber_h=4);
 //
@@ -179,7 +180,7 @@ EBayBoltInset=7.5;
 
 ForwardPetalLen=200;
 ForwardTubeLen=310;
-EBay_Len=164;
+EBay_Len=166;
 AftPetalLen=150;
 MotorTubeLen=24*25.4;
 BodyTubeLen=850;
@@ -303,7 +304,9 @@ module NoseCone(){
 
 module ElectronicsBay(TopOnly=false, BottomOnly=false, ShowDoors=false){
 	Len=EBay_Len;
-	TubeStop_Z=20;
+	CR_t=4;
+	STB_h=16;
+	TubeStop_Z=STB_h+CR_t+1;
 	Doors=[[0],[90],[180,270]];
 
 	EB_Electronics_BayUniversal(Tube_OD=Body_OD, Tube_ID=Body_ID, DoorAngles=Doors, Len=Len, 
@@ -322,6 +325,7 @@ module ElectronicsBay(TopOnly=false, BottomOnly=false, ShowDoors=false){
 			TubeStop(InnerTubeID=Coupler_ID, OuterTubeOD=Body_OD, myfn=$preview? 36:360);
 } // ElectronicsBay
 
+//ElectronicsBay();
 //ElectronicsBay(TopOnly=false, BottomOnly=false);
 //translate([0,0,16]) CenteringRing(OD=Body_ID, ID=ULine38Body_OD, Thickness=4, nHoles=5);
 
