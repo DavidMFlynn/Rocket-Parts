@@ -3,7 +3,7 @@
 // Filename: R102ULLib.scad
 // by David M. Flynn
 // Created: 5/5/2024 
-// Revision: 0.9.5  12/30/2024 
+// Revision: 0.9.6  12/30/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,6 +12,7 @@
 //
 //  ***** History *****
 //
+// 0.9.6  12/30/2024 Fixed it again.
 // 0.9.5  12/30/2024 Better ball lock w/ 6806 bearing.
 // 0.9.4  12/27/2024 Updated for ULine 4 inch tubes
 // 0.9.3  10/27/2024 Updated to current SpringThingBooster
@@ -203,6 +204,7 @@ module R102UL_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=3, Xtra_r
 	BoltInset=7.5;
 	Skirt_H=24;
 	EBayInterface_Z=Engagement_Len/2+Skirt_H+CouplerLenXtra;
+	Floor_Z=8;
 	Top_Z=EBayInterface_Z+BoltInset*2+1;
 	Tube_Z=Top_Z-Tube_d/2-3;
 	
@@ -222,6 +224,7 @@ module R102UL_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=3, Xtra_r
 			// Shock cord retention
 			difference(){
 				union(){
+					// Tube holder
 					hull(){
 						rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Top_Z-Overlap/2]) 
 							cube([Tube_d+6, Body_ID-2, Overlap], center=true);
@@ -230,15 +233,16 @@ module R102UL_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=3, Xtra_r
 							rotate([90,0,0]) cylinder(d=Tube_d+6, h=Body_ID-2, center=true);
 					} // hull
 					
-					rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z-12.2])
-						cube([Tube_d-3, Body_ID-2, 21], center=true);
+					// Support
+					rotate([0,0,Tube_a]) translate([TubeOffset_X-(Tube_d-3)/2,-(Body_ID-2)/2,Floor_Z])
+						cube([Tube_d-3, Body_ID-2, Tube_Z-Floor_Z]);
 				} // union
 				
 				rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z]) 
 					rotate([90,0,0]) cylinder(d=Tube_d*3, h=TubeSlot_w, center=true);
 					
-				rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z-12.2])
-					cube([Tube_d-1, TubeSlot_w,21.1], center=true);
+				rotate([0,0,Tube_a]) translate([TubeOffset_X-(Tube_d-1)/2,-TubeSlot_w/2,Floor_Z-Overlap])
+					cube([Tube_d-1, TubeSlot_w, Tube_Z-Floor_Z+Overlap*2]);
 					
 				Tube(OD=Body_OD+20, ID=Body_ID-1, Len=50, myfn=$preview? 90:360);
 			} // difference
