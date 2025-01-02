@@ -819,8 +819,8 @@ module PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, HasReplaceableSpringHolder=f
 	
 	// Body tube interface
 	if (CouplerTube_ID==0)
-	translate([0,0,-BodyTube_L]) 
-		Tube(OD=OD, ID=OD-4.4, Len=BodyTube_L+1, myfn=$preview? 90:360);
+		translate([0,0,-BodyTube_L]) 
+			Tube(OD=OD, ID=OD-4.4, Len=BodyTube_L+1, myfn=$preview? 90:360);
 									
 	difference(){
 		union(){
@@ -831,11 +831,20 @@ module PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, HasReplaceableSpringHolder=f
 				Tube(OD=ST_DSpring_ID-IDXtra*2, 
 						ID=ST_DSpring_ID-IDXtra*2-4.4, Len=BodyTube_L+1, myfn=$preview? 90:360);
 						
-						
-			// Coupler tube interface
-			if (CouplerTube_ID>0)
-			translate([0,0,-BodyTube_L]) 
-				cylinder(d=CouplerTube_ID, h=BodyTube_L+1, $fn=$preview? 90:360);
+			if (CouplerTube_ID>0){
+				// Coupler tube interface
+				translate([0,0,-BodyTube_L]) 
+					cylinder(d=CouplerTube_ID, h=BodyTube_L+1, $fn=$preview? 90:360);
+			}else{
+				// Filet to prevent bridging from pulling skirt in
+				translate([0,0,-4+Overlap])
+				
+				difference(){
+					cylinder(d=OD-4.4+Overlap, h=4, $fn=$preview? 90:360);
+					
+					translate([0,0,-Overlap]) cylinder(d1=OD-4.4+Overlap, d2=OD-4.4-3.5, h=4+Overlap*2, $fn=$preview? 90:360);
+				} // difference
+			}
 		} // union
 			
 		// Center Hole
@@ -856,6 +865,8 @@ module PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, HasReplaceableSpringHolder=f
 				translate([0,OD/2-6,-BodyTube_L-Overlap]) cylinder(d=4, h=30);
 				translate([0,OD/2-6,5]) cylinder(d=8, h=30);
 			}
+			
+		//translate([0,0,-40])	cube([100,100,100]);
 	} // difference
 	
 	if (HasThreadedCore) translate([0,0,-BodyTube_L])

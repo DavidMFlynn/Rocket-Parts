@@ -72,6 +72,7 @@
 // ChuckLock();
 //
 // Chuck(OD=BT54Body_ID);
+// SmallTubeChuck(OD=ULine38Body_ID);
 //
 // *******************************************************
 //  ***** Routines *****
@@ -288,6 +289,42 @@ module Chuck(OD=ULine203Body_ID, Threaded=true){
 // Chuck(OD=ULine102Body_ID);
 
 // Chuck(OD=BT54Body_ID);
+
+module SmallTubeChuck(OD=ULine203Body_ID){
+	// Press-in friction fit chuck
+	
+	ChuckMountPlate_d=80;
+	Nut_OD=60;
+	Thread_Len=25;
+	ChuckMountPlate_t=8;
+	nChuckMountingBolts=8;
+	Taper_Len=30;
+	StopPlate_t=3;
+	
+	difference(){
+		union(){
+			// Hub
+			cylinder(d=ChuckMountPlate_d, h=ChuckMountPlate_t, $fn=$preview? 90:360);
+			
+			// Nut
+			cylinder(d=Nut_OD, h=Thread_Len+StopPlate_t);
+			
+			// Rim
+			translate([0,0,Thread_Len+StopPlate_t-Overlap])
+				cylinder(d1=OD+2, d2=OD-2, h=Taper_Len, $fn=$preview? 90:360);
+	
+		} // union
+		
+		ChuckInternalThread(Len=Thread_Len);
+				
+		translate([0,0,Thread_Len-Overlap])
+			cylinder(d=OD-10, h=Taper_Len+StopPlate_t+Overlap*2, $fn=$preview? 90:360);
+			
+		//cube([100,100,100]);
+	} // difference
+} // SmallTubeChuck
+
+//SmallTubeChuck(OD=ULine38Body_ID);
 
 
 module ChuckInternalThread(Len=30){

@@ -3,7 +3,7 @@
 // Filename: Rocket102UL.scad
 // by David M. Flynn
 // Created: 12/27/2024
-// Revision: 1.0.3  12/30/2024
+// Revision: 1.0.4  1/1/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -50,6 +50,7 @@
 //
 //  ***** History *****
 //
+// 1.0.4  1/1/2025   Added Pusher ring to top of ebay assy
 // 1.0.3  12/30/2024 Fixes to lengths of Electronics bay and Ball Locks. Taller EBay. FC1
 // 1.0.2  12/29/2024 Changed to large bearing for ball locks, updated hardware list.
 // 1.0.1  12/28/2024 Cleaning up and printing 1st Art.
@@ -91,12 +92,15 @@
 //
 //  *** Spring Handling ***
 //
+// R102UL_SkirtRing(Coupler_OD=Body_ID-BodyTubeAnnulus, Coupler_ID=Body_ID-BodyTubeAnnulus-4.4, HasPD_Ring=true);
+// rotate([180,0,0]) R102UL_PusherRing(OD=Body_ID*CF_Comp-BodyTubeAnnulus, ID=Body_ID-BodyTubeAnnulus-4.4, OA_Len=20, Engagemnet_Len=7, Wall_t=4);
+//
 // SE_SlidingSpringMiddle(OD=Body_ID-BodyTubeAnnulus, nRopes=nRopes, SliderLen=30, SpLen=40, SpringStop_Z=20); // for Main
 // SE_SlidingSpringMiddle(OD=Body_ID-BodyTubeAnnulus, nRopes=nRopes); // for Drogue
 //
 // rotate([180,0,0]) SE_SpringEndTypeA(Coupler_OD=Body_ID-BodyTubeAnnulus, Coupler_ID=Body_ID-BodyTubeAnnulus-4.4, nRopes=nRopes, Spring_OD=SE_Spring_CS4323_OD());
 //
-// rotate([180,0,0]) R102UL_PusherRing(OD=Body_ID-BodyTubeAnnulus, ID=Body_ID-BodyTubeAnnulus-4.4, OA_Len=50, Engagemnet_Len=7, Wall_t=4);
+// rotate([180,0,0]) R102UL_PusherRing(OD=Body_ID*CF_Comp-BodyTubeAnnulus, ID=Body_ID-BodyTubeAnnulus-4.4, OA_Len=50, Engagemnet_Len=7, Wall_t=4);
 //
 // rotate([180,0,0]) R102UL_LowerSpringBottom();
 //
@@ -145,7 +149,8 @@ Overlap=0.05;
 IDXtra=0.2;
 $fn=$preview? 24:90;
 
-PETG_Comp=1.003; // shrinkage compensation
+PETG_Comp=1.003; // shrinkage compensation for PETG parts to fit CF parts
+CF_Comp=0.995; // CF parts print oversized OD
 
 nFins=5;
 
@@ -160,7 +165,7 @@ Fin_Chamfer_L=40;
 
 Body_OD=ULine102Body_OD;
 Body_ID=ULine102Body_ID;
-BodyTubeAnnulus=1.0; // for sliders
+BodyTubeAnnulus=1.2; // for sliders
 Coupler_OD=BT98Body_OD; // fits tight
 Coupler_ID=BT98Body_ID;
 

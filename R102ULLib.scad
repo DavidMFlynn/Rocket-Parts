@@ -56,7 +56,7 @@ MotorTube_ID=BT54Body_ID;
 
 
 module R102UL_SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, HasPD_Ring=false){
-	Engagemnet_Len=10;
+	Engagemnet_Len=7;
 	Plate_t=6;
 	ID=Coupler_ID-16;
 	
@@ -73,7 +73,7 @@ module R102UL_SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, HasPD_Ring
 		if (HasPD_Ring){
 			translate([0,0,Plate_t])
 				PD_PetalHubBoltPattern(OD=Coupler_OD, nBolts=6) Bolt4HeadHole(lHead=Plate_t+Engagemnet_Len);
-			
+
 		}else{
 			translate([0,0,Plate_t])
 				PD_PetalHubBoltPattern(OD=Coupler_OD, nBolts=nPetals) Bolt4HeadHole(lHead=Plate_t+Engagemnet_Len);
@@ -81,7 +81,7 @@ module R102UL_SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, HasPD_Ring
 	} // difference
 } // R102UL_SkirtRing
 
-// R102UL_SkirtRing();
+// R102UL_SkirtRing(HasPD_Ring=true);
 
 module R102UL_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4){
 	
@@ -91,11 +91,12 @@ module R102UL_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len
 	translate([0,0,Engagemnet_Len]) difference(){
 		Tube(OD=OD, ID=OD-Wall_t*2, Len=OA_Len-Engagemnet_Len, myfn=$preview? 90:720);
 		
+		// Reduce mass by thinning inside
 		A=OA_Len-Engagemnet_Len-18;
 		if (A>0){
-			translate([0,0,3]) cylinder(d1=OD-Wall_t*2-Overlap, d2=ID, h=6);
-			translate([0,0,9-Overlap]) cylinder(d=ID, h=A+Overlap*2);
-			translate([0,0,9+A]) cylinder(d2=OD-Wall_t*2-Overlap, d1=ID, h=6);
+			translate([0,0,3]) cylinder(d1=OD-Wall_t*2-Overlap, d2=ID, h=6, $fn=$preview? 90:720);
+			translate([0,0,9-Overlap]) cylinder(d=ID, h=A+Overlap*2, $fn=$preview? 90:720);
+			translate([0,0,9+A]) cylinder(d2=OD-Wall_t*2-Overlap, d1=ID, h=6, $fn=$preview? 90:720);
 		}
 	} // difference
 } // R102UL_PusherRing
@@ -244,7 +245,7 @@ module R102UL_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=3, Xtra_r
 				rotate([0,0,Tube_a]) translate([TubeOffset_X-(Tube_d-1)/2,-TubeSlot_w/2,Floor_Z-Overlap])
 					cube([Tube_d-1, TubeSlot_w, Tube_Z-Floor_Z+Overlap*2]);
 					
-				Tube(OD=Body_OD+20, ID=Body_ID-1, Len=50, myfn=$preview? 90:360);
+				Tube(OD=Body_OD+20, ID=Body_ID+1, Len=50, myfn=$preview? 90:360);
 			} // difference
 		} // union
 	
