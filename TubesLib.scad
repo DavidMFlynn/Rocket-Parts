@@ -3,7 +3,7 @@
 // Filename: TubesLib.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.21  12/28/2024
+// Revision: 0.9.22  1/2/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-function TubesLib_Rev()="TubesLib 0.9.21";
+function TubesLib_Rev()="TubesLib 0.9.22";
 echo(TubesLib_Rev());
+// 0.9.22  1/2/2025   Added seconds set of holes to BodyDrillingJig()
 // 0.9.21  12/28/2024 Added BodyDrillingJig()
 // 0.9.20  12/27/2024 Updated ULine203Body, now fits correctly using PETG-CF, add 0.5% for PETG?
 // 0.9.19  12/18/2024 Updated ULine203Body
@@ -232,8 +233,13 @@ module BodyDrillingJig(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, nBolts=5, BoltI
 		// Center hole
 		translate([0,0,-Plate_t-Overlap]) cylinder(d=Tube_ID-10, h=Plate_t+Overlap*2);
 		
+		// primary set of holes, usually for nosecone base
 		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) translate([0,Tube_OD/2+4,BoltInset])
-			rotate([-90,0,0]) Bolt4ClearHole(depth=20);
+			rotate([-90,0,0]) Bolt4ClearHole(depth=5);
+			
+		// Second set of holes for fin can
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+180/nBolts]) translate([0,Tube_OD/2+4,BoltInset-1.5])
+			rotate([-90,0,0]) Bolt4ClearHole(depth=5);
 	} // difference
 } // BodyDrillingJig
 
