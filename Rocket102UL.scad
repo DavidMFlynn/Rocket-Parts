@@ -3,7 +3,7 @@
 // Filename: Rocket102UL.scad
 // by David M. Flynn
 // Created: 12/27/2024
-// Revision: 1.0.4  1/1/2025
+// Revision: 1.0.5  1/3/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -50,6 +50,7 @@
 //
 //  ***** History *****
 //
+// 1.0.5  1/3/2025   Added body tube bolt holes to fin can.
 // 1.0.4  1/1/2025   Added Pusher ring to top of ebay assy
 // 1.0.3  12/30/2024 Fixes to lengths of Electronics bay and Ball Locks. Taller EBay. FC1
 // 1.0.2  12/29/2024 Changed to large bearing for ball locks, updated hardware list.
@@ -103,6 +104,9 @@
 // rotate([180,0,0]) R102UL_PusherRing(OD=Body_ID*CF_Comp-BodyTubeAnnulus, ID=Body_ID-BodyTubeAnnulus-4.4, OA_Len=50, Engagemnet_Len=7, Wall_t=4);
 //
 // rotate([180,0,0]) R102UL_LowerSpringBottom();
+//
+// Spacer
+// Tube(OD=Body_ID-BodyTubeAnnulus, ID=Body_ID-BodyTubeAnnulus-2.4, Len=125, myfn=$preview? 90:360); // 2 req.
 //
 // *** Fin Can ***
 //
@@ -334,7 +338,8 @@ module ElectronicsBay(TopOnly=false, BottomOnly=false, ShowDoors=false){
 //translate([0,0,16]) CenteringRing(OD=Body_ID, ID=ULine38Body_OD, Thickness=4, nHoles=5);
 
 module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
-	FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=Can_Len, 
+	difference(){
+		FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=Can_Len, 
 						MotorTube_OD=MotorTube_OD, RailGuide_h=RailGuide_h,
 						nFins=nFins,
 						Fin_Root_W=Fin_Root_W, Fin_Root_L=Fin_Root_L, 
@@ -342,6 +347,11 @@ module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 						Cone_Len=TailCone_Len, Extra_OD=2, RailGuideLen=R102_RailGuideLen,
 						LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly, HasWireHoles=false, 
 						HollowTailcone=true, HollowFinRoots=true, Wall_t=1.2);
+					
+		// Body tube bolt holes
+		for (j=[0:nFins-1]) rotate([0,0,360/nFins*j+180/nFins]) translate([0,Body_OD/2,Can_Len+6]) 
+			rotate([-90,0,0]) Bolt4Hole();
+	} // difference
 } // FinCan
 
 // FinCan(LowerHalfOnly=false, UpperHalfOnly=false);
