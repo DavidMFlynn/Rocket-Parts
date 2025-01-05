@@ -3,7 +3,7 @@
 // Filename: FinCan2Lib.scad
 // by David M. Flynn
 // Created: 12/24/2023 
-// Revision: 0.9.10  12/18/2024
+// Revision: 0.9.11  1/5/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -15,6 +15,7 @@
 function FinCan2LibRev()="FinCan2Lib 0.9.10";
 echo(FinCan2LibRev());
 //
+// 0.9.11  1/5/2025   Added parameters Coupler_Len and nCouplerBolts to FC2_FinCan()
 // 0.9.10  12/18/2024 Added Ogive tail cone option
 // 0.9.9  12/17/2024  Fixed some FC2_TailCone() issues
 // 0.9.8  10/27/2024  Fixed FC2_MotorRetainer() math
@@ -33,14 +34,15 @@ echo(FinCan2LibRev());
 /*
 FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 				MotorTube_OD=BT54Body_OD, RailGuide_h=BT98Body_OD/2+2,
-				nFins=5, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
+				nFins=5, HasIntegratedCoupler=true, Coupler_Len=10, nCouplerBolts=0, 
+				HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 				Fin_Root_W=14, Fin_Root_L=130, Fin_Post_h=14, Fin_Chamfer_L=32,
 				Cone_Len=65, ThreadedTC=true, Extra_OD=0, RailGuideLen=30, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
 /**/
 /*
 FC2_FinCan(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, Can_Len=160,
 				MotorTube_OD=BT54Body_OD, RailGuide_h=BT75Body_OD/2+2,
-				nFins=5, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
+				nFins=5, HasIntegratedCoupler=true, Coupler_Len=10, nCouplerBolts=0, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 				Fin_Root_W=12, Fin_Root_L=130, Fin_Post_h=10, Fin_Chamfer_L=32,
 				Cone_Len=35, ThreadedTC=true, Extra_OD=0, RailGuideLen=30, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false);
 /**/
@@ -86,7 +88,8 @@ NominalThreadWall_t=ThreadPitch+1.5; // added to motor tube radius
 
 module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 				MotorTube_OD=BT54Body_OD, RailGuide_h=BT98Body_OD/2+2, RailGuide_z=0,
-				nFins=5, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
+				nFins=5, HasIntegratedCoupler=true, Coupler_Len=10, nCouplerBolts=0,
+				HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 				Fin_Root_W=14, Fin_Root_L=130, Fin_Post_h=14, Fin_Chamfer_L=32,
 				Cone_Len=65, ThreadedTC=true, Extra_OD=0, RailGuideLen=30,
 				LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false, HollowTailcone=false, 
@@ -97,7 +100,6 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 	RailGuide_Z=(RailGuide_z==0)? RailGuideTube_Len/2:RailGuide_z;
 	MotorTubeHole_d=MotorTube_OD+MotorTubeHoleIDXtra;
 	FinInset_Len=(Can_Len-Fin_Root_L)/2;
-	Coupler_Len=10;
 	FB_Xtra_Fwd=HasIntegratedCoupler? Coupler_Len:0;
 	
 	difference(){
@@ -169,9 +171,8 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 				
 				// Remove outside of HasIntegratedCoupler
 				if (FB_Xtra_Fwd>0)
-					translate([0,0,Can_Len]) Tube(OD=Body_OD+1, ID=Body_ID-1, Len=15, myfn=$preview? 36:360);
+					translate([0,0,Can_Len]) Tube(OD=Body_OD+1, ID=Body_ID-1, Len=Coupler_Len+Overlap, myfn=$preview? 36:360);
 					
-				
 			} // difference
 			
 			//*
@@ -197,6 +198,11 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 			translate([0,Body_OD/2,10]) rotate([90,0,0]) cylinder(d=10, h=(Body_OD-MotorTubeHole_d)/2);
 		} // union
 	
+		// Body tube bolts
+		if (nCouplerBolts>0)
+			for (j=[0:nCouplerBolts-1]) rotate([0,0,360/nCouplerBolts*j+180/nFins]) 
+				translate([0,Body_ID/2,Can_Len+Coupler_Len/2]) rotate([-90,0,0]) Bolt4Hole();
+			
 		// Hollow roots
 		if (HollowFinRoots && (Body_OD/2-MotorTubeHole_d/2-Fin_Post_h)>5) 
 			for (j=[0:nFins]) rotate([0,0,360/nFins*j+180/nFins]){

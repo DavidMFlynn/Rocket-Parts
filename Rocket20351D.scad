@@ -47,11 +47,11 @@
 						nRivets=nNoseconeRivets, nBolts=nEBay_Bolts, Flat=true);
 /**/
 //
-// R203_SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, HasPD_Ring=false);
+// R203_SkirtRing(Coupler_OD=Body_ID-BodyTubeAnnulus, Coupler_ID=Coupler_ID, HasPD_Ring=false);
 // rotate([180,0,0]) R203_PusherRing(OA_Len=50, Engagemnet_Len=10, Wall_t=4);
-// SE_SlidingBigSpringMiddle(OD=Coupler_OD, SliderLen=80, Extension=0); // print 2
-// rotate([180,0,0]) SE_SpringEndTypeA(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, nRopes=6, Spring_OD=SE_Spring_CS11890_OD());
-// SE_SpringEndTypeC(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, nRopes=6, UseSmallSpring=false);
+// SE_SlidingBigSpringMiddle(OD=Body_ID-BodyTubeAnnulus, SliderLen=80, Extension=0); // print 2
+// rotate([180,0,0]) SE_SpringEndTypeA(Coupler_OD=Body_ID-BodyTubeAnnulus, Coupler_ID=Coupler_ID, nRopes=6, Spring_OD=SE_Spring_CS11890_OD());
+// SE_SpringEndTypeC(Coupler_OD=Body_ID-BodyTubeAnnulus, Coupler_ID=Coupler_ID, nRopes=6, UseSmallSpring=false);
 // CenteringRing(OD=Body_ID, ID=MotorTube_OD, Thickness=10, nHoles=6, Offset=0, myfn=$preview? 90:360);
 // rotate([180,0,0]) R203_MotorTubeTopper();
 //
@@ -70,16 +70,16 @@
 //
 //  *** Ball Lock Unit ***
 // rotate([180,0,0]) STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD, Engagement_Len=Engagement_Len);
-// rotate([180,0,0]) R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID);
-// STB_LockDisk(Body_ID=Body_ID, nLockBalls=nLockBalls, HasLargeInnerBearing=true);
-// R203_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false);
+// rotate([180,0,0]) R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=nEBay_Bolts, Xtra_r=0.3);
+// STB_LockDisk(Body_ID=Body_ID, nLockBalls=nLockBalls, HasLargeInnerBearing=true, Xtra_r=0.3);
+// R203_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false, Xtra_r=0.3);
 //
 //  *** Petal Deployer ***
-// R203_PetalHub(); // Lower 
+// R203_PetalHub(OD=Body_ID-BodyTubeAnnulus);
 // R203_NC_PetalHub(); // upper
-// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=DroguePetal_Len, nPetals=nPetals, Wall_t=2.4, AntiClimber_h=5.0, HasLocks=false, Lock_Span_a=0);
-// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=MainPetal_Len, nPetals=nPetals, Wall_t=2.4, AntiClimber_h=5.0, HasLocks=false, Lock_Span_a=0);
-// rotate([-90,0,0]) PD_PetalSpringHolder(); // print 15
+// PD_Petals2(OD=Body_ID-BodyTubeAnnulus, Len=DroguePetal_Len, nPetals=nPetals, Wall_t=2.4, AntiClimber_h=5.0, HasLocks=false, Lock_Span_a=0);
+// PD_Petals2(OD=Body_ID-BodyTubeAnnulus, Len=MainPetal_Len, nPetals=nPetals, Wall_t=2.4, AntiClimber_h=5.0, HasLocks=false, Lock_Span_a=0);
+// rotate([-90,0,0]) PD_PetalSpringHolder2(); // print 15
 // PD_HubSpringHolder();
 //
 // 
@@ -153,6 +153,7 @@ Fin_Inset=10;
 
 Body_OD=ULine203Body_OD;
 Body_ID=ULine203Body_ID;
+BodyTubeAnnulus=1.30; // for sliders
 Coupler_OD=ULine203Body_ID-1.10;
 Coupler_ID=Coupler_OD-4.4;
 EBayTube_OD=BT75Body_OD;
@@ -315,67 +316,31 @@ module FinCan(LowerHalfOnly=false, UpperHalfOnly=false, TailConeOnly=false){
 	
 	Cutout_d=60;
 	Cutout_Depth=35;
-	IncludeDecor=false;
-	RailGuide_Z=IncludeDecor? FinCan_Len-40:40;
-	Ogive_Len=240;
-	Cut_d=MotorRetainer_OD+4.4;
-	Cut_Z=OgiveBoatTail? Ogive_Cut_Z(Ogive_L=Ogive_Len, R=Body_OD/2, End_R=Cut_d/2):Cone_Len;
-
-	module Decor(D=Cutout_d){
-		hull(){
-			translate([0,Body_OD/2,FinCan_Len-65-Fin_Inset-Cutout_d/2]) sphere(d=D);
-			translate([0,Body_OD/2-Cutout_Depth, FinCan_Len-65-Fin_Inset-Cutout_d/2-Cutout_Depth]) 
-				sphere(d=D-Cutout_Depth);
-			translate([0,Body_OD/2,-Cone_Len]) sphere(d=D);
-			translate([0,Body_OD/2-Cutout_Depth,-Cone_Len]) sphere(d=D-Cutout_Depth);
-		} // hull
-		for (j=[1:nFins-1]) rotate([0,0,360/nFins*j]) hull(){
-			translate([0,Body_OD/2,FinCan_Len-Fin_Inset-Cutout_d/2]) sphere(d=D);
-			translate([0,Body_OD/2-Cutout_Depth,FinCan_Len-Fin_Inset-Cutout_d/2-Cutout_Depth]) 
-				sphere(d=D-Cutout_Depth);
-			translate([0,Body_OD/2,-Cone_Len]) sphere(d=D);
-			translate([0,Body_OD/2-Cutout_Depth,-Cone_Len]) sphere(d=D-Cutout_Depth);
-		} // hull
-	} // Decor
+	RailGuide_Z=40;
+	Cut_Z=Cone_Len;
 	
 	difference(){
-		union(){
-			FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=FinCan_Len,
+		FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=FinCan_Len,
 				MotorTube_OD=MotorTube_OD, RailGuide_h=Body_OD/2+2, RailGuide_z=RailGuide_Z,
-				nFins=nFins, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
+				nFins=nFins, HasIntegratedCoupler=true, Coupler_Len=EBayBoltInset*2, nCouplerBolts=nFins*2,
+				HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 				Fin_Root_W=Fin_Root_W, Fin_Root_L=Fin_Root_L, Fin_Post_h=Fin_Post_h, Fin_Chamfer_L=Fin_Chamfer_L,
 				Cone_Len=Cone_Len, ThreadedTC=false, Extra_OD=0, RailGuideLen=40,
 				LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly, HasWireHoles=false, 
 				HollowTailcone=true, 
-				HollowFinRoots=true, Wall_t=2.2, OgiveTailCone=OgiveBoatTail, Ogive_Len=Ogive_Len, OgiveCut_d=Cut_d);
-				
-			if (OgiveBoatTail) translate([0,0,-Cut_Z]) cylinder(d=Cut_d, h=MotorRetainer_Len);
-		} // union
-				
+				HollowFinRoots=true, Wall_t=2.2, OgiveTailCone=false, Ogive_Len=0, OgiveCut_d=0);
+					
 		// Motor Retainer
 		translate([0,0,-Cut_Z-8]){
 			cylinder(d=MotorRetainer_OD, h=MotorRetainer_Len);
 			cylinder(d=MotorTube_OD+IDXtra*2, h=MotorRetainer_Len+8+Overlap);
 		}
-		//translate([0,0,-Cone_Len-Overlap]) cylinder(d=Body_OD, h=5);
-		
-		if (IncludeDecor) Decor(D=Cutout_d);
 
 		if (TailConeOnly) cylinder(d=Body_OD+6, h=FinCan_Len+30);
 		if (LowerHalfOnly) mirror([0,0,1]) cylinder(d=Body_OD+1, h=Cut_Z+1);
 	} // difference
 	
-	if (IncludeDecor)
-	difference(){
-		intersection(){
-			cylinder(d=Body_OD-1, h=FinCan_Len);
-			
-			Decor(D=Cutout_d+4.4);
-		} // intersection
-		
-		Decor(D=Cutout_d);
-	} // difference
-				
+	
 } // FinCan
 
 // FinCan();

@@ -35,7 +35,7 @@ Overlap=0.05;
 IDXtra=0.2;
 $fn=$preview? 36:90;
 
-CouplerLenXtra=-10;
+CouplerLenXtra=0;
 nLockBalls=7;
 Engagement_Len=30;
 //BallPerimeter_d=STB_BT137BallPerimeter_d();
@@ -176,98 +176,88 @@ module R203_MotorTubeTopper(){
 
 // R203_MotorTubeTopper();
 
-module R203_PetalHub(Body_OD=Coupler_OD){
+module R203_PetalHub(OD=Coupler_OD){
 	// Bolts to bottom of electronics bay
-	difference(){
-		PD_PetalHub(OD=Coupler_OD, 
+	PD_PetalHub(OD=OD, 
 					nPetals=nPetals, 
 					HasReplaceableSpringHolder=true,
 					HasBolts=true,
 					nBolts=nPetals,
-					ShockCord_a=-1,
-					HasNCSkirt=false);
+					ShockCord_a=-2,
+					HasNCSkirt=false, CenterHole_d=OD-60);
 					
-		// Remove center	
-		translate([0,0,-Overlap]) cylinder(d=Coupler_OD-60,h=10);
-	} // difference
 } // R203_PetalHub
 
 // translate([0,0,-20]) rotate([180,0,0]) R203_PetalHub();
 // R203_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=true);
 
-module R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, Xtra_r=0.0){
-	XtraLen=-5;
+module R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=7, Xtra_r=0.0){
 	Tube_d=12.7;
 	Skirt_Len=16;
-	TubeInset=Tube_d/2+3;
-	Tube_Z=XtraLen+39+Skirt_Len-TubeInset;
 	Tube_a=-38.5;
 	TubeSlot_w=34;
 	TubeOffset_X=0;	
-	
-	// copied from STB
-	LockDisk_H=10; // length of dowel pins
-	LockDiskHole_H=LockDisk_H+1;
-	Plate_T=3;
-	Top_H=LockDiskHole_H/2+Plate_T;
+		
+	BoltInset=8;
+	Engagement_Len=20;
+	Floor_Z=8;
+	Skirt_H=24;
+	EBayInterface_Z=Engagement_Len/2+Skirt_H+CouplerLenXtra;
+	Top_Z=EBayInterface_Z+BoltInset*2+1;
+	Tube_Z=Top_Z-Tube_d/2-3;
 	
 	difference(){
 		union(){
 			STB_BallRetainerTop(Body_ID=Body_ID, Outer_OD=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls,
-			HasIntegratedCouplerTube=true, nBolts=0,
-			IntegratedCouplerLenXtra=XtraLen,
-			HasSecondServo=true,
-			UsesBigServo=true,
-			Engagement_Len=Engagement_Len, HasLargeInnerBearing=true, Xtra_r=Xtra_r);
+						HasIntegratedCouplerTube=true, nBolts=0,
+						IntegratedCouplerLenXtra=CouplerLenXtra,
+						HasSecondServo=true,
+						UsesBigServo=true,
+						Engagement_Len=Engagement_Len, HasLargeInnerBearing=true, Xtra_r=Xtra_r);
 			
-			// Extend Coupler
-			translate([0,0,XtraLen+39]) 
-				Tube(OD=Body_ID, ID=Body_ID-6, Len=Skirt_Len+Overlap, myfn=$preview? 90:360);
-			
-			// Shock cord hole
-			translate([0,0,XtraLen+39+Skirt_Len]) 
-				rotate([180,0,0]) Tube(OD=39, ID=34, Len=XtraLen+39+Skirt_Len-6, myfn=$preview? 90:360);
-				
+			// Extend skirt
+			translate([0,0,Top_Z-Skirt_Len]) 
+				Tube(OD=Body_ID, ID=Body_ID-IDXtra-6, Len=Skirt_Len, myfn=$preview? 90:360);
+							
 			// Shock cord retention
 			difference(){
-				hull(){
-					rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z]) 
-						rotate([90,0,0]) cylinder(d=Tube_d+6, h=Body_ID-2, center=true);
-					rotate([0,0,Tube_a]) translate([TubeOffset_X,0,7])
-						cube([Tube_d+8, Body_ID-2, Overlap],center=true);
-				} // hull
-				
-				hull(){
-					rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z]) 
-						rotate([90,0,0]) cylinder(d=Tube_d+7, h=TubeSlot_w, center=true);
-					rotate([0,0,Tube_a]) translate([TubeOffset_X,0,7])
-						cube([Tube_d+8+Overlap, TubeSlot_w, Overlap*2], center=true);
-				} // hull
+				union(){
+					// Tube holder
+					hull(){
+						rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Top_Z-Overlap/2]) 
+							cube([Tube_d+6, Body_ID-2, Overlap], center=true);
+						rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z])
+							rotate([90,0,0]) cylinder(d=Tube_d+6, h=Body_ID-2, center=true);
+					} // hull
 					
-				// Trim outside
-				Tube(OD=Body_OD+20, ID=Body_ID-1, Len=50, myfn=$preview? 90:360);
+					// Support
+					rotate([0,0,Tube_a]) translate([TubeOffset_X-(Tube_d-3)/2,-(Body_ID-2)/2,Floor_Z])
+							cube([Tube_d-3, Body_ID-2, Tube_Z-Floor_Z]);
+				} // union
+				rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z]) 
+					rotate([90,0,0]) cylinder(d=Tube_d*3, h=TubeSlot_w, center=true);
+					
+				rotate([0,0,Tube_a]) translate([TubeOffset_X-(Tube_d-1)/2,-TubeSlot_w/2,Floor_Z-Overlap])
+					cube([Tube_d-1, TubeSlot_w, Tube_Z-Floor_Z+Overlap*2]);
+					
+				Tube(OD=Body_OD+20, ID=Body_ID+1, Len=50, myfn=$preview? 90:360);
 			} // difference
 		} // union
-	
-		// Bolt holes
-		translate([0,0,Top_H]) 
-			STB_BR_BoltPattern(Body_ID=Body_ID, Body_OD=Body_ID, nLockBalls=nLockBalls) 
-				Bolt4HeadHole(depth=8, lHead=20);
-				
+		
+		// Aluminum tube
 		translate([TubeOffset_X,0,Tube_Z]) rotate([90,0,Tube_a]) 
 			cylinder(d=Tube_d, h=Body_OD, center=true);
 			
-			
-		// Bolt holes in skirt
-		for (j=[0:nEBayBolts-1]) rotate([0,0,360/nEBayBolts*j+25]) 
-			translate([0,Body_OD/2,XtraLen+39.0+EBayBoltInset])
-				rotate([-90,0,0]) Bolt4Hole();
-			
+		//Bolt holes for Electronics bay
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]){
+			translate([0, -Body_OD/2-1, EBayInterface_Z+BoltInset]) rotate([90,0,0]) Bolt4Hole();
+		} // for
 		//cube([100,100,100]);
 	} // difference
 } // R203_BallRetainerTop
 
 // rotate([180,0,0]) R203_BallRetainerTop();
+
 
 module R203_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false, Xtra_r=0.0){
 	// PD_Ring is required to attach the petal hub because 3 balls isn't good enough and 5 won't line up.
@@ -284,7 +274,7 @@ module R203_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=fals
 					Engagement_Len=Engagement_Len, HasLargeInnerBearing=true, Xtra_r=Xtra_r);
 		
 				
-		//*
+		/*
 			if (HasPD_Ring){
 				translate([0,0,-Engagement_Len/2-PD_Ring_h])
 					Tube(OD=Body_ID-IDXtra*2, ID=Body_ID-IDXtra-4.4, Len=PD_Ring_h+Overlap, myfn=$preview? 90:360);

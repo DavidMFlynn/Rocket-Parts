@@ -650,7 +650,7 @@ module PD_PetalHub(OD=BT75Coupler_OD,
 						Body_OD=BT75Body_OD,
 						Body_ID=BT75Body_ID,
 						NC_Base=NC_Base, 
-						SkirtLen=10){
+						SkirtLen=10, CenterHole_d=0){
 	// ShockCord_a: >=0 Shock cord slot, -1 nothing, -2 center hole
 	Width=PetalWidth+1;
 	Thickness=3;
@@ -775,8 +775,10 @@ module PD_PetalHub(OD=BT75Coupler_OD,
 		translate([0,0,-Overlap]) hull() 
 			PD_ShockCordHolePattern(OD=OD, ShockCord_a=ShockCord_a) cylinder(d=4, h=20);
 			
-		if (ShockCord_a==-2)
-			translate([0,0,-Overlap]) cylinder(d=BT38Body_OD, h=10);
+		if (ShockCord_a==-2){
+			Hole_d=(CenterHole_d>0)? CenterHole_d:BT38Body_OD;
+			translate([0,0,-Overlap]) cylinder(d=Hole_d, h=10, $fn=$preview? 90:360);
+			}
 			
 	} // difference
 	
