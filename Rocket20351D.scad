@@ -48,7 +48,9 @@
 /**/
 //
 // R203_SkirtRing(Coupler_OD=Body_ID-BodyTubeAnnulus, Coupler_ID=Coupler_ID, HasPD_Ring=false);
-// rotate([180,0,0]) R203_PusherRing(OA_Len=50, Engagemnet_Len=10, Wall_t=4);
+// rotate([180,0,0]) R203_PusherRing(OD=Body_ID*CF_Comp-BodyTubeAnnulus, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=10, Wall_t=4);
+//  *** for NC Petal Hub ***
+// rotate([180,0,0]) R203_PusherRing(OD=Body_ID*CF_Comp-BodyTubeAnnulus, ID=Body_ID-BodyTubeAnnulus-4.6, OA_Len=50, Engagemnet_Len=10, Wall_t=4);
 // SE_SlidingBigSpringMiddle(OD=Body_ID-BodyTubeAnnulus, SliderLen=80, Extension=0); // print 2
 // rotate([180,0,0]) SE_SpringEndTypeA(Coupler_OD=Body_ID-BodyTubeAnnulus, Coupler_ID=Coupler_ID, nRopes=6, Spring_OD=SE_Spring_CS11890_OD());
 // SE_SpringEndTypeC(Coupler_OD=Body_ID-BodyTubeAnnulus, Coupler_ID=Coupler_ID, nRopes=6, UseSmallSpring=false);
@@ -76,7 +78,7 @@
 //
 //  *** Petal Deployer ***
 // R203_PetalHub(OD=Body_ID-BodyTubeAnnulus);
-// R203_NC_PetalHub(); // upper
+// R203_NC_PetalHub(OD=Body_ID-BodyTubeAnnulus, nPetals=nPetals, CouplerTube_ID=Coupler_ID); // upper
 // PD_Petals2(OD=Body_ID-BodyTubeAnnulus, Len=DroguePetal_Len, nPetals=nPetals, Wall_t=2.4, AntiClimber_h=5.0, HasLocks=false, Lock_Span_a=0);
 // PD_Petals2(OD=Body_ID-BodyTubeAnnulus, Len=MainPetal_Len, nPetals=nPetals, Wall_t=2.4, AntiClimber_h=5.0, HasLocks=false, Lock_Span_a=0);
 // rotate([-90,0,0]) PD_PetalSpringHolder2(); // print 15
@@ -116,6 +118,8 @@ use<R203Lib.scad>
 Overlap=0.05;
 IDXtra=0.2;
 $fn=$preview? 36:90;
+
+CF_Comp=0.995; // CF parts print oversized OD
 
 /*
 // a short nose cone

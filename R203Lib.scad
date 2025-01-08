@@ -55,13 +55,10 @@ MotorTube_OD=BT75Body_OD;
 MotorTube_ID=BT75Body_ID;
 
 
-module R203_NC_PetalHub(){
-	OD=Coupler_OD;
-	nPetals=nPetals;
+module R203_NC_PetalHub(OD=Body_ID-BodyTubeAnnulus, nPetals=nPetals, CouplerTube_ID=Coupler_ID){
 	nRopes=nPetals;
 	Spring_ID=SE_Spring_CS11890_ID();
 	Spring_OD=SE_Spring_CS11890_OD();
-	CouplerTube_ID=Coupler_ID;
 				
 	BodyTube_L=10;
 	SpringHole_ID=Spring_ID-IDXtra*2-4.4;
@@ -331,13 +328,21 @@ module R203_SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, HasPD_Ring=f
 
 // R203_SkirtRing();
 
-module R203_PusherRing(OA_Len=50, Engagemnet_Len=10, Wall_t=4){
+module R203_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4){
 	
+	Tube(OD=OD, ID=ID, Len=OA_Len, myfn=$preview? 90:720);
 	
-	Tube(OD=Coupler_OD, ID=Coupler_ID, Len=OA_Len, myfn=$preview? 90:720);
-	translate([0,0,Engagemnet_Len]) 
-		Tube(OD=Coupler_OD, ID=Coupler_OD-Wall_t*2, Len=OA_Len-Engagemnet_Len, myfn=$preview? 90:720);
-	
+	translate([0,0,Engagemnet_Len]) difference(){
+		Tube(OD=OD, ID=OD-Wall_t*2, Len=OA_Len-Engagemnet_Len, myfn=$preview? 90:720);
+		
+		// Reduce mass by thinning inside
+		A=OA_Len-Engagemnet_Len-18;
+		if (A>0){
+			translate([0,0,3]) cylinder(d1=OD-Wall_t*2-Overlap, d2=ID, h=6, $fn=$preview? 90:720);
+			translate([0,0,9-Overlap]) cylinder(d=ID, h=A+Overlap*2, $fn=$preview? 90:720);
+			translate([0,0,9+A]) cylinder(d2=OD-Wall_t*2-Overlap, d1=ID, h=6, $fn=$preview? 90:720);
+		}
+	} // difference
 } // R203_PusherRing
 
 // rotate([180,0,0]) R203_PusherRing();
