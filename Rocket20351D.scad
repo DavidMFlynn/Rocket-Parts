@@ -65,6 +65,7 @@
 // rotate([180,0,0]) EBay(TopOnly=true, BottomOnly=false, ShowDoors=false);
 // EBay(TopOnly=false, BottomOnly=true, ShowDoors=false);
 // CenteringRing(OD=Body_ID, ID=EBayTube_OD, Thickness=EBayCR_t, nHoles=8, Offset=0, myfn=$preview? 90:360);
+// CenteringRing(OD=Body_ID, ID=EBayTube_OD, Thickness=4.5, nHoles=8, Offset=0, myfn=$preview? 90:360); // fix
 //  *** Doors ***
 // rotate([-90,0,0]) EB_AltDoor(Tube_OD=Body_OD);
 // rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD, HasSwitch=false, DoubleBatt=false);
@@ -72,9 +73,9 @@
 //
 //  *** Ball Lock Unit ***
 // rotate([180,0,0]) STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD, Engagement_Len=Engagement_Len);
-// rotate([180,0,0]) R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=nEBay_Bolts, Xtra_r=0.3);
+// rotate([180,0,0]) R203_BallRetainerTop(Body_OD=Body_OD+1.2, Body_ID=Body_ID, EBayTube_OD=EBayTube_OD, Engagement_Len=Engagement_Len, nBolts=nEBay_Bolts, Xtra_r=0.3); // fix for Body_OD too small
 // STB_LockDisk(Body_ID=Body_ID, nLockBalls=nLockBalls, HasLargeInnerBearing=true, Xtra_r=0.3);
-// R203_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false, Xtra_r=0.3);
+// R203_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, Engagement_Len=Engagement_Len, HasPD_Ring=false, Xtra_r=0.3);
 //
 //  *** Petal Deployer ***
 // R203_PetalHub(OD=Body_ID-BodyTubeAnnulus);
@@ -166,7 +167,7 @@ MotorTube_OD=BT75Body_OD;
 MotorTube_ID=BT75Body_ID;
 
 UpperBody_Len=400;
-EBay_Len=172;
+EBay_Len=176;
 EBayCR_t=6;
 LowerBody_Len=48*25.4;
 FinCan_Len=Fin_Root_L+Fin_Inset*2;
@@ -293,8 +294,8 @@ module ShowRocket(ShowInternals=false){
 // ShowRocket(ShowInternals=true);
 
 module EBay(TopOnly=false, BottomOnly=false, ShowDoors=false){
-	TubeStop_Z=EBayBoltInset*2+EBayCR_t+0.3;
-	
+	TubeStop_Z=EBayBoltInset*2+EBayCR_t+1.9;
+	echo(TubeStop_Z=TubeStop_Z);
 	R20351D_Doors=$preview? [[],[45],[-45]]:[[0,180],[45,180+45],[-45,-90,180-45,180-90]]; // Altimeters, Alt_Batts, SW_Bats
 	
 	EB_Electronics_BayUniversal(Tube_OD=Body_OD, Tube_ID=Body_ID, DoorAngles=R20351D_Doors, Len=EBay_Len, 

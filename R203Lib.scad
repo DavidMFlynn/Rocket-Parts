@@ -3,7 +3,7 @@
 // Filename: R203Lib.scad
 // by David M. Flynn
 // Created: 12/14/2024 
-// Revision: 0.9.2  12/22/2024 
+// Revision: 0.9.3  1/14/2025 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,6 +12,7 @@
 //
 //  ***** History *****
 //
+// 0.9.3  1/14/2025   Engagement_Len removed
 // 0.9.2  12/22/2024  Fixes to R203_BallRetainerTop
 // 0.9.1  12/21/2024  Added a cusomized version of PD_NC_PetalHub R203_NC_PetalHub
 // 0.9.0  12/14/2024  Copied from R137Lib 0.9.0 
@@ -22,7 +23,7 @@
 // R203_NC_PetalHub();
 // R203_MotorTubeTopper();
 // R203_PetalHub(Body_OD=Coupler_OD);
-// R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID);
+// R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, EBayTube_OD=BT54Body_OD, nBolts=7, Xtra_r=0.0);
 // R203_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false);
 //
 // ***********************************
@@ -37,8 +38,6 @@ $fn=$preview? 36:90;
 
 CouplerLenXtra=0;
 nLockBalls=7;
-Engagement_Len=30;
-//BallPerimeter_d=STB_BT137BallPerimeter_d();
 nPetals=7;
 nEBayBolts=7;
 EBayBoltInset=8;
@@ -188,7 +187,7 @@ module R203_PetalHub(OD=Coupler_OD){
 // translate([0,0,-20]) rotate([180,0,0]) R203_PetalHub();
 // R203_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=true);
 
-module R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=7, Xtra_r=0.0){
+module R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, EBayTube_OD=BT54Body_OD, Engagement_Len=0, nBolts=7, Xtra_r=0.0){
 	Tube_d=12.7;
 	Skirt_Len=16;
 	Tube_a=-38.5;
@@ -196,7 +195,6 @@ module R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=7, Xtra_r=0
 	TubeOffset_X=0;	
 		
 	BoltInset=8;
-	Engagement_Len=20;
 	Floor_Z=8;
 	Skirt_H=24;
 	EBayInterface_Z=Engagement_Len/2+Skirt_H+CouplerLenXtra;
@@ -236,10 +234,23 @@ module R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=7, Xtra_r=0
 					
 				rotate([0,0,Tube_a]) translate([TubeOffset_X-(Tube_d-1)/2,-TubeSlot_w/2,Floor_Z-Overlap])
 					cube([Tube_d-1, TubeSlot_w, Tube_Z-Floor_Z+Overlap*2]);
-					
+				
+				// Trim outside	
 				Tube(OD=Body_OD+20, ID=Body_ID+1, Len=50, myfn=$preview? 90:360);
 			} // difference
+			
+			// Center tube
+			translate([0,0,Floor_Z]) Tube(OD=EBayTube_OD+IDXtra*2+6, ID=EBayTube_OD-3, Len=Top_Z-Floor_Z, myfn=$preview? 90:360);
+			
+			// Spokes
+			Spoke_Angles=[0,22,80,115,180,235,270];
+			Spoke_w=3;
+			translate([0,0,Floor_Z]) for (j=Spoke_Angles) rotate([0,0,j])
+				translate([-Spoke_w/2,EBayTube_OD/2+IDXtra*2,0]) cube([Spoke_w, Body_ID/2-EBayTube_OD/2-1, Top_Z-Floor_Z]);
 		} // union
+		
+		// EBay Tube
+		translate([0,0,Tube_Z+Tube_d/2-0.5]) cylinder(d=EBayTube_OD+IDXtra*2, h=10);
 		
 		// Aluminum tube
 		translate([TubeOffset_X,0,Tube_Z]) rotate([90,0,Tube_a]) 
@@ -256,49 +267,25 @@ module R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=7, Xtra_r=0
 // rotate([180,0,0]) R203_BallRetainerTop();
 
 
-module R203_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false, Xtra_r=0.0){
+module R203_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, Engagement_Len=0, Xtra_r=0.0){
 	// PD_Ring is required to attach the petal hub because 3 balls isn't good enough and 5 won't line up.
 	
 	Bolt_a=0;// offset between PD_PetalHub and R65_BallRetainerBottom
-
-	
 	PD_Ring_h=9;
 	
 	difference(){
-		union(){
-			STB_BallRetainerBottom(Body_ID=Body_ID, Body_OD=Body_ID, 
+		
+		STB_BallRetainerBottom(Body_ID=Body_ID, Body_OD=Body_ID, 
 					nLockBalls=nLockBalls, HasSpringGroove=false, 
 					Engagement_Len=Engagement_Len, HasLargeInnerBearing=true, Xtra_r=Xtra_r);
 		
-				
-		/*
-			if (HasPD_Ring){
-				translate([0,0,-Engagement_Len/2-PD_Ring_h])
-					Tube(OD=Body_ID-IDXtra*2, ID=Body_ID-IDXtra-4.4, Len=PD_Ring_h+Overlap, myfn=$preview? 90:360);
-				
-				rotate([0,0,Bolt_a]) translate([0,0,-Engagement_Len/2-PD_Ring_h])
-					PD_PetalHubBoltPattern(OD=Coupler_OD, nBolts=6) cylinder(d=8, h=PD_Ring_h+Overlap);
-					
-				translate([0,0,-Engagement_Len/2-PD_Ring_h]) 
-					Tube(OD=39, ID=34, Len=PD_Ring_h+Overlap, myfn=$preview? 90:360);
-			}
-		/**/
-			
-		} // union
-		
-		if (HasPD_Ring){
-			rotate([0,0,Bolt_a]) translate([0,0,-Engagement_Len/2-PD_Ring_h])
-				PD_PetalHubBoltPattern(OD=Coupler_OD, nBolts=6) rotate([180,0,0]) Bolt4Hole(depth=PD_Ring_h-1);
-			
-		}else{
-			rotate([0,0,Bolt_a]) translate([0,0,-Engagement_Len/2])
-				PD_PetalHubBoltPattern(OD=Coupler_OD, nBolts=nPetals) rotate([180,0,0]) Bolt4Hole(depth=20);
-		}
+		rotate([0,0,Bolt_a]) translate([0,0,-Engagement_Len/2])
+			PD_PetalHubBoltPattern(OD=Coupler_OD, nBolts=nPetals) rotate([180,0,0]) Bolt4Hole(depth=20);
 
 	} // difference
 } // R203_BallRetainerBottom
 
-// R203_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false);
+// R203_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID);
 
 module R203_SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, HasPD_Ring=false){
 	Engagemnet_Len=10;

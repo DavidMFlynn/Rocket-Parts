@@ -186,35 +186,42 @@ module P_Shape(){
 // *** Parameter test ***
 /*
 nPanels=8;
-Diameter=20*25.4; // 63 inches in diameter
+Diameter=20*25.4;
 CenterHole_d=3.0*25.4;
 echo(Diameter=Diameter);
 /**/
 
 /*
 nPanels=6;
-Diameter=14*25.4; // 63 inches in diameter
+Diameter=14*25.4;
 R=Diameter/2;
 CenterHole_d=2.5*25.4;
 echo(Diameter=Diameter);
 /**/
-/*
-SeamAllowance=6;
-Panel_w=Diameter*PI/nPanels;
-Apex_w=CenterHole_d*PI/nPanels;
-Skirt_Y=(R-R*0.707)*2*PI/4;
-Center_Y=Skirt_Y+R*0.707;
-echo(R=R);
-Apex_Y=Center_Y-CenterHole_d/2;
-echo(Apex_Y=Apex_Y);
+
+
+//*
+
+//P_ShapeTest(Diameter=14*25.4, nPanels=6, CenterHole_d=2.5*25.4, SeamAllowance=6);
+
+//P_ShapeTest(Diameter=160*25.4, nPanels=20, CenterHole_d=12*25.4, SeamAllowance=6);
 
 //for (j=[0:nPanels-1]) rotate([0,0,360/nPanels*j]) translate([0,-Center_Y,0]) // show full circle
-translate([PrintingOffset_X,PrintingOffset_Y+SeamAllowance,0]) // offset for pdf
-offset(delta=SeamAllowance) // comment out when showing full circle
-P_ShapeTest();
+//translate([PrintingOffset_X,PrintingOffset_Y+SeamAllowance,0]) // offset for pdf
+ // comment out when showing full circle
 	
-module P_ShapeTest(){
+module P_ShapeTest(Diameter=14*25.4, nPanels=6, CenterHole_d=2.5*25.4, SeamAllowance=6){
+	R=Diameter/2;
+	Panel_w=Diameter*PI/nPanels;
+	Apex_w=CenterHole_d*PI/nPanels;
+	Skirt_Y=(R-R*0.707)*2*PI/4;
+	Center_Y=Skirt_Y+R*0.707;
+	Apex_Y=Center_Y-CenterHole_d/2;
 	
+	echo(Apex_Y=Apex_Y);
+	echo(R=R);
+	
+	offset(delta=SeamAllowance)
 	difference(){
 		hull(){
 			intersection(){
