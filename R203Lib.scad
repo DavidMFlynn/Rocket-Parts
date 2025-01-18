@@ -243,7 +243,7 @@ module R203_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, EBayTube_OD=BT54Bo
 			translate([0,0,Floor_Z]) Tube(OD=EBayTube_OD+IDXtra*2+6, ID=EBayTube_OD-3, Len=Top_Z-Floor_Z, myfn=$preview? 90:360);
 			
 			// Spokes
-			Spoke_Angles=[0,22,80,115,180,235,270];
+			Spoke_Angles=[0,22,80,115,177,235,270];
 			Spoke_w=3;
 			translate([0,0,Floor_Z]) for (j=Spoke_Angles) rotate([0,0,j])
 				translate([-Spoke_w/2,EBayTube_OD/2+IDXtra*2,0]) cube([Spoke_w, Body_ID/2-EBayTube_OD/2-1, Top_Z-Floor_Z]);

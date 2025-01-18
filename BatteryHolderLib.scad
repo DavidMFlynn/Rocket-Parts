@@ -43,6 +43,9 @@ echo(BatteryHolderLibRev());
 //  SingleBatteryHolder(Tube_ID=PML75Body_ID);
 //  DoubleBatteryHolder(Tube_ID=PML75Body_ID);
 //
+// RocketServoHolderRevC(IsDouble=false);
+// RocketServoHolderRevC(IsDouble=true);
+//
 // ***********************************
 //  ***** Routines *****
 //

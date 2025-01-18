@@ -36,6 +36,7 @@ echo(PetalDeploymentLibRev());
 //  ***** for STL output *****
 //
 // rotate([180,0,0]) PD_Petals(OD=BT75Coupler_OD, Len=110, nPetals=3, Wall_t=1.8, AntiClimber_h=0, HasLocks=false, Lock_Span_a=0);
+// PD_Petals2(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_h=0, HasLocks=false, Lock_Span_a=0);
 // rotate([180,0,0]) PD_GridPetals(OD=BT137Coupler_OD, Len=150, nPetals=3, Wall_t=1.2, HasLocks=false);
 // rotate([-90,0,0]) PD_PetalSpringHolder();
 // PD_PetalSpringHolder2();

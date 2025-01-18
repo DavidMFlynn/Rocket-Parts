@@ -3,7 +3,7 @@
 // Filename: SpringThingBooster.scad
 // by David M. Flynn
 // Created: 2/26/2023
-// Revision: 1.4.7   12/30/2024
+// Revision: 1.4.8   1/15/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -36,9 +36,10 @@
 //  Steel Dowel Pin 4mm (Undersized) x 16mm (3 Req.)
 //
 //  ***** History *****
-function SpringThingBoosterRev()="SpringThingBooster Rev. 1.4.7";
+function SpringThingBoosterRev()="SpringThingBooster Rev. 1.4.8";
 echo(SpringThingBoosterRev());
 //
+// 1.4.8   1/15/2025  Fixed second servo depth.
 // 1.4.7   12/30/2024 Added Xtra_r parameter
 // 1.4.6   12/29/2024 Fixed a booboo
 // 1.4.5   12/28/2024 Added Bearing6806 as large bearing for ULine102Body_ID
@@ -82,7 +83,7 @@ echo(SpringThingBoosterRev());
 //  ***** for STL output *****
 //
 // STB_BallRetainerBottom(Body_ID=BT75Body_ID, Body_OD=BT75Body_ID, nLockBalls=nLockBalls, HasSpringGroove=true, Engagement_Len=20, HasLargeInnerBearing=false, Xtra_r=0.0);
-// STB_BallRetainerTop(Outer_OD=PML75Body_OD, Body_OD=BT75Body_ID, nLockBalls=nLockBalls, HasIntegratedCouplerTube=false, Body_ID=BT75Body_ID, HasSecondServo=false, UsesBigServo=false, Engagement_Len=20, HasLargeInnerBearing=false, Xtra_r=0.0);
+// STB_BallRetainerTop(Outer_OD=PML75Body_OD, Body_OD=BT75Body_ID, nLockBalls=nLockBalls, HasIntegratedCouplerTube=false, nBolts=0, Body_ID=BT75Body_ID, HasSecondServo=false, UsesBigServo=false, Engagement_Len=20, HasLargeInnerBearing=false, Xtra_r=0.0);
 // STB_LockDisk(Body_ID=BT75Body_ID, nLockBalls=nLockBalls, HasLargeInnerBearing=false, Xtra_r=0.0);
 // STB_TubeEnd(Body_ID=BT75Body_ID, nLockBalls=nLockBalls, Body_OD=BT75Body_OD, Engagement_Len=20);
 //
@@ -665,7 +666,7 @@ module STB_BallRetainerTop(Body_ID=BT75Body_ID, Outer_OD=0, Body_OD=BT75Body_ID,
 				
 			if (HasSecondServo)
 				BigServoPosition(SecondServo=true) translate([0,0,7.4])  rotate([0,0,180])
-					Servo_HX5010(BottomMount=true,TopAccess=false, Xtra_w=1, Xtra_h=0);
+					Servo_HX5010(BottomMount=true, TopAccess=false, Xtra_w=1, Xtra_h=0, XtraTop=-2);
 		}else{
 			ServoPosition() ServoSG90(TopMount=false,HasGear=false); 
 			if (HasSecondServo)
@@ -720,11 +721,11 @@ STB_LockDisk(Body_ID=ULine102Body_ID, nLockBalls=6, HasLargeInnerBearing=true);
 	
 /**/
 
-/*
+//*
 STB_BallRetainerTop(Body_ID=ULine203Body_ID, Outer_OD=ULine203Body_OD, Body_OD=ULine203Body_ID, nLockBalls=7,
 HasIntegratedCouplerTube=true,
 			IntegratedCouplerLenXtra=-10,
-			HasSecondServo=false,
+			HasSecondServo=true,
 			UsesBigServo=true,
 			Engagement_Len=30);
 /**/
