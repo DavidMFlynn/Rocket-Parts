@@ -3,7 +3,7 @@
 // Filename: Fins.scad
 // by David M. Flynn
 // Created: 6/11/2022 
-// Revision: 1.0.4  9/5/2024
+// Revision: 1.1.0  1/19/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-function FinsRev()="Fins 1.0.4";
+function FinsRev()="Fins 1.1.0";
 echo(FinsRev());
+// 1.1.0  1/19/2025  Added Ogive leading and trailing edge version TrapFin3...
 // 1.0.4  9/5/2024   Added PrinterBrim_H=0.9 parameter to TrapFin2()
 // 1.0.3  8/21/2024  Geometry changed: Orientation is now Y centric, Fin 1 is now 1/2 fin angle from +Y.
 // 1.0.2  12/21/2022 Added an optional spar to TrapFin2()
@@ -37,6 +38,13 @@ echo(FinsRev());
 //
 // TrapFin2(Post_h=10, Root_L=180, Tip_L=120, Root_W=10, Tip_W=5.0, Span=120, Chamfer_L=18, TipOffset=0, Bisect=false, Bisect_X=0, PrinterBrim_H=0.9, HasSpiralVaseRibs=true);
 //
+/*
+ TrapFin3(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100, Chamfer_L=18,
+				TipOffset=0, TipInset=0, HasBluntTip=false, TipPost_h=0,
+				Bisect=false, Bisect_X=0,
+				HasSpar=false, Spar_d=8, Spar_L=100, PrinterBrim_H=0.9, HasSpiralVaseRibs=true);
+/**/
+//
 // *** Examples ***
 // TrapFin2(Post_h=10, Root_L=240, Tip_L=50, Root_W=12, Tip_W=7.0, Span=150, Chamfer_L=24, TipOffset=60, PrinterBrim_H=0.9, HasSpiralVaseRibs=true);
 //
@@ -48,6 +56,8 @@ echo(FinsRev());
 // ***********************************
 //  ***** Routines *****
 //
+// Fin_BluntOgiveShape(L=24, W=12, Tip_R=1);
+//
 // Chamfer(Len=200, Flat=0.5, Chamfer_a=10);
 //
 // Fin(Root_L=150, Root_W=5, Tip_W=2.5, Span=70, Chamfer_a=15);
@@ -55,6 +65,10 @@ echo(FinsRev());
 // TrapFin2Tail(Post_h=5, Root_L=150, Root_W=10, Chamfer_L=18);
 // TrapFin2Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18);
 // TrapFin2Shape(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100, Chamfer_L=18);
+//
+// TrapFin3Tail(Post_h=5, Root_L=150, Root_W=10, Chamfer_L=18);
+// TrapFin2Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18);
+// TrapFin3Shape(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100, Chamfer_L=18, TipOffset=0, TipInset=0, TipPost_h=0, HasBluntTip=false);
 // 
 // ***********************************
 
@@ -102,6 +116,35 @@ module Fin(Root_L=150, Root_W=5, Tip_W=2.5, Span=70, Chamfer_a=15){
 
 // *************************************************************************
 
+module Fin_BluntOgiveShape(L=24, W=12, Tip_R=1){
+	// Spherically blunted tangent ogive
+	function OGiveArcOffset(R=10,L=50)=(R*R+L*L)/(2*R); // p:center of arc = -p+R or p-R
+	function OGiveTipX0(R=10,L=50,Tip_R)=L-sqrt( (OGiveArcOffset(R,L)-Tip_R) * (OGiveArcOffset(R,L)-Tip_R)
+		- (OGiveArcOffset(R,L)-R) * (OGiveArcOffset(R,L)-R)); // X0:End of Ogive portion = L-X0
+		
+	R=W/2;
+	p=OGiveArcOffset(R,L);
+	X0 = OGiveTipX0(R,L,Tip_R); //L-sqrt((p-Tip_R)*(p-Tip_R)-(p-R)*(p-R));
+	
+	// calculate tangent point
+	Yt=(Tip_R*(p-R))/(p-Tip_R);
+	Xt=X0-sqrt(Tip_R*Tip_R-Yt*Yt);
+	//echo(Xt=Xt);
+
+		hull(){
+			intersection(){
+				translate([-R,0,0]) square([R*2,L-Xt]);// clip at tangent point, keep first and fourth quadrants only
+				
+				translate([-p+R, 0, 0]) circle(r=p, $fn=$preview? 90:360);
+				translate([p-R, 0, 0]) circle(r=p, $fn=$preview? 90:360);
+			} // intersection
+			
+			// Tip
+			translate([0, L-X0, 0]) circle(r=Tip_R, $fn=$preview? 90:360);
+		} // hull
+	
+} // Fin_BluntOgiveShape
+	
 module TrapFin2Tail(Post_h=5, Root_L=150, Root_W=10, Chamfer_L=18){
 	Edge_r=1;
 	
@@ -113,7 +156,20 @@ module TrapFin2Tail(Post_h=5, Root_L=150, Root_W=10, Chamfer_L=18){
 	} // hull
 } // TrapFin2Tail
 
-//TrapFin2Tail(Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18);
+// TrapFin2Tail(Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18);
+
+module TrapFin3Tail(Post_h=5, Root_L=150, Root_W=10, Chamfer_L=18){
+	Edge_r=1;
+	
+	linear_extrude(height=Post_h)
+			hull(){
+				translate([0,Root_L/2-Chamfer_L,0]) Fin_BluntOgiveShape(L=Chamfer_L, W=Root_W, Tip_R=Edge_r);
+				translate([0,-Root_L/2+Chamfer_L,0]) rotate([0,0,180]) Fin_BluntOgiveShape(L=Chamfer_L, W=Root_W, Tip_R=Edge_r);
+			} // hull
+			
+} // TrapFin3Tail
+
+// TrapFin3Tail(Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18);
 
 module TrapFin2Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18){
 	
@@ -124,8 +180,86 @@ module TrapFin2Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_
 
 // TrapFin2Slots();
 
-// module BluntTip(){}??
+module TrapFin3Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18){
+	
+	for (j=[0:nFins]) rotate([0,0,360/nFins*j+180/nFins]) translate([0,Tube_OD/2-Post_h,0])
+		rotate([-90,0,0]) TrapFin3Tail(Post_h=Post_h+1, Root_L=Root_L, Root_W=Root_W, Chamfer_L=Chamfer_L);
+		
+} // TrapFin3Slots
 
+// TrapFin3Slots();
+
+module TrapFin3Shape(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100, Chamfer_L=18,
+						TipOffset=0, TipInset=0, TipPost_h=0, HasBluntTip=false){
+						
+	
+
+
+	Edge_r=1;
+	Tip_Chamfer=HasBluntTip? Chamfer_L:Chamfer_L-(Root_W-Tip_W);
+	Tip_Chamfer_Z=HasBluntTip? 0:Tip_Chamfer;
+	
+	// Post, embeds into fin can
+	
+	if (Post_h>0) 
+		linear_extrude(height=Post_h+Overlap)
+			hull(){
+				translate([0,Root_L/2-Chamfer_L,0]) Fin_BluntOgiveShape(L=Chamfer_L, W=Root_W, Tip_R=Edge_r);
+				translate([0,-Root_L/2+Chamfer_L,0]) rotate([0,0,180]) Fin_BluntOgiveShape(L=Chamfer_L, W=Root_W, Tip_R=Edge_r);
+			} // hull
+			
+	/*
+	hull(){
+		translate([0,-Root_L/2+Edge_r,0]) cylinder(r=Edge_r, h=Post_h);
+		translate([0,-Root_L/2+Chamfer_L,0]) cylinder(d=Root_W, h=Post_h);
+		translate([0,Root_L/2-Chamfer_L,0]) cylinder(d=Root_W, h=Post_h);
+		translate([0,Root_L/2-Edge_r,0]) cylinder(r=Edge_r, h=Post_h);
+	} // hull
+	/**/
+	
+	// Tip Post, embeds into pod fin can
+	/*
+	if (HasBluntTip && TipPost_h>0) translate([0,TipOffset,Post_h+Span-Overlap])
+	hull(){
+		translate([0,-Tip_L/2+Edge_r,0]) cylinder(r=Edge_r, h=TipPost_h);
+		translate([0,-Tip_L/2+Tip_Chamfer,0]) cylinder(d=Tip_W, h=TipPost_h);
+		translate([0,Tip_L/2-Tip_Chamfer,0]) cylinder(d=Tip_W, h=TipPost_h);
+		translate([0,Tip_L/2-Edge_r,0]) cylinder(r=Edge_r, h=TipPost_h);
+	} // hull
+	/**/
+	
+	hull(){
+		translate([0, 0, Post_h]) linear_extrude(height=Overlap)
+			hull(){
+				translate([0,Root_L/2-Chamfer_L,0]) Fin_BluntOgiveShape(L=Chamfer_L, W=Root_W, Tip_R=Edge_r);
+				translate([0,-Root_L/2+Chamfer_L,0]) rotate([0,0,180]) Fin_BluntOgiveShape(L=Chamfer_L, W=Root_W, Tip_R=Edge_r);
+			} // hull
+	
+		translate([0, -Tip_L/2+Edge_r+TipOffset, Span-Edge_r-TipInset]) sphere(r=Edge_r);
+		translate([0, Tip_L/2-Edge_r+TipOffset, Span-Edge_r]) sphere(r=Edge_r);
+	} // hull
+	
+	/*
+	hull(){
+		translate([0, -Root_L/2+Edge_r, Post_h-Overlap]) cylinder(r=Edge_r, h=Overlap);
+		translate([0, -Root_L/2+Chamfer_L, Post_h-Overlap]) cylinder(d=Root_W, h=Overlap);
+		translate([0, Root_L/2-Chamfer_L, Post_h-Overlap]) cylinder(d=Root_W, h=Overlap);
+		translate([0, Root_L/2-Edge_r, Post_h-Overlap]) cylinder(r=Edge_r, h=Overlap);
+		
+		translate([0, -Tip_L/2+Edge_r+TipOffset, Post_h+Span-Tip_Chamfer_Z-TipInset]) cylinder(r=Edge_r, h=Overlap);
+		translate([0, -Tip_L/2+Tip_Chamfer+TipOffset, Post_h+Span-Tip_Chamfer_Z-TipInset]) cylinder(d=Tip_W, h=Overlap);
+		translate([0, Tip_L/2-Tip_Chamfer+TipOffset, Post_h+Span-Tip_Chamfer_Z]) cylinder(d=Tip_W, h=Overlap);
+		translate([0, Tip_L/2-Edge_r+TipOffset, Post_h+Span-Tip_Chamfer_Z]) cylinder(r=Edge_r, h=Overlap);
+		
+		translate([0, -Tip_L/2+Edge_r+TipOffset, Post_h+Span-Edge_r-TipInset]) sphere(r=Edge_r);
+		translate([0, Tip_L/2-Edge_r+TipOffset, Post_h+Span-Edge_r]) sphere(r=Edge_r);
+	} // hull
+	/**/
+		
+} // TrapFin3Shape
+
+//TrapFin3Shape(Post_h=15, Root_L=180, Tip_L=80, Root_W=12, Tip_W=2.0, Span=100, Chamfer_L=34, TipOffset=40, TipInset=0, TipPost_h=0, HasBluntTip=false);
+						
 module TrapFin2Shape(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100, Chamfer_L=18,
 						TipOffset=0, TipInset=0, TipPost_h=0, HasBluntTip=false){
 	Edge_r=1;
@@ -296,6 +430,86 @@ module TrapFin2(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100,
 
 //TrapFin2(Post_h=10, Root_L=160, Tip_L=70, Root_W=6, Tip_W=3.0, Span=100, Chamfer_L=18, TipOffset=20, Bisect=false, Bisect_X=0, HasSpar=false, Spar_d=8, Spar_L=100);
 				
+
+module TrapFin3(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100, Chamfer_L=18,
+				TipOffset=0, TipInset=0, HasBluntTip=false, TipPost_h=0,
+				Bisect=false, Bisect_X=0,
+				HasSpar=false, Spar_d=8, Spar_L=100, PrinterBrim_H=0.9, HasSpiralVaseRibs=true){
+					
+	Rib_Spacing=20;
+	Perimeter=0.8;
+	Rib_a=40; // 45 worked well
+	Rib_Slot_w=0.1;
+	BaseTrim=0.9; // 3 layers
+	Spar_D=Spar_d+IDXtra*2;
+					
+	nCuts=(Root_L+TipOffset)/Rib_Spacing*2;
+					
+	difference(){
+		TrapFin3Shape(Post_h=Post_h, Root_L=Root_L, Tip_L=Tip_L, 
+						Root_W=Root_W, Tip_W=Tip_W, TipPost_h=TipPost_h, Span=Span, Chamfer_L=Chamfer_L,
+						TipOffset=TipOffset, TipInset=TipInset, HasBluntTip=HasBluntTip);
+		
+		if (HasSpar){
+			// Hole for spar
+			translate([0,0,-Overlap]) cylinder(d=Spar_D, h=Spar_L);
+			
+			// Cut for spiral vase
+			difference(){
+				translate([0,0,BaseTrim]){
+					cylinder(d=Spar_D+Perimeter*2, h=Spar_L-BaseTrim);
+					translate([-Root_W,0,0]) cube([Root_W*2,Rib_Slot_w,Spar_L-BaseTrim]);
+				}
+				
+				translate([0,0,-Overlap*2])
+					cylinder(d=Spar_D+Perimeter*2-Rib_Slot_w*2, h=Spar_L+Overlap*2);
+				
+				// cut out middle
+				translate([-Perimeter,-Root_L-Overlap,-1]) cube([Perimeter*2, Root_L*2+Overlap*2, Span*2]);
+			} // difference
+		}
+		
+		// make webs with 0.1mm cuts
+		if (HasSpiralVaseRibs)
+		difference(){
+			union(){
+				for (j=[0:nCuts])
+					translate([-Root_W,-Root_L+j*Rib_Spacing,-Overlap]) 
+						rotate([Rib_a,0,0]) cube([Root_W*2,Rib_Slot_w,Span*2]);
+				for (j=[0:nCuts])
+					translate([-Root_W,-Root_L+j*Rib_Spacing,-Overlap]) 
+						rotate([-Rib_a,0,0]) cube([Root_W*2,Rib_Slot_w,Span*2]);
+				
+				
+			} // union
+			
+			if (HasSpar) translate([0,0,-Overlap]){
+				cylinder(d=Spar_D+Perimeter*6, h=Spar_L+Perimeter+Overlap);
+				translate([-Root_W,-Perimeter*2,0]) cube([Root_W*2,Perimeter*4,Spar_L+Perimeter*2+Overlap]);
+			}
+				
+			// cut out middle
+			translate([-Perimeter,-Root_L-Overlap,-1]) cube([Perimeter*2, Root_L*2+Overlap*2, Span*2]);
+			
+			// Leave an intact foot
+			translate([-Root_W, -Root_L-Overlap, -1]) cube([Root_W*2, Root_L*2+Overlap*2, 1+BaseTrim]);
+			
+			if (Bisect)
+				translate([0,Bisect_X,-1])	CutZone(X_Offset=0, Y=Root_W, Z=Span*2+2);
+		} // difference
+		
+		//translate([-30,-20,81]) cube([100,100,200]);
+	} // difference
+	
+	if ($preview==false && PrinterBrim_H>0){
+		translate([0,-Root_L/2+Root_W*0.7,0]) 
+			cylinder(d=Root_W*2, h=PrinterBrim_H); // Neg
+		translate([0,Root_L/2-Root_W*0.7,0]) 
+			cylinder(d=Root_W*2, h=PrinterBrim_H); // Pos
+	}
+} // TrapFin3
+
+
 // Too big to print in one piece
 module TooBigFin(KeepNegXHalf=false){
 	

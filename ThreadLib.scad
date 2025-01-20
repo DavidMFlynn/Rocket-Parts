@@ -16,7 +16,7 @@
 //  ***** Routines *****
 // ExternalThread_Triangle(Pitch=1);
 // ExternalThread_OneRotation(Pitch=1,Dia_Nominal=6,Step_a=20);
-// ExternalThread(Pitch=1,Dia_Nominal=6,Length=5,Step_a=20,TrimEnd=true,TrimRoot=false);
+// ExternalThread(Pitch=1, Dia_Nominal=6, Length=5, Step_a=20, TrimEnd=true, TrimRoot=false);
 // HexHead(WrenchSize=11);
 // *****************************************
 //  ***** for STL output *****
@@ -62,7 +62,7 @@ module ExternalThread_OneRotation(Pitch=1,Dia_Nominal=6,Step_a=20) {
 
 //ExternalThread_OneRotation(Pitch=1.27,Dia_Nominal=6.35,Step_a=20);
 
-module ExternalThread(Pitch=1,Dia_Nominal=6,Length=5,Step_a=20,TrimEnd=true,TrimRoot=false){
+module ExternalThread(Pitch=1, Dia_Nominal=6, Length=5, Step_a=20, TrimEnd=true, TrimRoot=false){
 	// H = 0.8660254*Pitch; // 60°
 	H = 0.5*Pitch;
 	Dia_min=Dia_Nominal - H*2 + H/2;

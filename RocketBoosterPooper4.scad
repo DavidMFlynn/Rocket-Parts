@@ -57,8 +57,7 @@
 // rotate([180,0,0]) RBP4_BallRetainerTop();
 // R137_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=true);
 // R137_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false);
-//
-// rotate([180,0,0]) STB_TubeEnd2(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=Engagement_Len);
+// rotate([180,0,0]) STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nBT137Balls, Body_OD=Body_OD, Engagement_Len=Engagement_Len);
 //
 //  ***** Upper Electronics Bay *****
 //
@@ -119,16 +118,13 @@ use<CablePuller.scad>
 use<BoosterDropperLib.scad>
 use<RailGuide.scad>
 use<Fins.scad>
-use<FinCan.scad>
+use<FinCan2Lib.scad>
 use<NoseCone.scad>
-use<AltBay.scad>
-use<BatteryHolderLib.scad> echo(BatteryHolderLibRev());
 use<SpringThingBooster.scad>
-use<CableReleaseBB.scad>
 use<ThreadLib.scad>
 use<R75StrapOn.scad>
 use<PetalDeploymentLib.scad>
-use<Stager2Lib.scad>
+use<Stager75BBLib.scad>
 use<SpringEndsLib.scad> echo(SpringEndsLibRev());
 use<MotorPodLockLib.scad>
 use<ElectronicsBayLib.scad>

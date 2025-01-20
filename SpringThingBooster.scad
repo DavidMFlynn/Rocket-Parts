@@ -384,9 +384,14 @@ module STB_TubeEnd(Body_ID=BT75Body_ID, nLockBalls=nLockBalls,
 
 	// Made for 5.5" rockets w/ tighter ball fit and more contact area.
 	BallPerimeter_d=STB_BallPerimeter_d(Body_ID);
+	Ball_d=STB_LockBall_d(Body_ID);
+	StandardWall_t=2.0;
 	ThinWall_t=1.8; // 2 perimeters at thinnest wall, was 2.2
 	ChamferLen=6;
-	Ring_OD=Body_OD+ThinWall_t*2;
+	
+	Min_Ring_OD=Body_OD+StandardWall_t*2;
+	BallCalcdRing_OD=BallPerimeter_d+ThinWall_t*2; // needed only for thin walled tubes
+	Ring_OD=max(Min_Ring_OD,BallCalcdRing_OD);
 	RingLen=Engagement_Len+10-ChamferLen;
 	DepthExtra=0.5;
 	
@@ -418,7 +423,7 @@ module STB_TubeEnd(Body_ID=BT75Body_ID, nLockBalls=nLockBalls,
 		Steps=90/nLockBalls;
 		DispPerStep=1.5/Steps;
 		Offset=-0.25; // was -0.5; 
-		Ball_d=STB_LockBall_d(Body_ID);
+		
 		Slot_Width=Ball_d+IDXtra*3;
 		myFn=$preview? 36:90;
 		
@@ -721,7 +726,7 @@ STB_LockDisk(Body_ID=ULine102Body_ID, nLockBalls=6, HasLargeInnerBearing=true);
 	
 /**/
 
-//*
+/*
 STB_BallRetainerTop(Body_ID=ULine203Body_ID, Outer_OD=ULine203Body_OD, Body_OD=ULine203Body_ID, nLockBalls=7,
 HasIntegratedCouplerTube=true,
 			IntegratedCouplerLenXtra=-10,

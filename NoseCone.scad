@@ -635,6 +635,7 @@ module BluntOgiveShape(L=150, D=50, Base_L=10, Tip_R=5, Thickness=0){
 
 //rotate_extrude() 
 //offset(-3) BluntOgiveShape(L=190, D=137, Base_L=0, Tip_R=15);
+//BluntOgiveShape(L=24, D=12, Base_L=0, Tip_R=1);
 
 module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, Tip_R=5, HasThreadedTip=false, Wall_T=3, 
 							Cut_d=0, LowerPortion=false, FillTip=false){
