@@ -1,15 +1,15 @@
 // ***********************************
 // Project: 3D Printed Rocket
-// Filename: Rocket102UL.scad
+// Filename: Rocket1025175.scad
 // by David M. Flynn
-// Created: 12/27/2024
-// Revision: 1.0.5  1/3/2025
+// Created: 1/21/2025
+// Revision: 0.9.0  1/21/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 //
 //  A ULine 4 inch mailing tube version of Rocket98
-//  Rocket with 102mm Body and 54mm motor. 
+//  Rocket with 102mm Body and 75mm motor. 
 //  Printing with TINMORRY PETG-CF Black for fins, fin can and nosecone.
 //
 //  Dual deploy:
@@ -19,7 +19,7 @@
 //
 // ULine 4" Body Tube by 310mm Forward Bay
 // ULine 4" Body Tube by 850mm Lower Body
-// Blue Tube 2.1" Body Tube by 19.5 inches minimum Motor Tube (Fits 54/1706 case)
+// Blue Tube 3" Body Tube by 16 inches minimum Motor Tube (Fits 75/1280 and 75/2560 cases)
 // Drogue parachute
 // 63" Parachute
 // 1/2" Braided Nylon Shock Cord (40 feet)
@@ -50,19 +50,14 @@
 //
 //  ***** History *****
 //
-// 1.0.5  1/3/2025   Added body tube bolt holes to fin can.
-// 1.0.4  1/1/2025   Added Pusher ring to top of ebay assy
-// 1.0.3  12/30/2024 Fixes to lengths of Electronics bay and Ball Locks. Taller EBay. FC1
-// 1.0.2  12/29/2024 Changed to large bearing for ball locks, updated hardware list.
-// 1.0.1  12/28/2024 Cleaning up and printing 1st Art.
-// 1.0.0  12/27/2024 Copied Rocket98C Rev: 1.2.3
+// 0.9.0  1/21/2025  Copied from Rocket102UL Rev 1.0.5
 //
 // ***********************************
 //  ***** for STL output *****
 //
 // *** Nosecode ***
 //
-// NoseCone();
+// NoseCone(); // PETG-CF 0.6mm nozzle, 0.4mm layers
 // NC_ShockcordRingDual(Tube_OD=Body_OD*PETG_Comp, Tube_ID=Body_ID, NC_Base_L=NC_Base_L, nRivets=NC_nRivets, nBolts=nEBayBolts, Flat=false);
 //
 // rotate([180,0,0]) ElectronicsBay(TopOnly=true, BottomOnly=false);
@@ -110,7 +105,7 @@
 //
 // *** Fin Can ***
 //
-// rotate([180,0,0]) R102UL_MotorTubeTopper();
+// rotate([180,0,0]) R102UL_MotorTubeTopper(MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID, HasPassThru=true, nRopes=0);
 // FinCan(LowerHalfOnly=false, UpperHalfOnly=true);
 // rotate([180,0,0]) FinCan(LowerHalfOnly=true, UpperHalfOnly=false);
 // MotorRetainer();
@@ -156,17 +151,6 @@ $fn=$preview? 24:90;
 PETG_Comp=1.003; // shrinkage compensation for PETG parts to fit CF parts
 CF_Comp=0.995; // CF parts print oversized OD
 
-nFins=5;
-
-Fin_Post_h=15;
-Fin_Root_L=280;
-Fin_Root_W=10;
-Fin_Tip_W=3.0;
-Fin_Tip_L=90;
-Fin_Span=130;
-Fin_TipOffset=60;
-Fin_Chamfer_L=40;
-FinInset_Len=10;
 
 Body_OD=ULine102Body_OD;
 Body_ID=ULine102Body_ID;
@@ -175,8 +159,32 @@ Coupler_OD=BT98Body_OD; // fits tight
 Coupler_ID=BT98Body_ID;
 
 // *** 54mm Motor Tube ***
-MotorTube_OD=BT54Body_OD;
-MotorTube_ID=BT54Body_ID;
+MotorTube_OD=BT75Body_OD;
+MotorTube_ID=BT75Body_ID;
+
+nFins=5;
+
+Fin_Post_h=(Body_OD-BT75Body_OD)/2;
+// new smaller fin
+Fin_Root_L=240;
+Fin_Root_W=10;
+Fin_Tip_W=2.0;
+Fin_Tip_L=70;
+Fin_Span=110;
+Fin_TipOffset=40;
+Fin_Chamfer_L=30;
+
+/*
+// original for 102UL
+Fin_Root_L=280;
+Fin_Root_W=10;
+Fin_Tip_W=3.0;
+Fin_Tip_L=90;
+Fin_Span=130;
+Fin_TipOffset=60;
+Fin_Chamfer_L=40;
+FinInset_Len=10;
+/**/
 
 NC_Len=300;
 NC_Tip_r=6;
@@ -191,18 +199,24 @@ ForwardPetalLen=200;
 ForwardTubeLen=310;
 EBay_Len=166;
 AftPetalLen=150;
-MotorTubeLen=24*25.4;
-BodyTubeLen=850;
+MotorTubeLen=16*25.4;
+BodyTubeLen=450;
 
-
+FinInset_Len=10;
 Can_Len=Fin_Root_L+FinInset_Len*2;
 Bolt4Inset=4;
 nLockBalls=6;
 nPetals=3;
 nRopes=6;
-TailCone_Len=65;
+TailCone_Len=35;
 RailGuide_h=Body_OD/2+2;
 R102_RailGuideLen=30;
+
+echo(ForwardTubeLen=ForwardTubeLen);
+echo(BodyTubeLen=BodyTubeLen);
+echo(MotorTubeLen=MotorTubeLen);
+echo(Can_Len=Can_Len);
+echo(Fin_Post_h=Fin_Post_h);
 
 module ShowRocket(ShowInternals=false){
 	FinCan_Z=35;
@@ -288,7 +302,7 @@ module ShowRocket(ShowInternals=false){
 	
 	//*
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j+180/nFins])
-		translate([0,Body_OD/2-Fin_Post_h, Fin_Z]) 
+		translate([0,Body_OD/2, Fin_Z]) 
 			rotate([-90,0,0]) color("Orange") RocketFin();
 	/**/
 	
@@ -339,20 +353,6 @@ module ElectronicsBay(TopOnly=false, BottomOnly=false, ShowDoors=false){
 //ElectronicsBay(TopOnly=false, BottomOnly=false);
 //translate([0,0,16]) CenteringRing(OD=Body_ID, ID=ULine38Body_OD, Thickness=4, nHoles=5);
 
-module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
-	FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=Can_Len, 
-						MotorTube_OD=MotorTube_OD, RailGuide_h=RailGuide_h,
-						Coupler_Len=15, nCouplerBolts=6,
-						nFins=nFins,
-						Fin_Root_W=Fin_Root_W, Fin_Root_L=Fin_Root_L, 
-						Fin_Post_h=Fin_Post_h, Fin_Chamfer_L=Fin_Chamfer_L,
-						Cone_Len=TailCone_Len, Extra_OD=2, RailGuideLen=R102_RailGuideLen,
-						LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly, HasWireHoles=false, 
-						HollowTailcone=true, HollowFinRoots=true, Wall_t=1.2);
-} // FinCan
-
-// FinCan(LowerHalfOnly=false, UpperHalfOnly=false);
-
 module MotorRetainer(){
 	
 	// Extra_ID adjusted for 0.6mm nozzle and 0.4mm layers
@@ -365,64 +365,29 @@ module MotorRetainer(){
 
 // MotorRetainer();
 
-module RocketFin(){
-	
-	TrapFin2(Post_h=Fin_Post_h, Root_L=Fin_Root_L, Tip_L=Fin_Tip_L, Root_W=Fin_Root_W,
-				Tip_W=Fin_Tip_W, Span=Fin_Span, Chamfer_L=Fin_Chamfer_L,
-				TipOffset=Fin_TipOffset,
-				Bisect=false, Bisect_X=0,
-				HasSpar=false, Spar_d=8, Spar_L=100,
-				PrinterBrim_H=0.8, HasSpiralVaseRibs=false);
-	
-} // RocketFin
-
-//RocketFin();
-
-// ***************************************
-
-module SurfaceFinCan(LowerHalfOnly=false, UpperHalfOnly=false){
-	nFins=3;
-	MotorTube_OD=BT75Body_OD;
+module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 	
 	FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=Can_Len, 
 						MotorTube_OD=MotorTube_OD, RailGuide_h=RailGuide_h,
-						Coupler_Len=15, nCouplerBolts=6,
+						Coupler_Len=15, nCouplerBolts=5,
 						HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 						nFins=nFins,
 						Fin_Root_W=Fin_Root_W, Fin_Root_L=Fin_Root_L, 
-						Fin_Post_h=Fin_Post_h, Fin_Chamfer_L=Fin_Chamfer_L,
+						Fin_Post_h=Fin_Post_h-1, Fin_Chamfer_L=Fin_Chamfer_L,
 						Cone_Len=TailCone_Len, Extra_OD=2, RailGuideLen=R102_RailGuideLen,
 						LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly, HasWireHoles=false, 
 						HollowTailcone=true, HollowFinRoots=true, Wall_t=1.2,UseTrapFin3=true);
 					
 
-} // SurfaceFinCan
+} // FinCan
 
-// SurfaceFinCan(LowerHalfOnly=false, UpperHalfOnly=false);
+// FinCan(LowerHalfOnly=false, UpperHalfOnly=false);
 
-module ShowSurfaceFinCan(){
-	FinCan_Z=35;
-	Fin_Z=FinCan_Z+Fin_Root_L/2+FinInset_Len;
-	nFins=3;
-	MotorTube_OD=BT75Body_OD;
-	Fin_Post_h=0; //(Body_OD-BT75Body_OD)/2;
+module RocketFin(){
+	Fillet_r=0; //5;
 	
-	translate([0,0,FinCan_Z]) color("White") SurfaceFinCan();
-	
-
-	for (j=[0:nFins]) rotate([0,0,360/nFins*j+180/nFins])
-		translate([0,Body_OD/2-Fin_Post_h, Fin_Z]) 
-			rotate([-90,0,0]) color("Orange") SurfaceFin();
-}
-
-//ShowSurfaceFinCan();
-
-module SurfaceFin(){
-	Fillet_r=5; //5;
-	Post_H=(Body_OD-BT75Body_OD)/2;
-	
-	translate([0,0,-Post_H])
-	TrapFin3(Post_h=Post_H+Fillet_r-Overlap, Root_L=Fin_Root_L, Tip_L=Fin_Tip_L, Root_W=Fin_Root_W,
+	translate([0,0,-Fin_Post_h])
+	TrapFin3(Post_h=Fin_Post_h+Fillet_r-Overlap, Root_L=Fin_Root_L, Tip_L=Fin_Tip_L, Root_W=Fin_Root_W,
 				Tip_W=Fin_Tip_W, Span=Fin_Span, Chamfer_L=Fin_Chamfer_L,
 				TipOffset=Fin_TipOffset,
 				Bisect=false, Bisect_X=0,
@@ -431,12 +396,35 @@ module SurfaceFin(){
 	
 	if (Fillet_r>0)
 		FilletTest(Root_L=Fin_Root_L, Root_W=Fin_Root_W, Chamfer_L=Fin_Chamfer_L, Tube_d=Body_OD, Fillet_r=Fillet_r);
-} // SurfaceFin
+} // RocketFin
 
-//SurfaceFin();
+//RocketFin();
 
 
+module TestFin(){
+	Fillet_r=5; //5;
+	Fin_Post_h=0; // test
+	Fin_Root_L=150;
+	Fin_Tip_L=50;
+	Fin_Root_W=10;
+	Fin_Tip_W=2;
+	Fin_Span=60;
+	Fin_Chamfer_L=24;
+	Fin_TipOffset=30;
+	
+	translate([0,0,-Fin_Post_h])
+	TrapFin3(Post_h=Fin_Post_h+Fillet_r-Overlap, Root_L=Fin_Root_L, Tip_L=Fin_Tip_L, Root_W=Fin_Root_W,
+				Tip_W=Fin_Tip_W, Span=Fin_Span, Chamfer_L=Fin_Chamfer_L,
+				TipOffset=Fin_TipOffset,
+				Bisect=false, Bisect_X=0,
+				HasSpar=false, Spar_d=8, Spar_L=100,
+				PrinterBrim_H=0.0, HasSpiralVaseRibs=false);
+	
+	if (Fillet_r>0)
+		FilletTest(Root_L=Fin_Root_L, Root_W=Fin_Root_W, Chamfer_L=Fin_Chamfer_L, Tube_d=Body_OD, Fillet_r=Fillet_r);
+} // TestFin
 
+//TestFin();
 
 
 

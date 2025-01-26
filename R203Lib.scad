@@ -122,10 +122,11 @@ module R203_MotorTubeTopper(){
 	ST_DSpring_OD=SE_Spring_CS11890_OD();
 	ST_DSpring_ID=SE_Spring_CS11890_ID();
 	
-	Skirt_Len=30;
+	Skirt_Len=26;
 	nRopes=6;
 	Rope_d=4;
 	RopeHoleBC_r=(MotorTube_OD+8)/2+Rope_d/2+1;
+	OD=Body_ID-0.2; // was -0 too tight
 
 	difference(){
 		union(){
@@ -136,9 +137,9 @@ module R203_MotorTubeTopper(){
 						Len=Skirt_Len+Overlap, myfn=$preview? 36:360);
 			// Outer ring
 			translate([0,0,-Skirt_Len]) 
-				Tube(OD=Body_ID, ID=Body_ID-4.4, Len=Skirt_Len+Overlap, myfn=$preview? 90:720);
+				Tube(OD=OD, ID=OD-4.4, Len=Skirt_Len+Overlap, myfn=$preview? 90:720);
 				
-			CenteringRing(OD=Body_ID, ID=MotorTube_ID-4.4, Thickness=10, nHoles=6, Offset=0, myfn=$preview? 90:720);
+			CenteringRing(OD=OD, ID=MotorTube_ID-4.4, Thickness=10, nHoles=6, Offset=0, myfn=$preview? 90:720);
 			//translate([0,0,4]) 
 			//	Tube(OD=ST_DSpring_OD+8, ID=ST_DSpring_OD, Len=8, myfn=$preview? 36:360);
 			
@@ -157,7 +158,7 @@ module R203_MotorTubeTopper(){
 		//translate([0,0,Al_Tube_Z]) rotate([90,0,0]) cylinder(d=Al_Tube_d+IDXtra, h=Body_OD, center=true);
 		
 		// Rail guide bolts
-		translate([Body_ID/2, 0, -9]) {
+		translate([OD/2, 0, -9]) {
 			translate([0,0,6.35]) rotate([0,90,0]) Bolt6Hole();
 			translate([0,0,-6.35]) rotate([0,90,0]) Bolt6Hole();
 		}
@@ -315,12 +316,15 @@ module R203_SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, HasPD_Ring=f
 
 // R203_SkirtRing();
 
-module R203_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4){
+module R203_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4, nBolts=0){
 	
-	Tube(OD=OD, ID=ID, Len=OA_Len, myfn=$preview? 90:720);
+	
 	
 	translate([0,0,Engagemnet_Len]) difference(){
-		Tube(OD=OD, ID=OD-Wall_t*2, Len=OA_Len-Engagemnet_Len, myfn=$preview? 90:720);
+		union(){
+			Tube(OD=OD, ID=OD-Wall_t*2, Len=OA_Len-Engagemnet_Len, myfn=$preview? 90:720);
+			translate([0,0,-Engagemnet_Len]) Tube(OD=OD, ID=ID, Len=OA_Len, myfn=$preview? 90:720);
+		} // union
 		
 		// Reduce mass by thinning inside
 		A=OA_Len-Engagemnet_Len-18;
@@ -329,10 +333,14 @@ module R203_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7
 			translate([0,0,9-Overlap]) cylinder(d=ID, h=A+Overlap*2, $fn=$preview? 90:720);
 			translate([0,0,9+A]) cylinder(d2=OD-Wall_t*2-Overlap, d1=ID, h=6, $fn=$preview? 90:720);
 		}
+		
+		if (nBolts>0)
+			translate([0,0,-Engagemnet_Len])
+				PD_PetalHubBoltPattern(OD=OD, nBolts=nBolts) Bolt4HeadHole(lHead=15+Engagemnet_Len);
 	} // difference
 } // R203_PusherRing
 
-// rotate([180,0,0]) R203_PusherRing();
+// rotate([180,0,0]) translate([0,0,6.2]) R203_PusherRing(nBolts=7);
 
 
 

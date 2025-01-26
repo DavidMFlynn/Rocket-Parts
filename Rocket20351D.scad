@@ -48,11 +48,13 @@
 /**/
 //
 // R203_SkirtRing(Coupler_OD=Body_ID-BodyTubeAnnulus, Coupler_ID=Coupler_ID, HasPD_Ring=false);
-// rotate([180,0,0]) R203_PusherRing(OD=Body_ID*CF_Comp-BodyTubeAnnulus, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=10, Wall_t=4);
+// rotate([180,0,0]) R203_PusherRing(OD=Body_ID*CF_Comp-BodyTubeAnnulus, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=10, Wall_t=4, nBolts=7);
 //  *** for NC Petal Hub ***
 // rotate([180,0,0]) R203_PusherRing(OD=Body_ID*CF_Comp-BodyTubeAnnulus, ID=Body_ID-BodyTubeAnnulus-4.6, OA_Len=50, Engagemnet_Len=10, Wall_t=4);
 // SE_SlidingBigSpringMiddle(OD=Body_ID-BodyTubeAnnulus, SliderLen=80, Extension=0); // print 2
 // rotate([180,0,0]) SE_SpringEndTypeA(Coupler_OD=Body_ID-BodyTubeAnnulus, Coupler_ID=Coupler_ID, nRopes=6, Spring_OD=SE_Spring_CS11890_OD());
+//  *** for Drogue ***
+// rotate([180,0,0]) R203_PusherRing(OD=Body_ID*CF_Comp-BodyTubeAnnulus, ID=Coupler_ID, OA_Len=75, Engagemnet_Len=7, Wall_t=4, nBolts=0);
 // SE_SpringEndTypeC(Coupler_OD=Body_ID-BodyTubeAnnulus, Coupler_ID=Coupler_ID, nRopes=6, UseSmallSpring=false);
 // CenteringRing(OD=Body_ID, ID=MotorTube_OD, Thickness=10, nHoles=6, Offset=0, myfn=$preview? 90:360);
 // rotate([180,0,0]) R203_MotorTubeTopper();

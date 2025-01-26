@@ -96,7 +96,7 @@
 // SE_SpringTop(OD=Coupler_OD, Piston_Len=50, nRopes=3);
 // SE_SpringEndBottom(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, Len=30, nRopeHoles=3, CutOutCenter=true);
 //
-// SpringSpacer(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, Len=40);
+// SpringSpacer(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, Len=60);
 //
 // UpperRailBtnMount();
 //

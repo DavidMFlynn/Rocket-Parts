@@ -3,7 +3,7 @@
 // Filename: Fins.scad
 // by David M. Flynn
 // Created: 6/11/2022 
-// Revision: 1.1.0  1/19/2025
+// Revision: 1.1.1  1/23/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-function FinsRev()="Fins 1.1.0";
+function FinsRev()="Fins 1.1.1";
 echo(FinsRev());
+// 1.1.1  1/23/2025  Fin fillets
 // 1.1.0  1/19/2025  Added Ogive leading and trailing edge version TrapFin3...
 // 1.0.4  9/5/2024   Added PrinterBrim_H=0.9 parameter to TrapFin2()
 // 1.0.3  8/21/2024  Geometry changed: Orientation is now Y centric, Fin 1 is now 1/2 fin angle from +Y.
@@ -39,6 +40,7 @@ echo(FinsRev());
 // TrapFin2(Post_h=10, Root_L=180, Tip_L=120, Root_W=10, Tip_W=5.0, Span=120, Chamfer_L=18, TipOffset=0, Bisect=false, Bisect_X=0, PrinterBrim_H=0.9, HasSpiralVaseRibs=true);
 //
 /*
+//  *** Ogive leading and trailing edges ***
  TrapFin3(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100, Chamfer_L=18,
 				TipOffset=0, TipInset=0, HasBluntTip=false, TipPost_h=0,
 				Bisect=false, Bisect_X=0,
@@ -57,6 +59,8 @@ echo(FinsRev());
 //  ***** Routines *****
 //
 // Fin_BluntOgiveShape(L=24, W=12, Tip_R=1);
+// Fin_BluntOgiveFillet(L=18, W=10, Tip_R=1, Fillet_Z=4, Fillet_r=4);
+// Fin3Fillet(Root_L=100, Root_W=10, Chamfer_L=20, Tube_d=106, Fillet_r=4);
 //
 // Chamfer(Len=200, Flat=0.5, Chamfer_a=10);
 //
@@ -129,9 +133,10 @@ module Fin_BluntOgiveShape(L=24, W=12, Tip_R=1){
 	// calculate tangent point
 	Yt=(Tip_R*(p-R))/(p-Tip_R);
 	Xt=X0-sqrt(Tip_R*Tip_R-Yt*Yt);
+	
 	//echo(Xt=Xt);
 
-		hull(){
+		//hull(){
 			intersection(){
 				translate([-R,0,0]) square([R*2,L-Xt]);// clip at tangent point, keep first and fourth quadrants only
 				
@@ -141,10 +146,49 @@ module Fin_BluntOgiveShape(L=24, W=12, Tip_R=1){
 			
 			// Tip
 			translate([0, L-X0, 0]) circle(r=Tip_R, $fn=$preview? 90:360);
-		} // hull
+		//} // hull
 	
 } // Fin_BluntOgiveShape
+
+module Fin_BluntOgiveFillet(L=18, W=10, Tip_R=1, Fillet_Z=4, Fillet_r=4){
+	// Spherically blunted tangent ogive
+	function OGiveArcOffset(R=10,L=50)=(R*R+L*L)/(2*R); // p:center of arc = -p+R or p-R
+	function OGiveTipX0(R=10,L=50,Tip_R)=L-sqrt( (OGiveArcOffset(R,L)-Tip_R) * (OGiveArcOffset(R,L)-Tip_R)
+		- (OGiveArcOffset(R,L)-R) * (OGiveArcOffset(R,L)-R)); // X0:End of Ogive portion = L-X0
+		
+	R=W/2;
+	p=OGiveArcOffset(R,L);
+	X0 = OGiveTipX0(R,L,Tip_R); //L-sqrt((p-Tip_R)*(p-Tip_R)-(p-R)*(p-R));
+	Step_a=$preview? 2:0.5;
+	Start_a=0;
+	Stop_a=45;
 	
+	// calculate tangent point
+	Yt=(Tip_R*(p-R))/(p-Tip_R);
+	Xt=X0-sqrt(Tip_R*Tip_R-Yt*Yt);
+	//echo(Xt=Xt);
+
+	Comp=Fillet_r/4; // calculation needed
+	
+	translate([-p+R, 0, Fillet_Z])
+		for (j=[Start_a:Step_a:Stop_a]) hull(){
+			rotate([0,0,j]) translate([p+Comp+Fillet_r,0,0]) sphere(r=Fillet_r+Comp, $fn=90);
+			rotate([0,0,j+Step_a]) translate([p+Comp+Fillet_r,0,0]) sphere(r=Fillet_r+Comp, $fn=90);
+		}
+	
+	translate([p-R, 0, Fillet_Z])
+		for (j=[Start_a:Step_a:Stop_a]) hull(){
+			rotate([0,0,-j]) translate([-p-Comp-Fillet_r,0,0]) sphere(r=Fillet_r+Comp, $fn=90);
+			rotate([0,0,-j-Step_a]) translate([-p-Comp-Fillet_r,0,0]) sphere(r=Fillet_r+Comp, $fn=90);
+		}
+	
+	// Tip
+	translate([0, L-X0, Fillet_Z]) 
+		for (j=[-60:60]) rotate([0,0,j]) translate([0,Fillet_r+Comp+Tip_R,0]) sphere(r=Fillet_r+Comp, $fn=90);
+} // Fin_BluntOgiveFillet
+	
+// Fin_BluntOgiveFillet();
+
 module TrapFin2Tail(Post_h=5, Root_L=150, Root_W=10, Chamfer_L=18){
 	Edge_r=1;
 	
@@ -189,6 +233,71 @@ module TrapFin3Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_
 
 // TrapFin3Slots();
 
+module Fin3Fillet(Root_L=100, Root_W=10, Chamfer_L=20, Tube_d=106, Fillet_r=4){
+	Edge_r=1;
+	
+	difference(){
+		hull(){
+	
+			difference(){
+				
+				translate([0,0,-5])
+				linear_extrude(height=5+Overlap)
+					hull(){
+						translate([0,Root_L/2-Chamfer_L,0]) 
+							Fin_BluntOgiveShape(L=Chamfer_L+Fillet_r*2, W=Root_W+Fillet_r*2, Tip_R=Edge_r);
+						translate([0,-Root_L/2+Chamfer_L,0]) rotate([0,0,180])
+							Fin_BluntOgiveShape(L=Chamfer_L+Fillet_r*2, W=Root_W+Fillet_r*2, Tip_R=Edge_r);
+					} // hull
+					
+				difference(){
+					translate([0,0,-Tube_d/2]) rotate([90,0,0]) cylinder(d=Tube_d+10, h=Root_L+Fillet_r*2+10, center=true, $fn=360);
+					translate([0,0,-Tube_d/2]) rotate([90,0,0]) cylinder(d=Tube_d+Overlap*2, h=Root_L+Fillet_r*2+10, center=true, $fn=360);
+				} // difference
+				
+				translate([0,0,-Tube_d/2]) rotate([90,0,0]) cylinder(d=Tube_d, h=Root_L+Fillet_r*2+10, center=true, $fn=360);
+				
+				
+			} // difference
+	
+	
+			linear_extrude(height=Fillet_r)
+				hull(){
+					translate([0,Root_L/2-Chamfer_L,0]) Fin_BluntOgiveShape(L=Chamfer_L, W=Root_W, Tip_R=Edge_r);
+					translate([0,-Root_L/2+Chamfer_L,0]) rotate([0,0,180]) Fin_BluntOgiveShape(L=Chamfer_L, W=Root_W, Tip_R=Edge_r);
+				} // hull
+
+		} // hull
+		
+		Comp=Fillet_r/4; // calculation needed
+		Fillet_Z=Fillet_r;
+		
+		//*
+		
+		hull(){
+			translate([Root_W/2+Fillet_r+Comp, Root_L/2, Fillet_Z]) sphere(Fillet_r+Comp, $fn=90);
+			translate([Root_W/2+Fillet_r+Comp, -Root_L/2, Fillet_Z]) sphere(Fillet_r+Comp, $fn=90);
+		} // hull
+		
+		hull(){
+			translate([-Root_W/2-Fillet_r-Comp, Root_L/2, Fillet_Z]) sphere(Fillet_r+Comp, $fn=90);
+			translate([-Root_W/2-Fillet_r-Comp, -Root_L/2, Fillet_Z]) sphere(Fillet_r+Comp, $fn=90);
+		} // hull
+		
+		translate([0,Root_L/2-Chamfer_L,0]) 
+			Fin_BluntOgiveFillet(L=Chamfer_L, W=Root_W, Tip_R=Edge_r, Fillet_Z=Fillet_Z, Fillet_r=Fillet_r);
+		
+		translate([0,-Root_L/2+Chamfer_L,0]) mirror([0,1,0]) 
+			Fin_BluntOgiveFillet(L=Chamfer_L, W=Root_W, Tip_R=Edge_r, Fillet_Z=Fillet_Z, Fillet_r=Fillet_r);
+		/**/
+		
+		translate([0,0,-Tube_d/2]) rotate([90,0,0]) cylinder(d=Tube_d, h=Root_L+Fillet_r*2+30, center=true, $fn=360);
+	} // difference
+} // Fin3Fillet
+
+// Fin3Fillet(Root_L=96, Root_W=9, Chamfer_L=19, Tube_d=106, Fillet_r=7);
+// TrapFin3Shape(Post_h=0, Root_L=100, Tip_L=50, Root_W=10, Tip_W=2.0, Span=80, Chamfer_L=20,TipOffset=0, TipInset=0, TipPost_h=0, HasBluntTip=false);
+						
 module TrapFin3Shape(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100, Chamfer_L=18,
 						TipOffset=0, TipInset=0, TipPost_h=0, HasBluntTip=false){
 						

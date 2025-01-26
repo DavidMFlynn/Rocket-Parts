@@ -93,7 +93,8 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 				Fin_Root_W=14, Fin_Root_L=130, Fin_Post_h=14, Fin_Chamfer_L=32,
 				Cone_Len=65, ThreadedTC=true, Extra_OD=0, RailGuideLen=30,
 				LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false, HollowTailcone=false, 
-				HollowFinRoots=false, Wall_t=1.2, OgiveTailCone=false, Ogive_Len=400, OgiveCut_d=BT54Body_OD+8){
+				HollowFinRoots=false, Wall_t=1.2, OgiveTailCone=false, Ogive_Len=400, OgiveCut_d=BT54Body_OD+8,
+				UseTrapFin3=false){
 				
 	FinBox_W=Fin_Root_W+IDXtra*2+Wall_t*2;
 	RailGuideTube_Len=(RailGuideLen-5)*2;
@@ -123,7 +124,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 						Tube(OD=Body_OD-1, ID=Body_ID-4, Len=5, myfn=$preview? 36:360);
 					translate([0,0,Can_Len-5-Overlap]) cylinder(d1=Body_OD-Wall_t*2, d2=Body_ID-5, h=5);
 				} // difference
-			}
+			} // HasIntegratedCoupler
 			
 			if (HasAftIntegratedCoupler){
 				translate([0,0,-Coupler_Len]){
@@ -135,8 +136,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 					Tube(OD=Body_OD-1, ID=Body_ID-4, Len=5, myfn=$preview? 36:360);
 					translate([0,0,-Overlap]) cylinder(d2=Body_OD-Wall_t*2, d1=Body_ID-5, h=5);
 				} // difference
-				
-			}
+			} // HasAftIntegratedCoupler
 			
 			UpperRing_Z=HasIntegratedCoupler? Can_Len+7:Can_Len-3;
 			UpperRing_OD=HasIntegratedCoupler? Body_ID-1:Body_OD-1;
@@ -177,7 +177,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 			
 			//*
 			if (Cone_Len>0)
-			FC2_TailCone(Body_OD=Body_OD, MotorTube_OD=MotorTube_OD, 
+				FC2_TailCone(Body_OD=Body_OD, MotorTube_OD=MotorTube_OD, 
 						nFins=nFins,
 						Fin_Root_W=Fin_Root_W, Fin_Root_L=Fin_Root_L, 
 						Fin_Post_h=Fin_Post_h, Fin_Chamfer_L=Fin_Chamfer_L,
@@ -189,13 +189,14 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 			
 			// Rail guide bolt boss
 			if (RailGuide_h>5)
-			translate([0,0,RailGuide_Z]) 
-				RailGuidePost(OD=Body_OD, MtrTube_OD=MotorTubeHole_d, H=RailGuide_h, 
-					TubeLen=RailGuideTube_Len, Length = RailGuideLen, BoltSpace=12.7, AddTaper=false, Wall_t=Wall_t);
+				translate([0,0,RailGuide_Z]) 
+					RailGuidePost(OD=Body_OD, MtrTube_OD=MotorTubeHole_d, H=RailGuide_h, 
+						TubeLen=RailGuideTube_Len, Length = RailGuideLen, BoltSpace=12.7, AddTaper=false, Wall_t=Wall_t);
 					
 			// Rail button bolt boss
 			if (RailGuide_h==1)
-			translate([0,Body_OD/2,10]) rotate([90,0,0]) cylinder(d=10, h=(Body_OD-MotorTubeHole_d)/2);
+				translate([0,Body_OD/2,10]) rotate([90,0,0]) cylinder(d=10, h=(Body_OD-MotorTubeHole_d)/2);
+			
 		} // union
 	
 		// Body tube bolts
@@ -218,8 +219,13 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 					
 		// Fin Sockets
 		translate([0,0,Fin_Root_L/2+FinInset_Len])
-			TrapFin2Slots(Tube_OD=Body_OD, nFins=nFins, Post_h=Fin_Post_h, 
+			if (UseTrapFin3){
+				TrapFin3Slots(Tube_OD=Body_OD, nFins=nFins, Post_h=Fin_Post_h, 
 					Root_L=Fin_Root_L, Root_W=Fin_Root_W, Chamfer_L=Fin_Chamfer_L);
+			}else{
+				TrapFin2Slots(Tube_OD=Body_OD, nFins=nFins, Post_h=Fin_Post_h, 
+					Root_L=Fin_Root_L, Root_W=Fin_Root_W, Chamfer_L=Fin_Chamfer_L);
+			}
 		
 		// Wire holes for night launch fins w/ LEDs
 		if (HasWireHoles)
@@ -257,7 +263,7 @@ module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 				
 	
 	FinAlignment_Len=0;
-	AftClosure_h=10;
+	AftClosure_h=(MotorTube_OD>60)? 13:10;
 	Retainer_h=2;
 	Nut_Len=Retainer_h+AftClosure_h+10;
 	Tail_r=Body_OD/4; // was 20
@@ -405,7 +411,7 @@ module FC2_MotorRetainer(Body_OD=BT98Body_OD,
 						HasWrenchCuts=false, Cone_Len=65, ExtraLen=0, Extra_OD=0, Extra_ID=0, Ogive=false){
 	
 	
-	AftClosure_h=10;
+	AftClosure_h=(MotorTube_OD>60)? 13:10;
 	Retainer_h=2;
 	Nut_Len=Retainer_h+AftClosure_h+10;
 	Tail_r=Body_OD/4;
@@ -456,6 +462,12 @@ module FC2_MotorRetainer(Body_OD=BT98Body_OD,
 		if ($preview) translate([0,0,-Cone_Len-ExtraLen-1]) cube([50,50,100]);
 	} // difference
 } // FC2_MotorRetainer
+
+/*
+translate([0,0,-0.2]) FC2_MotorRetainer(Body_OD=ULine102Body_OD,
+						MotorTube_OD=BT75Body_OD, MotorTube_ID=BT75Body_ID,
+						HasWrenchCuts=false, Cone_Len=35, ExtraLen=0, Extra_OD=2);
+/**/
 
 /*
 translate([0,0,-0.2]) FC2_MotorRetainer(Body_OD=BT65Body_OD,

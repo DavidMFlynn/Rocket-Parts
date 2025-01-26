@@ -63,6 +63,8 @@
 //
 // EB_Electronics_Bay55(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=EBay_Len, nBolts=6, BoltInset=7.5, ShowDoors=false); // new 8/1/24
 //
+// CenteringRing(OD=Body_ID, ID=BT38Body_OD, Thickness=3, nHoles=8, Offset=0, myfn=$preview? 90:360);
+//
 // rotate([-90,0,0]) EB_AltDoor(Tube_OD=Body_OD);
 // rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD, HasSwitch=false, DoubleBatt=false);
 // rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD, HasSwitch=true, DoubleBatt=true);
@@ -98,6 +100,8 @@
 // rotate([90,0,0]) BoltOnRailGuide(Length = 35, BoltSpace=12.7, RoundEnds=true); // ForwardBoosterLock
 //
 // MotorRetainer(HasWrenchCuts=false, Cone_Len=TailConeLen, ExtraLen=0);
+//
+// BodyDrillingJig(Tube_OD=Body_OD, Tube_ID=Body_ID, nBolts=6, BoltInset=7.5);
 //
 // ***********************************
 //  ***** Routines *****

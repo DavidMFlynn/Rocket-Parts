@@ -242,8 +242,8 @@ module BodyDrillingJig(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, nBolts=5, BoltI
 			rotate([-90,0,0]) Bolt4ClearHole(depth=5);
 			
 		// Second set of holes for fin can
-		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+180/nBolts]) translate([0,Tube_OD/2+4,BoltInset-1.5])
-			rotate([-90,0,0]) Bolt4ClearHole(depth=5);
+		//for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+180/nBolts]) translate([0,Tube_OD/2+4,BoltInset-1.5])
+		//	rotate([-90,0,0]) Bolt4ClearHole(depth=5);
 	} // difference
 } // BodyDrillingJig
 

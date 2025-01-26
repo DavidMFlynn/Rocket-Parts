@@ -16,8 +16,14 @@
 // ******************************************
 //  ***** for STL output *****
 //
+// ForwardClosureProtector();
+// 
 // CaseEnd(Label="75/1280");
 // CaseEnd(Label="75/2560");
+// CaseEnd(Label="75/3840");
+// CaseEnd(Label="75/5120");
+// CaseEnd(Label="75/6400");
+// CaseEnd(Label="75/7680");
 // CaseTube(Len=200);
 // ExtenderTube(Len=134);
 //
@@ -59,6 +65,33 @@ module CaseEnd(Label="75/1280"){
 } // CaseEnd
 
 // CaseEnd();
+
+module ForwardClosureProtector(){
+	OAH=30;
+	Plate_t=3;
+	OD=Case_d+1+4.4;
+	
+	difference(){
+		cylinder(d=OD, h=OAH, $fn=$preview? 90:360);
+		
+		translate([0,0,Plate_t+21]) cylinder(d=Case_d+1, h=OAH, $fn=$preview? 90:360);
+		
+		translate([0,0,Plate_t+9])
+			ExternalThread(Pitch=ThreadPitch, Dia_Nominal=NominalThread_d+IDXtra*4, Length=12, Step_a=Step_a, TrimEnd=true, TrimRoot=true);
+		
+		translate([0,0,Plate_t+18]) cylinder(d=72.5, h=OAH, $fn=$preview? 90:360);
+		translate([0,0,Plate_t]) cylinder(d=70.2, h=OAH, $fn=$preview? 90:360);
+		
+		// Decoration
+		nSegments=12;
+		for (j=[0:nSegments-1]) rotate([0,0,360/nSegments*j]) translate([0,OD/2+2,-Overlap]){
+			cylinder(d=10, h=10);
+			translate([0,0,10]) sphere(d=10);
+		}
+	} // difference
+} // ForwardClosureProtector
+
+// ForwardClosureProtector();
 
 module ExtenderTube(Len=134){
 	Wall_t=1.8;
