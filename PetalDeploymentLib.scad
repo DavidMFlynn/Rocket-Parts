@@ -3,7 +3,7 @@
 // Filename: PetalDeploymentLib.scad
 // by David M. Flynn
 // Created: 10/22/2023 
-// Revision: 0.9.10  12/30/2024
+// Revision: 0.9.12  1/27/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -18,8 +18,10 @@
 //
 //  ***** History *****
 //
-function PetalDeploymentLibRev()="PetalDeploymentLib Rev. 0.9.10";
+function PetalDeploymentLibRev()="PetalDeploymentLib Rev. 0.9.12";
 echo(PetalDeploymentLibRev());
+// 0.9.12  1/27/2025  Added PD_PetalHolder
+// 0.9.11  1/25/2025  Fixed AntiClimber_h position calculation.
 // 0.9.10  12/30/2024 A more robust petal. Added PD_PetalSpringHolder2(), PD_Petals2()
 // 0.9.9  12/16/2024  Added replaceable spring holder.
 // 0.9.8  8/11/2024   Added PD_Booster_PetalHub()
@@ -62,6 +64,10 @@ PD_PetalHub(OD=BT75Coupler_OD,
 //
 // PD_Booster_PetalHub(OD=BT54Coupler_OD, nPetals=2, nRopes=2, ShockCord_a=-1, HasThreadedCore=true, ST_DSpring_ID=SE_Spring_CS4323_ID(), ST_DSpring_OD=SE_Spring_CS4323_OD(), CouplerTube_ID=0)
 //
+//  *** Tools ***
+// PD_PetalHolder(Petal_OD=BT137Coupler_OD, Is_Top=false); // bottom half
+// PD_PetalHolder(Petal_OD=BT137Coupler_OD, Is_Top=true); // top half
+//
 // ***********************************
 //  ***** Routines *****
 //
@@ -87,6 +93,51 @@ Bolt4Inset=4;
 ShockCord_a=45;
 NC_Base=15;
 PetalWidth=15;
+
+module PD_PetalHolder(Petal_OD=BT137Coupler_OD, Is_Top=false){
+	Len=30;
+	
+	difference(){
+		union(){
+			difference(){
+				cylinder(d=Petal_OD+6, h=Len, $fn=$preview? 90:360);
+				// half
+				translate([0,-Petal_OD/2-20,-Overlap]) cube([Petal_OD/2+20, Petal_OD+40, Len+Overlap*2]);
+			} // difference
+			
+			hull(){
+				translate([0,Petal_OD/2+12,0]) cylinder(d=16, h=Len/2-0.2);
+				translate([-16,Petal_OD/2,0]) cylinder(d=10, h=Len/2-0.2);
+			} // hull
+			
+			mirror([0,1,0])
+			hull(){
+				translate([0,Petal_OD/2+12,0]) cylinder(d=16, h=Len/2-0.2);
+				translate([-16,Petal_OD/2,0]) cylinder(d=10, h=Len/2-0.2);
+			} // hull
+		} // union
+		
+		// bolts
+		if (Is_Top){
+			translate([0,Petal_OD/2+12,0]) rotate([180,0,0]) Bolt10HeadHole();
+			mirror([0,1,0])
+				translate([0,Petal_OD/2+12,0]) rotate([180,0,0]) Bolt10HeadHole();
+		}else{
+			
+			translate([0,Petal_OD/2+12,Len/2]) Bolt10Hole();
+			
+			mirror([0,1,0])
+				translate([0,Petal_OD/2+12,Len/2]) Bolt10Hole();
+		}
+		
+		// remove inside
+		translate([0,0,-Overlap]) cylinder(d=Petal_OD, h=Len+Overlap*2, $fn=$preview? 90:360);
+	} // difference
+	
+} // PD_PetalHolder
+
+//PD_PetalHolder();
+//translate([0,0,30]) rotate([0,180,0]) PD_PetalHolder(Is_Top=true);
 
 module PD_PetalLockCatch(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, Len=23, LockStop=true){
 	
@@ -245,7 +296,7 @@ module PD_Petals(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_h
 	AntiClimber_LockComp=HasLocks? 10:0;
 	
 	module AntiClimber(){
-		translate([0.6, -OD/2+1, 0])
+		rotate([0,0,180]) translate([0.6, -OD/2+1, 0])
 		hull(){
 			cube([AntiClimber_w+1.5,Overlap,AntiClimber_L]);
 			translate([AntiClimber_w/2, AntiClimber_h, AntiClimber_h]) 
@@ -276,7 +327,7 @@ module PD_Petals(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_h
 			
 			if (AntiClimber_h>0)
 				for (j=[0:nPetals-1]) 
-					rotate([0,0,360/nPetals*j]) {
+					rotate([0,0,360/nPetals*j+180/nPetals]) {
 						translate([0,0,BaseOffset+Len-AntiClimber_L-AntiClimber_LockComp]){
 							AntiClimber();
 							mirror([1,0,0]) AntiClimber();
@@ -301,7 +352,7 @@ module PD_Petals(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_h
 	} // difference
 } // PD_Petals
 
-//rotate([180,0,0]) PD_Petals(OD=BT75Coupler_OD, Len=110, nPetals=3, AntiClimber_h=3, HasLocks=true, Lock_Span_a=20);
+//rotate([180,0,0]) PD_Petals(OD=BT75Coupler_OD, Len=110, nPetals=5, AntiClimber_h=3, HasLocks=true, Lock_Span_a=20);
 //PD_Petals(OD=BT137Coupler_OD, Len=110, nPetals=3, Wall_t=2.4, AntiClimber_h=5);
 //rotate([180,0,0]) PD_Petals(OD=BT98Coupler_OD, Len=55, nPetals=3, Wall_t=1.8, AntiClimber_h=4, HasLocks=true, Lock_Span_a=120);
 
@@ -315,7 +366,7 @@ module PD_Petals2(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_
 	AntiClimber_LockComp=HasLocks? 10:0;
 	
 	module AntiClimber(){
-		translate([0.6, -OD/2+1, 0])
+		rotate([0,0,180]) translate([0.6, -OD/2+1, 0])
 		hull(){
 			cube([AntiClimber_w+1.5,Overlap,AntiClimber_L]);
 			translate([AntiClimber_w/2, AntiClimber_h, AntiClimber_h]) 
@@ -347,7 +398,7 @@ module PD_Petals2(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_
 			
 			if (AntiClimber_h>0)
 				for (j=[0:nPetals-1]) 
-					rotate([0,0,360/nPetals*j]) {
+					rotate([0,0,360/nPetals*j+180/nPetals]) {
 						translate([0,0,BaseOffset+Len-AntiClimber_L-AntiClimber_LockComp]){
 							AntiClimber();
 							mirror([1,0,0]) AntiClimber();
@@ -371,6 +422,8 @@ module PD_Petals2(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_
 				cube([2, Wall_t*2-2.4, Len+Overlap*2], center=true); // leave 1.2mm
 	} // difference
 } // PD_Petals2
+
+//PD_Petals2(OD=BT137Coupler_OD, Len=100, nPetals=6, Wall_t=1.8, AntiClimber_h=5, HasLocks=false, Lock_Span_a=0);
 
 module WallGrigBox(X=10, Y=15, Z=15, R=1.5, A=0){
 	myfn=24;

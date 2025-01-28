@@ -23,7 +23,7 @@
 //
 // ***********************************
 include<TubesLib.scad>
-use<SpringThingBooster.scad> SpringThingBoosterRev();
+use<SpringThingBooster.scad> echo(SpringThingBoosterRev());
 use<PetalDeploymentLib.scad>
 use<SpringEndsLib.scad>
 
@@ -51,17 +51,39 @@ Coupler_ID=BT137Coupler_ID;
 MotorTube_OD=BT54Body_OD;
 MotorTube_ID=BT54Body_ID;
 
-module R137_PetalHub(Body_OD=Coupler_OD){
+module R137_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=3){
+	
+	
+	Tube(OD=OD, ID=ID, Len=OA_Len, myfn=$preview? 90:720);
+	
+	translate([0,0,Engagemnet_Len]) difference(){
+		Tube(OD=OD, ID=OD-Wall_t*2, Len=OA_Len-Engagemnet_Len, myfn=$preview? 90:720);
+		
+		// Reduce mass by thinning inside
+		A=OA_Len-Engagemnet_Len-18;
+		if (A>0){
+			translate([0,0,3]) cylinder(d1=OD-Wall_t*2-Overlap, d2=ID, h=6, $fn=$preview? 90:720);
+			translate([0,0,9-Overlap]) cylinder(d=ID, h=A+Overlap*2, $fn=$preview? 90:720);
+			translate([0,0,9+A]) cylinder(d2=OD-Wall_t*2-Overlap, d1=ID, h=6, $fn=$preview? 90:720);
+		}
+	} // difference
+} // R137_PusherRing
+
+// rotate([180,0,0]) R137_PusherRing();
+
+module R137_PetalHub(Body_OD=Coupler_OD, CenterHole_d=34){
 	// Bolts to bottom of electronics bay
 	difference(){
-		PD_PetalHub(OD=Coupler_OD, 
-					nPetals=3, 
+		PD_PetalHub(OD=Body_OD, 
+					nPetals=6, 
+					HasReplaceableSpringHolder=true,
 					HasBolts=true,
 					nBolts=6, // Same as nPetals
 					ShockCord_a=-1,
 					HasNCSkirt=false);
-						
-		translate([0,0,-Overlap]) cylinder(d=34,h=10);
+					
+		if (CenterHole_d>0)	
+			translate([0,0,-Overlap]) cylinder(d=CenterHole_d,h=10);
 	} // difference
 } // R137_PetalHub
 

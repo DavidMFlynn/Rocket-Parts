@@ -90,7 +90,6 @@ Alt_DoorXtra_Y=4;
 //  *** Door Angles ***
 // for doors 0° is at 180° (-Y), RailGuide is always at 0° (+Y)
 OneAltBay=[[0],[180],[]]; // One altimeter at 0° and one battery door at 180°
-Big55Bay=[[0,60],[-60,-120],[120,180]]; // Original Bay55
 ToadBay=[[-72,0],[216,144],[72]]; // Alt and Batt for ignition; Alt, Batt and BattSW for deployment; rail guide.
 SimpleOneBattSWBay=[[0],[],[180]];
 SimpleTwoBattSWBay=[[0],[],[120,240]];
@@ -251,18 +250,35 @@ module EB_Electronics_Bay(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, Len=162, nBo
 
 
 module EB_Electronics_Bay55(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, Len=162, nBolts=7, BoltInset=7.5, ShowDoors=false,
-							HasRailGuide=false, RailGuideLen=35){
+							HasRailGuide=false, RailGuideLen=35, TopOnly=false, BottomOnly=false){
 	// Large 2 altimeter electronics bay
+	AltDoorInc_a=27.5;
+	BattDoorInc_a=58.75;
+	Batt2DoorInc_a=62.5;
+	Big55Bay=[[-AltDoorInc_a,AltDoorInc_a],[-AltDoorInc_a-BattDoorInc_a,AltDoorInc_a+BattDoorInc_a],[-AltDoorInc_a-BattDoorInc_a-Batt2DoorInc_a,AltDoorInc_a+BattDoorInc_a+Batt2DoorInc_a]]; // Original Bay55
+
+	EBayCR_t=5;
+	TubeStop_Z=BoltInset*2+EBayCR_t+1.9;
 	
 	if (HasRailGuide==false){
 		EB_Electronics_BayUniversal(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorAngles=Big55Bay, Len=Len, 
 									nBolts=nBolts, BoltInset=BoltInset, ShowDoors=ShowDoors,
-									HasRailGuide=HasRailGuide, RailGuideLen=RailGuideLen);
+									HasRailGuide=HasRailGuide, RailGuideLen=RailGuideLen,
+									Bolted=true, ExtraBolts=[], TopOnly=TopOnly, BottomOnly=BottomOnly);
 	}else{
 		EB_Electronics_BayUniversal(Tube_OD=Tube_OD, Tube_ID=Tube_ID, DoorAngles=ToadBay, Len=Len, 
 									nBolts=nBolts, BoltInset=BoltInset, ShowDoors=ShowDoors,
-									HasRailGuide=HasRailGuide, RailGuideLen=RailGuideLen);
+									HasRailGuide=HasRailGuide, RailGuideLen=RailGuideLen,
+									Bolted=true, ExtraBolts=[], TopOnly=TopOnly, BottomOnly=BottomOnly);
 	}				
+	
+	// Bottom centering ring stop
+	if (!TopOnly) translate([0,0,TubeStop_Z]) 
+		TubeStop(InnerTubeID=Tube_ID-5, OuterTubeOD=Tube_OD-2, myfn=$preview? 36:360);
+		
+	// Top centering ring stop
+	if (!BottomOnly) translate([0,0,Len-TubeStop_Z]) rotate([180,0,0])
+		TubeStop(InnerTubeID=Tube_ID-5, OuterTubeOD=Tube_OD-2, myfn=$preview? 36:360);
 } // EB_Electronics_Bay55
 
 // EB_Electronics_Bay55(Len=170, HasRailGuide=false, RailGuideLen=35);

@@ -38,19 +38,22 @@
 // BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD, L=NC_Len, Base_L=NC_Base_L, nRivets=6, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
 //
 // NC_ShockcordRingDual(Tube_OD=Body_OD+Vinyl_t, Tube_ID=Body_ID, NC_Base_L=NC_Base_L, nRivets=6);
-// SE_SlidingBigSpringMiddle(OD=BT137Coupler_OD, SliderLen=75, Extension=20); // not required
-// PD_NC_PetalHub(OD=Coupler_OD, nPetals=3, nRopes=6, ShockCord_a=-1, HasThreadedCore=false, ST_DSpring_ID=SE_Spring_CS11890_ID(), ST_DSpring_OD=SE_Spring_CS11890_OD(), CouplerTube_ID=Coupler_ID);
 //
+// SE_SlidingBigSpringMiddle(OD=BT137Coupler_OD, SliderLen=60, Extension=0);
+//
+// PD_NC_PetalHub(OD=Coupler_OD, nPetals=6, HasReplaceableSpringHolder=true, nRopes=6, ShockCord_a=-1, HasThreadedCore=false, ST_DSpring_ID=SE_Spring_CS11890_ID(), ST_DSpring_OD=SE_Spring_CS11890_OD(), CouplerTube_ID=Coupler_ID);
+// rotate([180,0,0]) R137_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=40, Engagemnet_Len=10, Wall_t=3);
+
+// PD_HubSpringHolder();
+// rotate([-90,0,0]) PD_PetalSpringHolder2();
+// PD_Petals2(OD=Coupler_OD, Len=180, nPetals=6, Wall_t=2.4, AntiClimber_h=5, HasLocks=false, Lock_Span_a=0);
 //
 // R137_PetalHub(); // Bolts to bottom of electronics bay
 // rotate([-90,0,0]) PD_PetalSpringHolder(OD=Coupler_OD);
-// rotate([180,0,0]) PD_GridPetals(OD=Coupler_OD, Len=180, nPetals=nPetals, Wall_t=1.2);
-// rotate([180,0,0]) PD_GridPetals(OD=Coupler_OD, Len=85, nPetals=nPetals, Wall_t=1.2);
 //
-// rotate([180,0,0]) SE_SpringEndTypeA(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, nRopes=6, Spring_OD=SE_Spring_CS11890_OD());
-//		An end for Spring_CS11890.
-// 		Requires a short piece of coupler tube.
-
+// SE_SpringEndTypeC(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, Len=20, nRopes=6, UseSmallSpring=false);
+// rotate([180,0,0]) R137_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=40, Engagemnet_Len=7, Wall_t=3.5);
+//
 //  ***** Ball Lock *****
 //
 // STB_LockDisk(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls, HasLargeInnerBearing=true);
@@ -60,20 +63,18 @@
 // rotate([180,0,0]) STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nBT137Balls, Body_OD=Body_OD, Engagement_Len=Engagement_Len);
 //
 //  ***** Upper Electronics Bay *****
+// rotate([180,0,0]) EB_Electronics_Bay55(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, Len=EBay_Len, nBolts=6, BoltInset=7.5, ShowDoors=false, HasRailGuide=false, RailGuideLen=35, TopOnly=true, BottomOnly=false); // new 1/26/25
+// EB_Electronics_Bay55(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, Len=EBay_Len, nBolts=6, BoltInset=7.5, ShowDoors=false, HasRailGuide=false, RailGuideLen=35, TopOnly=false, BottomOnly=true); // new 1/26/25
 //
-// EB_Electronics_Bay55(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=EBay_Len, nBolts=6, BoltInset=7.5, ShowDoors=false); // new 8/1/24
-//
-// CenteringRing(OD=Body_ID, ID=BT38Body_OD, Thickness=3, nHoles=8, Offset=0, myfn=$preview? 90:360);
+// CenteringRing(OD=Body_ID, ID=BT38Body_OD, Thickness=5, nHoles=8, Offset=0, myfn=$preview? 90:360);
 //
 // rotate([-90,0,0]) EB_AltDoor(Tube_OD=Body_OD);
 // rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD, HasSwitch=false, DoubleBatt=false);
 // rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD, HasSwitch=true, DoubleBatt=true);
 //
 // * Drogue PetalHub *
-// PD_NC_PetalHub(OD=DrogueInnerTube_OD, nPetals=3, nRopes=6, ShockCord_a=-1, HasThreadedCore=false);
-// rotate([180,0,0]) PD_Petals(OD=DrogueInnerTube_OD, Len=170, nPetals=3, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
-//
-// SE_SlidingSpringMiddle(OD=Coupler_OD, nRopes=6, SliderLen=50, SpLen=50, SpringStop_Z=20, UseSmallSpring=false);
+// R137_PetalHub(Body_OD=Coupler_OD, CenterHole_d=76);
+// PD_Petals2(OD=Coupler_OD, Len=100, nPetals=6, Wall_t=2.4, AntiClimber_h=5, HasLocks=false);
 //
 //
 // ForwardBoosterLock();
@@ -117,8 +118,8 @@
 
 use<AT-RMS-Lib.scad>
 include<TubesLib.scad>
+use<R137Lib.scad>
 use<LD-20MGServoLib.scad>
-use<CablePuller.scad>
 use<BoosterDropperLib.scad>
 use<RailGuide.scad>
 use<Fins.scad>
@@ -184,7 +185,7 @@ LockShaftLen=Body_OD-55.2;
 echo(LockShaftLen=LockShaftLen);
 nServoGearTeeth=28;
 
-EBay_Len=162; // extra short, was 152
+EBay_Len=168; 
 
 //NC_Len=360;
 //NC_Tip_r=15;
@@ -331,27 +332,6 @@ module ShowRocket(ShowInternals=false){
 
 // ShowRocket(ShowInternals=true);
 // ShowRocket(ShowInternals=false);
-
-
-module R137_PetalHub(){
-	// Bolts to bottom of electronics bay
-	difference(){
-		PD_PetalHub(OD=Coupler_OD, 
-					nPetals=3, 
-					HasBolts=true,
-					nBolts=6, // Same as nPetals
-					ShockCord_a=-1,
-					HasNCSkirt=false, 
-						Body_OD=BT75Body_OD,
-						Body_ID=BT75Body_ID,
-						NC_Base=NC_Base_L, 
-						SkirtLen=10);
-						
-		translate([0,0,-Overlap]) cylinder(d=80,h=10);
-	} // difference
-} // R137_PetalHub
-
-// R137_PetalHub();
 
 module R137_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false){
 	// PD_Ring is required to attach the petal hub because 3 balls isn't good enough and 5 won't line up.

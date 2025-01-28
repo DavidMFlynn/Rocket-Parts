@@ -49,7 +49,7 @@ echo(SpringEndsLibRev());
 //		Requires a short piece of coupler tube.
 //
 // SE_SpringEndTypeB(Coupler_OD=BT75Coupler_OD, MotorCoupler_OD=BT54Coupler_OD, nRopes=3, UseSmallSpring=true);
-// SE_SpringEndTypeC(Coupler_OD=BT137Coupler_OD, Coupler_ID=BT137Coupler_ID, nRopes=5, UseSmallSpring=false);
+// SE_SpringEndTypeC(Coupler_OD=BT137Coupler_OD, Coupler_ID=BT137Coupler_ID, Len=25, nRopes=6, UseSmallSpring=false);
 //
 // SE_SlidingBigSpringMiddle(OD=BT137Coupler_OD, SliderLen=50, Extension=0)
 // SE_SlidingSpringMiddle(OD=BT98Coupler_OD, nRopes=6, SliderLen=40, SpLen=40, SpringStop_Z=20, UseSmallSpring=true);
@@ -457,11 +457,11 @@ module SE_SpringEndTypeB(Coupler_OD=BT75Coupler_OD, MotorCoupler_OD=BT54Coupler_
 //SE_SpringEndTypeB();
 //SE_SpringEndTypeB(Coupler_OD=BT137Coupler_OD, MotorCoupler_OD=BT75Coupler_OD, nRopes=6, UseSmallSpring=false);
 
-module SE_SpringEndTypeC(Coupler_OD=BT137Coupler_OD, Coupler_ID=BT137Coupler_ID, nRopes=5, UseSmallSpring=false){
+module SE_SpringEndTypeC(Coupler_OD=BT137Coupler_OD, Coupler_ID=BT137Coupler_ID, Len=25, nRopes=5, UseSmallSpring=false){
 	Spring_OD=UseSmallSpring? Spring_CS4323_OD:Spring_CS11890_OD;
 	Spring_ID=UseSmallSpring? Spring_CS4323_ID:Spring_CS11890_ID;
+	// engagement length = 7
 	
-	Len=25;
 	Rope_BC_r=Spring_OD/2+11;
 	
 	difference(){
