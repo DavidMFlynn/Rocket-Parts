@@ -82,7 +82,7 @@ echo(SpringThingBoosterRev());
 // ***********************************
 //  ***** for STL output *****
 //
-// STB_BallRetainerBottom(Body_ID=BT75Body_ID, Body_OD=BT75Body_ID, nLockBalls=nLockBalls, HasSpringGroove=true, Engagement_Len=20, HasLargeInnerBearing=false, Xtra_r=0.0);
+// STB_BallRetainerBottom(Body_ID=BT75Body_ID, Body_OD=BT75Body_ID, nLockBalls=nLockBalls, Engagement_Len=20, HasLargeInnerBearing=false, Xtra_r=0.0);
 // STB_BallRetainerTop(Outer_OD=PML75Body_OD, Body_OD=BT75Body_ID, nLockBalls=nLockBalls, HasIntegratedCouplerTube=false, nBolts=0, Body_ID=BT75Body_ID, HasSecondServo=false, UsesBigServo=false, Engagement_Len=20, HasLargeInnerBearing=false, Xtra_r=0.0);
 // STB_LockDisk(Body_ID=BT75Body_ID, nLockBalls=nLockBalls, HasLargeInnerBearing=false, Xtra_r=0.0);
 // STB_TubeEnd(Body_ID=BT75Body_ID, nLockBalls=nLockBalls, Body_OD=BT75Body_OD, Engagement_Len=20);
@@ -775,7 +775,7 @@ STB_BallRetainerTop(Body_ID=BT137Body_ID, Outer_OD=BT137Body_OD, Body_OD=BT137Bo
 	/**/		
 
 		
-module STB_BallRetainerBottom(Body_ID=BT75Body_ID, Body_OD=BT75Body_ID, nLockBalls=nLockBalls, HasSpringGroove=true, Engagement_Len=20, HasLargeInnerBearing=false, Xtra_r=0.0){
+module STB_BallRetainerBottom(Body_ID=BT75Body_ID, Body_OD=BT75Body_ID, nLockBalls=nLockBalls, HasSpringGroove=false, Engagement_Len=20, HasLargeInnerBearing=false, Xtra_r=0.0){
 
 	BallPerimeter_d=STB_BallPerimeter_d(Body_ID);
 	Ball_d=STB_LockBall_d(Body_ID);
@@ -881,6 +881,9 @@ module STB_BallRetainerBottom(Body_ID=BT75Body_ID, Body_OD=BT75Body_ID, nLockBal
 			rotate([0,90,0]) cylinder(d=Magnet_d, h=Magnet_h+Overlap*2, center=true);
 	} // difference
 } // STB_BallRetainerBottom
+
+// STB_BallRetainerBottom(Body_ID=BT137Body_ID, Body_OD=BT137Body_ID, nLockBalls=nBT137Balls, HasSpringGroove=false, Engagement_Len=25, HasLargeInnerBearing=true);
+
 /*
 STB_BallRetainerBottom(Body_ID=ULine102Body_ID, Body_OD=ULine102Body_ID, nLockBalls=6, HasSpringGroove=false, Engagement_Len=20, HasLargeInnerBearing=true);
 rotate([0,0,STB_Unlocked_a(ULine102Body_ID)]){

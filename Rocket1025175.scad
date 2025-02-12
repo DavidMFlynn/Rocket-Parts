@@ -383,6 +383,16 @@ module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 
 // FinCan(LowerHalfOnly=false, UpperHalfOnly=false);
 
+module FinCanFix(H=1.2){
+	difference(){
+		FinCan(LowerHalfOnly=false, UpperHalfOnly=true);
+		
+		#translate([0,0,Can_Len/2+H]) cylinder(d=Body_OD+5, h=Can_Len);
+	} // difference
+} // FinCanFix
+
+//FinCanFix();
+
 module RocketFin(){
 	Fillet_r=0; //5;
 	

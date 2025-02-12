@@ -255,7 +255,7 @@ module EB_Electronics_Bay55(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, Len=162,
 	AltDoorInc_a=27.5;
 	BattDoorInc_a=58.75;
 	Batt2DoorInc_a=62.5;
-	Big55Bay=[[-AltDoorInc_a,AltDoorInc_a],[-AltDoorInc_a-BattDoorInc_a,AltDoorInc_a+BattDoorInc_a],[-AltDoorInc_a-BattDoorInc_a-Batt2DoorInc_a,AltDoorInc_a+BattDoorInc_a+Batt2DoorInc_a]]; // Original Bay55
+	Big55Bay=[[-AltDoorInc_a,AltDoorInc_a],[-AltDoorInc_a-BattDoorInc_a-Batt2DoorInc_a,AltDoorInc_a+BattDoorInc_a+Batt2DoorInc_a],[-AltDoorInc_a-BattDoorInc_a,AltDoorInc_a+BattDoorInc_a]]; // Original Bay55
 
 	EBayCR_t=5;
 	TubeStop_Z=BoltInset*2+EBayCR_t+1.9;

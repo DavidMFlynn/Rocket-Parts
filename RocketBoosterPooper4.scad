@@ -56,11 +56,11 @@
 //
 //  ***** Ball Lock *****
 //
-// STB_LockDisk(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls, HasLargeInnerBearing=true);
+// STB_LockDisk(Body_ID=Body_ID, nLockBalls=nLockBalls, HasLargeInnerBearing=true, Xtra_r=0.2);
 // rotate([180,0,0]) RBP4_BallRetainerTop();
 // R137_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=true);
 // R137_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false);
-// rotate([180,0,0]) STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nBT137Balls, Body_OD=Body_OD, Engagement_Len=Engagement_Len);
+// rotate([180,0,0]) STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD, Engagement_Len=Engagement_Len);
 //
 //  ***** Upper Electronics Bay *****
 // rotate([180,0,0]) EB_Electronics_Bay55(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, Len=EBay_Len, nBolts=6, BoltInset=7.5, ShowDoors=false, HasRailGuide=false, RailGuideLen=35, TopOnly=true, BottomOnly=false); // new 1/26/25
@@ -156,8 +156,7 @@ DrogueInnerTube_ID=BT98Coupler_ID;
 UpperEBayTube_OD=BT54Body_OD;
 UpperEBayTube_ID=BT54Body_ID;
 
-nBT137Balls=7;
-BT137BallPerimeter_d=STB_BT137BallPerimeter_d();
+nLockBalls=7;
 Engagement_Len=25;
 
 // *** 54mm Motor Tube ***
@@ -274,7 +273,7 @@ module ShowRocket(ShowInternals=false){
 	//*
 	translate([0,0,FwdTubeEnd_Z+0.2])
 		rotate([180,0,0]) color("Blue")
-			STB_TubeEnd(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls, 
+			STB_TubeEnd(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nLockBalls, 
 						Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=25);
 	/**/
 	
@@ -282,12 +281,12 @@ module ShowRocket(ShowInternals=false){
 	translate([0,0,FwdTubeEnd_Z]) 
 		rotate([180,0,0]) {
 			STB_BallRetainerTop(BallPerimeter_d=BT137BallPerimeter_d, Body_OD=Body_ID, 
-								nLockBalls=nBT137Balls, IntegratedCouplerLenXtra=-19,
+								nLockBalls=nLockBalls, IntegratedCouplerLenXtra=-19,
 								HasIntegratedCouplerTube=true, Body_ID=Body_ID, HasSecondServo=true,
-								UsesBigServo=true, Engagement_Len=25);
+								UsesBigServo=true, Engagement_Len=Engagement_Len);
 			if (ShowInternals)
 				STB_BallRetainerBottom(BallPerimeter_d=BT137BallPerimeter_d, Body_OD=Body_ID,
-								nLockBalls=nBT137Balls, HasSpringGroove=false, Engagement_Len=25);
+								nLockBalls=nLockBalls, HasSpringGroove=false, Engagement_Len=Engagement_Len);
 		}
 	/**/
 	
@@ -343,8 +342,9 @@ module R137_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=fals
 	
 	difference(){
 		union(){
-			STB_BallRetainerBottom(BallPerimeter_d=BT137BallPerimeter_d, Body_OD=Body_ID,
-					nLockBalls=nBT137Balls, HasSpringGroove=false, Engagement_Len=Engagement_Len, HasLargeInnerBearing=true);
+			STB_BallRetainerBottom(Body_ID=Body_ID, Body_OD=Body_ID, nLockBalls=nLockBalls, HasSpringGroove=false, 
+									Engagement_Len=Engagement_Len, HasLargeInnerBearing=true, Xtra_r=0.0);
+			
 				
 		//*
 			if (HasPD_Ring){
@@ -370,7 +370,8 @@ module R137_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=fals
 	} // difference
 } // R137_BallRetainerBottom
 
-//R137_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=true);
+// R137_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=true);
+// R137_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false);
 
 module NC_PetalHub(){
 	BodyTube_L=10;
@@ -402,7 +403,7 @@ module NC_PetalHub(){
 //NC_PetalHub();
 
 module RBP4_BallRetainerTop(){
-	XtraLen=-12;
+	XtraLen=0;
 	Tube_d=12.7;
 	Tube_Z=XtraLen+13+30.15;
 	Tube_a=-30;
@@ -412,12 +413,13 @@ module RBP4_BallRetainerTop(){
 	
 	difference(){
 		union(){
-			STB_BallRetainerTop(BallPerimeter_d=BT137BallPerimeter_d, Outer_OD=Body_OD,
-								Body_OD=Body_ID, nLockBalls=nBT137Balls,
-								HasIntegratedCouplerTube=true, 
-								IntegratedCouplerLenXtra=XtraLen,
-								Body_ID=Body_ID, HasSecondServo=true, UsesBigServo=true,
-								Engagement_Len=25, HasLargeInnerBearing=true);
+			STB_BallRetainerTop(Body_ID=Body_ID, Outer_OD=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls,
+			HasIntegratedCouplerTube=true, nBolts=0,
+			IntegratedCouplerLenXtra=XtraLen,
+				
+			HasSecondServo=true,
+			UsesBigServo=true,
+			Engagement_Len=Engagement_Len, HasLargeInnerBearing=true, Xtra_r=0.0);
 				
 			translate([0,0,XtraLen+13+35.5]) 
 				Tube(OD=Body_ID, ID=Body_ID-6, Len=4, myfn=$preview? 90:360);
@@ -1372,7 +1374,7 @@ module BF_Base(){
 module BF_Base_TubeEnd(){
 	translate([0,0,20]) Tube(OD=BT137BallPerimeter_d+4.5, ID=BT137Body_OD+IDXtra*2, Len=10, myfn=$preview? 90:360);
 	
-	rotate([180,0,0]) STB_TubeEnd(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nBT137Balls, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=25);
+	rotate([180,0,0]) STB_TubeEnd(BallPerimeter_d=BT137BallPerimeter_d, nLockBalls=nLockBalls, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=25);
 } // BF_Base_TubeEnd
 
 // translate([0,0,-201-31-101]) BF_Base_TubeEnd();

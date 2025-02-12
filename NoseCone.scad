@@ -104,9 +104,13 @@ module NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13
 	Spring_ID=Spring_CS4323_ID;
 	
 	
-	module FW_GPS_SW_Hole(a=0){
-		translate([-4,-1.6-1,-1]) 
-			rotate([0,-90+a,0]) cylinder(d=1.7, h=100);
+	module FW_GPS_SW_Hole(){
+		// Switch
+		translate([5,-1.6-1,-1]) 
+			rotate([90,0,0]) cylinder(d=3, h=100);
+			
+		// Terminal block
+		translate([10,0,4]) rotate([0,0,180]) cube([7,10,7]);
 	} // FW_GPS_SW_Hole
 
 
@@ -223,8 +227,10 @@ module NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13
 			} // difference
 		} // union
 		
+		translate([-10,-25, 6]) rotate([-10,0,0]) FW_GPS_SW_Hole();
+		
 		// Nosecone rivets
-		for (j=[0:nRivets-1]) rotate([0,0,360/nRivets*j]) translate([0,-Body_ID/2-1,NC_Base_L/2])
+		for (j=[0:nRivets-1]) rotate([0,0,360/nRivets*j+5]) translate([0,-Body_ID/2-1,NC_Base_L/2])
 			rotate([-90,0,0]){ cylinder(d=Rivet_d, h=10); 
 			translate([0,0,3.2]) cylinder(d=Rivet_d*2, h=6);}
 
