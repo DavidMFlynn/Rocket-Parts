@@ -53,7 +53,7 @@
 // PD_NC_PetalHub(OD=Coupler_OD, nPetals=nPetals, nRopes=3); // for dual deploy only
 // R75_PetalHub(Body_OD=Body_OD, Body_ID=Body_ID); // for bottom of ebay
 // rotate([-90,0,0]) PD_PetalSpringHolder();  // Print 6
-// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=ForwardPetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
+// PD_Petals2(OD=Coupler_OD, Len=ForwardPetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
 // rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=AftPetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
 //
 // SE_SpringEndTop(OD=Coupler_OD, Tube_ID=Coupler_OD-4.4, nRopeHoles=3, CutOutCenter=true);
@@ -152,6 +152,7 @@ use<R75Lib.scad>
 use<PetalDeploymentLib.scad>
 use<ElectronicsBayLib.scad>
 include<Stager75BBLib.scad>
+use<Fins.scad>
 use<FinCan2Lib.scad>
 use<NoseCone.scad>
 use<BatteryHolderLib.scad>
@@ -189,6 +190,8 @@ nBoltsBooster=4;
 nLockBalls=5; // Ball Lock (STB) units
 BallPerimeter_d=Body_OD;
 
+nPetals=3;
+ForwardPetal_Len=150;
 BoosterPetalLen=150;
 
 // 5 smaller fins, from R75D
@@ -367,7 +370,7 @@ module ShowRocket(ShowInternals=true){
 	}
 	
 	translate([0,0,STB_Z+0.1]) 
-		STB_BallRetainerTop(BallPerimeter_d=BallPerimeter_d, Outer_OD=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls, HasIntegratedCouplerTube=true, Body_ID=Body_ID, HasSecondServo=false, UsesBigServo=false, Engagement_Len=20, HasLargeInnerBearing=false);
+		STB_BallRetainerTop(Outer_OD=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls, HasIntegratedCouplerTube=true, Body_ID=Body_ID, HasSecondServo=false, UsesBigServo=false, Engagement_Len=20, HasLargeInnerBearing=false);
 	
 	if (ShowInternals) translate([0,0,STB_Z]) {
 		R75_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=true);
@@ -386,7 +389,7 @@ module ShowRocket(ShowInternals=true){
 	}
 
 	if (ShowInternals==false) translate([0,0,STB_Z]) 
-		STB_TubeEnd2(BallPerimeter_d=BallPerimeter_d, nLockBalls=nLockBalls, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=20);
+		STB_TubeEnd(nLockBalls=nLockBalls, Body_OD=Body_OD, Body_ID=Body_ID, Engagement_Len=20);
 
 		
 	translate([0,0,LowerEBay_Z]) rotate([0,0,-90])
@@ -407,7 +410,7 @@ module ShowRocket(ShowInternals=true){
 		
 		color("White") SustainerFinCan();
 		
-		translate([0,0,-22.1]) Stager_Cup(Tube_OD=Body_OD, ID=BT54Body_ID, nLocks=nLocks, BoltsOn=true);
+		translate([0,0,-22.1]) Stager_Cup(Tube_OD=Body_OD, nLocks=nLocks, BoltsOn=true);
 		if (ShowInternals) translate([0,0,-12]) ATRMS_54_1280_Motor(Extended=false, HasEyeBolt=true);
 		
 		
@@ -425,7 +428,7 @@ module ShowRocket(ShowInternals=true){
 
 module Nosecone(){
 	BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=NC_Len, 
-			Base_L=NC_Base_L, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
+			Base_L=NC_Base_L, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t);
 	
 } // Nosecone
 
@@ -487,7 +490,7 @@ module SustainerFinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 			cylinder(d=6, h=Sustainer_Fin_Root_L+70);
 			
 		// Booster attachment
-		translate([0,0,-20]) rotate([0,0,10]) Stager_CupHoles(Tube_OD=Body_OD, ID=Stager_ID, nLocks=3);
+		translate([0,0,-20]) rotate([0,0,10]) Stager_CupHoles(Tube_OD=Body_OD, nLocks=3,BoltsOn=true, Collar_h=DefaultCollarLen);
 		
 	} // difference
 	

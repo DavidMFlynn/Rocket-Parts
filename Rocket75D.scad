@@ -104,7 +104,7 @@ DualDeploy=true;
 // PD_NC_PetalHub(OD=Coupler_OD, nPetals=nPetals, nRopes=3); // for dual deploy only
 // R75_PetalHub(Body_OD=Body_OD, Body_ID=Body_ID); // for bottom of ebay
 // rotate([-90,0,0]) PD_PetalSpringHolder();  // Print 6
-// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=ForwardPetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
+// PD_Petals2(OD=Coupler_OD, Len=ForwardPetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
 // rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=AftPetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
 // rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=75, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=0, HasLocks=false);
 //
@@ -127,8 +127,7 @@ DualDeploy=true;
 // *** Fin Can ***
 //
 // rotate([180,0,0]) Rocket75D_Fincan(LowerHalfOnly=false, UpperHalfOnly=false);
-// 
-rotate([180,0,0]) Rocket75D_Fincan(LowerHalfOnly=true, UpperHalfOnly=false, Hollow=true);
+// rotate([180,0,0]) Rocket75D_Fincan(LowerHalfOnly=true, UpperHalfOnly=false, Hollow=true);
 //
 // Rocket75D_MotorRetainer();
 //
@@ -215,7 +214,7 @@ nPetals=3;
 nLockBalls=5;
 RailGuideLen=35;
 
-ForwardPetal_Len=200; // Main 'chute and lots of shock cord
+ForwardPetal_Len=180; // Main 'chute and lots of shock cord
 AftPetal_Len=150; // Drogue
 B_Petal_Len=120;
 

@@ -106,7 +106,7 @@
 // rotate([180,0,0]) R102UL_LowerSpringBottom();
 //
 // Spacer
-// Tube(OD=Body_ID-BodyTubeAnnulus, ID=Body_ID-BodyTubeAnnulus-2.4, Len=125, myfn=$preview? 90:360); // 2 req.
+// Tube(OD=Body_ID-BodyTubeAnnulus, ID=Body_ID-BodyTubeAnnulus-2.4, Len=60, myfn=$preview? 90:360);
 //
 // *** Fin Can ***
 //

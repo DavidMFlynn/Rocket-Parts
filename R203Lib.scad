@@ -53,6 +53,7 @@ Coupler_ID=ULine203Coupler_ID;
 MotorTube_OD=BT75Body_OD;
 MotorTube_ID=BT75Body_ID;
 
+BodyTubeAnnulus=1.30; // for sliders
 
 module R203_NC_PetalHub(OD=Body_ID-BodyTubeAnnulus, nPetals=nPetals, CouplerTube_ID=Coupler_ID){
 	nRopes=nPetals;
@@ -107,6 +108,36 @@ module R203_NC_PetalHub(OD=Body_ID-BodyTubeAnnulus, nPetals=nPetals, CouplerTube
 } // R203_NC_PetalHub
 
 // R203_NC_PetalHub();
+
+module R203_SpringXtender(Len=60){
+	Spring_ID=SE_Spring_CS11890_ID();
+	Spring_OD=SE_Spring_CS11890_OD();
+	SpringHole_ID=Spring_ID-IDXtra*2-4.4;
+	CenterHole_d=SpringHole_ID;
+
+	difference(){
+		union(){
+			cylinder(d=Spring_OD+10, h=Len, $fn=$preview? 90:360);
+			
+			translate([0,0,Len-Overlap]) cylinder(d=Spring_OD-IDXtra, h=10, $fn=$preview? 90:360);
+			translate([0,0,Len-Overlap]) cylinder(d1=Spring_OD+5, d2=Spring_OD, h=5, $fn=$preview? 90:360);
+		} // union
+		
+		// Center Hole
+		translate([0,0,-Overlap]) 
+			cylinder(d=SpringHole_ID, h=Len+10+Overlap*2, $fn=$preview? 90:360);
+		translate([0,0,-Overlap]) 
+			cylinder(d=CenterHole_d, h=10, $fn=$preview? 90:360);
+			
+		translate([0,0,-Overlap]) 
+			cylinder(d=Spring_OD, h=10, $fn=$preview? 90:360);
+		translate([0,0,-Overlap]) 
+			cylinder(d1=Spring_OD+5, d2=Spring_OD, h=5, $fn=$preview? 90:360);
+
+	} // difference
+} // R203_SpringXtender
+
+//R203_SpringXtender();
 
 module R203_MotorTubeTopper(){
 // Z zero is top of motor tube

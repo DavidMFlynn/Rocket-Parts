@@ -238,6 +238,12 @@ module P_ShapeTest(Diameter=14*25.4, nPanels=6, CenterHole_d=2.5*25.4, SeamAllow
 } // P_ShapeTest
 
 //P_ShapeTest();
+/*
+offset(delta=6) difference(){
+	P_ShapeTest(Diameter=110*25.4, nPanels=24, CenterHole_d=12*25.4, SeamAllowance=0);
+	translate([-200,0,0]) square([400,800]);
+}
+
 
 /**/
 

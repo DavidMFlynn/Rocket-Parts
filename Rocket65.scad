@@ -96,7 +96,7 @@
 // SE_SpringTop(OD=Coupler_OD, Piston_Len=50, nRopes=3);
 // SE_SpringEndBottom(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, Len=30, nRopeHoles=3, CutOutCenter=true);
 //
-// SpringSpacer(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, Len=60);
+// SpringSpacer(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, Len=30);
 //
 // UpperRailBtnMount();
 //
@@ -148,7 +148,8 @@ Fin_TipOffset=20;
 Fin_Chamfer_L=18;
 FinInset_Len=5;
 
-Body_OD=LOC65Body_OD;
+//Body_OD=LOC65Body_OD;
+Body_OD=Estes65Body_OD;
 Body_ID=LOC65Body_ID;
 Coupler_OD=LOC65Coupler_OD;
 Coupler_ID=LOC65Coupler_ID;
@@ -291,7 +292,8 @@ module UpperRailBtnMount(){
 
 				
 module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
-	Wall_t=1.2;
+	//Wall_t=1.2; // Normal for LOC tube
+	Wall_t=0.9; // thin for estes tube
 	
 	FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=Can_Len,
 				MotorTube_OD=MotorTube_OD, RailGuide_h=1, RailGuide_z=0,
