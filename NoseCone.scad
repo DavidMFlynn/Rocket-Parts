@@ -668,6 +668,7 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, Tip_R=5, Ha
 					hull(){
 						translate([0,0,Tip_Z-Wall_T]) sphere(r=Tip_R-Wall_T, $fn=$preview? 36:90);
 						translate([0,0,Tip_Z-Wall_T*3]) sphere(r=Tip_R, $fn=$preview? 36:90);
+						translate([0,0,Tip_Z-Wall_T*5]) sphere(r=Tip_R+Wall_T*2, $fn=$preview? 36:90); // added 4/18/25
 					} // hull
 				} // difference
 				

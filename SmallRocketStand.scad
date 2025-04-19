@@ -115,17 +115,45 @@ rotate([0,0,180]) rotate([0,0,30]) translate([0,-15,8]) PrepStand_RocketArm();
 translate([0,0,180]) rotate([0,0,30]) rotate([90,0,0]) cylinder(d=203, h=50);
 /**/
 module PrepStand_Leg(){
+	// old
+	
 	hull(){
 		translate([PrepStand_BaseSpan/2,0,0]) cube([30,30,3]);
 		translate([PrepStand_Hub_d/2,0,50]) cube([3,30,50]);
 	} // hull
+		
+	translate([PrepStand_Hub_d/2-4,0,50]) cube([4+Overlap,30,50]);
+	translate([PrepStand_Hub_d/2-8,0,46]) cube([4+Overlap,30,58]);
+	
+} // PrepStand_Leg
+
+//rotate([90,0,0]) 
+PrepStand_Leg();
+
+module PrepStand_Leg2(){
+	module LegShape(){
+		
+	} // LegShape
+	
+	difference(){
+		hull(){
+			translate([PrepStand_BaseSpan/2,0,0]) cube([30,30,3]);
+			translate([PrepStand_Hub_d/2,0,50]) cube([3,30,50]);
+		} // hull
+		
+		translate([PrepStand_Hub_d/2,-Overlap,53]) cube([3+Overlap,30+Overlap*2,44]);
+		hull(){
+			translate([PrepStand_BaseSpan/2,-Overlap,3]) cube([24,30+Overlap*2,Overlap]);
+			translate([PrepStand_Hub_d/2+3,-Overlap,53]) cube([Overlap,30+Overlap*2,44]);
+		} // hull
+	} // difference
+	
+	
 	translate([PrepStand_Hub_d/2-4,0,50]) cube([4+Overlap,30,50]);
 	translate([PrepStand_Hub_d/2-8,0,46]) cube([4+Overlap,30,58]);
 	
 	
-} // PrepStand_Leg
-
-//rotate([90,0,0]) PrepStand_Leg();
+} // PrepStand_Leg2
 
 module PrepStand_RocketArm(){
 	Len=150;
