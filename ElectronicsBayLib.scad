@@ -58,9 +58,9 @@ EB_Electronics_BayUniversal(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, DoorAngl
 /**/
 //
 //  *** Doors ***
-// rotate([-90,0,0]) EB_AltDoor(Tube_OD=BT98Body_OD);
-// rotate([-90,0,0]) EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=false, DoubleBatt=false);
-// rotate([-90,0,0]) EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=true, DoubleBatt=false);
+// rotate([-90,0,0]) EB_AltDoor(Tube_OD=BT98Body_OD, BlankDoor=false);
+// rotate([-90,0,0]) EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=false, DoubleBatt=false, BlankDoor=false);
+// rotate([-90,0,0]) EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=true, DoubleBatt=false, BlankDoor=false);
 //
 // ***********************************
 //  ***** Routines *****
@@ -99,14 +99,14 @@ AltBattTwoBattSWBay=[[0],[90],[180,270]]; //Alt, Batt, BattSW, BattSW
 function EB_BattDoor_X(Tube_OD=BT137Body_OD)=Tube_OD>70? BattDoorX():BattDoorX()-4;
 
 	
-module EB_AltDoor(Tube_OD=BT98Body_OD){
-	AltDoor54(Tube_OD=Tube_OD, IsLoProfile=false, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowAlt=true);
+module EB_AltDoor(Tube_OD=BT98Body_OD, BlankDoor=false){
+	AltDoor54(Tube_OD=Tube_OD, IsLoProfile=false, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowAlt=true, BlankDoor=BlankDoor);
 } // EB_AltDoor
 
 //EB_AltDoor(Tube_OD=BT98Body_OD);
 
-module EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=false, DoubleBatt=false){
-	Batt_Door(Tube_OD=Tube_OD, Door_X=EB_BattDoor_X(Tube_OD=Tube_OD), InnerTube_OD=0, HasSwitch=HasSwitch, DoubleBatt=DoubleBatt);
+module EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=false, DoubleBatt=false, BlankDoor=false){
+	Batt_Door(Tube_OD=Tube_OD, Door_X=EB_BattDoor_X(Tube_OD=Tube_OD), InnerTube_OD=0, HasSwitch=HasSwitch, DoubleBatt=DoubleBatt, BlankDoor=BlankDoor);
 } // EB_BattDoor
 
 //EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=false);
@@ -283,6 +283,22 @@ module EB_Electronics_Bay55(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, Len=162,
 
 // EB_Electronics_Bay55(Len=170, HasRailGuide=false, RailGuideLen=35);
 
+module EB_AltDoorFrameHole(Tube_OD=Tube_OD){
+	Alt_BayFrameHole(Tube_OD=Tube_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
+} // EB_AltDoorFrameHole
+		
+module EB_AltDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, ShowDoors=false){
+	Alt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, 
+			DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=ShowDoors);
+} // EB_AltDoorFrame
+			
+module EB_BattDoorFrameHole(Tube_OD=Tube_OD, HasSwitch=false){
+	Batt_BayFrameHole(Tube_OD=Tube_OD, Door_X=EB_BattDoor_X(Tube_OD=Tube_OD), HasSwitch=HasSwitch);
+} // EB_BattDoorFrameHole
+
+module EB_BattDoorFrame(Tube_OD=Tube_OD, HasSwitch=false, ShowDoors=false){
+	Batt_BayDoorFrame(Tube_OD=Tube_OD, Door_X=EB_BattDoor_X(Tube_OD=Tube_OD), HasSwitch=HasSwitch, ShowDoor=ShowDoors);
+} // EB_BattDoorFrame
 
 module EB_Electronics_BayUniversal(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, DoorAngles=OneAltBay, Len=170, 
 									nBolts=6, BoltInset=7.5, ShowDoors=false,
@@ -399,18 +415,14 @@ module EB_Electronics_BayUniversal(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, D
 		
 		// Altimeter(s)
 		for (j=AltDoorAngles)
-		translate([0,0,Altimeter_Z]) rotate([0,0,j]) 
-			Alt_BayFrameHole(Tube_OD=Tube_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y);
-
+			translate([0,0,Altimeter_Z]) rotate([0,0,j]) EB_AltDoorFrameHole(Tube_OD=Tube_OD);
+		
 		// Battery and Switch door holes
 		for (j=BattDoorAngles)
-		translate([0,0,BattSwDoor_Z]) rotate([0,0,j]) 
-			Batt_BayFrameHole(Tube_OD=Tube_OD, Door_X=EB_BattDoor_X(Tube_OD=Tube_OD), HasSwitch=false);
+			translate([0,0,BattSwDoor_Z]) rotate([0,0,j]) EB_BattDoorFrameHole(Tube_OD=Tube_OD, HasSwitch=false);
 		
 		for (j=BattSWDoorAngles)
-		translate([0,0,BattSwDoor_Z]) rotate([0,0,j]) 
-			Batt_BayFrameHole(Tube_OD=Tube_OD, Door_X=EB_BattDoor_X(Tube_OD=Tube_OD), HasSwitch=true);
-		
+			translate([0,0,BattSwDoor_Z]) rotate([0,0,j]) EB_BattDoorFrameHole(Tube_OD=Tube_OD, HasSwitch=true);		
 		
 		//Bolt holes for nosecone and ball lock
 		if (nBolts>0)
@@ -431,18 +443,15 @@ module EB_Electronics_BayUniversal(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, D
 		union(){
 			// Altimeter
 			for (j=AltDoorAngles)
-			translate([0,0,Altimeter_Z]) rotate([0,0,j])
-				Alt_BayDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, 
-						DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=ShowDoors);
+				translate([0,0,Altimeter_Z]) rotate([0,0,j]) EB_AltDoorFrame(Tube_OD=Tube_OD, Tube_ID=Tube_ID, ShowDoors=ShowDoors);
 			
 			// Battery and Switch doors
 			for (j=BattDoorAngles)
-			translate([0,0,BattSwDoor_Z]) rotate([0,0,j]) 
-				Batt_BayDoorFrame(Tube_OD=Tube_OD, Door_X=EB_BattDoor_X(Tube_OD=Tube_OD), HasSwitch=false, ShowDoor=ShowDoors);
-
+				translate([0,0,BattSwDoor_Z]) rotate([0,0,j]) EB_BattDoorFrame(Tube_OD=Tube_OD, HasSwitch=false, ShowDoors=ShowDoors);
+			
 			for (j=BattSWDoorAngles)
-			translate([0,0,BattSwDoor_Z]) rotate([0,0,j]) 
-				Batt_BayDoorFrame(Tube_OD=Tube_OD, Door_X=EB_BattDoor_X(Tube_OD=Tube_OD), HasSwitch=true, ShowDoor=ShowDoors);
+				translate([0,0,BattSwDoor_Z]) rotate([0,0,j]) EB_BattDoorFrame(Tube_OD=Tube_OD, HasSwitch=true, ShowDoors=ShowDoors);
+				
 		} // union
 		
 		if (TopOnly) translate([0,0,-10]) cylinder(d=Tube_OD+10, h=Len/2+10);

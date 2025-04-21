@@ -269,7 +269,7 @@ module AltBay54(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Tube_Len=136, DoorXt
 //AltBay54(ShowDoor=false);
 //AltBay54(Tube_OD=PML75Body_OD, Tube_ID=PML75Body_ID, Tube_Len=136, DoorXtra_X=2, DoorXtra_Y=2, ShowDoor=true);
 
-module AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false, DoorXtra_X=0, DoorXtra_Y=0, ShowAlt=true){
+module AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false, DoorXtra_X=0, DoorXtra_Y=0, ShowAlt=true, BlankDoor=false){
 	Door_Y=Alt54Door_Y+DoorXtra_Y;
 	Door_X=Alt54Door_X+DoorXtra_X;
 	Door_t=AltDoorThickness-0.7;
@@ -283,6 +283,7 @@ module AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false, DoorXtra_X=0, DoorXtra
 			Door(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t, Tube_OD=Tube_OD,
 					HasSixBolts=true, HasBoltHoles=false);
 		
+			if (!BlankDoor)
 			intersection(){
 				
 				translate([0,0,-Door_Y/2])
@@ -303,6 +304,8 @@ module AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false, DoorXtra_X=0, DoorXtra
 	
 		// PCB parts
 		
+		if (!BlankDoor){
+		
 		// Pressure transducer
 		translate([0, -Tube_OD/2+Door_t+BoltBossInset, -Door_Y/2+AltOffset_Y]) {
 			rotate([90,0,0]) translate([-11,27,0]) cube([12,14,11],center=true);
@@ -316,17 +319,18 @@ module AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false, DoorXtra_X=0, DoorXtra
 			translate([0,0,AltArmingScrew_Y]) rotate([90,0,0]) cylinder(d=5, h=Tube_OD);
 			translate([0,0,AltLED_Y]) rotate([90,0,0]) cylinder(d=5, h=Tube_OD);
 		}
+		} // if
 
 		// mounting bolts
 		translate([0, -Tube_OD/2, Door_Y/2-4]) rotate([90,0,0]) Bolt4ClearHole();
 		translate([0, -Tube_OD/2, -Door_Y/2+4]) rotate([90,0,0]) Bolt4ClearHole();
 	} // difference
 
-	if ($preview) translate([0,-Tube_OD/2+Door_t+BoltBossInset+1.6,0]) rotate([90,0,0]) AltPCB();
+	if ($preview && ShowAlt && !BlankDoor) translate([0,-Tube_OD/2+Door_t+BoltBossInset+1.6,0]) rotate([90,0,0]) AltPCB();
 } // AltDoor54
 
 //rotate([90,0,0]) AltDoor54(Tube_OD=PML54Body_OD, IsLoProfile=false);
-//rotate([180,0,0]) AltDoor54(Tube_OD=PML98Body_OD, IsLoProfile=true);
+//rotate([180,0,0]) AltDoor54(Tube_OD=PML98Body_OD, IsLoProfile=false, BlankDoor=true);
 
 module UpperRailButtonPost(Body_OD=PML54Body_OD, Body_ID=PML54Body_ID, MtrTube_OD=PML38Body_OD, Extend=5){
 		

@@ -3,7 +3,7 @@
 // Filename: NoseCone.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.19  12/20/2024
+// Revision: 0.9.20  4/19/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-function NoseConeRev()="NoseCone Rev. 0.9.19";
+function NoseConeRev()="NoseCone Rev. 0.9.20";
 echo(NoseConeRev());
+// 0.9.20  4/19/2025  Added UseHardSpring option to NC_ShockcordRingDual
 // 0.9.19  12/20/2024 Added function Ogive_Cut_Z(), added FillTip parameter to BluntOgiveNoseCone()
 // 0.9.18  12/19/2024 Fix the two part nose cone problem?, In BluntOgiveNoseCone() the cut parameter has been changed to Cut_d
 // 0.9.17  12/18/2024 Added OgiveTailConeShape() and OgiveTailCone()
@@ -39,7 +40,7 @@ echo(NoseConeRev());
 //  ***** for STL output *****
 // NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13);
 // NC_ShockcordRingDual(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, NC_ID=0, NC_Base_L=25, nRivets=6, nBolts=0, Flat=false);
-// NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_ID=0, NC_Base_L=15, nRivets=3, nBolts=0, Flat=false);
+// NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_ID=0, NC_Base_L=20, nRivets=3, nBolts=0, Flat=false, UseHardSpring=false);
 //
 // BluntConeNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=180, Base_L=21, nRivets=3, Tip_R=15, HasThreadedTip=false, Wall_T=3);
 // OgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=170, Base_L=21, Wall_T=3);
@@ -260,7 +261,7 @@ module NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13
 //NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13);
 //NC_ShockcordRing75(Body_OD=BT65Body_OD, Body_ID=BT65Body_ID, NC_Base_L=13);
 
-module NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_ID=0, NC_Base_L=20, nRivets=3, nBolts=0, Flat=false){
+module NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_ID=0, NC_Base_L=20, nRivets=3, nBolts=0, Flat=false, UseHardSpring=false){
 	// Connects nosecone to deployment tube
 	// Has aluminum tube shock cord mount
 	// Has spring end and resess for spring into nosecone
@@ -282,6 +283,7 @@ module NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_ID=0, N
 	Spring_CS4323_ID=40.50;
 	Spring_CS4323_CBL=22; // coil bound length
 	Spring_CS4323_FL=200; // free length
+	
 	Nosecone_ID=(NC_ID==0)? Tube_ID-IDXtra*2:NC_ID-IDXtra*2;
 
 	Plate_t=(Tube_OD>130)? 10:6;
@@ -290,10 +292,13 @@ module NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_ID=0, N
 	Tube_d=12.7;
 	Tube_Z=30;
 	CR_z=-3;
-	Spring_OD=(Tube_OD>110)? Spring_CS11890_OD:Spring_CS4323_OD;
+	
+	Std_Spring_OD=(Tube_OD>110)? Spring_CS11890_OD:Spring_CS4323_OD;
+	Spring_OD=UseHardSpring? Spring_CS4009_OD:Std_Spring_OD;
+	
 	BodyTube_L=15;
 	SpringEnd_Z=Tube_Z-Tube_d/2-3;
-	SpringSplice_OD=Spring_OD+10;
+	SpringSplice_OD=Spring_OD+3;
 	
 	Mod_Z=Flat? 13:0;
 	ID=Nosecone_ID-4.4;
