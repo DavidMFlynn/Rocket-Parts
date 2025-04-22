@@ -79,8 +79,8 @@
 // *** Ball Lock ***
 //
 // BallRetainerBottom();
-// STB_BallRetainerTop(Outer_OD=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls, HasIntegratedCouplerTube=true, nBolts=nEBay_Bolts, Body_ID=Body_ID, HasSecondServo=true, UsesBigServo=true, Engagement_Len=Engagement_Len, HasLargeInnerBearing=true, Xtra_r=0.2);
-// STB_LockDisk(Body_ID=Body_ID, nLockBalls=nLockBalls, HasLargeInnerBearing=true);
+// rotate([180,0,0]) STB_BallRetainerTop(Outer_OD=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls, HasIntegratedCouplerTube=true, nBolts=nEBay_Bolts, Body_ID=Body_ID, HasSecondServo=true, UsesBigServo=true, Engagement_Len=Engagement_Len, HasLargeInnerBearing=true, Xtra_r=STB_Xtra_r);
+// STB_LockDisk(Body_ID=Body_ID, nLockBalls=nLockBalls, HasLargeInnerBearing=true, Xtra_r=STB_Xtra_r);
 // rotate([180,0,0]) STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD, Engagement_Len=Engagement_Len);
 //
 //
@@ -164,7 +164,7 @@ RailGuideLen=40;
 
 LowerPusherRingLen=50;
 UpperPusherRingLen=125;
-
+STB_Xtra_r=0.3;
 	
 EBayBoltInset=7.5;
 EBayCR_t=3;
@@ -385,7 +385,7 @@ module PusherBoltPattern(){
 
 module BallRetainerBottom(){
 	difference(){
-		STB_BallRetainerBottom(Body_ID=Body_ID, Body_OD=Body_ID, nLockBalls=nLockBalls, Engagement_Len=Engagement_Len, HasLargeInnerBearing=true, Xtra_r=0.2);
+		STB_BallRetainerBottom(Body_ID=Body_ID, Body_OD=Body_ID, nLockBalls=nLockBalls, Engagement_Len=Engagement_Len, HasLargeInnerBearing=true, Xtra_r=STB_Xtra_r);
 		
 		translate([0,0,-Engagement_Len/2]) PusherBoltPattern() rotate([180,0,0]) Bolt4Hole(depth=Engagement_Len/2+2);
 			
@@ -515,18 +515,18 @@ module MotorRetainer(){
 	Motor_OD=75.5;
 	MotorRetainer_OD=90;
 	MotorStop_Len=4;
-	MotorStop_Z=AftClosure_Len+4;
-	OAL=AftClosure_Len+MotorStop_Len+15+4;
-	SnapRing_w=2;
+	MotorStop_Z=AftClosure_Len+6;
+	SnapRing_w=3.6;
+	OAL=AftClosure_Len+MotorStop_Len+15+4+SnapRing_w;
 	
 	
 	difference(){
 		cylinder(d=MotorRetainer_OD, h=OAL, $fn=$preview? 90:360);
 		
 	
-		translate([0,0,MotorStop_Z+MotorStop_Len]) cylinder(d=MotorTube_OD+IDXtra*2, h=OAL, $fn=$preview? 90:360);
+		translate([0,0,MotorStop_Z+MotorStop_Len]) cylinder(d=MotorTube_OD+IDXtra*3, h=OAL, $fn=$preview? 90:360);
 		translate([0,0,MotorStop_Z-Overlap]) cylinder(d=Motor_OD+IDXtra*3, h=OAL, $fn=$preview? 90:360);
-		translate([0,0,-Overlap]) cylinder(d=AftClosure_OD+IDXtra*3, h=MotorStop_Z+Overlap, $fn=$preview? 90:360);
+		translate([0,0,-Overlap]) cylinder(d=AftClosure_OD+IDXtra*4, h=MotorStop_Z+Overlap, $fn=$preview? 90:360);
 		
 		// Snap ring
 		translate([0,0,MotorStop_Z-AftClosure_Len]) cylinder(d1=AftClosure_OD+3, d2=AftClosure_OD+IDXtra*3, h=3, $fn=$preview? 90:360);
