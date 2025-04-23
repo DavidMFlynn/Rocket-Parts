@@ -3,7 +3,7 @@
 // Filename: RocketStubby.scad
 // by David M. Flynn
 // Created: 4/18/2025 
-// Revision: 0.9.1  4/21/2025 
+// Revision: 0.9.2  4/23/2025 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -39,6 +39,7 @@
 //
 //  ***** History *****
 //
+// 0.9.2  4/23/2025  Thicker tail cone, fixed spring size...
 // 0.9.1  4/21/2025  Printing....
 // 0.9.0  4/18/2025  First code
 //
@@ -93,8 +94,8 @@
 //
 // **************************************
 //
-// rotate([90,0,0]) BoltOnRailGuide(Length = 30, BoltSpace=12.7, RoundEnds=true);
-// rotate([-90,0,0]) RailGuideSpacer(OD=Body_OD, H=RailGuide_h, Length = 30, BoltSpace=12.7);
+// rotate([90,0,0]) BoltOnRailGuide(Length = RailGuideLen, BoltSpace=12.7, RoundEnds=true);
+// rotate([-90,0,0]) RailGuideSpacer(OD=Body_OD, H=RailGuide_h, Length = RailGuideLen, BoltSpace=12.7);
 //
 // **************************************
 //  *** Tools ***
@@ -283,7 +284,7 @@ module SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, Engagemnet_Len=7)
 
 // SkirtRing();
 
-module SkirtPlateBoltPattern(){
+module SkirtPlateBoltPattern(Spring_OD){
 	nBolts=6;
 	BC_d=SE_Spring_CS11890_OD()+16;
 
@@ -292,6 +293,7 @@ module SkirtPlateBoltPattern(){
 
 module SkirtPlate(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, Engagemnet_Len=7){
 	Plate_t=4;
+	Spring_ID=SE_Spring_CS4009_OD();
 	ID=SE_Spring_CS11890_ID();
 	nHoles=12;
 	Hole_d=Coupler_ID/2-8-(SE_Spring_CS11890_OD()+32)/2-12;
@@ -328,9 +330,9 @@ module SkirtPlate(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, Engagemnet_Len=7
 // SkirtPlate(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, Engagemnet_Len=7);
 
 module SkirtPlateSpringHolder(){
-	Spring_OD=SE_Spring_CS11890_OD();
+	Spring_OD=SE_Spring_CS4009_OD();
 	Tube_OD=Spring_OD+8;
-	Plate_OD=Spring_OD+24;
+	Plate_OD=SE_Spring_CS11890_OD()+24; // should be Spring_OD fix later
 	Plate_t=8;
 	OAL=100;
 	
@@ -342,9 +344,10 @@ module SkirtPlateSpringHolder(){
 		} // union
 		
 		// center hole
-		translate([0,0,-Overlap]) cylinder(d=Spring_OD, h=OAL+Overlap*2);
-		translate([0,0,6]) cylinder(d1=Spring_OD, d2=Spring_OD+2, h=5);
-		translate([0,0,11-Overlap]) cylinder(d=Spring_OD+2, h=OAL+Overlap*2);
+		translate([0,0,-Overlap]) cylinder(d=Spring_OD-10, h=OAL+Overlap*2);
+		translate([0,0,5]) cylinder(d=Spring_OD, h=OAL+Overlap*2);
+		translate([0,0,11]) cylinder(d1=Spring_OD, d2=Spring_OD+2, h=5);
+		translate([0,0,16-Overlap]) cylinder(d=Spring_OD+2, h=OAL+Overlap*2);
 		
 		// Bolts
 		translate([0,0,Plate_t]) SkirtPlateBoltPattern() Bolt4HeadHole();
@@ -508,6 +511,7 @@ module FinCan(LowerHalfOnly=false, UpperHalfOnly=false, HasIntegratedEBay=false,
 } // FinCan
 
 // FinCan();
+// rotate([180,0,0]) FinCan(LowerHalfOnly=true, UpperHalfOnly=false, HasIntegratedEBay=false, ShowDoors=false);
 
 module MotorRetainer(){
 	AftClosure_OD=79.5;

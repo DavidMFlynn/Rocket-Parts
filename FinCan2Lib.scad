@@ -102,11 +102,12 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 	MotorTubeHole_d=MotorTube_OD+MotorTubeHoleIDXtra;
 	FinInset_Len=(Can_Len-Fin_Root_L)/2;
 	FB_Xtra_Fwd=HasIntegratedCoupler? Coupler_Len:0;
+	BigTubeFn=(Body_OD>130)? 720:360;
 	
 	difference(){
 		union(){
 			// Body Tube
-			Tube(OD=Body_OD, ID=Body_OD-Wall_t*2, Len=Can_Len, myfn=$preview? 36:360);
+			Tube(OD=Body_OD, ID=Body_OD-Wall_t*2, Len=Can_Len, myfn=$preview? 90:BigTubeFn);
 			
 			// Motor Tube Sleeve
 			if (HasMotorSleeve)
@@ -115,20 +116,20 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 			// integrated coupler
 			if (HasIntegratedCoupler){
 				translate([0,0,Can_Len-Overlap]){
-					Tube(OD=Body_ID-IDXtra, ID=Body_ID-4, Len=Coupler_Len+Overlap, myfn=$preview? 36:360);
+					Tube(OD=Body_ID-IDXtra, ID=Body_ID-4, Len=Coupler_Len+Overlap, myfn=$preview? 90:BigTubeFn);
 					if (HasMotorSleeve)
 						Tube(OD=MotorTubeHole_d+Wall_t*2, ID=MotorTubeHole_d, Len=Coupler_Len+Overlap, myfn=$preview? 36:360);
 				}
 				difference(){
 					translate([0,0,Can_Len-5])
-						Tube(OD=Body_OD-1, ID=Body_ID-4, Len=5, myfn=$preview? 36:360);
+						Tube(OD=Body_OD-1, ID=Body_ID-4, Len=5, myfn=$preview? 90:BigTubeFn);
 					translate([0,0,Can_Len-5-Overlap]) cylinder(d1=Body_OD-Wall_t*2, d2=Body_ID-5, h=5);
 				} // difference
 			} // HasIntegratedCoupler
 			
 			if (HasAftIntegratedCoupler){
 				translate([0,0,-Coupler_Len]){
-					Tube(OD=Body_ID-IDXtra, ID=Body_ID-4, Len=Coupler_Len+Overlap, myfn=$preview? 36:360);
+					Tube(OD=Body_ID-IDXtra, ID=Body_ID-4, Len=Coupler_Len+Overlap, myfn=$preview? 90:BigTubeFn);
 					if (HasMotorSleeve)
 						Tube(OD=MotorTubeHole_d+Wall_t*2, ID=MotorTubeHole_d, Len=Coupler_Len+Overlap, myfn=$preview? 36:360);
 				}
@@ -244,7 +245,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 		if (RailGuide_h==1)
 			translate([0,Body_OD/2,10]) rotate([-90,0,0]) Bolt8Hole();
 		
-		if (LowerHalfOnly) translate([0,0,Can_Len/2]) cylinder(d=Body_OD+1, h=Can_Len/2+50);
+		if (LowerHalfOnly) translate([0,0,Can_Len/2]) cylinder(d=Body_OD+3, h=Can_Len/2+50);
 		if (UpperHalfOnly) translate([0,0,Can_Len/2]) 
 			rotate([180,0,0]) cylinder(d=Body_OD+10, h=Can_Len/2+Cone_Len+1);
 			
@@ -284,7 +285,7 @@ module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 		union(){
 			if (Ogive){
 				if (MakeHollow){
-					rotate([180,0,0]) OgiveTailCone(Ogive_L=Ogive_Len, Body_D=Body_OD, End_D=Cut_d, Wall_T=2.4);
+					rotate([180,0,0]) OgiveTailCone(Ogive_L=Ogive_Len, Body_D=Body_OD, End_D=Cut_d, Wall_T=7); //Wall_T=2.4
 					
 					// Motor tube
 					translate([0,0,-Cut_Z]) cylinder(d=Cut_d, h=Cut_Z);
