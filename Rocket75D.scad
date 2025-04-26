@@ -3,7 +3,7 @@
 // Filename: Rocket75D.scad
 // by David M. Flynn
 // Created: 8/6/2023 
-// Revision: 1.3.7  11/17/2024 
+// Revision: 1.3.8  4/24/2025 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -52,6 +52,7 @@
 //
 //  ***** History *****
 //
+// 1.3.8  4/24/2025  Updated and mod'd for 54mm motor 2 stage;
 // 1.3.7  11/17/2024 Added R75_UpperRailGuideMount for sustainer.
 // 1.3.6  10/29/2024 Added Vinyl_d to OD of printed parts. New fin shape. Fixed ShowRocket()
 // 1.3.5  10/8/2024  Longer tail cone for 38mm motor.
@@ -177,6 +178,9 @@ DualDeploy=true;
 // ShowRocket(IsDualDeploy=DualDeploy, ShowInternals=false, ShowDoors=true);
 // translate([300,0,0]) ShowRocket(IsDualDeploy=DualDeploy, ShowInternals=true, ShowDoors=false);
 //
+// ShowBooster(ShowInternals=false, ShowDoors=true);
+// ShowBooster(ShowInternals=true, ShowDoors=false);
+//
 // ***********************************
 include<TubesLib.scad>
 use<RailGuide.scad>
@@ -232,6 +236,30 @@ MainBearing_T=Bearing6807_T;
 
 Stager_SkirtLen=46;
 
+//*
+// U-Line 3" Mailing Tube version
+Body_OD=ULine75Body_OD;
+Body_ID=ULine75Body_ID;
+Coupler_OD=BT75Coupler_OD;
+Coupler_ID=BT75Coupler_ID;
+// *** 38mm Motor Tube ***
+/*
+MotorTube_OD=ULine38Body_OD;
+MotorTube_ID=ULine38Body_ID;
+MotorCoupler_OD=BT38Coupler_OD;
+TailCone_Len=50;
+/**/
+// *** 54mm Motor Tube ***
+//*
+MotorTube_OD=BT54Body_OD;
+MotorTube_ID=BT54Body_ID;
+MotorCoupler_OD=BT54Coupler_OD;
+TailCone_Len=40;
+/**/
+
+TailConeExtra_OD=2;
+/**/
+
 /*
 // Max The Red Fins
 nFins=5;
@@ -249,14 +277,15 @@ FinInset_Len=5;
 //*
 // smaller for dual deploy
 nFins=5;
-Fin_Post_h=14;
+//Fin_Post_h=14; // 38mm motor
+Fin_Post_h=Body_OD/2-MotorTube_OD/2-1.2; // 54mm motor
 Fin_Root_L=190;
 Fin_Root_W=8;
 Fin_Tip_W=3.0;
 Fin_Tip_L=70;
 Fin_Span=70;
 Fin_TipOffset=30;
-Fin_Chamfer_L=22;
+Fin_Chamfer_L=32;
 FinInset_Len=5;
 /**/
 
@@ -289,14 +318,14 @@ FinInset_Len=10;
 
 // Booster fin
 B_FinScale=1.40;
-B_Fin_Post_h=14;
+B_Fin_Post_h=Body_OD/2-MotorTube_OD/2-1.2;
 B_Fin_Root_L=190*B_FinScale;
 B_Fin_Root_W=8*B_FinScale;
 B_Fin_Tip_W=3.0;
 B_Fin_Tip_L=70*B_FinScale;
 B_Fin_Span=70*B_FinScale;
 B_Fin_TipOffset=30*B_FinScale;
-B_Fin_Chamfer_L=22*B_FinScale;
+B_Fin_Chamfer_L=32*B_FinScale;
 B_FinInset_Len=5;
 
 B_FinCan_Len=B_Fin_Root_L+B_FinInset_Len*2; // Calculated fin can length
@@ -316,19 +345,7 @@ TailCone_Len=35;
 TailConeExtra_OD=1;
 /**/
 
-//*
-// U-Line 3" Mailing Tube version
-Body_OD=ULine75Body_OD;
-Body_ID=ULine75Body_ID;
-Coupler_OD=BT75Coupler_OD;
-Coupler_ID=BT75Coupler_ID;
-// *** 38mm Motor Tube ***
-MotorTube_OD=ULine38Body_OD;
-MotorTube_ID=ULine38Body_ID;
-MotorCoupler_OD=BT38Coupler_OD;
-TailCone_Len=50;
-TailConeExtra_OD=0;
-/**/
+
 
 MotorTubeHole_d=MotorTube_OD+IDXtra*3;
 
@@ -350,8 +367,8 @@ echo(B_MotorTubeLen=B_MotorTubeLen);
 
 module ShowRocket(IsDualDeploy=true, ShowInternals=false, ShowDoors=false){
 	FinCan_Z=35;
-	Fin_Z=FinCan_Z+Fin_Root_L/2+FinInset_Len;
-	MotorTube_Z=FinCan_Z-23;
+	Fin_Z=FinCan_Z+FinCan_Len/2;
+	MotorTube_Z=FinCan_Z-TailCone_Len+12;
 	BodyTube_Z=FinCan_Z+FinCan_Len+Overlap*2;
 	EBay_Z=BodyTube_Z+BodyTubeLen+33.5;
 	UpperBallLock_Z=EBay_Z+EBay_Len+26.5;
@@ -361,7 +378,7 @@ module ShowRocket(IsDualDeploy=true, ShowInternals=false, ShowDoors=false){
 
 	translate([0,0,NoseCone_Z]){
 		rotate([0,0,90]) BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=NC_Len, Base_L=13, 
-							Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
+							Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, LowerPortion=false);
 		rotate([0,0,-30]) color("LightGreen")
 			NC_ShockcordRing75(Body_OD=Body_OD, Body_ID=Body_ID, NC_Base_L=NC_Base_L);}
 	
@@ -435,7 +452,7 @@ module ShowRocket(IsDualDeploy=true, ShowInternals=false, ShowDoors=false){
 	
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j+180/nFins])
 		translate([0, Body_OD/2-Fin_Post_h, Fin_Z]) 
-			rotate([-90,0,0]) color("Yellow") RocketFin();
+			rotate([-90,0,0]) color("Yellow") RocketFin(false);
 	
 	translate([0,0,FinCan_Z-0.2]) Rocket75D_MotorRetainer();
 	
@@ -448,7 +465,7 @@ module ShowRocket(IsDualDeploy=true, ShowInternals=false, ShowDoors=false){
 
 module ShowBooster(ShowInternals=false, ShowDoors=false){
 	FinCan_Z=35;
-	Fin_Z=FinCan_Z+B_Fin_Root_L/2+B_FinInset_Len;
+	Fin_Z=FinCan_Z+B_FinCan_Len/2;
 	MotorTube_Z=FinCan_Z-38;
 	MTCR_Z=MotorTube_Z+B_MotorTubeLen-10;
 	BodyTube_Z=FinCan_Z+B_FinCan_Len;
@@ -470,7 +487,7 @@ module ShowBooster(ShowInternals=false, ShowDoors=false){
 		
 	if (!ShowInternals)
 		translate([0,0,BallLock_Z]) //rotate([180,0,0])
-			STB_TubeEnd2(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD+Vinyl_d, Engagement_Len=20);
+			STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD+Vinyl_d, Engagement_Len=20);
 			
 	if (ShowInternals){
 		translate([0,0,BallLock_Z]) 
@@ -551,7 +568,7 @@ module Rocket75D_Fincan(LowerHalfOnly=false, UpperHalfOnly=false, Hollow=true){
 				Fin_Root_W=Fin_Root_W, Fin_Root_L=Fin_Root_L, Fin_Post_h=Fin_Post_h, Fin_Chamfer_L=Fin_Chamfer_L,
 				Cone_Len=TailCone_Len, ThreadedTC=true, Extra_OD=TailConeExtra_OD,
 				LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly, HasWireHoles=false, HollowTailcone=Hollow, 
-				HollowFinRoots=Hollow, Wall_t=1.2);
+				HollowFinRoots=Hollow, Wall_t=1.2, UseTrapFin3=true);
 } // Rocket75D_Fincan
 
 // Rocket75D_Fincan(LowerHalfOnly=false, UpperHalfOnly=false);
@@ -571,7 +588,7 @@ module Rocket75D_SFincan(LowerHalfOnly=false, UpperHalfOnly=false){
 				Fin_Root_W=Fin_Root_W, Fin_Root_L=Fin_Root_L, Fin_Post_h=Fin_Post_h, Fin_Chamfer_L=Fin_Chamfer_L,
 				Cone_Len=0, ThreadedTC=false, Extra_OD=TailConeExtra_OD,
 				LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly, HasWireHoles=false, HollowTailcone=true, 
-				HollowFinRoots=true, Wall_t=1.2);
+				HollowFinRoots=true, Wall_t=1.2, UseTrapFin3=true);
 				
 		
 			if (UpperHalfOnly==false) translate([0,0,FinInset_Len-1-TailPlate_t])
@@ -600,7 +617,7 @@ module Rocket75D_MotorRetainer(){
 	
 module RocketFin(HasSpiralVaseRibs=true){
 	
-	TrapFin2(Post_h=Fin_Post_h, Root_L=Fin_Root_L, Tip_L=Fin_Tip_L, Root_W=Fin_Root_W,
+	TrapFin3(Post_h=Fin_Post_h, Root_L=Fin_Root_L, Tip_L=Fin_Tip_L, Root_W=Fin_Root_W,
 				Tip_W=Fin_Tip_W, Span=Fin_Span, Chamfer_L=Fin_Chamfer_L,
 				TipOffset=Fin_TipOffset,
 				Bisect=false, Bisect_X=0,
@@ -609,7 +626,7 @@ module RocketFin(HasSpiralVaseRibs=true){
 	
 } // RocketFin
 
-//RocketFin();
+// RocketFin(HasSpiralVaseRibs=false);
 
 //  **************************************************************************************************************
 //   ***** Booster Parts *****
@@ -630,13 +647,13 @@ module B_ElectronicsBay(IsDualDeploy=false, ShowDoors=false, TopOnly=false, Bott
 
 // B_ElectronicsBay(IsDualDeploy=false, ShowDoors=false, TopOnly=false, BottomOnly=false);
 
-module RocketBFin(){
+module RocketBFin(HasSpiralVaseRibs=false){
 	
-	TrapFin2(Post_h=B_Fin_Post_h, Root_L=B_Fin_Root_L, Tip_L=B_Fin_Tip_L, Root_W=B_Fin_Root_W,
+	TrapFin3(Post_h=B_Fin_Post_h, Root_L=B_Fin_Root_L, Tip_L=B_Fin_Tip_L, Root_W=B_Fin_Root_W,
 				Tip_W=B_Fin_Tip_W, Span=B_Fin_Span, Chamfer_L=B_Fin_Chamfer_L,
 				TipOffset=B_Fin_TipOffset,
 				Bisect=false, Bisect_X=0,
-				HasSpar=false, Spar_d=8, Spar_L=100);
+				HasSpar=false, Spar_d=8, Spar_L=100, HasSpiralVaseRibs=HasSpiralVaseRibs);
 				
 	
 } // RocketBFin
@@ -650,7 +667,7 @@ module B_Fincan(LowerHalfOnly=false, UpperHalfOnly=false){
 				Fin_Root_W=B_Fin_Root_W, Fin_Root_L=B_Fin_Root_L, Fin_Post_h=B_Fin_Post_h, Fin_Chamfer_L=B_Fin_Chamfer_L,
 				Cone_Len=TailCone_Len, ThreadedTC=true, Extra_OD=TailConeExtra_OD,
 				LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly, HasWireHoles=false, HollowTailcone=true, 
-				HollowFinRoots=true, Wall_t=1.2);
+				HollowFinRoots=true, Wall_t=1.2, UseTrapFin3=true);
 } // B_Fincan
 
 //B_Fincan();

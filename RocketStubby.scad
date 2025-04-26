@@ -52,6 +52,7 @@
 // 
 // NC_ShockcordRingDual(Tube_OD=Body_OD, Tube_ID=Body_ID, NC_ID=0, NC_Base_L=NC_Base_L, nRivets=6, nBolts=6, Flat=true, UseHardSpring=true);
 // 
+// SpringExtention(Xten=50, Len=120);
 // SkirtPlateSpringHolder();
 // SkirtPlate(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, Engagemnet_Len=7);
 // rotate([180,0,0]) PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=UpperPusherRingLen, Engagemnet_Len=7, Wall_t=4, nBolts=0);
@@ -63,7 +64,8 @@
 // rotate([180,0,0]) EBay(TopOnly=true, BottomOnly=false, ShowDoors=false);
 // EBay(TopOnly=false, BottomOnly=true, ShowDoors=false);
 //
-// CenteringRing(OD=Body_ID, ID=MotorTube_OD+IDXtra*2, Thickness=EBayCR_t, nHoles=8); // Print 2
+// CenteringRing(OD=Body_ID, ID=MotorTube_OD+IDXtra*2, Thickness=EBayCR_t, nHoles=8);
+// CenteringRing(OD=Body_ID, ID=MotorTube_OD+IDXtra*2, Thickness=6, nHoles=8);
 //
 // *** Doors ***
 //
@@ -262,6 +264,34 @@ module ShowRocket(ShowInternals=false){
 
 //ShowRocket();
 //ShowRocket(ShowInternals=true);
+
+module SpringExtention(Xten=50, Len=120){
+	Spring_OD=SE_Spring_CS4009_OD();
+	Spring_ID=SE_Spring_CS4009_ID();
+	SpringSplice_OD=Spring_OD+3;
+	SpringEnd_Z=Len-Xten;
+	
+	module SpringHole(Len=20, D_Mod=0){
+		rotate([180,0,0]) {
+			cylinder(d=Spring_OD+D_Mod, h=Len);
+			translate([0,0,4]) cylinder(d1=Spring_OD+D_Mod, d2=SpringSplice_OD, h=8);
+			translate([0,0,12-Overlap]) cylinder(d=SpringSplice_OD+D_Mod, h=Len-12);
+			}
+	} // SpringHole
+	
+	difference(){
+		union(){
+			translate([0,0,Len]) SpringHole(Len=Len,D_Mod=-IDXtra*2);
+			cylinder(d=Spring_OD+6, h=Len-24);
+		} // union
+	
+	translate([0,0,-Overlap]) cylinder(d=Spring_ID, Len+Overlap*2);
+	translate([0,0,SpringEnd_Z]) SpringHole(Len=Len, D_Mod=0);
+			
+	} // difference
+} // SpringExtention
+
+// rotate([180,0,0]) SpringExtention();
 
 module SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, Engagemnet_Len=7){
 	Plate_t=4;
