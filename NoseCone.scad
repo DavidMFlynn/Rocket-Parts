@@ -85,6 +85,88 @@ Overlap=0.05;
 $fn=$preview? 24:90;
 IDXtra=0.2;
 
+
+module NC_ShockcordRing54(Body_OD=BT54Body_OD, Body_ID=BT54Body_ID, NC_Base_L=13, nRopes=3, nBolts=2){
+    // Small Spring
+	Spring_CS4323_OD=44.30;
+	Spring_CS4323_ID=40.50;
+	Spring_CS4323_CBL=22; // coil bound length
+	Spring_CS4323_FL=200; // free length
+
+	nRivets=2;
+	Rivet_d=4;
+	Plate_t=4;
+	Rope_d=4;
+	Tube_d=12.7;
+	CR_z=-3;
+	StopRing_h=2;
+	Spring_OD=Spring_CS4323_OD;
+	Spring_ID=Spring_CS4323_ID;
+	
+	
+	difference(){
+		union(){
+			// Stop ring
+			translate([0,0,-StopRing_h]) Tube(OD=Body_OD, ID=Body_ID-1, Len=StopRing_h, myfn=$preview? 36:360);
+			
+			// Nosecone interface
+			Tube(OD=Body_ID-IDXtra*2, ID=Body_ID-4.4, Len=NC_Base_L, myfn=$preview? 36:360);
+			
+			// Body tube interface
+			translate([0,0,-StopRing_h-15]) Tube(OD=Body_ID, ID=Body_ID-4.4, Len=15, myfn=$preview? 36:360);
+			// Spring holder
+			translate([0,0,-StopRing_h-15]) Tube(OD=Spring_OD+8, ID=Spring_OD, Len=15+Overlap, myfn=$preview? 36:360);
+				
+			// Stiffener
+			translate([0,0,-5])
+				cylinder(d=Body_ID-1, h=6);
+				
+			// Tube holder
+			difference(){
+				hull(){
+					translate([0,0,CR_z+3+Tube_d/2]) 
+						rotate([0,90,0]) cylinder(d=Tube_d+4.4, h=Body_ID-4, center=true);
+					translate([0,0,CR_z+2]) cube([Body_ID-5,Tube_d+8,Overlap],center=true);
+				} // hull
+				
+				translate([0,0,CR_z+3+Tube_d/2]) 
+						rotate([0,90,0]) cylinder(d=Tube_d+25, h=Body_ID-30, center=true);
+			} // difference
+		} // union
+		
+		
+		// Nosecone rivets
+		for (j=[0:nRivets-1]) rotate([0,0,360/nRivets*j+5]) translate([0,-Body_ID/2-1,NC_Base_L/2])
+			rotate([-90,0,0]){ cylinder(d=Rivet_d, h=10); 
+			translate([0,0,3.2]) cylinder(d=Rivet_d*2, h=6);}
+
+		// Center hole
+		translate([0,0,-6]) hull(){
+			translate([4,0,0]) cylinder(d=Tube_d+6, h=28);
+			translate([-4,0,0]) cylinder(d=Tube_d+6, h=28);
+			}
+			
+		//EBay Bolts
+		if (nBolts>0)
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) translate([0,Body_ID/2,-StopRing_h-7.5]) 
+			rotate([-90,0,0]) Bolt4Hole();
+		
+		// Spring
+		translate([0,0,-6]) cylinder(d=Spring_OD, h=3, $fn=$preview? 36:360);
+		translate([0,0,-StopRing_h-15-Overlap]) cylinder(d1=Spring_OD+4, d2=Spring_OD, h=8, $fn=$preview? 36:360);
+		
+		// Tube hole
+		translate([0,0,CR_z+3+Tube_d/2]) rotate([0,90,0]) cylinder(d=Tube_d, h=Body_OD, center=true);
+		
+		// Retention cord
+		if (nRopes>0)
+		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j+180/nRopes]) translate([0,Body_ID/2-Rope_d/2-2.5,-10]) cylinder(d=Rope_d, h=30);
+	} // difference
+	
+} // NC_ShockcordRing54
+
+// NC_ShockcordRing54(Body_OD=BT54Body_OD, Body_ID=BT54Body_ID, NC_Base_L=13, nRopes=0, nBolts=0);
+
 module NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13){
     // Small Spring
 	Spring_CS4323_OD=44.30;

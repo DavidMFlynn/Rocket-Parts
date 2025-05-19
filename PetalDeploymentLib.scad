@@ -3,7 +3,7 @@
 // Filename: PetalDeploymentLib.scad
 // by David M. Flynn
 // Created: 10/22/2023 
-// Revision: 0.9.12  1/27/2025
+// Revision: 0.9.13  5/13/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -18,8 +18,9 @@
 //
 //  ***** History *****
 //
-function PetalDeploymentLibRev()="PetalDeploymentLib Rev. 0.9.12";
+function PetalDeploymentLibRev()="PetalDeploymentLib Rev. 0.9.13";
 echo(PetalDeploymentLibRev());
+// 0.9.13  5/13/2025  Removed petal stop for easier printing (test).
 // 0.9.12  1/27/2025  Added PD_PetalHolder
 // 0.9.11  1/25/2025  Fixed AntiClimber_h position calculation.
 // 0.9.10  12/30/2024 A more robust petal. Added PD_PetalSpringHolder2(), PD_Petals2()
@@ -41,7 +42,7 @@ echo(PetalDeploymentLibRev());
 // PD_Petals2(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_h=0, HasLocks=false, Lock_Span_a=0);
 // rotate([180,0,0]) PD_GridPetals(OD=BT137Coupler_OD, Len=150, nPetals=3, Wall_t=1.2, HasLocks=false);
 // rotate([-90,0,0]) PD_PetalSpringHolder();
-// PD_PetalSpringHolder2();
+// rotate([-90,0,0]) PD_PetalSpringHolder2();
 // PD_HubSpringHolder();
 /*
 PD_PetalHub(OD=BT75Coupler_OD, 
@@ -67,6 +68,10 @@ PD_PetalHub(OD=BT75Coupler_OD,
 //  *** Tools ***
 // PD_PetalHolder(Petal_OD=BT137Coupler_OD, Is_Top=false); // bottom half
 // PD_PetalHolder(Petal_OD=BT137Coupler_OD, Is_Top=true); // top half
+// PD_PetalHolder(Petal_OD=BT98Coupler_OD, Is_Top=false); // bottom half
+// PD_PetalHolder(Petal_OD=BT98Coupler_OD, Is_Top=true); // top half
+// PD_PetalHolder(Petal_OD=ULine102Body_ID-0.5, Is_Top=false); // bottom half
+// PD_PetalHolder(Petal_OD=ULine102Body_ID-0.5, Is_Top=true); // top half
 //
 // ***********************************
 //  ***** Routines *****
@@ -121,7 +126,7 @@ module PD_PetalHolder(Petal_OD=BT137Coupler_OD, Is_Top=false){
 		if (Is_Top){
 			translate([0,Petal_OD/2+12,0]) rotate([180,0,0]) Bolt10HeadHole();
 			mirror([0,1,0])
-				translate([0,Petal_OD/2+12,0]) rotate([180,0,0]) Bolt10HeadHole();
+				translate([0,Petal_OD/2+12,0]) rotate([180,0,0]) Bolt10Hole(); //Bolt10HeadHole();
 		}else{
 			
 			translate([0,Petal_OD/2+12,Len/2]) Bolt10Hole();
@@ -608,7 +613,7 @@ module PD_PetalSpringHolder2(){
 				rotate([0,90,0]) cylinder(d=Axle_d, h=Axle_L, center=true);
 				
 			// Petal stop
-			translate([0,-2.5,5]) cube([15,3.5,10], center=true); // square
+			//translate([0,-2.5,5]) cube([15,3.5,10], center=true); // square
 		} // union
 		
 		

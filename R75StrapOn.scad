@@ -112,7 +112,7 @@ use<Fins.scad>
 use<NoseCone.scad>
 use<AltBay.scad>
 use<BatteryHolderLib.scad>
-use<SpringThingBooster.scad> SpringThingBoosterRev();
+use<SpringThingBooster.scad> echo(SpringThingBoosterRev());
 use<CableReleaseBB.scad>
 use<PetalDeploymentLib.scad>
 use<ThreadLib.scad>
@@ -188,11 +188,11 @@ module ShowRocketStrapOn(ShowInternals=true){
 	//*
 	translate([0,0,NoseCone_Z]){
 		BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=NC_Len, Base_L=NC_Base, 
-							Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
+							Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, LowerPortion=false);
 	
 		if (ShowInternals) {
-			rotate([180,0,0]) PetalHub();
-			translate([0,0,-8]) rotate([180,0,0]) Petals(Len=110, nPetals=4);
+			rotate([180,0,0]) R75_NC_Base_PetalHub(Body_OD=Body_OD, Body_ID=Body_ID, Coupler_OD=Coupler_OD);
+			translate([0,0,-8]) rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=121, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=true);
 			}
 	}
 	/**/
@@ -416,8 +416,8 @@ module Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID, ShowDoors=false){
 		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
 			Batt_BayFrameHole(Tube_OD=Tube_OD, HasSwitch=true);
 		
-		rotate([0,0,Flange_a]) translate([0,0,Len+TopSkirt_Len]) 
-			MountingBoltPattern(nTopBolts=5, LockRing_d=Coupler_OD) Bolt4Hole();
+		//rotate([0,0,Flange_a]) translate([0,0,Len+TopSkirt_Len]) 
+		//	MountingBoltPattern(nTopBolts=5, LockRing_d=Coupler_OD) Bolt4Hole();
 	} // difference
 	
 	// Altimeter

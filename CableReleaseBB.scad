@@ -207,7 +207,7 @@ module CRBB_ExtensionRod(Len=100){
 
 //CRBB_ExtensionRod(Len=90);
 
-module CRBB_LockingPin(LockPin_Len=LockPin_Len, GuidePoint=false){
+module CRBB_LockingPin(LockPin_Len=LockPin_Len, GuidePoint=false, IsThreaded=true){
 	Point_Len=GuidePoint? GuidePoint_Len:0;
 	Point_d=GuidePoint_d;
 	
@@ -221,7 +221,7 @@ module CRBB_LockingPin(LockPin_Len=LockPin_Len, GuidePoint=false){
 		
 		CRBB_BallGroove(BallCircle_d=BallCircle_d, Ball_d=Ball_d);
 		translate([0,0,-Ball_d-Point_Len-Overlap]) 
-			if ($preview){ 
+			if ($preview || IsThreaded){ 
 				cylinder(d=6.35, h=LockPin_Len+Point_Len+Overlap*2); }
 			else { 
 				ExternalThread(Pitch=25.4/20, Dia_Nominal=6.35+IDXtra*2, 
