@@ -87,6 +87,9 @@
 // rotate([-90,0,0]) PD_PetalSpringHolder2(); // print 15
 // PD_HubSpringHolder();
 //
+// *** for fin can, NOT CF+PETG ***
+// rotate([180,0,0]) R203_PusherRing(OD=Body_ID-BodyTubeAnnulus, ID=Coupler_ID, OA_Len=165, Engagemnet_Len=5, Wall_t=4, nBolts=0);
+//
 // 
 // FinCan(LowerHalfOnly=false, UpperHalfOnly=true, TailConeOnly=false);
 // FinCan(LowerHalfOnly=true, UpperHalfOnly=false, TailConeOnly=false);
@@ -99,6 +102,7 @@
 // TubeTest(OD=Body_OD, ID=Body_ID);
 // FinCanAlignmentTool();
 // BodyDrillingJig(Tube_OD=Body_OD, Tube_ID=Body_ID, nBolts=nEBay_Bolts, BoltInset=7.5);
+// BodyDrillingJig(Tube_OD=Body_OD, Tube_ID=Body_ID, nBolts=nFins*2, BoltInset=EBayBoltInset);
 //
 // *******************************************************
 //  ***** for Viewing *****

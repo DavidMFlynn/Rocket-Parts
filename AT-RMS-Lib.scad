@@ -128,7 +128,12 @@ kATRMS_Aft75_h=12.85;
 
 
 kATRMS_75_Case_d=75.4;
-kATRMS_75_2560_Case_h=332.5;
+// + 135mm per grain
+kATRMS_75_1280_Case_h=197.5; // J
+kATRMS_75_2560_Case_h=332.5; // J+J=K
+kATRMS_75_3840_Case_h=467.5; // K+J=L
+kATRMS_75_5120_Case_h=602.5; // K+2J=L
+kATRMS_75_6400_Case_h=737.5; // L+J=M
 
 kATRMS_For75_oal=kATRMS_For75_h4;
 
@@ -403,6 +408,19 @@ module ATRMS_75_2560_Motor(Extended=false, HasEyeBolt=true){
 
 //ATRMS_75_2560_Motor(Extended=false, HasEyeBolt=true);
 
+module ATRMS_75_3840_Motor(Extended=false, HasEyeBolt=true){
+
+	Extra=Extended? kATRMS_ExtFor75_h2:0;
+	
+	if (HasEyeBolt)
+		color("Gray") translate([0,0,kATRMS_75_3840_Case_h+kATRMS_For75_oal+Extra]) Eye_Bolt2();
+	color("Silver") translate([0,0,kATRMS_75_3840_Case_h]) ATRMS_ForClosure75(Extended=Extended);
+	color("LightBlue") ATRMS_75_3840_Case();
+	color("Silver") ATRMS_AftClosure75();
+} // ATRMS_75_3840_Motor
+
+//ATRMS_75_3840_Motor(Extended=false, HasEyeBolt=true);
+
 module ATRMS_ForClosure75(Extended=false){
 	// Standard plugged threaded forward closure
 	Etra=Extended? kATRMS_ExtFor75_h2:0;
@@ -421,11 +439,18 @@ module ATRMS_ForClosure75(Extended=false){
 
 // ATRMS_ForClosure75(Extended=false);
 
+
 module ATRMS_75_2560_Case(){
 	cylinder(d=kATRMS_75_Case_d, h=kATRMS_75_2560_Case_h);
 } // ATRMS_75_2560_Case
 
 // ATRMS_75_2560_Case();
+
+module ATRMS_75_3840_Case(){
+	cylinder(d=kATRMS_75_Case_d, h=kATRMS_75_3840_Case_h);
+} // ATRMS_75_3840_Case
+
+// ATRMS_75_3840_Case();
 
 module ATRMS_AftClosure75(){
 	

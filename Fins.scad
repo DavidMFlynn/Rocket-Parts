@@ -3,7 +3,7 @@
 // Filename: Fins.scad
 // by David M. Flynn
 // Created: 6/11/2022 
-// Revision: 1.1.1  1/23/2025
+// Revision: 1.1.2  4/22/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-function FinsRev()="Fins 1.1.1";
+function FinsRev()="Fins 1.1.2";
 echo(FinsRev());
+// 1.1.2  4/22/2025  Added IDXtra*3 to width of TrapFin3Tail
 // 1.1.1  1/23/2025  Fin fillets
 // 1.1.0  1/19/2025  Added Ogive leading and trailing edge version TrapFin3...
 // 1.0.4  9/5/2024   Added PrinterBrim_H=0.9 parameter to TrapFin2()
@@ -205,7 +206,7 @@ module TrapFin2Tail(Post_h=5, Root_L=150, Root_W=10, Chamfer_L=18){
 module TrapFin3Tail(Post_h=5, Root_L=150, Root_W=10, Chamfer_L=18){
 	Edge_r=1;
 	
-	linear_extrude(height=Post_h)
+	linear_extrude(height=Post_h) offset(r=IDXtra*1.5)
 			hull(){
 				translate([0,Root_L/2-Chamfer_L,0]) Fin_BluntOgiveShape(L=Chamfer_L, W=Root_W, Tip_R=Edge_r);
 				translate([0,-Root_L/2+Chamfer_L,0]) rotate([0,0,180]) Fin_BluntOgiveShape(L=Chamfer_L, W=Root_W, Tip_R=Edge_r);
@@ -213,7 +214,7 @@ module TrapFin3Tail(Post_h=5, Root_L=150, Root_W=10, Chamfer_L=18){
 			
 } // TrapFin3Tail
 
-// TrapFin3Tail(Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18);
+// TrapFin3Tail(Post_h=10, Root_L=180, Root_W=10, Chamfer_L=30);
 
 module TrapFin2Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18){
 	

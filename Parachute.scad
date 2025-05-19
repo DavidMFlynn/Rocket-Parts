@@ -23,6 +23,8 @@
 //
 // PrintingOffset_X, PrintingOffset_Y is used to center the pattern on the page for printing.
 // 
+// Laser cutter size: 420mm x 900mm
+//
 //  ***** History *****
 //
 // 0.9.5  11/11/2022 Making a 32" 'chute. 
@@ -184,14 +186,80 @@ module P_Shape(){
 	
 // ******************************************************************
 // *** Parameter test ***
+
 /*
+// *** 88", 20 panels, 42 sqft ***
+nPanels=20;
+Diameter=88*25.4;
+CenterHole_d=10.0*25.4;
+echo(Diameter=Diameter);
+// DrawTip();
+// DrawBase();
+/**/
+module DrawTip(){
+	difference(){
+		P_ShapeTest(Diameter=Diameter, nPanels=nPanels, CenterHole_d=CenterHole_d, SeamAllowance=6);
+		
+		translate([-210,-10,0]) square([420,504]); // 500-seam
+	} // difference
+} // DrawTip
+
+module DrawBase(){
+	difference(){
+		P_ShapeTest(Diameter=Diameter, nPanels=nPanels, CenterHole_d=CenterHole_d, SeamAllowance=6);
+		
+		translate([-210,506,0]) square([420,1000]); // 500+seam
+	} // difference
+} // DrawBase
+
+
+/*
+// *** 78", 16 panels, 33 sqft ***
+nPanels=16;
+Diameter=78*25.4;
+CenterHole_d=9.0*25.4;
+echo(Diameter=Diameter);
+P_ShapeTest(Diameter=Diameter, nPanels=nPanels, CenterHole_d=CenterHole_d, SeamAllowance=6);
+/**/
+
+/*
+// *** 63", 14 panels, 21.6 sqft ***
+nPanels=14;
+Diameter=63*25.4;
+CenterHole_d=7.0*25.4;
+echo(Diameter=Diameter);
+P_ShapeTest(Diameter=Diameter, nPanels=nPanels, CenterHole_d=CenterHole_d, SeamAllowance=6);
+/**/
+
+/*
+// *** 45", 12 panels, 11 sqft ***
+nPanels=12;
+Diameter=45*25.4;
+CenterHole_d=5.0*25.4;
+echo(Diameter=Diameter);
+P_ShapeTest(Diameter=Diameter, nPanels=nPanels, CenterHole_d=CenterHole_d, SeamAllowance=6);
+/**/
+
+/*
+// *** 32", 10 panels, 5.58 sqft  ***
+nPanels=10;
+Diameter=32*25.4;
+CenterHole_d=4.0*25.4;
+echo(Diameter=Diameter);
+P_ShapeTest(Diameter=Diameter, nPanels=nPanels, CenterHole_d=CenterHole_d, SeamAllowance=6);
+/**/
+
+/*
+// *** 20", 8 panels, 314 sqin, 2.18 sqft ***
 nPanels=8;
 Diameter=20*25.4;
 CenterHole_d=3.0*25.4;
 echo(Diameter=Diameter);
+P_ShapeTest(Diameter=Diameter, nPanels=nPanels, CenterHole_d=CenterHole_d, SeamAllowance=6);
 /**/
 
 /*
+// *** 14", 6 panels, 153 sqin ***
 nPanels=6;
 Diameter=14*25.4;
 R=Diameter/2;

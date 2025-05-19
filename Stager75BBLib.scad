@@ -178,7 +178,7 @@ MainBearing_ID=Bearing6809_ID;
 MainBearing_T=Bearing6809_T;
 /**/
 
-//*
+/*
 // constants for 75mm stager
 Default_nLocks=3;
 DefaultBody_OD=BT75Body_OD;
@@ -190,11 +190,23 @@ MainBearing_ID=Bearing6807_ID;
 MainBearing_T=Bearing6807_T;
 /**/
 
-/*
+//*
 // constants for 65mm stager
 Default_nLocks=2;
 DefaultBody_OD=BT65Body_OD;
 DefaultBody_ID=BT65Body_ID;
+DefaultMotorTube_OD=BT38Body_OD;
+DefaultServo=ServoMG90S_ID;
+MainBearing_OD=Bearing6805_OD;
+MainBearing_ID=Bearing6805_ID;
+MainBearing_T=Bearing6805_T;
+/**/
+
+/*
+// constants for 54mm stager, too small
+Default_nLocks=2;
+DefaultBody_OD=BT54Body_OD;
+DefaultBody_ID=BT54Body_ID;
 DefaultMotorTube_OD=BT38Body_OD;
 DefaultServo=ServoMG90S_ID;
 MainBearing_OD=Bearing6805_OD;

@@ -33,7 +33,7 @@ echo(BatteryHolderLibRev());
 // ***********************************
 //  ***** for STL output *****
 //
-//  Batt_Door(Tube_OD=PML98Body_OD, Door_X=BattDoorX(), InnerTube_OD=PML54Body_OD, HasSwitch=false, DoubleBatt=false);
+//  Batt_Door(Tube_OD=PML98Body_OD, Door_X=BattDoorX(), InnerTube_OD=PML54Body_OD, HasSwitch=false, DoubleBatt=false, BlankDoor=false);
 //  Batt_Door6xAAA(Tube_OD=BT137Body_OD, InnerTube_OD=BT54Body_OD, HasSwitch=true);
 //  SingleBatteryPocket(ShowBattery=true);
 //
@@ -423,7 +423,7 @@ module Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, HasSwitch=fal
 //Batt_BayDoorFrame(Tube_OD=PML54Body_OD, Door_X=Batt_Door_X-10, HasSwitch=true, ShowDoor=false);
 //rotate([90,0,0]) Batt_Door54(Tube_OD=PML54Body_OD, HasSwitch=true);
 
-module Batt_Door(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, InnerTube_OD=PML38Body_OD, HasSwitch=false, DoubleBatt=false){
+module Batt_Door(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, InnerTube_OD=PML38Body_OD, HasSwitch=false, DoubleBatt=false, BlankDoor=false){
 
 	ShowBattery=true;
 	Door_Y=HasSwitch? Batt_Door_Y+CK_RotSw_d:Batt_Door_Y;
@@ -450,6 +450,7 @@ module Batt_Door(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, InnerTube_OD=PML38Bod
 		union(){
 			Door(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t, Tube_OD=Tube_OD, HasSixBolts=false);
 			
+			if (!BlankDoor)
 			intersection(){
 				difference(){
 					translate([0,0,-Door_Y/2])
@@ -478,7 +479,7 @@ module Batt_Door(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, InnerTube_OD=PML38Bod
 		} // union
 		
 		// Switch
-		if (HasSwitch)
+		if (HasSwitch && !BlankDoor)
 			translate([0, -Tube_OD/2+CK_RotSw_AO_h/2+Overlap, Switch_Y]) rotate([90,0,0]){
 				cylinder(d=CK_RotSw_d+IDXtra*2, h=CK_RotSw_AO_h/2-Door_t);
 				cylinder(d=CK_RotSw_Face_d+IDXtra*2, h=CK_RotSw_AO_h/2+CK_RotSw_Face_h-Door_t);

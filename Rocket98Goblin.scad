@@ -3,7 +3,7 @@
 // Filename: Rocket98Goblin.scad
 // by David M. Flynn
 // Created: 3/19/2024 
-// Revision: 1.3.3  3/31/2024 
+// Revision: 1.3.4  5/14/2025 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -47,6 +47,7 @@
 //
 //  ***** History *****
 //
+// 1.3.4  5/14/2025  Updated petal deployer.
 // 1.3.3  3/31/2024  Added bolt holes to electronics bay.
 // 1.3.2  3/21/2024  Little fixes.
 // 1.3.1  3/20/2024  Reworked ShowRocket(), updated parts list, removed unused parts.
@@ -87,9 +88,10 @@ CouplerLenXtra=-10;
 //
 // *** petal deployer ***
 //
-// PD_PetalHub(OD=Coupler_OD, nPetals=nPetals, ShockCord_a=PD_ShockCordAngle());
-// rotate([-90,0,0]) PD_PetalSpringHolder(OD=Coupler_OD);
-// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=PetalLen, nPetals=nPetals, AntiClimber_h=3);
+// PD_PetalHub(OD=Coupler_OD, nPetals=nPetals, HasReplaceableSpringHolder=true, ShockCord_a=PD_ShockCordAngle());
+// PD_HubSpringHolder(); // print 3
+// rotate([-90,0,0]) PD_PetalSpringHolder2();
+// PD_Petals2(OD=Coupler_OD, Len=PetalLen, nPetals=nPetals, AntiClimber_h=3);
 //
 // rotate([180,0,0]) SE_SpringTop(OD=Coupler_OD, Piston_Len=50, nRopes=6);
 // SpringMiddle();
@@ -124,7 +126,7 @@ use<NoseCone.scad>
 use<ElectronicsBayLib.scad>
 use<AltBay.scad>
 use<BatteryHolderLib.scad>
-use<SpringThingBooster.scad> SpringThingBoosterRev();
+use<SpringThingBooster.scad> echo(SpringThingBoosterRev());
 use<PetalDeploymentLib.scad>
 use<SpringEndsLib.scad>
 
@@ -167,7 +169,7 @@ NC_Wall_t=1.8;
 NC_Base_L=15;
 
 EBay_Len=162;
-PetalLen=150;
+PetalLen=170;
 MotorTubeLen=12*25.4;
 BodyTubeLen=17*25.4;
 

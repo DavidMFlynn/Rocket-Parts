@@ -3,7 +3,7 @@
 // Filename: BoosterPooper3.scad
 // by David M. Flynn
 // Created: 9/3/2022 
-// Revision: 0.9.4  9/25/2022
+// Revision: 0.9.5  5/9/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -16,6 +16,7 @@
 //
 //  ***** History *****
 //
+// 0.9.5  5/9/2025  Rework of strap-on boosters begins.
 // 0.9.4  9/25/2022 Work on ForwardBoosterLock parts. 
 // 0.9.3  9/18/2022 Added some missing parts.
 // 0.9.2  9/9/2022  Still working on ForwardBoosterLock
@@ -81,46 +82,15 @@ rotate([180,0,0])
 // ************************************************
 //  *** Strap-On Booster Parts ***
 // 
-/*
-// More room for shock cord
-FairingConeOGive(Fairing_OD=BP_Booster_Body_OD, 
-					FairingWall_T=BP_Booster_Fairing_Wall_t,
-					NC_Base=5, 
-					NC_Len=155, // Actual lenth is 150, blunted OGive. 
-					NC_Wall_t=2,
-					NC_Tip_r=5)
-/**/
-/*
-// Alt. small
-FairingCone(Fairing_OD=BP_Booster_Body_OD, 
-					FairingWall_T=BP_Booster_Fairing_Wall_t,
-					NC_Base=5, 
-					NC_Len=95, 
-					NC_Wall_t=2,
-					NC_Tip_r=5);
-/**/
-// NoseLockRing(Fairing_OD=BP_Booster_Body_OD, Fairing_ID =BP_Booster_Fairing_ID);
-//
-/*
-// *** >>>Enable override for smaller booster fairing spring<<< ***
+BoosterNose_L=90;
+BoosterNoseBase_L=13;
+BoosterNoseWall_T=1.8;
 
- F54_FairingHalf(IsLeftHalf=true, 
-				Fairing_OD=BP_Booster_Fairing_OD,
-				Wall_T=BP_Booster_Fairing_Wall_t,
-				Len=BP_Booster_Fairing_Len); // Booster Fairing, the parachute goes in here. 
-/**/
-//
-/*
- F54_FairingHalf(IsLeftHalf=false, 
-				Fairing_OD=BP_Booster_Fairing_OD,
-				Wall_T=BP_Booster_Fairing_Wall_t,
-				Len=BP_Booster_Fairing_Len); // Booster Fairing, the parachute goes in here. 
-/**/
-//
-// rotate([180,0,0]) FairingBase(); // Pring w/ support
-// FairingBaseLockRing();
-//
-// F54_SpringEndCap();
+// BluntOgiveNoseCone(ID=BP_Booster_Body_ID, OD=BP_Booster_Body_OD, L=BoosterNose_L, Base_L=BoosterNoseBase_L, nRivets=3, Tip_R=5, HasThreadedTip=false, Wall_T=BoosterNoseWall_T, Cut_d=0, LowerPortion=false, FillTip=true);
+
+// R54_NC_Base();
+// R54_NC_Base_PetalHub();
+
 //
 // Booster_E_Bay();
 //  AltDoor54(Tube_OD=BP_Booster_Body_OD);
@@ -146,23 +116,19 @@ FairingCone(Fairing_OD=BP_Booster_Body_OD,
 //
 // ***********************************
 
-include<LD-20MGServoLib.scad>
-include<Fairing54.scad>
+include<TubesLib.scad>
+use<NoseCone.scad>
+use<LD-20MGServoLib.scad>
 include<BoosterDropperLib.scad>
-include<FinCan.scad>
-include<BatteryHolderLib.scad>
-include<AltBay.scad>
+use<FinCan2Lib.scad>
+use<RailGuide.scad>
+use<PetalDeploymentLib.scad>
+use<Fins.scad>
+use<CableReleaseBB.scad>
+use<SpringEndsLib.scad>
 
 //also included
- //include<NoseCone.scad>
- //include<ChargeHolder.scad>
- //include<CablePuller.scad>
- //include<FairingJointLib.scad>
- //include<RailGuide.scad>
- //include<Fins.scad>
- //include<TubesLib.scad>
- //include<BearingLib.scad>
- //include<CommonStuffSAEmm.scad>
+  //include<CommonStuffSAEmm.scad>
 
 Overlap=0.05;
 IDXtra=0.2;
@@ -177,26 +143,7 @@ BP_Booster_MtrTube_OD=PML38Body_OD;
 BP_Booster_MtrTube_ID=PML38Body_ID;
 BP_Booster_MtrRtr_OD=PML38Body_OD+6;
 
-BP_Booster_Fairing_Len=130;
-BP_Booster_Fairing_OD=BP_Booster_Body_OD;
-BP_Booster_Fairing_Wall_t=2.2;
-BP_Booster_Fairing_ID=BP_Booster_Fairing_OD-BP_Booster_Fairing_Wall_t*2;
 
-/*
-// *** Override, Smaller Booster Fairing Spring ***
-F54_Spring_OD=5/16*25.4;
-F54_Spring_FL=1.00*25.4;
-F54_Spring_CBL=0.55*25.4;
-F54_SpringEndCap_OD=F54_Spring_OD+3;
-/**/
-
-/*
-// *** Override, Larger Main Fairing Spring ***
-F54_Spring_OD=5/16*25.4;
-F54_Spring_FL=1.25*25.4;
-F54_Spring_CBL=0.7*25.4;
-F54_SpringEndCap_OD=F54_Spring_OD+3;
-/**/
 
 BP_Body_OD=PML98Body_OD;
 BP_Body_ID=PML98Body_ID;
@@ -253,11 +200,52 @@ LockShaftLen=48.0; // Changed -0.5mm 9/11/2022
 nLockShaftTeeth=24;
 nServoGearTeeth=24;
 
-//NoseLockRing(Fairing_OD=BP_Booster_Body_OD, Fairing_ID =BP_Booster_Fairing_ID);
-//FairingBaseLockRing(Tube_ID=BP_Booster_Body_ID, Fairing_ID=BP_Booster_Fairing_ID, Interface=Overlap);
-//mirror([0,0,1])F54_Retainer(IsLeftHalf=true, Fairing_OD=BP_Booster_Fairing_OD, Wall_T=BP_Booster_Fairing_Wall_t);
+/*
+module BoosterLockPin(){
+	LockPin_Len=30;
 
+	CRBB_LockingPin(LockPin_Len=LockPin_Len, GuidePoint=true, IsThreaded=false);
+	
+} // BoosterLockPin
 
+BoosterLockPin();
+
+module BoosterInnerBearingRetainer(){
+	difference(){
+		CRBB_InnerBearingRetainer(HasServo=true);
+		
+		// Shock cord hole
+		translate([0,0,-10]) cylinder(d=4.4, h=18);
+	} // difference
+
+}
+
+//SE_Spring_CS4323_OD()
+
+CRBB_LockRing(GuidePoint=true);
+
+module Booster_CRBB_TopRetainer(){
+
+	difference(){
+		CRBB_TopRetainer(LockRing_d=CRBB_LockRingDiameter(), OD=BP_Booster_Body_ID, HasMountingBolts=false, GuidePoint=true);
+		
+		// Spring groove
+		translate([0,0,13]) difference(){
+			cylinder(d=SE_Spring_CS4323_OD(), h=3);
+			translate([0,0,-Overlap]) cylinder(d=SE_Spring_CS4323_ID()-1, h=3+Overlap*2);
+		} // difference
+		
+	} // difference
+
+} // Booster_CRBB_TopRetainer
+
+Booster_CRBB_TopRetainer();
+
+translate([0,0,-26]) CRBB_OuterBearingRetainer();
+translate([0,0,-26]) BoosterInnerBearingRetainer();
+translate([0,0,-26]) CRBB_MagnetBracket();
+translate([0,0,-26]) CRBB_TriggerPost(HasOuterPost=false);
+/**/
 
 module ShowBooster(){
 	//*
@@ -396,6 +384,52 @@ module ShowBoosterPooper(){
 } // ShowBoosterPooper
 
 //ShowBoosterPooper();
+
+module R54_NC_Base(Body_OD=BP_Booster_Body_OD, Body_ID=BP_Booster_Body_ID, NC_Base_L=BoosterNoseBase_L, Coupler_OD=BP_Booster_Body_ID-0.5){
+	nBolts=4;
+	
+	difference(){
+		union(){
+			NC_ShockcordRing54(Body_OD=Body_OD, Body_ID=Body_ID, NC_Base_L=NC_Base_L, nRopes=0, nBolts=0);
+			
+			translate([0,0,-3]) cylinder(d=Body_OD, h=3, $fn=$preview? 90:360);
+		} // union
+		
+		translate([0,0,-20]) cylinder(d=Body_OD+1, h=17);
+		translate([0,0,-3-Overlap]) hull(){
+			translate([-8,0,0]) cylinder(d=19, h=6);
+			translate([8,0,0]) cylinder(d=19, h=6);
+		} // hull
+		
+		//rotate([0,0,20]) 
+		translate([0,0,-3]) PD_PetalHubBoltPattern(OD=Coupler_OD, nBolts=nBolts) rotate([180,0,0]) Bolt4Hole();
+		
+		hull(){
+			translate([0,-10,-3]) cylinder(d=6,h=6);
+			translate([0,-20,-3]) cylinder(d=6,h=6);
+		} // hull
+	} // difference
+} // R54_NC_Base
+
+// R54_NC_Base();
+
+module R54_NC_Base_PetalHub(Body_OD=BP_Booster_Body_OD, Body_ID=BP_Booster_Body_ID, Coupler_OD=BP_Booster_Body_ID-0.5){
+	ShockCord_a=90;
+	
+	PD_PetalHub(OD=Coupler_OD, 
+					nPetals=2, 
+					HasBolts=true,
+					nBolts=4,
+					ShockCord_a=ShockCord_a,
+					HasNCSkirt=false, 
+						Body_OD=Body_OD,
+						Body_ID=Body_ID,
+						NC_Base=0, 
+						SkirtLen=10);
+						
+} // R54_NC_Base_PetalHub
+
+// translate([0,0,-3]) rotate([180,0,90]) R54_NC_Base_PetalHub();
 
 module Electronics_Bay(){
 	// Z=0 center of Booster button

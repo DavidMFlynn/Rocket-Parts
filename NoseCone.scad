@@ -3,7 +3,7 @@
 // Filename: NoseCone.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.19  12/20/2024
+// Revision: 0.9.20  4/19/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-function NoseConeRev()="NoseCone Rev. 0.9.19";
+function NoseConeRev()="NoseCone Rev. 0.9.20";
 echo(NoseConeRev());
+// 0.9.20  4/19/2025  Added UseHardSpring option to NC_ShockcordRingDual
 // 0.9.19  12/20/2024 Added function Ogive_Cut_Z(), added FillTip parameter to BluntOgiveNoseCone()
 // 0.9.18  12/19/2024 Fix the two part nose cone problem?, In BluntOgiveNoseCone() the cut parameter has been changed to Cut_d
 // 0.9.17  12/18/2024 Added OgiveTailConeShape() and OgiveTailCone()
@@ -39,7 +40,7 @@ echo(NoseConeRev());
 //  ***** for STL output *****
 // NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13);
 // NC_ShockcordRingDual(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, NC_ID=0, NC_Base_L=25, nRivets=6, nBolts=0, Flat=false);
-// NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_ID=0, NC_Base_L=15, nRivets=3, nBolts=0, Flat=false);
+// NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_ID=0, NC_Base_L=20, nRivets=3, nBolts=0, Flat=false, UseHardSpring=false);
 //
 // BluntConeNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=180, Base_L=21, nRivets=3, Tip_R=15, HasThreadedTip=false, Wall_T=3);
 // OgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=170, Base_L=21, Wall_T=3);
@@ -83,6 +84,88 @@ use<ThreadLib.scad>
 Overlap=0.05;
 $fn=$preview? 24:90;
 IDXtra=0.2;
+
+
+module NC_ShockcordRing54(Body_OD=BT54Body_OD, Body_ID=BT54Body_ID, NC_Base_L=13, nRopes=3, nBolts=2){
+    // Small Spring
+	Spring_CS4323_OD=44.30;
+	Spring_CS4323_ID=40.50;
+	Spring_CS4323_CBL=22; // coil bound length
+	Spring_CS4323_FL=200; // free length
+
+	nRivets=2;
+	Rivet_d=4;
+	Plate_t=4;
+	Rope_d=4;
+	Tube_d=12.7;
+	CR_z=-3;
+	StopRing_h=2;
+	Spring_OD=Spring_CS4323_OD;
+	Spring_ID=Spring_CS4323_ID;
+	
+	
+	difference(){
+		union(){
+			// Stop ring
+			translate([0,0,-StopRing_h]) Tube(OD=Body_OD, ID=Body_ID-1, Len=StopRing_h, myfn=$preview? 36:360);
+			
+			// Nosecone interface
+			Tube(OD=Body_ID-IDXtra*2, ID=Body_ID-4.4, Len=NC_Base_L, myfn=$preview? 36:360);
+			
+			// Body tube interface
+			translate([0,0,-StopRing_h-15]) Tube(OD=Body_ID, ID=Body_ID-4.4, Len=15, myfn=$preview? 36:360);
+			// Spring holder
+			translate([0,0,-StopRing_h-15]) Tube(OD=Spring_OD+8, ID=Spring_OD, Len=15+Overlap, myfn=$preview? 36:360);
+				
+			// Stiffener
+			translate([0,0,-5])
+				cylinder(d=Body_ID-1, h=6);
+				
+			// Tube holder
+			difference(){
+				hull(){
+					translate([0,0,CR_z+3+Tube_d/2]) 
+						rotate([0,90,0]) cylinder(d=Tube_d+4.4, h=Body_ID-4, center=true);
+					translate([0,0,CR_z+2]) cube([Body_ID-5,Tube_d+8,Overlap],center=true);
+				} // hull
+				
+				translate([0,0,CR_z+3+Tube_d/2]) 
+						rotate([0,90,0]) cylinder(d=Tube_d+25, h=Body_ID-30, center=true);
+			} // difference
+		} // union
+		
+		
+		// Nosecone rivets
+		for (j=[0:nRivets-1]) rotate([0,0,360/nRivets*j+5]) translate([0,-Body_ID/2-1,NC_Base_L/2])
+			rotate([-90,0,0]){ cylinder(d=Rivet_d, h=10); 
+			translate([0,0,3.2]) cylinder(d=Rivet_d*2, h=6);}
+
+		// Center hole
+		translate([0,0,-6]) hull(){
+			translate([4,0,0]) cylinder(d=Tube_d+6, h=28);
+			translate([-4,0,0]) cylinder(d=Tube_d+6, h=28);
+			}
+			
+		//EBay Bolts
+		if (nBolts>0)
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) translate([0,Body_ID/2,-StopRing_h-7.5]) 
+			rotate([-90,0,0]) Bolt4Hole();
+		
+		// Spring
+		translate([0,0,-6]) cylinder(d=Spring_OD, h=3, $fn=$preview? 36:360);
+		translate([0,0,-StopRing_h-15-Overlap]) cylinder(d1=Spring_OD+4, d2=Spring_OD, h=8, $fn=$preview? 36:360);
+		
+		// Tube hole
+		translate([0,0,CR_z+3+Tube_d/2]) rotate([0,90,0]) cylinder(d=Tube_d, h=Body_OD, center=true);
+		
+		// Retention cord
+		if (nRopes>0)
+		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j+180/nRopes]) translate([0,Body_ID/2-Rope_d/2-2.5,-10]) cylinder(d=Rope_d, h=30);
+	} // difference
+	
+} // NC_ShockcordRing54
+
+// NC_ShockcordRing54(Body_OD=BT54Body_OD, Body_ID=BT54Body_ID, NC_Base_L=13, nRopes=0, nBolts=0);
 
 module NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13){
     // Small Spring
@@ -260,7 +343,7 @@ module NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13
 //NC_ShockcordRing75(Body_OD=BT75Body_OD, Body_ID=BT75Body_ID, NC_Base_L=13);
 //NC_ShockcordRing75(Body_OD=BT65Body_OD, Body_ID=BT65Body_ID, NC_Base_L=13);
 
-module NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_ID=0, NC_Base_L=20, nRivets=3, nBolts=0, Flat=false){
+module NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_ID=0, NC_Base_L=20, nRivets=3, nBolts=0, Flat=false, UseHardSpring=false){
 	// Connects nosecone to deployment tube
 	// Has aluminum tube shock cord mount
 	// Has spring end and resess for spring into nosecone
@@ -282,6 +365,7 @@ module NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_ID=0, N
 	Spring_CS4323_ID=40.50;
 	Spring_CS4323_CBL=22; // coil bound length
 	Spring_CS4323_FL=200; // free length
+	
 	Nosecone_ID=(NC_ID==0)? Tube_ID-IDXtra*2:NC_ID-IDXtra*2;
 
 	Plate_t=(Tube_OD>130)? 10:6;
@@ -290,10 +374,13 @@ module NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_ID=0, N
 	Tube_d=12.7;
 	Tube_Z=30;
 	CR_z=-3;
-	Spring_OD=(Tube_OD>110)? Spring_CS11890_OD:Spring_CS4323_OD;
+	
+	Std_Spring_OD=(Tube_OD>110)? Spring_CS11890_OD:Spring_CS4323_OD;
+	Spring_OD=UseHardSpring? Spring_CS4009_OD:Std_Spring_OD;
+	
 	BodyTube_L=15;
 	SpringEnd_Z=Tube_Z-Tube_d/2-3;
-	SpringSplice_OD=Spring_OD+10;
+	SpringSplice_OD=Spring_OD+3;
 	
 	Mod_Z=Flat? 13:0;
 	ID=Nosecone_ID-4.4;
@@ -668,6 +755,7 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, Tip_R=5, Ha
 					hull(){
 						translate([0,0,Tip_Z-Wall_T]) sphere(r=Tip_R-Wall_T, $fn=$preview? 36:90);
 						translate([0,0,Tip_Z-Wall_T*3]) sphere(r=Tip_R, $fn=$preview? 36:90);
+						translate([0,0,Tip_Z-Wall_T*5]) sphere(r=Tip_R+Wall_T*2, $fn=$preview? 36:90); // added 4/18/25
 					} // hull
 				} // difference
 				
