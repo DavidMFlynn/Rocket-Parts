@@ -3,12 +3,16 @@
 // Filename: RocketStubby.scad
 // by David M. Flynn
 // Created: 4/18/2025 
-// Revision: 0.9.2  4/23/2025 
+// Revision: 0.9.3  6/15/2025 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 //
-//  Built from a scrap of 8.5" CF over Concrete Tube
+//  Flown with 88" main only on K1000T 6/14/2025 to 3100'. 
+//  Needs some nose weight or drogue bay.
+//  Needs anti-climbers and alignment ring.
+//  
+//  Built from a scrap of 8.5" CF over Concrete Form Tube
 //  Rocket with 75mm motor. 
 //
 //  ***** Parts *****
@@ -39,6 +43,7 @@
 //
 //  ***** History *****
 //
+// 0.9.3  6/15/2025  Added 6mm anti-climber to petals.
 // 0.9.2  4/23/2025  Thicker tail cone, fixed spring size...
 // 0.9.1  4/21/2025  Printing....
 // 0.9.0  4/18/2025  First code
@@ -54,10 +59,31 @@
 // 
 // SpringExtention(Xten=50, Len=120);
 // SkirtPlateSpringHolder();
+// SkirtPlateSpringExtender();
 // SkirtPlate(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, Engagemnet_Len=7);
 // rotate([180,0,0]) PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=UpperPusherRingLen, Engagemnet_Len=7, Wall_t=4, nBolts=0);
-// rotate([180,0,0]) PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=LowerPusherRingLen, Engagemnet_Len=7, Wall_t=4, nBolts=nLockBalls);
+// rotate([180,0,0]) PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=LowerPusherRingLen, Engagemnet_Len=7, Wall_t=4.2, nBolts=nLockBalls, HasAlignmentRing=true);
 // SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, Engagemnet_Len=7);
+//
+// PD_Petals2(OD=Coupler_OD, Len=150, nPetals=nPetals, Wall_t=PetalWall_t, AntiClimber_h=6, HasLocks=false, Lock_Span_a=0);
+// rotate([-90,0,0]) PD_PetalSpringHolder2();
+// PD_HubSpringHolder();
+// PD_NC_PetalHub(OD=Coupler_OD, nPetals=nPetals, HasReplaceableSpringHolder=true, nRopes=nPetals, ShockCord_a=-1, HasThreadedCore=false, ST_DSpring_ID=SE_Spring_CS4009_ID(), ST_DSpring_OD=SE_Spring_CS4009_OD(), CouplerTube_ID=0);
+//
+/*
+PD_PetalHub(OD=Coupler_OD, 
+					nPetals=nPetals, 
+					HasReplaceableSpringHolder=true,
+					HasBolts=true,
+					nBolts=12,
+					ShockCord_a=-2,
+					HasNCSkirt=false, 
+						Body_OD=Body_OD,
+						Body_ID=Body_ID,
+						NC_Base=NC_Base_L, 
+						SkirtLen=10, 
+					CenterHole_d=Coupler_OD-60, nRopes=6);
+/**/
 //
 // *** EBay ***
 //
@@ -86,6 +112,24 @@
 // STB_LockDisk(Body_ID=Body_ID, nLockBalls=nLockBalls, HasLargeInnerBearing=true, Xtra_r=STB_Xtra_r);
 // rotate([180,0,0]) STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD, Engagement_Len=Engagement_Len);
 //
+// *** for Dual Deploy Only ***
+//
+//
+// PD_Petals2(OD=Coupler_OD, Len=150, nPetals=nDroguePetals, Wall_t=PetalWall_t, AntiClimber_h=6, HasLocks=false, Lock_Span_a=0);
+/*
+PD_PetalHub(OD=Coupler_OD, 
+					nPetals=nDroguePetals, 
+					HasReplaceableSpringHolder=true,
+					HasBolts=true,
+					nBolts=0, // Same as nPetals
+					ShockCord_a=-2,
+					HasNCSkirt=false, 
+						Body_OD=Body_OD,
+						Body_ID=Body_ID,
+						NC_Base=15, 
+						SkirtLen=10, 
+					CenterHole_d=156);
+/**/
 //
 // *** Fin Can ***
 //
@@ -105,6 +149,9 @@
 // TubeTest(OD=Body_OD, ID=Body_ID, TestOD=false);
 // TubeTest(OD=Body_OD, ID=Body_ID, TestOD=true);
 // BodyDrillingJig(Tube_OD=Body_OD, Tube_ID=Body_ID, nBolts=6, BoltInset=7.5);
+//
+// PD_PetalHolder(Petal_OD=Coupler_OD, Is_Top=false); // bottom half
+// PD_PetalHolder(Petal_OD=Coupler_OD, Is_Top=true); // top half
 //
 // ***********************************
 //  ***** Routines *****
@@ -176,21 +223,29 @@ nEBay_Bolts=10;
 
 MotorTubeLen=640;
 BodyTubeLen=510;
+LowerTubeLen=460;
 
+nLockBalls=7;
+
+nPetals=6;
+nDroguePetals=nLockBalls;
+PetalWall_t=2.2;
 
 Can_Len=Fin_Root_L+FinInset_Len*2;
 Bolt4Inset=4;
-nLockBalls=7;
-nPetals=5;
 ShockCord_a=17;// offset between PD_PetalHub and R65_BallRetainerBottom
 TailCone_Len=80;
 RailGuide_h=Body_OD/2+2;
 
-module ShowRocket(ShowInternals=false){
+module ShowRocket(DualDeploy=false, ShowInternals=false){
 	FinCan_Z=35;
 	MotorTube_Z=-TailCone_Len+42;
 	Fin_Z=FinCan_Z+Fin_Root_L/2+FinInset_Len;
-	EBay_Z=FinCan_Z+Can_Len+0.2;
+	LowerTube_Z=FinCan_Z+Can_Len+0.2;
+	DrogueTubeEnd_Z=LowerTube_Z+LowerTubeLen+Engagement_Len/2;
+	DrogueBallLock_Z=DrogueTubeEnd_Z+0.2;
+	
+	EBay_Z=DualDeploy? DrogueBallLock_Z+36.5:FinCan_Z+Can_Len+0.2;
 	AftBallLock_Z=EBay_Z+EBay_Len+0.2+50-12.5;
 	AftTubeEnd_Z=AftBallLock_Z+0.2;
 	
@@ -216,8 +271,8 @@ module ShowRocket(ShowInternals=false){
 		rotate([180,0,0]) STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD, Engagement_Len=Engagement_Len);
 	
 	if (!ShowInternals)
-	translate([0,0,BodyTube_Z]) color("LightBlue") 
-		Tube(OD=Body_OD, ID=Body_ID, Len=BodyTubeLen-Overlap*2, myfn=$preview? 90:360);
+		translate([0,0,BodyTube_Z]) color("LightBlue") 
+			Tube(OD=Body_OD, ID=Body_ID, Len=BodyTubeLen-Overlap*2, myfn=$preview? 90:360);
 	
 	if (ShowInternals) translate([0,0,UpperPusherRing_Z+UpperPusherRingLen+4.4]) color("Tan") 
 		SkirtPlateSpringHolder();
@@ -239,6 +294,27 @@ module ShowRocket(ShowInternals=false){
 	
 	translate([0,0,AftBallLock_Z]) rotate([180,0,0])
 		STB_BallRetainerTop(Outer_OD=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls, HasIntegratedCouplerTube=true, nBolts=nEBay_Bolts, Body_ID=Body_ID, HasSecondServo=true, UsesBigServo=true, Engagement_Len=Engagement_Len, HasLargeInnerBearing=true, Xtra_r=0.2);
+	
+	// Drogue Bay
+	if (DualDeploy){
+		
+		translate([0,0,DrogueBallLock_Z])
+			STB_BallRetainerTop(Outer_OD=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls, HasIntegratedCouplerTube=true, 
+				nBolts=nEBay_Bolts, Body_ID=Body_ID, HasSecondServo=true, UsesBigServo=true, Engagement_Len=Engagement_Len, 
+				HasLargeInnerBearing=true, Xtra_r=0.2);
+				
+		if (ShowInternals) translate([0,0,DrogueBallLock_Z]) BallRetainerBottom();
+	
+		if (!ShowInternals) translate([0,0,DrogueTubeEnd_Z]) color("Orange")
+			STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD, Engagement_Len=Engagement_Len);
+	
+		if (!ShowInternals)
+			translate([0,0,LowerTube_Z]) color("White") 
+				Tube(OD=Body_OD, ID=Body_ID, Len=LowerTubeLen-Overlap*2, myfn=$preview? 90:360);
+		
+		
+		
+	} // DualDeploy
 	
 	translate([0,0,FinCan_Z]) color("White") 
 		FinCan(LowerHalfOnly=false, UpperHalfOnly=false);
@@ -263,7 +339,7 @@ module ShowRocket(ShowInternals=false){
 } // ShowRocket
 
 //ShowRocket();
-//ShowRocket(ShowInternals=true);
+//ShowRocket(DualDeploy=true, ShowInternals=true);
 
 module SpringExtention(Xten=50, Len=120){
 	Spring_OD=SE_Spring_CS4009_OD();
@@ -274,19 +350,20 @@ module SpringExtention(Xten=50, Len=120){
 	module SpringHole(Len=20, D_Mod=0){
 		rotate([180,0,0]) {
 			cylinder(d=Spring_OD+D_Mod, h=Len);
-			translate([0,0,4]) cylinder(d1=Spring_OD+D_Mod, d2=SpringSplice_OD, h=8);
+			translate([0,0,4]) cylinder(d1=Spring_OD+D_Mod, d2=SpringSplice_OD+D_Mod, h=8);
 			translate([0,0,12-Overlap]) cylinder(d=SpringSplice_OD+D_Mod, h=Len-12);
 			}
 	} // SpringHole
 	
 	difference(){
 		union(){
-			translate([0,0,Len]) SpringHole(Len=Len,D_Mod=-IDXtra*2);
-			cylinder(d=Spring_OD+6, h=Len-24);
+			translate([0,0,Len]) SpringHole(Len=Len-SpringEnd_Z, D_Mod=-IDXtra*2);
+			translate([0,0,SpringEnd_Z]) cylinder(d=Spring_OD+6, h=Len-SpringEnd_Z-24);
+			cylinder(d=Spring_ID-1, h=Len);
 		} // union
 	
-	translate([0,0,-Overlap]) cylinder(d=Spring_ID, Len+Overlap*2);
-	translate([0,0,SpringEnd_Z]) SpringHole(Len=Len, D_Mod=0);
+		translate([0,0,-Overlap]) cylinder(d=Spring_ID-7, Len+Overlap*2);
+		//translate([0,0,SpringEnd_Z]) SpringHole(Len=Len, D_Mod=0);
 			
 	} // difference
 } // SpringExtention
@@ -348,11 +425,15 @@ module SkirtPlate(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, Engagemnet_Len=7
 		translate([0,0,-Overlap]) cylinder(d=ID, h=Plate_t+Engagemnet_Len+Overlap*2);
 		
 		// Rope holes
-		for (j=[0:nRopes]) rotate([0,0,180/nHoles+360/nRopes*j]) translate([0,Coupler_ID/2-4-Rope_d/2,-Overlap])
+		for (j=[0:nRopes]) rotate([0,0,360/nRopes*j]) translate([0,Coupler_ID/2-4-Rope_d/2,-Overlap])
 			cylinder(d=Rope_d, h=Plate_t+Engagemnet_Len+Overlap*2);
 		
-		// Bolt holes
+		// Bolt holes for Spring holeder
 		SkirtPlateBoltPattern() rotate([180,0,0]) Bolt4Hole(depth=Plate_t+Engagemnet_Len+1);
+		
+		// Bolt holes for petal hub
+		PD_PetalHubBoltPattern(OD=Coupler_OD, nBolts=nRopes*2) 
+					translate([0,0,Plate_t+Engagemnet_Len]) Bolt4Hole(depth=Plate_t+Engagemnet_Len+1);
 	} // difference
 	
 } // SkirtPlate
@@ -386,13 +467,52 @@ module SkirtPlateSpringHolder(){
 
 // SkirtPlateSpringHolder();
 
+module SkirtPlateSpringExtender(){
+	Plate_OD=SE_Spring_CS11890_OD()+24; // should be Spring_OD fix later
+	Tube_OD=Plate_OD-16;
+	Tube_ID=Tube_OD-4.4;
+	Plate_t=8;
+	OAL=100;
+	
+	difference(){
+		union(){
+			cylinder(d=Plate_OD, h=Plate_t/2);
+			translate([0,0,Plate_t/2-Overlap]) cylinder(d1=Plate_OD, d2=Tube_OD, h=Plate_t/2+6);
+			
+			cylinder(d=Tube_OD, h=OAL);
+			// top
+			translate([0,0,OAL-Plate_t/2]) cylinder(d=Plate_OD, h=Plate_t/2);
+			translate([0,0,OAL-Plate_t-6]) cylinder(d1=Tube_OD, d2=Plate_OD, h=Plate_t/2+6+Overlap);
+		} // union
+		
+		// center hole
+		translate([0,0,-Overlap]) cylinder(d=Tube_ID, h=OAL+Overlap*2);
+		
+		
+		// Bolts
+		translate([0,0,Plate_t]) SkirtPlateBoltPattern() Bolt4HeadHole();
+		translate([0,0,OAL]) SkirtPlateBoltPattern() Bolt4Hole();
+	} // difference
+} // SkirtPlateSpringExtender
 
-module PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4, nBolts=0){
+// SkirtPlateSpringExtender();
+
+module PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4.4, nBolts=0, HasAlignmentRing=false){
+	AlignmentRing_OD=OD-PetalWall_t*2-1;
+	AlignmentRing_ID=OD-Wall_t*2;
+	AlignmentRing_H=2;
 	
 	translate([0,0,Engagemnet_Len]) difference(){
 		union(){
 			Tube(OD=OD, ID=OD-Wall_t*2, Len=OA_Len-Engagemnet_Len, myfn=$preview? 90:720);
 			translate([0,0,-Engagemnet_Len]) Tube(OD=OD, ID=ID, Len=OA_Len, myfn=$preview? 90:720);
+			
+			if (HasAlignmentRing){
+				
+					translate([0,0,OA_Len-Engagemnet_Len-Overlap]) 
+						Tube(OD=AlignmentRing_OD, ID=AlignmentRing_ID, Len=AlignmentRing_H, myfn=$preview? 90:720);
+				
+			} // HasAlignmentRing
 		} // union
 		
 		// Reduce mass by thinning inside
@@ -409,7 +529,7 @@ module PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7, Wal
 	} // difference
 } // PusherRing
 
-// rotate([180,0,0]) translate([0,0,4.2]) PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4, nBolts=nLockBalls);
+// rotate([180,0,0]) translate([0,0,4.2]) PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4, nBolts=nLockBalls, HasAlignmentRing=true);
 
 module PusherBoltPattern(){
 	for (j=[0:nLockBalls-1]) rotate([0,0,360/nLockBalls*(j+0.5)]) 

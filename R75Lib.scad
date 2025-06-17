@@ -52,10 +52,12 @@ Coupler_ID=BT75Coupler_ID;
 MotorTube_OD=BT54Body_OD;
 MotorTube_ID=BT54Body_ID;
 
-module R75_UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, HasSpokes=false, Extended=0){
-	Len=25;
+module R75_UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, Len=25, HasSpokes=false, Extended=0, HasTube=false, HasStopAtTop=false){
+	
 	Wall_t=2.2;
 	nSpokes=7;
+	AlTube_d=12.7;
+	AlTube_Z=AlTube_d;
 	
 	difference(){
 		union(){
@@ -66,9 +68,13 @@ module R75_UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, HasSp
 				translate([0,0,-Extended])
 				Tube(OD=MotorTube_OD+IDXtra*2+Wall_t*2, ID=MotorTube_OD+IDXtra*2, Len=Len+Extended, myfn=$preview? 36:360);
 				
-				if (Extended>0)
+				if (Extended>0 && !HasStopAtTop)
 					translate([0,0,-Extended+Len]) 
 					TubeStop(InnerTubeID=MotorTube_OD-3, OuterTubeOD=MotorTube_OD+Wall_t*2, myfn=$preview? 36:360);
+					
+				if (HasStopAtTop)
+					translate([0,0,Len-4.5]) 
+					TubeStop(InnerTubeID=MotorTube_OD-3, OuterTubeOD=MotorTube_OD+2, myfn=$preview? 36:360);
 				
 				for (j=[0:nSpokes-1]) rotate([0,0,360/nSpokes*j+180/nSpokes]) hull(){
 					translate([0,MotorTube_OD/2+IDXtra+Wall_t/2,0]) cylinder(d=Wall_t, h=Len);
@@ -80,9 +86,16 @@ module R75_UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, HasSp
 					translate([0,0,6.35]) rotate([90,0,0]) cylinder(d=12, h=Body_ID/2-MotorTube_OD/2-IDXtra-Wall_t);
 					translate([0,0,-6.35]) rotate([90,0,0]) cylinder(d=12, h=Body_ID/2-MotorTube_OD/2-IDXtra-Wall_t);
 				}
+				
+				if (HasTube) translate([0,0,AlTube_Z]) difference(){
+					scale([1,1,1.35]) rotate([0,90,0]) cylinder(d=AlTube_d+6, h=Body_ID-2.6, center=true);
+					cylinder(d=MotorTube_OD+1, h=AlTube_d*2+1, center=true);
+				}
 			} // else
 		} // union
 				
+		if (HasTube) translate([0,0,AlTube_Z]) rotate([0,90,0]) cylinder(d=AlTube_d+IDXtra, h=Body_ID+2, center=true);
+		
 		// Rail guide bolts
 		translate([0, Body_ID/2, Len/2]) {
 			translate([0,0,6.35]) rotate([-90,0,0]) Bolt6Hole();
@@ -92,7 +105,7 @@ module R75_UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, HasSp
 } // R75_UpperRailGuideMount
 
 // R75_UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD);
-//R75_UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, HasSpokes=true, Extended=15);
+// R75_UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, Len=30, HasSpokes=true, Extended=0, HasTube=true, HasStopAtTop=true);
 
 module R75_MotorTubeTopper(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID){
 // Z zero is top of motor tube

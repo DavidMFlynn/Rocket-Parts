@@ -125,7 +125,7 @@ Magnet_d=3/16*25.4;
 Magnet_t=1/8*25.4;
 Magnet_a=10;
 Ret_OD=Bearing6805_ID+4;
-Magnet_Y=-Ret_OD/2+Magnet_d/2+3;
+Magnet_Y=-Ret_OD/2+Magnet_d/2+2;
 Magnet_Z=-Magnet_d/2-2;
 
 
@@ -221,7 +221,7 @@ module CRBB_LockingPin(LockPin_Len=LockPin_Len, GuidePoint=false, IsThreaded=tru
 		
 		CRBB_BallGroove(BallCircle_d=BallCircle_d, Ball_d=Ball_d);
 		translate([0,0,-Ball_d-Point_Len-Overlap]) 
-			if ($preview || IsThreaded){ 
+			if ($preview || !IsThreaded){ 
 				cylinder(d=6.35, h=LockPin_Len+Point_Len+Overlap*2); }
 			else { 
 				ExternalThread(Pitch=25.4/20, Dia_Nominal=6.35+IDXtra*2, 
@@ -692,29 +692,39 @@ module CRBB_SpringEnd(Coupler_OD=BT98Coupler_OD){
 //translate([0,0,-27]) CRBB_InnerBearingRetainer(HasServo=false);
 /**/
 
-module CRBB_InnerBearingRetainer(HasServo=true){
+module CRBB_InnerBearingRetainer(HasServo=true, HasCenterHole=false){
 	// Changed screw depth by -0.5
 
 	H=6;
 	MagnetExtraOffset=0.4; // <<< over center amount
+	CenterHole_d=3.5;
+	Servo_X=-1.3; // was 0
+	Servo_Y=6; // was 5
 	
 	difference(){
 		union(){
 			if (HasServo)
-			translate([0,5,-12]) rotate([0,90,180+10]) translate([0,0,-1]){
-				ServoSG90TopBlock(Xtra_Len=4, Xtra_Width=7, Xtra_Height=2);
-				//color("Tan") translate([0,0,6.2]) ServoSG90(TopMount=false, HasGear=false);
+				translate([Servo_X,Servo_Y,-12]) rotate([0,90,180+10]) translate([0,0,-1]){
+					ServoSG90TopBlock(Xtra_Len=4, Xtra_Width=7, Xtra_Height=2, HasWireNotch=true);
+				
 				}
 				
 			cylinder(d=Ret_OD+3, h=H);
 			
 			// magnet holder
-			rotate([0,0,Magnet_a]) translate([-Magnet_t/2-MagnetExtraOffset,Magnet_Y,Magnet_Z]) hull(){
+			rotate([0,0,Magnet_a]) translate([-Magnet_t/2-MagnetExtraOffset, Magnet_Y, Magnet_Z]) hull(){
 				translate([0,-Magnet_d/2-2,0]) cylinder(d=Magnet_t, h=-Magnet_Z*2+1, center=true);
 				translate([0,Magnet_d/2+2,0]) cylinder(d=Magnet_t, h=-Magnet_Z*2+1, center=true);
 			}
 				//cube([Magnet_t, Magnet_d+6, Magnet_d+6], center=true);
 		} // union
+		
+		// Trim outside
+		difference(){
+			translate([0,0,-6-Overlap]) cylinder(d=Ret_OD+10, h=H+6);
+			translate([0,0,-Overlap*2]) cylinder(d=Ret_OD+3+Overlap, h=H+Overlap*2);
+			translate([0,0,-Overlap*2+Overlap-6]) cylinder(d2=Ret_OD+3+Overlap, d1=Ret_OD+3+Overlap+6, h=6);
+		} // difference
 		
 		// Magnet
 		rotate([0,0,Magnet_a]) translate([-Magnet_t/2-MagnetExtraOffset, Magnet_Y, Magnet_Z]) 
@@ -723,14 +733,75 @@ module CRBB_InnerBearingRetainer(HasServo=true){
 		// Bottom Bolt holes
 		for (j=[0:nBottomBolts-1]) rotate([0,0,360/nBottomBolts*j])
 			translate([0,BottomBoltCircle_d/2,-0.5]) rotate([180,0,0]) Bolt4HeadHole();
+			
+		// Center Hole
+		if (HasCenterHole)
+			hull(){
+				translate([0,0,H]) cylinder(d=CenterHole_d, h=Overlap);
+				translate([0,0,-4]) sphere(d=CenterHole_d);
+			} // hull
+			
 	} // difference
 } // CRBB_InnerBearingRetainer
 
-//translate([0,0,-0.5]) CRBB_InnerBearingRetainer(HasServo=false);
+//translate([0,0,-0.5]) CRBB_InnerBearingRetainer(HasServo=true, HasCenterHole=true);
 
+module CRBB_InnerBearingRetainerLP(HasServo=true, HasCenterHole=false){
+	// Low Profile version
+	// Changed screw depth by -0.5
 
+	H=6;
+	MagnetExtraOffset=0.4; // <<< over center amount
+	CenterHole_d=4.5;
+	Servo_X=-1.3; // was 0
+	Servo_Y=6; // was 5
+	
+	difference(){
+		union(){
+			if (HasServo)
+				translate([Servo_X,Servo_Y,-12]) rotate([90,0,90]) translate([-3,1.5,-8]){
+					ServoSG90TopBlock(Xtra_Len=4, Xtra_Width=8.7, Xtra_Height=2, HasWireNotch=false);
+				
+				}
+				
+			cylinder(d=Ret_OD+3, h=H);
+			
+			// magnet holder
+			rotate([0,0,Magnet_a]) translate([-Magnet_t/2-MagnetExtraOffset, Magnet_Y, Magnet_Z]) hull(){
+				translate([0,-Magnet_d/2-2,0]) cylinder(d=Magnet_t, h=-Magnet_Z*2+1, center=true);
+				translate([0,Magnet_d/2+2,0]) cylinder(d=Magnet_t, h=-Magnet_Z*2+1, center=true);
+			}
+				//cube([Magnet_t, Magnet_d+6, Magnet_d+6], center=true);
+		} // union
+		
+		// Trim outside
+		translate([0,0,-30]) cylinder(d=60, h=14);
+		
+		translate([0,0,-30])
+		difference(){
+			cylinder(d=60, h=34);
+			translate([0,0,-Overlap]) cylinder(d=53, h=34+Overlap*2);
+		}
+		
+		// Magnet
+		rotate([0,0,Magnet_a]) translate([-Magnet_t/2-MagnetExtraOffset, Magnet_Y, Magnet_Z]) 
+			rotate([0,90,0]) cylinder(d=Magnet_d, h=Magnet_t+2, center=true);
+		
+		// Bottom Bolt holes
+		for (j=[0:nBottomBolts-1]) rotate([0,0,360/nBottomBolts*j])
+			translate([0,BottomBoltCircle_d/2,-0.5]) rotate([180,0,0]) Bolt4HeadHole(depth=8,lHead=11);
+			
+		// Center Hole
+		if (HasCenterHole)
+			hull(){
+				translate([0,0,H]) cylinder(d=CenterHole_d, h=Overlap);
+				translate([0,0,-4]) sphere(d=CenterHole_d);
+			} // hull
+			
+	} // difference
+} // CRBB_InnerBearingRetainerLP
 
-
+// CRBB_InnerBearingRetainerLP(HasServo=true, HasCenterHole=true);
 
 
 
