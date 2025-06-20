@@ -8,11 +8,10 @@
 // ***********************************
 //  ***** Notes *****
 //
-//  Upscale of Rocket65
 //  Rocket with 75mm Body and 54mm motor. 
 //
-//  Single deploy:
-//   Mission Control V3 / RocketServo
+//  Dual Deploy:
+//   Mission Control V3 / RocketServo X2
 //
 //  ***** Parts *****
 //
@@ -47,7 +46,8 @@
 // 1/4" Rail Button (2 req)
 // CS4323 Spring (1/2 req)
 // 5/16" Dia x 1-1/4" Spring (3/6 req) PetalHub
-// 1/2" Dia x 0.035" Wall x 74mm Long Aluminum Tube (1/3 req)
+// 1/2" Dia x 0.035" Wall x 74mm Long Aluminum Tube (2 req) UpperRailGuideMount,NC_ShockcordRing75
+// 1/2" Dia x 0.035" Wall x 68mm Long Aluminum Tube (2 req) R75_BallRetainerTop
 //
 //  ***** History *****
 //
@@ -97,19 +97,18 @@
 //
 // *** petal deployer ***
 //
-// PD_NC_PetalHub(OD=Coupler_OD, nPetals=3, nRopes=3); // for dual deploy only
+// PD_NC_PetalHub(OD=Coupler_OD, nPetals=3, HasReplaceableSpringHolder=false, nRopes=3, ShockCord_a=-1, HasThreadedCore=false, ST_DSpring_ID=SE_Spring_CS4323_ID(), ST_DSpring_OD=SE_Spring_CS4323_OD(), CouplerTube_ID=0, CouplerTubeLen=0);// for dual deploy only
 // R75_PetalHub(Body_OD=Body_OD, Body_ID=Body_ID, Coupler_OD=Coupler_OD);
 // rotate([-90,0,0]) PD_PetalSpringHolder2();
-// PD_Petals2(OD=Coupler_OD, Len=150, nPetals=3, Wall_t=1.8, AntiClimber_h=3, HasLocks=false);
-// PD_Petals2(OD=Coupler_OD, Len=110, nPetals=3, Wall_t=1.8, AntiClimber_h=3, HasLocks=false);
+// PD_Petals2(OD=Coupler_OD, Len=180, nPetals=3, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
+// PD_Petals2(OD=Coupler_OD, Len=110, nPetals=3, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
 //
-// SE_SpringEndTop(OD=Coupler_OD-IDXtra, Tube_ID=BT75Coupler_OD-IDXtra-3.6, nRopeHoles=3, CutOutCenter=true);
-// SE_SlidingSpringMiddle(OD=Coupler_OD, nRopes=3);
-//
-//  *** bottom of spring options
-// SE_SpringEndBottom(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, nRopeHoles=3);// optional may be required for 54/1706 (K185W)
+//  *** Spring Handling ***
+// SE_SlidingSpringMiddle(OD=Coupler_OD, nRopes=3, SliderLen=40, SpLen=40, SpringStop_Z=20, UseSmallSpring=true);
+// SE_SpringEndTop(OD=Coupler_OD-IDXtra, Tube_ID=BT75Coupler_OD-IDXtra-3.6, nRopeHoles=3, CutOutCenter=true); // easier option
 // rotate([180,0,0]) SE_SpringEndTypeA(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, nRopes=3); // preferred option
-// SE_SpringEndTypeB(Coupler_OD=Coupler_OD, MotorCoupler_OD=MotorCoupler_OD, nRopes=3); // Sits on top of motor tube
+// rotate([180,0,0]) SE_SpringEndBottom(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, Len=20, nRopeHoles=3, CutOutCenter=true);
+
 // SE_SpringSpacer(OD=Coupler_OD, Tube_ID=Coupler_ID, Len=70); // optional
 // SE_SpringSpacer(OD=Coupler_OD, Tube_ID=Coupler_ID, Len=55); // optional
 //
@@ -125,6 +124,10 @@
 // RocketFin(HasSpiralVaseRibs=false);
 //
 // RailButton(); // (4 req) print many
+//
+// *** Tools ***
+//
+// BodyDrillingJig(Tube_OD=Body_OD, Tube_ID=Body_ID, nBolts=3, BoltInset=7.5);
 //
 // ***********************************
 //  ***** Routines *****
@@ -189,7 +192,6 @@ Body_ID=BT75Body_ID;
 Coupler_OD=BT75Coupler_OD;
 Coupler_ID=BT75Coupler_ID;
 
-// *** 38mm Motor Tube ***
 MotorTube_OD=BT54Body_OD;
 MotorTube_ID=BT54Body_ID;
 MotorCoupler_OD=BT54Coupler_OD;
@@ -295,6 +297,7 @@ module EBay(DualDeploy=false, TopOnly=false, BottomOnly=false, ShowDoors=false){
 
 	Doors=DualDeploy? SimpleTwoBattSWBay:SimpleOneBattSWBay;
 	ExtraBolts=DualDeploy? []:[90];
+	
 	EB_Electronics_BayUniversal(Tube_OD=Body_OD, Tube_ID=Body_ID, DoorAngles=Doors, Len=EBay_Len, 
 									nBolts=3, BoltInset=7.5, ShowDoors=ShowDoors,
 									HasFwdIntegratedCoupler=false, HasFwdShockMount=false,

@@ -133,6 +133,8 @@ PD_PetalHub(OD=Coupler_OD,
 //
 // *** Fin Can ***
 //
+// rotate([180,0,0]) UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, Len=40, HasSpokes=true, Extended=20, HasTube=false, HasStopAtTop=false);
+//
 // FinCan(LowerHalfOnly=false, UpperHalfOnly=true);
 // rotate([180,0,0]) FinCan(LowerHalfOnly=true, UpperHalfOnly=false);
 // RocketFin();
@@ -340,6 +342,61 @@ module ShowRocket(DualDeploy=false, ShowInternals=false){
 
 //ShowRocket();
 //ShowRocket(DualDeploy=true, ShowInternals=true);
+
+module UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, Len=25, HasSpokes=false, Extended=0, HasTube=false, HasStopAtTop=false){
+	
+	Wall_t=2.2;
+	nSpokes=7;
+	AlTube_d=12.7;
+	AlTube_Z=AlTube_d;
+	
+	difference(){
+		union(){
+			if (!HasSpokes)
+				Tube(OD=Body_ID, ID=MotorTube_OD+IDXtra*2, Len=Len, myfn=$preview? 36:360);
+			else{
+				Tube(OD=Body_ID, ID=Body_ID-Wall_t*2, Len=Len, myfn=$preview? 36:360);
+				translate([0,0,-Extended])
+				Tube(OD=MotorTube_OD+IDXtra*2+Wall_t*2, ID=MotorTube_OD+IDXtra*2, Len=Len+Extended, myfn=$preview? 36:360);
+				
+				if (Extended>0 && !HasStopAtTop)
+					translate([0,0,-Extended+Len]) 
+					TubeStop(InnerTubeID=MotorTube_OD-3, OuterTubeOD=MotorTube_OD+Wall_t*2, myfn=$preview? 36:360);
+					
+				if (HasStopAtTop)
+					translate([0,0,Len-4.5]) 
+					TubeStop(InnerTubeID=MotorTube_OD-3, OuterTubeOD=MotorTube_OD+2, myfn=$preview? 36:360);
+				
+				for (j=[0:nSpokes-1]) rotate([0,0,360/nSpokes*j+180/nSpokes]) hull(){
+					translate([0,MotorTube_OD/2+IDXtra+Wall_t/2,0]) cylinder(d=Wall_t, h=Len);
+					translate([0,Body_ID/2-Wall_t/2,0]) cylinder(d=Wall_t, h=Len);
+				}
+				
+				// Rail guide bolts
+				translate([0, Body_ID/2-Wall_t+Overlap, Len/2]) hull(){
+					translate([0,0,6.35]) scale([1,1,1.5]) rotate([90,0,0]) cylinder(d=12, h=Body_ID/2-MotorTube_OD/2-IDXtra-Wall_t);
+					translate([0,0,-6.35]) scale([1,1,1.5]) rotate([90,0,0]) cylinder(d=12, h=Body_ID/2-MotorTube_OD/2-IDXtra-Wall_t);
+				}
+				
+				// Shock cord mounting tube
+				if (HasTube) translate([0,0,AlTube_Z]) difference(){
+					scale([1,1,1.35]) rotate([0,90,0]) cylinder(d=AlTube_d+6, h=Body_ID-2.6, center=true);
+					cylinder(d=MotorTube_OD+1, h=AlTube_d*2+1, center=true);
+				}
+			} // else
+		} // union
+				
+		if (HasTube) translate([0,0,AlTube_Z]) rotate([0,90,0]) cylinder(d=AlTube_d+IDXtra, h=Body_ID+2, center=true);
+		
+		// Rail guide bolts
+		translate([0, Body_ID/2, Len/2]) {
+			translate([0,0,6.35]) rotate([-90,0,0]) Bolt6Hole();
+			translate([0,0,-6.35]) rotate([-90,0,0]) Bolt6Hole();
+		}
+	} // difference
+} // UpperRailGuideMount
+
+// UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, Len=40, HasSpokes=true, Extended=20, HasTube=false, HasStopAtTop=false);
 
 module SpringExtention(Xten=50, Len=120){
 	Spring_OD=SE_Spring_CS4009_OD();

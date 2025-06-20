@@ -830,10 +830,11 @@ module PD_PetalHub(OD=BT75Coupler_OD,
 				rotate([90,0,0]) cylinder(d=4, h=12);
 		}}
 				
+				
 		// Shock cord hole
 		if (ShockCord_a>=0)
-		translate([0,0,-Overlap]) hull() 
-			PD_ShockCordHolePattern(OD=OD, ShockCord_a=ShockCord_a) cylinder(d=4, h=20);
+			translate([0,0,-Overlap]) hull() 
+				PD_ShockCordHolePattern(OD=OD, ShockCord_a=ShockCord_a) cylinder(d=4, h=20);
 			
 		if (ShockCord_a==-2){
 			Hole_d=(CenterHole_d>0)? CenterHole_d:BT38Body_OD;
@@ -917,7 +918,7 @@ module PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, HasReplaceableSpringHolder=f
 		} // union
 			
 		// round shock cord
-		translate([12,0,-Overlap]) cylinder(d=4, h=30);
+		//translate([12,0,-Overlap]) cylinder(d=4, h=30);
 		
 		// Center Hole
 		if (OD>60){
@@ -968,7 +969,7 @@ module PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, HasReplaceableSpringHolder=f
 	
 } // PD_NC_PetalHub
 
-//*
+/*
 PD_NC_PetalHub(OD=PML54Coupler_OD, nPetals=2, HasReplaceableSpringHolder=false, nRopes=0, ShockCord_a=-1, HasThreadedCore=true,
 				ST_DSpring_ID=SE_Spring_CS4323_ID(), ST_DSpring_OD=SE_Spring_CS4323_OD(), CouplerTube_ID=0, CouplerTubeLen=-1);
 /**/
