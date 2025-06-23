@@ -3,21 +3,22 @@
 // Filename: Rocket75C.scad
 // by David M. Flynn
 // Created: 8/6/2023 
-// Revision: 1.4  6/15/2025 
+// Revision: 1.4.1  6/22/2025 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 //
 //  Rocket with 75mm Body and 54mm motor. 
+//  Target motor is L1000W
 //
 //  Dual Deploy:
 //   Mission Control V3 / RocketServo X2
 //
 //  ***** Parts *****
 //
-// BlueTube 2.0 3" Body Tube by 8.5 inches (for dual deploy)
-// BlueTube 2.0 3" Body Tube by 18 to 24 inches (19.25" as built)
-// Blue Tube 2.1" Body Tube by 16 inches
+// BlueTube 2.0 3" Body Tube by 315mm (for dual deploy)
+// BlueTube 2.0 3" Body Tube by 720mm
+// Blue Tube 2.1" Body Tube by 690mm
 // 45" Parachute
 // 1/8" Paracord (3 feet)
 // 1/2" Braided Nylon Shock Cord (20 feet)
@@ -51,6 +52,7 @@
 //
 //  ***** History *****
 //
+// 1.4.1  6/22/2025  Updated tube lengths.
 // 1.4.0  6/15/2025  Updated for L1000W race at XPRS 2025
 // 1.3.1  2/11/2025  Updated to current libs.
 // 1.3.0  7/18/2024  Changed to 5 Lock Balls and Dual Deploy
@@ -100,7 +102,7 @@
 // PD_NC_PetalHub(OD=Coupler_OD, nPetals=3, HasReplaceableSpringHolder=false, nRopes=3, ShockCord_a=-1, HasThreadedCore=false, ST_DSpring_ID=SE_Spring_CS4323_ID(), ST_DSpring_OD=SE_Spring_CS4323_OD(), CouplerTube_ID=0, CouplerTubeLen=0);// for dual deploy only
 // R75_PetalHub(Body_OD=Body_OD, Body_ID=Body_ID, Coupler_OD=Coupler_OD);
 // rotate([-90,0,0]) PD_PetalSpringHolder2();
-// PD_Petals2(OD=Coupler_OD, Len=180, nPetals=3, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
+// PD_Petals2(OD=Coupler_OD, Len=200, nPetals=3, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
 // PD_Petals2(OD=Coupler_OD, Len=110, nPetals=3, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
 //
 //  *** Spring Handling ***
@@ -136,7 +138,8 @@
 // ***********************************
 //  ***** for Viewing *****
 //
-// ShowRocket(ShowInternals=false, DualDeploy=true, ShowDoors=true);
+// 
+ShowRocket(ShowInternals=false, DualDeploy=true, ShowDoors=true);
 // translate([300,0,0]) ShowRocket(ShowInternals=true);
 //
 // ***********************************
@@ -203,10 +206,10 @@ NC_Tip_r=3.5;
 NC_Wall_t=2.2;
 NC_Base_L=15;
 
-MainBay_Len=8.5*25.4;
+MainBay_Len=315;
 EBay_Len=162;
-BodyTubeLen=28*25.4;
-MotorTubeLen=27*25.4;
+BodyTubeLen=720;
+MotorTubeLen=690;
 
 FinInset_Len=5;
 Can_Len=Fin_Root_L+FinInset_Len*2;

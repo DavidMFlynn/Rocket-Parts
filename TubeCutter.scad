@@ -24,6 +24,8 @@
 // DremelRACover();
 // DremelRAHolder();
 //
+// DremelBase();
+//
 // ***********************************
 //  ***** Routines *****
 //
@@ -85,7 +87,7 @@ module DremelRAHolderBoltPattern(){
 } // DremelRAHolderBoltPattern
 
 module DremelBase(){
-	BasePlate_t=10;
+	BasePlate_t=14;
 	LeftGuide_X=75;
 	Guide_X=20;
 	Guide_Y=120;
@@ -114,7 +116,7 @@ module DremelBase(){
 	} // difference
 } // DremelBase
 
-//DremelBase();
+// DremelBase();
 
 module DremelRACover(){
 	Cover_H=15;
