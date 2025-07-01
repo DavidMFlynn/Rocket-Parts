@@ -38,16 +38,18 @@ Overlap=0.05;
 	kDeck_z=2.5;
 	kWheel_z=14.2;
 	kWheelOffset=5; // body CL to wheel CL
-	kBoltCl=28.2;
+	kBoltCl=28.5;
 	kWidth=12.4;
 	
 	kBody_h=19; // was 16 changed to 19 for MG90S
 	kBody_l=23;
 	
 	kTopBox_h=4.5;
+	
+	
 
 	
-module ServoSG90TopBlock(Xtra_Len=4, Xtra_Width=4, Xtra_Height=0){
+module ServoSG90TopBlock(Xtra_Len=4, Xtra_Width=4, Xtra_Height=0, HasWireNotch=false){
 	difference(){
 		translate([kWheelOffset-kDeck_x/2-Xtra_Len/2, -kWidth/2-Xtra_Width/2, kDeck_z]) 
 			cube([kDeck_x+Xtra_Len, kWidth+Xtra_Width, kDeck_z+Xtra_Height]);
@@ -60,6 +62,11 @@ module ServoSG90TopBlock(Xtra_Len=4, Xtra_Width=4, Xtra_Height=0){
 		
 		cylinder(d=kWidth, h=kWheel_z);
 		
+		if (HasWireNotch) translate([kWheelOffset-kBody_l/2,0,0]) hull(){
+			translate([0,-1.5,kDeck_z-Overlap]) cylinder(d=2, h=kDeck_z+Xtra_Height+Overlap*2);
+			translate([0,1.5,kDeck_z-Overlap]) cylinder(d=2, h=kDeck_z+Xtra_Height+Overlap*2);
+			}
+		
 		hull(){
 			cylinder(d=6.35,h=11.5);
 			translate([7,0,0])cylinder(d=6.35,h=11.5);
@@ -68,6 +75,7 @@ module ServoSG90TopBlock(Xtra_Len=4, Xtra_Width=4, Xtra_Height=0){
 } // ServoSG90TopBlock
 
 //ServoSG90TopBlock(Xtra_Height=6);
+// ServoSG90TopBlock(Xtra_Len=4, Xtra_Width=7, Xtra_Height=2, HasWireNotch=true);
 
 module ServoSG90(TopMount=false, HasGear=true){
 	

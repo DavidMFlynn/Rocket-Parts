@@ -55,15 +55,16 @@ PD_PetalHub(OD=BT75Coupler_OD,
 						Body_OD=BT75Body_OD,
 						Body_ID=BT75Body_ID,
 						NC_Base=NC_Base, 
-						SkirtLen=10);
+						SkirtLen=10, 
+					CenterHole_d=0);
 /**/
-// PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, HasReplaceableSpringHolder=false, nRopes=3, ShockCord_a=-1, HasThreadedCore=false, ST_DSpring_ID=SE_Spring_CS4323_ID(), ST_DSpring_OD=SE_Spring_CS4323_OD(), CouplerTube_ID=0);
+// PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, HasReplaceableSpringHolder=false, nRopes=3, ShockCord_a=-1, HasThreadedCore=false, ST_DSpring_ID=SE_Spring_CS4323_ID(), ST_DSpring_OD=SE_Spring_CS4323_OD(), CouplerTube_ID=0, CouplerTubeLen=0);
 //
 // *** Used to prevent drag separation ***
 // rotate([0,-90,0]) PD_PetalLockCatch(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, Len=30, LockStop=false);
 // PD_CatchHolder(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, nPetals=3);
 //
-// PD_Booster_PetalHub(OD=BT54Coupler_OD, nPetals=2, nRopes=2, ShockCord_a=-1, HasThreadedCore=true, ST_DSpring_ID=SE_Spring_CS4323_ID(), ST_DSpring_OD=SE_Spring_CS4323_OD(), CouplerTube_ID=0)
+// PD_Booster_PetalHub(OD=BT54Coupler_OD, nPetals=2, nRopes=2, ShockCord_a=-1, HasThreadedCore=true, ST_DSpring_ID=SE_Spring_CS4323_ID(), ST_DSpring_OD=SE_Spring_CS4323_OD(), CouplerTube_ID=0);
 //
 //  *** Tools ***
 // PD_PetalHolder(Petal_OD=BT137Coupler_OD, Is_Top=false); // bottom half
@@ -368,7 +369,7 @@ module PD_Petals2(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_
 	BaseOffset=7.2; // was 8.2
 	AntiClimber_w=2;
 	AntiClimber_L=AntiClimber_h*4;
-	AntiClimber_LockComp=HasLocks? 10:0;
+	AntiClimber_LockComp=HasLocks? 10:4;
 	
 	module AntiClimber(){
 		rotate([0,0,180]) translate([0.6, -OD/2+1, 0])
@@ -709,7 +710,7 @@ module PD_PetalHub(OD=BT75Coupler_OD,
 						Body_OD=BT75Body_OD,
 						Body_ID=BT75Body_ID,
 						NC_Base=NC_Base, 
-						SkirtLen=10, CenterHole_d=0){
+						SkirtLen=10, CenterHole_d=0, nRopes=0){
 	// ShockCord_a: >=0 Shock cord slot, -1 nothing, -2 center hole
 	Width=PetalWidth+1;
 	Thickness=3;
@@ -743,7 +744,7 @@ module PD_PetalHub(OD=BT75Coupler_OD,
 			difference(){
 				cylinder(d=OD, h=16, $fn=$preview? 90:360);
 				
-				translate([0, 0, 6+Overlap]) cylinder(d1=OD-40, d2=OD-6, h=10);
+				translate([0, 0, 6+Overlap]) cylinder(d1=OD-40, d2=OD-6, h=10, $fn=$preview? 90:360);
 			} // difference
 			
 			// Close bottom
@@ -829,16 +830,23 @@ module PD_PetalHub(OD=BT75Coupler_OD,
 				rotate([90,0,0]) cylinder(d=4, h=12);
 		}}
 				
+				
 		// Shock cord hole
 		if (ShockCord_a>=0)
-		translate([0,0,-Overlap]) hull() 
-			PD_ShockCordHolePattern(OD=OD, ShockCord_a=ShockCord_a) cylinder(d=4, h=20);
+			translate([0,0,-Overlap]) hull() 
+				PD_ShockCordHolePattern(OD=OD, ShockCord_a=ShockCord_a) cylinder(d=4, h=20);
 			
 		if (ShockCord_a==-2){
 			Hole_d=(CenterHole_d>0)? CenterHole_d:BT38Body_OD;
 			translate([0,0,-Overlap]) cylinder(d=Hole_d, h=10, $fn=$preview? 90:360);
 			}
 			
+		// Retention cord
+		if (nRopes>0)
+		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*(j+0.5)]) {
+				translate([0,OD/2-6,-Overlap]) cylinder(d=4, h=30);
+				translate([0,OD/2-6,5]) cylinder(d=8, h=30);
+			}
 	} // difference
 	
 } // PD_PetalHub
@@ -871,17 +879,18 @@ PD_PetalHub(OD=BT137Coupler_OD, Body_OD=BT137Body_OD,
 
 
 module PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, HasReplaceableSpringHolder=false, nRopes=3, ShockCord_a=-1, HasThreadedCore=false,
-				ST_DSpring_ID=SE_Spring_CS4323_ID(), ST_DSpring_OD=SE_Spring_CS4323_OD(), CouplerTube_ID=0){
+				ST_DSpring_ID=SE_Spring_CS4323_ID(), ST_DSpring_OD=SE_Spring_CS4323_OD(), CouplerTube_ID=0, CouplerTubeLen=0){
 				
 	BodyTube_L=(CouplerTube_ID>0)? 10:20;
 	SpringHole_ID=ST_DSpring_ID-IDXtra*2-4.4;
 	CenterHole_d=OD>80? SpringHole_ID : 21;
 	
-	
+	SkirtLen=(CouplerTubeLen==0)? BodyTube_L:CouplerTubeLen;
+	echo(SkirtLen=SkirtLen);
 	// Body tube interface
-	if (CouplerTube_ID==0)
-		translate([0,0,-BodyTube_L]) 
-			Tube(OD=OD, ID=OD-4.4, Len=BodyTube_L+1, myfn=$preview? 90:360);
+	if ((CouplerTube_ID==0) && (SkirtLen>0) && (CouplerTubeLen!=-1))
+		translate([0,0,-SkirtLen]) 
+			Tube(OD=OD, ID=OD-4.4, Len=SkirtLen+1, myfn=$preview? 90:360);
 									
 	difference(){
 		union(){
@@ -896,7 +905,7 @@ module PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, HasReplaceableSpringHolder=f
 				// Coupler tube interface
 				translate([0,0,-BodyTube_L]) 
 					cylinder(d=CouplerTube_ID, h=BodyTube_L+1, $fn=$preview? 90:360);
-			}else{
+			}else{ if (CouplerTubeLen>-1){
 				// Filet to prevent bridging from pulling skirt in
 				translate([0,0,-4+Overlap])
 				
@@ -905,14 +914,19 @@ module PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, HasReplaceableSpringHolder=f
 					
 					translate([0,0,-Overlap]) cylinder(d1=OD-4.4+Overlap, d2=OD-4.4-3.5, h=4+Overlap*2, $fn=$preview? 90:360);
 				} // difference
-			}
+			}}
 		} // union
 			
+		// round shock cord
+		//translate([12,0,-Overlap]) cylinder(d=4, h=30);
+		
 		// Center Hole
+		if (OD>60){
 		translate([0,0,-BodyTube_L-Overlap]) 
 			cylinder(d=SpringHole_ID, h=BodyTube_L+Overlap*2, $fn=$preview? 90:360);
 		translate([0,0,-Overlap]) 
 			cylinder(d=CenterHole_d, h=10, $fn=$preview? 90:360);
+			}
 			
 		if (CouplerTube_ID>0){
 			translate([0,0,-BodyTube_L-Overlap]) 
@@ -937,7 +951,9 @@ module PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, HasReplaceableSpringHolder=f
 				
 				for (j=[0:2]) rotate([0,0,120*j]) hull(){
 					cylinder(d=4, h=BodyTube_L);
-					translate([0,CenterHole_d/2,0]) cylinder(d=4, h=BodyTube_L);
+					//translate([0,CenterHole_d/2,0]) 
+					translate([0,ST_DSpring_ID/2-2.2,0]) 
+						cylinder(d=4, h=BodyTube_L);
 				} // hull
 			} // union
 			
@@ -953,6 +969,10 @@ module PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, HasReplaceableSpringHolder=f
 	
 } // PD_NC_PetalHub
 
+/*
+PD_NC_PetalHub(OD=PML54Coupler_OD, nPetals=2, HasReplaceableSpringHolder=false, nRopes=0, ShockCord_a=-1, HasThreadedCore=true,
+				ST_DSpring_ID=SE_Spring_CS4323_ID(), ST_DSpring_OD=SE_Spring_CS4323_OD(), CouplerTube_ID=0, CouplerTubeLen=-1);
+/**/
 //PD_NC_PetalHub();
 //PD_NC_PetalHub(OD=BT98Coupler_OD, nPetals=3, nRopes=6, ShockCord_a=45, HasThreadedCore=true);
 //PD_NC_PetalHub(OD=BT54Coupler_OD, nPetals=2, nRopes=2, ShockCord_a=60, HasThreadedCore=true);

@@ -3,7 +3,7 @@
 // Filename: Fins.scad
 // by David M. Flynn
 // Created: 6/11/2022 
-// Revision: 1.1.2  4/22/2025
+// Revision: 1.1.3  6/17/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-function FinsRev()="Fins 1.1.2";
+function FinsRev()="Fins 1.1.3";
 echo(FinsRev());
+// 1.1.3  6/17/2025  Fixed TrapFin3 height, added 1.5mm to fin socket in TrapFin3Slots
 // 1.1.2  4/22/2025  Added IDXtra*3 to width of TrapFin3Tail
 // 1.1.1  1/23/2025  Fin fillets
 // 1.1.0  1/19/2025  Added Ogive leading and trailing edge version TrapFin3...
@@ -72,7 +73,7 @@ echo(FinsRev());
 // TrapFin2Shape(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100, Chamfer_L=18);
 //
 // TrapFin3Tail(Post_h=5, Root_L=150, Root_W=10, Chamfer_L=18);
-// TrapFin2Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18);
+// TrapFin3Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18);
 // TrapFin3Shape(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100, Chamfer_L=18, TipOffset=0, TipInset=0, TipPost_h=0, HasBluntTip=false);
 // 
 // ***********************************
@@ -141,8 +142,8 @@ module Fin_BluntOgiveShape(L=24, W=12, Tip_R=1){
 			intersection(){
 				translate([-R,0,0]) square([R*2,L-Xt]);// clip at tangent point, keep first and fourth quadrants only
 				
-				translate([-p+R, 0, 0]) circle(r=p, $fn=$preview? 90:360);
-				translate([p-R, 0, 0]) circle(r=p, $fn=$preview? 90:360);
+				translate([-p+R, 0, 0]) circle(r=p, $fn=$preview? 90:720);
+				translate([p-R, 0, 0]) circle(r=p, $fn=$preview? 90:720);
 			} // intersection
 			
 			// Tip
@@ -226,9 +227,10 @@ module TrapFin2Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_
 // TrapFin2Slots();
 
 module TrapFin3Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18){
+	LengthComp=1.5;
 	
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j+180/nFins]) translate([0,Tube_OD/2-Post_h,0])
-		rotate([-90,0,0]) TrapFin3Tail(Post_h=Post_h+1, Root_L=Root_L, Root_W=Root_W, Chamfer_L=Chamfer_L);
+		rotate([-90,0,0]) TrapFin3Tail(Post_h=Post_h+1, Root_L=Root_L+LengthComp, Root_W=Root_W, Chamfer_L=Chamfer_L);
 		
 } // TrapFin3Slots
 
@@ -345,8 +347,8 @@ module TrapFin3Shape(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span
 				translate([0,-Root_L/2+Chamfer_L,0]) rotate([0,0,180]) Fin_BluntOgiveShape(L=Chamfer_L, W=Root_W, Tip_R=Edge_r);
 			} // hull
 	
-		translate([0, -Tip_L/2+Edge_r+TipOffset, Span-Edge_r-TipInset]) sphere(r=Edge_r);
-		translate([0, Tip_L/2-Edge_r+TipOffset, Span-Edge_r]) sphere(r=Edge_r);
+		translate([0, -Tip_L/2+Edge_r+TipOffset, Post_h+Span-Edge_r-TipInset]) sphere(r=Edge_r);
+		translate([0, Tip_L/2-Edge_r+TipOffset, Post_h+Span-Edge_r]) sphere(r=Edge_r);
 	} // hull
 	
 	/*

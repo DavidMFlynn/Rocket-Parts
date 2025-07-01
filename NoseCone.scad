@@ -47,7 +47,7 @@ echo(NoseConeRev());
 //
 // OgiveTailCone(Ogive_L=150, Body_D=100, End_D=66, Wall_T=3); // Truncated tangent ogive used to make a tail cone
 //
-// BluntOgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=350, Base_L=15, nRivets=3, Tip_R=5, HasThreadedTip=false, Wall_T=2.2, Cut_d=0, LowerPortion=false, FillTip=false); // Cut_d=PML98Body_OD-20 is good
+// BluntOgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=350, Base_L=15, nRivets=3, RivertInset=0, Tip_R=5, HasThreadedTip=false, Wall_T=2.2, Cut_d=0, LowerPortion=false, FillTip=false); // Cut_d=PML98Body_OD-20 is good
 // 
 // Splice_BONC(OD=58, H=10, L=160, Base_L=5, Tip_R=5, Wall_T=2.2, Cut_Z=80);  // fix a failed print
 // Bulkplate_BONC(OD=58, T=10, L=160, Base_L=5, Tip_R=5, Wall_T=2.2, Cut_Z=80);
@@ -730,12 +730,12 @@ module BluntOgiveShape(L=150, D=50, Base_L=10, Tip_R=5, Thickness=0){
 //offset(-3) BluntOgiveShape(L=190, D=137, Base_L=0, Tip_R=15);
 //BluntOgiveShape(L=24, D=12, Base_L=0, Tip_R=1);
 
-module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, Tip_R=5, HasThreadedTip=false, Wall_T=3, 
+module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, RivertInset=0, Tip_R=5, HasThreadedTip=false, Wall_T=3, 
 							Cut_d=0, LowerPortion=false, FillTip=false){
 
 	R=OD/2;
 	p=NC_OGiveArcOffset(R,L);
-	ThreadedTipDepth=40;
+	ThreadedTipDepth=(OD>85)? 40:25;
 	Tip_Z=Base_L+L-NC_OGiveTipX0(R,L,Tip_R);
 	//echo(NC_OGiveTipX0(R,L,Cut_d/2));
 	Cut_Z=Base_L+Ogive_Cut_Z(Ogive_L=L, R=R, End_R=Cut_d/2);
@@ -765,9 +765,14 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, Tip_R=5, Ha
 		} // difference
 		
 		// 3/8"-16 Thread
-		if (HasThreadedTip) translate([0,0,Base_L+L-Tip_R-ThreadedTipDepth-1])
-			ExternalThread(Pitch=1.5875, Dia_Nominal=9.525, Length=ThreadedTipDepth-Wall_T*2, 
+		if (HasThreadedTip) translate([0,0,Base_L+L-Tip_R-ThreadedTipDepth-1]) 
+			if (OD>85){
+				ExternalThread(Pitch=1.5875, Dia_Nominal=9.525, Length=ThreadedTipDepth-Wall_T*2, 
 							Step_a=$preview? 5:20, TrimEnd=true, TrimRoot=true);
+			}else{
+				ExternalThread(Pitch=1.27, Dia_Nominal=6.35, Length=ThreadedTipDepth-Wall_T*2, 
+							Step_a=$preview? 5:20, TrimEnd=true, TrimRoot=true);
+			}
 		
 		// Make Skirt fit coupler tube
 		translate([0,0,-Overlap]) cylinder(d=ID, h=Base_L+Overlap*2, $fn=$preview? 90:720);
@@ -776,7 +781,7 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, Tip_R=5, Ha
 		if (OD-Wall_T*2<ID)
 		translate([0,0,Base_L]) cylinder(d1=ID, d2=OD-Wall_T*2, h=Wall_T, $fn=$preview? 90:720);
 		
-		if (Base_L>12 && nRivets>0) translate([0,0,Base_L/2])
+		if (Base_L>12 && nRivets>0) translate([0,0,(RivertInset==0)? Base_L/2:RivertInset])
 			RivetPattern(BT_Dia=OD, nRivets=nRivets, Dia=5/32*25.4);
 		
 		if (Cut_d!=0 && LowerPortion==false)

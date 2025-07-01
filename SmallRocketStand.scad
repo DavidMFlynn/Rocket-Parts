@@ -92,6 +92,101 @@ module PrepStand_Core(){
 
 //translate([0,0,62.5+4]) rotate([0,180,0]) PrepStand_Core();
 
+module PrepStand_BP4_A(){
+	Main_OD=140;
+	Booster_OD=80;
+	Felt_t=3;
+	Wall_t=5;
+	Thickness=50;
+	Height=Main_OD/2+75;
+	
+	difference(){
+		union(){
+			cylinder(d=Main_OD+Felt_t*2+Wall_t*2, h=Thickness);
+			translate([Main_OD/2+Booster_OD/2,0,0])
+				cylinder(d=Booster_OD+Felt_t*2+Wall_t*2, h=Thickness);
+			translate([-Main_OD/2-Booster_OD/2,0,0])
+				cylinder(d=Booster_OD+Felt_t*2+Wall_t*2, h=Thickness);
+			translate([-Thickness/2,-Height,0]) cube([Thickness,Height,Thickness]);
+			
+			// gussets
+			hull(){
+				translate([10, -Height+Wall_t/2, 0]) cylinder(d=Wall_t, h=Thickness);
+				translate([Main_OD/2+Booster_OD, -20, 0]) cylinder(d=Wall_t, h=Thickness);
+			} // hulll
+			hull(){
+				translate([-10, -Height+Wall_t/2, 0]) cylinder(d=Wall_t, h=Thickness);
+				translate([-Main_OD/2-Booster_OD, -20, 0]) cylinder(d=Wall_t, h=Thickness);
+			} // hulll
+		} // union
+
+		translate([0,0,-Overlap])
+			cylinder(d=Main_OD+Felt_t*2, h=Thickness+Overlap*2);
+		translate([Main_OD/2+Booster_OD/2,0,-Overlap])
+			cylinder(d=Booster_OD+Felt_t*2, h=Thickness+Overlap*2);
+		translate([-Main_OD/2-Booster_OD/2,0,-Overlap])
+			cylinder(d=Booster_OD+Felt_t*2, h=Thickness+Overlap*2);
+			
+		// Trim top
+		translate([0,Main_OD/2-20,Thickness/2]) cube([Main_OD+Booster_OD*2+Felt_t*2+Wall_t*2+1, Main_OD, Thickness+Overlap*2], center=true);
+	
+		//core post
+		translate([0,-Height-Overlap, Thickness/2]) rotate([-90,0,0]) cylinder(d=12.7, h=Height);
+	} // difference
+	
+} // PrepStand_BP4_A
+
+// PrepStand_BP4_A();
+
+module PrepStand_BP4_B(Lower=false){
+	Main_OD=140;
+	Booster_OD=80;
+	Felt_t=3;
+	Wall_t=5;
+	Thickness=50;
+	Height=Main_OD/2+75;
+	
+	difference(){
+		union(){
+			cylinder(d=Main_OD+Felt_t*2+Wall_t*2, h=Thickness);
+			
+			hull(){
+				translate([-Thickness/4,-Height,0]) cube([Thickness/2,Height,Thickness]);
+				translate([-Thickness/2,-Height/2,Thickness/2]) rotate([90,0,0]) cylinder(d=5, h=Height, center=true);
+				translate([Thickness/2,-Height/2,Thickness/2]) rotate([90,0,0]) cylinder(d=5, h=Height, center=true);
+			} // hull
+			
+			if (Lower){
+				//rotate([0,0,-45]) translate([Main_OD/2+Felt_t+10,-7-Felt_t-10,0]) cylinder(d=20, h=Thickness);
+				rotate([0,0,-45]) translate([Main_OD/2+Felt_t,-7-Felt_t-Wall_t,0]) cube([10,Wall_t, Thickness]);
+				mirror([1,0,0]) rotate([0,0,-45]) translate([Main_OD/2+Felt_t,-7-Felt_t-Wall_t,0]) cube([10,Wall_t, Thickness]);
+			}
+			
+		} // union
+
+		translate([0,0,-Overlap])
+			cylinder(d=Main_OD+Felt_t*2, h=Thickness+Overlap*2);
+		translate([Main_OD/2+Booster_OD/2,0,-Overlap])
+			cylinder(d=Booster_OD+Felt_t*2, h=Thickness+Overlap*2);
+		translate([-Main_OD/2-Booster_OD/2,0,-Overlap])
+			cylinder(d=Booster_OD+Felt_t*2, h=Thickness+Overlap*2);
+			
+		// Trim top
+		translate([0,Main_OD/2-20,Thickness/2]) cube([Main_OD+Booster_OD*2+Felt_t*2+Wall_t*2+1, Main_OD, Thickness+Overlap*2], center=true);
+		
+		if (Lower){
+			rotate([0,0,-45]) translate([0, -7-Felt_t, -Overlap]) cube([Main_OD, 100, Thickness+Overlap*2]);
+			mirror([1,0,0]) rotate([0,0,-45]) translate([0, -7-Felt_t, -Overlap]) cube([Main_OD, 100, Thickness+Overlap*2]);
+		}
+	
+		//core post
+		translate([0,-Height-Overlap, Thickness/2]) rotate([-90,0,0]) cylinder(d=12.7, h=Height);
+	} // difference
+	
+} // PrepStand_BP4_B
+
+// PrepStand_BP4_B(Lower=true);
+
 module PrepStand_BottomCap(){
 	nSides=PrepStand_nSides;
 	
@@ -127,8 +222,7 @@ module PrepStand_Leg(){
 	
 } // PrepStand_Leg
 
-//rotate([90,0,0]) 
-PrepStand_Leg();
+//rotate([90,0,0]) PrepStand_Leg();
 
 module PrepStand_Leg2(){
 	module LegShape(){
