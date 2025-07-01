@@ -88,6 +88,7 @@
 //
 // rotate([-90,0,0]) EB_AltDoor(Tube_OD=Body_OD);
 // rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD, HasSwitch=true, DoubleBatt=false);
+// RocketServoHolderRevC(IsDouble=false);
 //
 // *** Ball Lock ***
 //
@@ -111,8 +112,7 @@
 // rotate([180,0,0]) SE_SpringEndTypeA(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, nRopes=3); // preferred option
 // rotate([180,0,0]) SE_SpringEndBottom(OD=Coupler_OD, Tube_ID=Coupler_OD-2.4, Len=20, nRopeHoles=3, CutOutCenter=true);
 
-// SE_SpringSpacer(OD=Coupler_OD, Tube_ID=Coupler_ID, Len=70); // optional
-// SE_SpringSpacer(OD=Coupler_OD, Tube_ID=Coupler_ID, Len=55); // optional
+// SE_SpringSpacer(OD=Coupler_OD, Tube_ID=Coupler_ID-1, Len=15); // optional adjust length as needed
 //
 // rotate([180,0,0]) R75_UpperRailGuideMount(Body_ID=Body_ID, MotorTube_OD=MotorTube_OD, Len=30, HasSpokes=true, Extended=0, HasTube=true, HasStopAtTop=true);
 //
@@ -125,7 +125,8 @@
 //
 // RocketFin(HasSpiralVaseRibs=false);
 //
-// RailButton(); // (4 req) print many
+// rotate([90,0,0]) BoltOnRailGuide(Length = RailGuideLen, BoltSpace=12.7, RoundEnds=true);
+// rotate([-90,0,0]) RailGuideSpacer(OD=Body_OD, H=RailGuide_h, Length = RailGuideLen, BoltSpace=12.7);
 //
 // *** Tools ***
 //
@@ -138,13 +139,13 @@
 // ***********************************
 //  ***** for Viewing *****
 //
-// 
-ShowRocket(ShowInternals=false, DualDeploy=true, ShowDoors=true);
+// ShowRocket(ShowInternals=false, DualDeploy=true, ShowDoors=true);
 // translate([300,0,0]) ShowRocket(ShowInternals=true);
 //
 // ***********************************
 include<TubesLib.scad>
 use<RailGuide.scad>
+use<BatteryHolderLib.scad>
 use<Fins.scad>
 use<NoseCone.scad>
 use<ElectronicsBayLib.scad>
@@ -217,6 +218,8 @@ TailCone_Len=35;
 Bolt4Inset=4;
 ShockCord_a=35;
 CouplerLenXtra=-5;
+RailGuideLen=30;
+RailGuide_h=Body_OD/2+2;
 
 module ShowRocket(ShowInternals=false, DualDeploy=false, ShowDoors=false){
 	FinCan_Z=35;
@@ -374,7 +377,7 @@ module UpperRailBtnMount75(){
 
 module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 	FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=Can_Len,
-				MotorTube_OD=MotorTube_OD, RailGuide_h=Body_OD/2+2, RailGuide_z=25, RailGuideLen=30,
+				MotorTube_OD=MotorTube_OD, RailGuide_h=RailGuide_h, RailGuide_z=25, RailGuideLen=RailGuideLen,
 				nFins=nFins, HasIntegratedCoupler=true, Coupler_Len=15, nCouplerBolts=nFins,
 				HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 				Fin_Root_W=Fin_Root_W, Fin_Root_L=Fin_Root_L, Fin_Post_h=Fin_Post_h, Fin_Chamfer_L=Fin_Chamfer_L,
