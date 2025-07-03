@@ -423,6 +423,7 @@ module SE_SpringEndTypeA2(Coupler_OD=BT75Coupler_OD, Coupler_ID=BT75Coupler_ID, 
 } // SE_SpringEndTypeA2
 
 // SE_SpringEndTypeA2(Coupler_OD=BT75Coupler_OD, Coupler_ID=BT75Coupler_ID, nRopes=6, Spring_OD=SE_Spring_CS11890_OD());
+// SE_SpringEndTypeA2(Coupler_OD=ULine157Coupler_OD, Coupler_ID=ULine157Coupler_ID, nRopes=6, Spring_OD=SE_Spring_CS11890_OD());
 
 module SE_SpringEndTypeB(Coupler_OD=BT75Coupler_OD, MotorCoupler_OD=BT54Coupler_OD,
 				nRopes=3, UseSmallSpring=true){
@@ -456,6 +457,7 @@ module SE_SpringEndTypeB(Coupler_OD=BT75Coupler_OD, MotorCoupler_OD=BT54Coupler_
 
 //SE_SpringEndTypeB();
 //SE_SpringEndTypeB(Coupler_OD=BT137Coupler_OD, MotorCoupler_OD=BT75Coupler_OD, nRopes=6, UseSmallSpring=false);
+//SE_SpringEndTypeB(Coupler_OD=ULine157Coupler_OD, MotorCoupler_OD=BT75Coupler_OD, nRopes=6, UseSmallSpring=false);
 
 module SE_SpringEndTypeC(Coupler_OD=BT137Coupler_OD, Coupler_ID=BT137Coupler_ID, Len=25, nRopes=5, UseSmallSpring=false){
 	Spring_OD=UseSmallSpring? Spring_CS4323_OD:Spring_CS11890_OD;
@@ -487,7 +489,7 @@ module SE_SpringEndTypeC(Coupler_OD=BT137Coupler_OD, Coupler_ID=BT137Coupler_ID,
 } // SE_SpringEndTypeC
 
 //SE_SpringEndTypeC();
-
+//SE_SpringEndTypeC(Coupler_OD=ULine157Coupler_OD, Coupler_ID=ULine157Coupler_ID, Len=10, nRopes=6, UseSmallSpring=false);
 
 module SE_SlidingBigSpringMiddle(OD=BT137Coupler_OD, SliderLen=50, Extension=0){
 	Wall_t=1.8;
@@ -585,6 +587,7 @@ module SE_SlidingBigSpringMiddle(OD=BT137Coupler_OD, SliderLen=50, Extension=0){
 } // SE_SlidingBigSpringMiddle
 
 // SE_SlidingBigSpringMiddle(SliderLen=60);
+// SE_SlidingBigSpringMiddle(OD=ULine157Coupler_OD, SliderLen=50, Extension=0);
 
 
 module SE_SlidingSpringMiddle(OD=BT98Coupler_OD, nRopes=6, SliderLen=40, SpLen=40, SpringStop_Z=20, UseSmallSpring=true){

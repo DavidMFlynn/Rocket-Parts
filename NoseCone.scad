@@ -3,7 +3,7 @@
 // Filename: NoseCone.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.20  4/19/2025
+// Revision: 0.9.21  7/2/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-function NoseConeRev()="NoseCone Rev. 0.9.20";
+function NoseConeRev()="NoseCone Rev. 0.9.21";
 echo(NoseConeRev());
+// 0.9.21  7/2/2025	  Fixed threaded tip in BluntOgiveNoseCone()
 // 0.9.20  4/19/2025  Added UseHardSpring option to NC_ShockcordRingDual
 // 0.9.19  12/20/2024 Added function Ogive_Cut_Z(), added FillTip parameter to BluntOgiveNoseCone()
 // 0.9.18  12/19/2024 Fix the two part nose cone problem?, In BluntOgiveNoseCone() the cut parameter has been changed to Cut_d
@@ -601,7 +602,7 @@ BluntConeNoseCone(ID=Fairing55_OD-4.4, OD=Fairing55_OD, L=190, Base_L=15, Tip_R=
 /**/
 
 
-module ElipticalShape(L=100, D=50, Base_L=2){
+module ElipticalShape(L=645, D=50, Base_L=15){
 	// tangent ogive
 	R=D/2;
 	p=L/R;
@@ -618,7 +619,7 @@ module ElipticalShape(L=100, D=50, Base_L=2){
 	if (Base_L>0) square([R,Base_L+Overlap]);
 } // ElipticalShape
 
-//rotate_extrude() ElipticalShape(Base_L=0);
+//rotate_extrude() ElipticalShape(L=645, D=ULine157Body_OD, Base_L=15);
 
 module OgiveShape(L=100, D=50, Base_L=2){
 	// tangent ogive
@@ -699,7 +700,7 @@ module BluntOgiveShape(L=150, D=50, Base_L=10, Tip_R=5, Thickness=0){
 	R=D/2;
 	p=NC_OGiveArcOffset(R,L);
 	X0 = NC_OGiveTipX0(R,L,Tip_R); //L-sqrt((p-Tip_R)*(p-Tip_R)-(p-R)*(p-R));
-	
+	//echo(X0=X0);
 	// calculate tangent point
 	Yt=(Tip_R*(p-R))/(p-Tip_R);
 	Xt=X0-sqrt(Tip_R*Tip_R-Yt*Yt);
@@ -735,8 +736,9 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, RivertInset
 
 	R=OD/2;
 	p=NC_OGiveArcOffset(R,L);
+	X0 = NC_OGiveTipX0(R,L,Tip_R); 
 	ThreadedTipDepth=(OD>85)? 40:25;
-	Tip_Z=Base_L+L-NC_OGiveTipX0(R,L,Tip_R);
+	Tip_Z=Base_L+L-X0;
 	//echo(NC_OGiveTipX0(R,L,Cut_d/2));
 	Cut_Z=Base_L+Ogive_Cut_Z(Ogive_L=L, R=R, End_R=Cut_d/2);
 	//echo(Cut_Z=Cut_Z);
@@ -760,16 +762,18 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, RivertInset
 				} // difference
 				
 				if (HasThreadedTip)
-					translate([0,0,Base_L+L-Tip_R-ThreadedTipDepth]) cylinder(d=OD, h=ThreadedTipDepth+Tip_R);
+					translate([0,0,Base_L+L-X0-ThreadedTipDepth]) cylinder(d=OD, h=ThreadedTipDepth+Tip_R);
 			} // difference
 		} // difference
 		
-		// 3/8"-16 Thread
-		if (HasThreadedTip) translate([0,0,Base_L+L-Tip_R-ThreadedTipDepth-1]) 
+		
+		if (HasThreadedTip) translate([0,0,Base_L+L-X0-ThreadedTipDepth-1]) 
 			if (OD>85){
+				// 3/8"-16 Thread
 				ExternalThread(Pitch=1.5875, Dia_Nominal=9.525, Length=ThreadedTipDepth-Wall_T*2, 
 							Step_a=$preview? 5:20, TrimEnd=true, TrimRoot=true);
 			}else{
+				// 1/4"-20 Thread
 				ExternalThread(Pitch=1.27, Dia_Nominal=6.35, Length=ThreadedTipDepth-Wall_T*2, 
 							Step_a=$preview? 5:20, TrimEnd=true, TrimRoot=true);
 			}
@@ -832,6 +836,11 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, RivertInset
 	
 } // BluntOgiveNoseCone
 
+/*
+BluntOgiveNoseCone(ID=ULine157Body_ID, OD=ULine157Body_OD, L=600, 
+						Base_L=15, nRivets=6, RivertInset=0, Tip_R=15, HasThreadedTip=true, Wall_T=1.8, 
+						Cut_d=ULine157Body_OD-30, LowerPortion=false, FillTip=true);
+/**/
 //BluntOgiveNoseCone(ID=BT75Coupler_OD, OD=BT75Body_OD, L=220, Base_L=13, Tip_R=7, Wall_T=1.8, Cut_d=0, LowerPortion=false);
 
 //BluntOgiveNoseCone(ID=BT75Coupler_OD, OD=BT75Body_OD, L=220, Base_L=13, Tip_R=6, Wall_T=1.8, Cut_d=BT75Body_OD/2, Transition_OD=BT75Body_OD-17, LowerPortion=true);

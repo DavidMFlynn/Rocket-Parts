@@ -51,6 +51,7 @@ echo("Stager3Lib 0.9.9");
 // ***********************************
 //  ***** Routines *****
 //
+// Stager_CupBoltHoles(Tube_OD=Body_OD, nLocks=nLocks) Bolt4Hole();
 // Stager_CupHoles(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true);
 // Stager_LockRod_Holes(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks);
 // Stager_SaucerBoltPattern(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks);
@@ -94,7 +95,7 @@ CupBoltsPerLock=2;
 DefaultBody_OD=BT98Body_OD;
 DefaultBody_ID=BT98Body_ID;
 /**/
-//*
+/*
 // for Stager 137
 Stager_LockRod_X=12;
 Stager_LockRod_Y=6;
@@ -105,6 +106,18 @@ Default_nLocks=5;
 CupBoltsPerLock=3;
 DefaultBody_OD=BT137Body_OD;
 DefaultBody_ID=BT137Body_ID;
+/**/
+//*
+// for Stager 157
+Stager_LockRod_X=12;
+Stager_LockRod_Y=6;
+Stager_LockRod_Z=38;
+Stager_LockRod_R=1;
+LockBall_d=1/2 * 25.4; // 1/2" Delrin balls
+Default_nLocks=5;
+CupBoltsPerLock=3;
+DefaultBody_OD=ULine157Body_OD;
+DefaultBody_ID=ULine157Body_ID;
 /**/
 
 Default_nSkirtBolts=5;
@@ -159,7 +172,7 @@ module ShowStager(Tube_OD=DefaultBody_OD, Tube_ID=DefaultBody_ID, nLocks=Default
 	
 	//*
 	translate([0,0,-150]) {
-		translate([20,0,-40]) rotate([180,0,120]) Stager_LockStop(Tube_OD=Tube_OD);
+		//translate([20,0,-40]) rotate([180,0,120]) Stager_LockStop(Tube_OD=Tube_OD);
 		translate([0,0,-10]) Stager_InnerRace(Tube_OD=Tube_OD);
 		
 	}
@@ -323,7 +336,7 @@ module Stager_ServoPlate(Tube_OD=DefaultBody_OD, Skirt_ID=DefaultBody_ID, nLocks
 	
 	nBolts=4;
 	Bolt_a=35;
-	Servo_X=Servo_X=UseLargeServo? -Tube_OD/2+27 : -BC_r+3;
+	Servo_X=UseLargeServo? -Tube_OD/2+27 : -BC_r+3;
 	Servo_Y=0;
 	Servo_Z=UseLargeServo? -10:-6;
 	ServoWheel_r=UseLargeServo? 6:4;
@@ -516,6 +529,16 @@ module Stager_LockRod(Adj=0){
 // Stager_LockRod();
 // Stager_LockRod(Adj=0.5);
 
+module Stager_CupBoltHoles(Tube_OD=Body_OD, nLocks=nLocks){
+	nBolts=nLocks*CupBoltsPerLock;
+
+	for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+180/nBolts]) 
+			translate([0,Tube_OD/2-CupBoltHoleInset,0]) children();
+				
+} // Stager_CupBoltHoles
+
+//Stager_CupBoltHoles(Tube_OD=Body_OD, nLocks=nLocks) Bolt4Hole();
+
 module Stager_CupHoles(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=true, Collar_h=DefaultCollarLen){
 	// refferenced from top of saucer
 	Len=StagerCupLen; // thickness without collar
@@ -530,10 +553,9 @@ module Stager_CupHoles(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks, BoltsOn=tr
 	Stager_LockRod_Holes(Tube_OD=Tube_OD, nLocks=nLocks);
 	
 	// BoltHoles
-	if (BoltsOn)
-		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+180/nBolts]) 
-			translate([0,Tube_OD/2-CupBoltHoleInset,Len+Collar_h]) 
-				rotate([180,0,0]) Bolt4Hole(depth=12);
+	if (BoltsOn) translate([0,0,Len+Collar_h])
+		Stager_CupBoltHoles(Tube_OD=Tube_OD, nLocks=nLocks) rotate([180,0,0]) Bolt4Hole(depth=12);
+		
 } // Stager_CupHoles
 
 // Stager_CupHoles();

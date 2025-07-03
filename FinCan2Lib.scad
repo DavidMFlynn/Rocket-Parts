@@ -88,7 +88,7 @@ NominalThreadWall_t=ThreadPitch+1.5; // added to motor tube radius
 
 module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 				MotorTube_OD=BT54Body_OD, RailGuide_h=BT98Body_OD/2+2, RailGuide_z=0,
-				nFins=5, HasIntegratedCoupler=true, Coupler_Len=10, nCouplerBolts=0,
+				nFins=5, HasIntegratedCoupler=true, HasFwdCenteringRing=false, Coupler_Len=10, nCouplerBolts=0,
 				HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 				Fin_Root_W=14, Fin_Root_L=130, Fin_Post_h=14, Fin_Chamfer_L=32,
 				Cone_Len=65, ThreadedTC=true, Extra_OD=0, RailGuideLen=30,
@@ -139,10 +139,10 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 				} // difference
 			} // HasAftIntegratedCoupler
 			
-			UpperRing_Z=HasIntegratedCoupler? Can_Len+7:Can_Len-3;
+			UpperRing_Z=HasIntegratedCoupler? Can_Len+Coupler_Len-3:Can_Len-3;
 			UpperRing_OD=HasIntegratedCoupler? Body_ID-1:Body_OD-1;
 			// Upper Centering Ring
-			if (Cone_Len==0)
+			if (HasFwdCenteringRing)
 				translate([0,0,UpperRing_Z])
 					CenteringRing(OD=UpperRing_OD, ID=MotorTubeHole_d, Thickness=3, nHoles=nFins, Offset=0);
 					
