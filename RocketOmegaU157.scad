@@ -57,6 +57,7 @@
 //
 // rotate([180,0,0]) MainEBay(TopOnly=true, BottomOnly=false, ShowDoors=false);
 // MainEBay(TopOnly=false, BottomOnly=true, ShowDoors=false);
+// CenteringRing(OD=Body_ID, ID=EBayTube_OD+IDXtra, Thickness=4.8, nHoles=0, Offset=0, myfn=$preview? 90:720);
 //
 // rotate([180,0,0]) LowerEBay(TopOnly=true, BottomOnly=false, ShowDoors=false);
 // LowerEBay(TopOnly=false, BottomOnly=true, ShowDoors=false);
@@ -73,7 +74,7 @@
 //
 STB_Xtra_r=0.3;
 //
-// rotate([180,0,0]) R157_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, EBayTube_OD=BT54Body_OD, Engagement_Len=Engagement_Len, nBolts=6, Xtra_r=STB_Xtra_r);
+// rotate([180,0,0]) R157_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, EBayTube_OD=EBayTube_OD, Engagement_Len=Engagement_Len, nBolts=6, Xtra_r=STB_Xtra_r);
 // STB_LockDisk(Body_ID=Body_ID, nLockBalls=nLockBalls, HasLargeInnerBearing=true, Xtra_r=STB_Xtra_r);
 // R157_BallRetainerBottom(Body_ID=Body_ID, Engagement_Len=Engagement_Len, Xtra_r=STB_Xtra_r);
 // STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD*CF_Comp, Engagement_Len=Engagement_Len);
@@ -92,10 +93,19 @@ STB_Xtra_r=0.3;
 //
 //  *** Fins & Fin Cans ***
 //
-// FinCan54();
+// SustainerFinCan(LowerHalfOnly=false, UpperHalfOnly=true);
+// rotate([180,0,0]) SustainerFinCan(LowerHalfOnly=true, UpperHalfOnly=false);
+//
 // RocketOmegaFin();
 //
+//  *** Rail Guides ***
+//
+// rotate([90,0,0]) BoltOnRailGuide(Length = RailGuide_Len, BoltSpace=12.7, RoundEnds=true, ExtraBack=0);
+// rotate([-90,0,0]) RailGuideSpacer(OD=Body_OD, H=RailGuide_h, Length = RailGuide_Len, BoltSpace=12.7);
+//
+// =====================
 //  ***** BOOSTER *****
+// =====================
 //
 //  *** Stager ***
 //
@@ -115,8 +125,8 @@ STB_Xtra_r=0.3;
 //
 //  *** Fin Can ***
 //
-// rotate([180,0,0]) BoosterFinCan(LowerHalfOnly=true, UpperHalfOnly=false);
 // BoosterFinCan(LowerHalfOnly=false, UpperHalfOnly=true);
+// rotate([180,0,0]) BoosterFinCan(LowerHalfOnly=true, UpperHalfOnly=false);
 //
 // BoosterMotorRetainer();
 // RocketOmegaBoosterFin();
@@ -190,6 +200,7 @@ Coupler_OD=ULine157Coupler_OD;
 Coupler_ID=ULine157Coupler_ID;
 MotorTube_OD=BT54Body_OD;
 MotorTube_ID=BT54Body_ID;
+EBayTube_OD=ULine38Body_OD;
 
 
 nLockBalls=6; // Ball Lock (STB) units
@@ -271,6 +282,7 @@ NC_nRivets=5;
 
 
 RailGuide_h=Body_OD/2+2;
+RailGuide_Len=40;
 TailConeLen=40;
 
 
@@ -421,9 +433,6 @@ module ShowRocketOmega(ShowInternals=true){
 		}}
 	}
 	
-	
-	
-		
 	if (!ShowInternals) translate([0,0,DrogueSTB_Z]) color("Gray")
 		STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD, Engagement_Len=Engagement_Len);
 
@@ -487,7 +496,7 @@ module MainEBay(TopOnly=false, BottomOnly=false, ShowDoors=false){
 									nBolts=nEBayBolts, BoltInset=EBayBoltInset, ShowDoors=ShowDoors,
 									HasFwdIntegratedCoupler=false, HasFwdShockMount=false,
 									HasAftIntegratedCoupler=false, HasAftShockMount=false,
-									HasRailGuide=false, RailGuideLen=40,
+									HasRailGuide=false, RailGuideLen=RailGuide_Len,
 									HasFwdCenteringRing=false, HasAftCenteringRing=false, InnerTube_OD=ULine38Body_OD,
 									Bolted=true, ExtraBolts=[45], TopOnly=TopOnly, BottomOnly=BottomOnly);
 									
@@ -510,7 +519,7 @@ module LowerEBay(TopOnly=false, BottomOnly=false, ShowDoors=false){
 									nBolts=nEBayBolts, BoltInset=7.5, ShowDoors=ShowDoors,
 									HasFwdIntegratedCoupler=true, HasFwdShockMount=false,
 									HasAftIntegratedCoupler=false, HasAftShockMount=false,
-									HasRailGuide=false, RailGuideLen=40,
+									HasRailGuide=false, RailGuideLen=RailGuide_Len,
 									HasFwdCenteringRing=false, HasAftCenteringRing=false, InnerTube_OD=0,
 									Bolted=true, ExtraBolts=[60,90,120], TopOnly=TopOnly, BottomOnly=BottomOnly);
 									
@@ -522,34 +531,38 @@ module SustainerFinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 	
 	Can_Len=Sustainer_Fin_Root_L+SustainerFinInset*2;
 	echo(Can_Len=Can_Len);
-	RailGuide_Z=50;
+	RailGuide_Z=35;
 	Retainer_d=65;	
+	Rocket_OD=Body_OD*CF_Comp+Vinyl_t*2;
 	
 	difference(){
 		union(){
-			FC2_FinCan(Body_OD=Body_OD*CF_Comp+Vinyl_t*2, Body_ID=Body_ID, Can_Len=Can_Len,
+			FC2_FinCan(Body_OD=Rocket_OD, Body_ID=Body_ID, Can_Len=Can_Len,
 				MotorTube_OD=MotorTube_OD, RailGuide_h=RailGuide_h, RailGuide_z=RailGuide_Z,
 				nFins=nFins, HasIntegratedCoupler=true, Coupler_Len=15, nCouplerBolts=nFins*2,
 				HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 				Fin_Root_W=Sustainer_Fin_Root_W, Fin_Root_L=Sustainer_Fin_Root_L, 
 				Fin_Post_h=Sustainer_Fin_Post_h, Fin_Chamfer_L=Sustainer_Fin_Chamfer_L,
-				Cone_Len=0, ThreadedTC=false, Extra_OD=0, RailGuideLen=40,
+				Cone_Len=0, ThreadedTC=false, Extra_OD=0, RailGuideLen=RailGuide_Len,
 				LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly, 
 				HasWireHoles=false, HollowTailcone=true, 
 				HollowFinRoots=true, Wall_t=1.2, OgiveTailCone=false, Ogive_Len=400, OgiveCut_d=BT54Body_OD+8,
 				UseTrapFin3=true);
 					
-			// Motor Retainer Socket
-			translate([0,0,-2]) cylinder(d=Retainer_d+5, h=25);
-			translate([0,0,-2+25-Overlap]) cylinder(d1=Retainer_d+5, d2=MotorTube_OD+4, h=8);
-		//*
-			// Stager cup mounts here
-			translate([0,0,-2])
-			difference(){
-				cylinder(d=Body_OD, h=6, $fn=$preview? 90:360);
-				translate([0,0,-Overlap]) cylinder(d=MotorTube_OD+IDXtra*3, h=30+Overlap*2);
-			} // difference
-		/**/
+			if (!UpperHalfOnly){
+				// Motor Retainer Socket
+				translate([0,0,-2]) cylinder(d=Retainer_d+5, h=25);
+				translate([0,0,-2+25-Overlap]) cylinder(d1=Retainer_d+5, d2=MotorTube_OD+4, h=8);
+			}
+		
+			if (!UpperHalfOnly){
+				// Stager cup mounts here
+				translate([0,0,-2])
+				difference(){
+					cylinder(d=Rocket_OD, h=6, $fn=$preview? 90:360);
+					translate([0,0,-Overlap]) cylinder(d=MotorTube_OD+IDXtra*3, h=30+Overlap*2);
+				} // difference
+			}
 		} // union
 		
 		// Igniter wirs
@@ -560,7 +573,6 @@ module SustainerFinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 		translate([0,0,-2-Overlap]) cylinder(d=Retainer_d+IDXtra*3, h=20);
 		cylinder(d=MotorTube_OD+IDXtra*3, h=40);
 		
-			
 		// Booster attachment
 		translate([0,0,-2]) rotate([0,0,10])
 		  Stager_CupBoltHoles(Tube_OD=Body_OD, nLocks=nLocks) rotate([180,0,0]) Bolt4Hole();
@@ -593,7 +605,7 @@ module BoosterEBay(TopOnly=false, BottomOnly=false, ShowDoors=false){
 									nBolts=nEBayBolts, BoltInset=7.5, ShowDoors=ShowDoors,
 									HasFwdIntegratedCoupler=true, HasFwdShockMount=false,
 									HasAftIntegratedCoupler=false, HasAftShockMount=false,
-									HasRailGuide=true, RailGuideLen=40,
+									HasRailGuide=true, RailGuideLen=RailGuide_Len,
 									HasFwdCenteringRing=false, HasAftCenteringRing=false, InnerTube_OD=0,
 									Bolted=true, ExtraBolts=[45], TopOnly=TopOnly, BottomOnly=BottomOnly);
 									
@@ -634,16 +646,17 @@ module BoosterFinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 	Can_Len=Booster_Fin_Root_L+BoosterFinInset*2; //Booster_Body_Len;
 	
 	echo(Can_Len=Can_Len);
-	RailGuide_Z=40;
+	RailGuide_Z=35;
 	Retainer_d=65;
+	Rocket_OD=Body_OD*CF_Comp+Vinyl_t*2;
 	
 	difference(){
-		FC2_FinCan(Body_OD=Body_OD, Body_ID=Body_ID, Can_Len=Can_Len,
+		FC2_FinCan(Body_OD=Rocket_OD, Body_ID=Body_ID, Can_Len=Can_Len,
 				MotorTube_OD=MotorTube_OD, RailGuide_h=RailGuide_h, RailGuide_z=RailGuide_Z,
 				nFins=nFins, HasIntegratedCoupler=true, Coupler_Len=15, nCouplerBolts=nFins*2,
 				HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 				Fin_Root_W=Booster_Fin_Root_W, Fin_Root_L=Booster_Fin_Root_L, Fin_Post_h=Booster_Fin_Post_h, Fin_Chamfer_L=Booster_Fin_Chamfer_L,
-				Cone_Len=TailConeLen, ThreadedTC=false, Extra_OD=2, RailGuideLen=40,
+				Cone_Len=TailConeLen, ThreadedTC=false, Extra_OD=2, RailGuideLen=RailGuide_Len,
 				LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly, 
 				HasWireHoles=false, HollowTailcone=true, 
 				HollowFinRoots=true, Wall_t=1.2, OgiveTailCone=false, Ogive_Len=400, OgiveCut_d=BT54Body_OD+8,
