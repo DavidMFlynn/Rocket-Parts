@@ -17,6 +17,9 @@
 // ***********************************
 //  ***** for STL output *****
 //
+// BT54MotorRetainer();
+// UL75MotorRetainer();
+//
 // ***********************************
 //  ***** Routines *****
 //
@@ -63,6 +66,8 @@ function ATRMS_54_Aft_d()=kATRMS_Aft54_d;
 //
 // ***********************************
 //
+include<TubesLib.scad>
+
 $fn=90;
 Overlap=0.05;
 
@@ -136,6 +141,35 @@ kATRMS_75_5120_Case_h=602.5; // K+2J=L
 kATRMS_75_6400_Case_h=737.5; // L+J=M
 
 kATRMS_For75_oal=kATRMS_For75_h4;
+
+module UL75MotorRetainer(){
+	MotorTubeHole_d=ULine75Body_OD+IDXtra*3;
+	AftClosure_OD=kATRMS_Aft75_d;
+	AftClosure_Len=kATRMS_Aft75_h;
+	Motor_OD=kATRMS_75_Case_d;
+	MotorRetainer_OD=90;
+	MotorStop_Len=4;
+	MotorStop_Z=AftClosure_Len+6;
+	SnapRing_w=3.6;
+	OAL=AftClosure_Len+MotorStop_Len+15+4+SnapRing_w;
+	
+	
+	difference(){
+		cylinder(d=MotorRetainer_OD, h=OAL, $fn=$preview? 90:360);
+		
+	
+		translate([0,0,MotorStop_Z+MotorStop_Len]) cylinder(d=MotorTubeHole_d, h=OAL, $fn=$preview? 90:360);
+		translate([0,0,MotorStop_Z-Overlap]) cylinder(d=Motor_OD+IDXtra*3, h=OAL, $fn=$preview? 90:360);
+		translate([0,0,-Overlap]) cylinder(d=AftClosure_OD+IDXtra*4, h=MotorStop_Z+Overlap, $fn=$preview? 90:360);
+		
+		// Snap ring
+		translate([0,0,MotorStop_Z-AftClosure_Len]) cylinder(d1=AftClosure_OD+3, d2=AftClosure_OD+IDXtra*3, h=3, $fn=$preview? 90:360);
+		translate([0,0,MotorStop_Z-AftClosure_Len-SnapRing_w]) cylinder(d=AftClosure_OD+3, h=SnapRing_w+Overlap, $fn=$preview? 90:360);
+	} // difference
+	
+} // UL75MotorRetainer
+
+// UL75MotorRetainer();
 
 module ShowAll54(){
 	ATRMS_54_427_Motor(HasEyeBolt=true); // I115W, I229T
@@ -393,6 +427,33 @@ module ATRMS_AftClosure54(){
 
 // ATRMS_AftClosure54();
 
+
+module BT54MotorRetainer(){
+	MotorTubeHole_d=BT54Body_OD+IDXtra*3;
+	MotorAftClosure_d=kATRMS_Aft54_d;
+	MotorAftClosure_h=kATRMS_Aft54_h;
+	Retainer_d=65;
+	OAH=33;
+	
+	difference(){
+		cylinder(d=Retainer_d, h=OAH, $fn=$preview? 90:360);
+		
+		// Aft closure
+		translate([0,0,-Overlap]) cylinder(d=MotorAftClosure_d+IDXtra*4, h=15, $fn=$preview? 90:360);
+		// motor body
+		cylinder(d=BT54Body_ID+IDXtra, h=OAH, $fn=$preview? 90:360);
+		// C-clip
+		translate([0,0,3]) cylinder(d=MotorAftClosure_d+3, h=2, $fn=$preview? 90:360);
+		translate([0,0,5]) cylinder(d1=MotorAftClosure_d+3, d2=MotorAftClosure_d+IDXtra*4, h=2, $fn=$preview? 90:360);
+		// motor tube
+		translate([0,0,18]) cylinder(d=MotorTubeHole_d, h=15+Overlap, $fn=$preview? 90:360);
+		
+		if ($preview) translate([0,0,-Overlap]) cube([50,50,50]);
+	} // difference
+	
+} // BT54MotorRetainer
+
+// BT54MotorRetainer();
 
 
 module ATRMS_75_2560_Motor(Extended=false, HasEyeBolt=true){

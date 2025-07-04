@@ -721,29 +721,7 @@ module FinCan(LowerHalfOnly=false, UpperHalfOnly=false, HasIntegratedEBay=false,
 // rotate([180,0,0]) FinCan(LowerHalfOnly=true, UpperHalfOnly=false, HasIntegratedEBay=false, ShowDoors=false);
 
 module MotorRetainer(){
-	AftClosure_OD=79.5;
-	AftClosure_Len=13;
-	Motor_OD=75.5;
-	MotorRetainer_OD=90;
-	MotorStop_Len=4;
-	MotorStop_Z=AftClosure_Len+6;
-	SnapRing_w=3.6;
-	OAL=AftClosure_Len+MotorStop_Len+15+4+SnapRing_w;
-	
-	
-	difference(){
-		cylinder(d=MotorRetainer_OD, h=OAL, $fn=$preview? 90:360);
-		
-	
-		translate([0,0,MotorStop_Z+MotorStop_Len]) cylinder(d=MotorTube_OD+IDXtra*3, h=OAL, $fn=$preview? 90:360);
-		translate([0,0,MotorStop_Z-Overlap]) cylinder(d=Motor_OD+IDXtra*3, h=OAL, $fn=$preview? 90:360);
-		translate([0,0,-Overlap]) cylinder(d=AftClosure_OD+IDXtra*4, h=MotorStop_Z+Overlap, $fn=$preview? 90:360);
-		
-		// Snap ring
-		translate([0,0,MotorStop_Z-AftClosure_Len]) cylinder(d1=AftClosure_OD+3, d2=AftClosure_OD+IDXtra*3, h=3, $fn=$preview? 90:360);
-		translate([0,0,MotorStop_Z-AftClosure_Len-SnapRing_w]) cylinder(d=AftClosure_OD+3, h=SnapRing_w+Overlap, $fn=$preview? 90:360);
-	} // difference
-	
+	UL75MotorRetainer();	
 } // MotorRetainer
 
 // translate([0,0,-TailCone_Len-11]) color("Gray") MotorRetainer();

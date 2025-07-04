@@ -191,7 +191,7 @@ module R157_PetalHub(OD=Coupler_OD, nPetals=nPetals, nBolts=nPetals){
 // translate([0,0,-20]) rotate([180,0,0]) R157_PetalHub();
 // R157_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=true);
 
-module R157_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, EBayTube_OD=BT54Body_OD, Engagement_Len=30, nBolts=6, Xtra_r=0.0){
+module R157_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, EBayTube_OD=ULine38Body_OD, Engagement_Len=30, nBolts=6, Xtra_r=0.0,CouplerLenXtra=0){
 	Tube_d=12.7;
 	Skirt_Len=16;
 	Tube_a=-30;
@@ -271,6 +271,7 @@ module R157_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, EBayTube_OD=BT54Bo
 } // R157_BallRetainerTop
 
 // rotate([180,0,0]) R157_BallRetainerTop();
+//R157_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, EBayTube_OD=ULine38Body_OD, Engagement_Len=30, nBolts=6, Xtra_r=0.3, CouplerLenXtra=-20);
 
 
 module R157_BallRetainerBottom(Body_ID=Body_ID, Engagement_Len=0, Xtra_r=0.0){
