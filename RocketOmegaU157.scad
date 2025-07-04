@@ -3,7 +3,7 @@
 // Filename: RocketOmegaU157.scad
 // by David M. Flynn
 // Created: 7/1/2025
-// Revision: 0.9.1  7/3/2025
+// Revision: 0.9.2  7/4/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -22,6 +22,7 @@
 // Booster Motor Tube	452mm BT54Body
 //
 //  ***** History *****
+// 0.9.2  7/4/2025    Added fin art.
 // 0.9.1  7/3/2025	  The Printing Begins! Little fixes.
 // 0.9.0  7/1/2025	  Copied from Omega75
 // 0.9.7  8/13/2024   Copied from Omega54 0.9.6
@@ -141,6 +142,24 @@ CouplerLenXtra=MainEB_HasCR? 0:-20; // 0 for use w/ centering ring:servos extend
 //
 // TubeTest(OD=Body_OD, ID=Body_ID, TestOD=false);
 // TubeTest(OD=Body_OD+IDXtra*2, ID=Body_ID, TestOD=true);
+//
+// ***********************************
+//  ***** for DXF output *****
+//
+//  ***** Fin Art *****
+//  Save as dxf for LightBurn to cut on laser cutter.
+//  Cut 4 of each, 32 pieces total.
+//
+// VinylSustainerFinBlack(); 
+// VinylSustainerFinBlue();
+// mirror([1,0,0]) VinylSustainerFinBlack(); 
+// mirror([1,0,0]) VinylSustainerFinBlue();
+//
+// VinylBoosterFinBlack();
+// VinylBoosterFinBlue();
+// mirror([1,0,0]) VinylBoosterFinBlack();
+// mirror([1,0,0]) VinylBoosterFinBlue();
+
 //
 // ***********************************
 //  ***** Routines *****
@@ -597,6 +616,68 @@ module SustainerFinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 
 // SustainerFinCan();	
 	
+module VinylSustainerFinBlack(ShowIn3D=false){
+	if (ShowIn3D){
+		hull(){
+			translate([0,-Sustainer_Fin_Root_L/2+6,Sustainer_Fin_Post_h+4]) 
+				rotate([0,90,0]) cylinder(d=1, h=Sustainer_Fin_Root_W+1, center=true);
+			translate([0,-Sustainer_Fin_Root_L/2+6,Sustainer_Fin_Post_h+4]) rotate([22.5,0,0]) 
+				translate([0,Sustainer_Fin_Root_L-8,0]) rotate([0,90,0]) cylinder(d=1, h=Sustainer_Fin_Root_W+1, center=true);
+			translate([0,Sustainer_Fin_Root_L/2-6,Sustainer_Fin_Post_h+4]) rotate([0,90,0]) cylinder(d=1, h=Sustainer_Fin_Root_W+1, center=true);
+		} // hull
+	}else{
+	
+		hull(){
+			translate([0,-Sustainer_Fin_Root_L/2+6,0]) circle(d=1);
+			translate([0,-Sustainer_Fin_Root_L/2+6,0]) rotate([0,0,22.5])
+				translate([0,Sustainer_Fin_Root_L-8,0]) circle(d=1);
+			translate([0,Sustainer_Fin_Root_L/2-6,0]) circle(d=1);
+		} // hull
+		
+	} // if
+} // VinylSustainerFinBlack
+
+// color("Gray") VinylSustainerFinBlack(ShowIn3D=false);
+// translate([Sustainer_Fin_Post_h+4,0,-Sustainer_Fin_Root_W/2-1.3]) rotate([0,-90,0]) color("Gray") VinylSustainerFinBlack(ShowIn3D=true);
+
+module VinylSustainerFinBlue(ShowIn3D=false){
+	if (ShowIn3D){
+		hull(){
+			translate([0,-Sustainer_Fin_Root_L/2+6,Sustainer_Fin_Post_h+5]) rotate([0,90,0]) cylinder(d=1, h=Sustainer_Fin_Root_W+1, center=true);
+			
+			translate([0,Sustainer_Fin_Tip_L/2-4,Sustainer_Fin_Post_h+5+Sustainer_Fin_Span-8]) 
+				rotate([0,90,0]) cylinder(d=1, h=Sustainer_Fin_Root_W+1, center=true);
+			
+			translate([0,-Sustainer_Fin_Root_L/2+6,Sustainer_Fin_Post_h+5]) rotate([46,0,0]) 
+				translate([0,Sustainer_Fin_Root_L,0]) rotate([0,90,0]) cylinder(d=1, h=Sustainer_Fin_Root_W+1, center=true);
+				
+			translate([0,-Sustainer_Fin_Root_L/2+6,Sustainer_Fin_Post_h+5]) rotate([23,0,0])
+				translate([0,Sustainer_Fin_Root_L-8,0]) 
+					rotate([0,90,0]) cylinder(d=1, h=Sustainer_Fin_Root_W+1, center=true);
+					
+		} // hull
+	}else{
+		hull(){
+			translate([-1,-Sustainer_Fin_Root_L/2+6,0]) circle(d=1);
+			
+			translate([-1-Sustainer_Fin_Span+8,Sustainer_Fin_Tip_L/2-4,]) 
+				circle(d=1);
+			
+			translate([-1,-Sustainer_Fin_Root_L/2+6,0]) rotate([0,0,46]) 
+				translate([0,Sustainer_Fin_Root_L,0]) circle(d=1);
+				
+			translate([-1,-Sustainer_Fin_Root_L/2+6,0]) rotate([0,0,23])
+				translate([0,Sustainer_Fin_Root_L-8,0]) 
+					circle(d=1);
+		
+		}
+	} // if
+
+} // VinylSustainerFinBlue
+
+// color("LightBlue") VinylSustainerFinBlue(ShowIn3D=false);
+// translate([Sustainer_Fin_Post_h+4,0,-Sustainer_Fin_Root_W/2-1.3]) rotate([0,-90,0]) color("LightBlue") VinylSustainerFinBlue(ShowIn3D=true);
+
 module RocketOmegaFin(){
 	//  *** Ogive leading and trailing edges ***
 	TrapFin3(Post_h=Sustainer_Fin_Post_h, Root_L=Sustainer_Fin_Root_L, Tip_L=Sustainer_Fin_Tip_L, 
@@ -649,6 +730,83 @@ module BoosterFinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 } // BoosterFinCan
 
 // BoosterFinCan(LowerHalfOnly=false, UpperHalfOnly=false);
+
+
+module VinylBoosterFinBlack(ShowIn3D=false){
+	EdgeInset=6;
+	RootInset=4; // for 3D only
+	MidPointAdj=-7;
+	
+	if (ShowIn3D){
+		hull(){
+			translate([0, -Booster_Fin_Root_L/2+EdgeInset, Booster_Fin_Post_h+RootInset]) 
+				rotate([0,90,0]) cylinder(d=1, h=Booster_Fin_Root_W+1, center=true);
+				
+			translate([0,-Booster_Fin_Root_L/2+EdgeInset,Booster_Fin_Post_h+RootInset]) rotate([22.5,0,0]) 
+				translate([0,Booster_Fin_Root_L+MidPointAdj,0]) rotate([0,90,0]) cylinder(d=1, h=Booster_Fin_Root_W+1, center=true);
+				
+			translate([0,Booster_Fin_Root_L/2-EdgeInset,Booster_Fin_Post_h+RootInset]) 
+				rotate([0,90,0]) cylinder(d=1, h=Booster_Fin_Root_W+1, center=true);
+		} // hull
+	}else{
+	
+		hull(){
+			translate([0,-Booster_Fin_Root_L/2+EdgeInset,0]) circle(d=1);
+			translate([0,-Booster_Fin_Root_L/2+EdgeInset,0]) rotate([0,0,22.5])
+				translate([0,Booster_Fin_Root_L+MidPointAdj,0]) circle(d=1);
+			translate([0,Booster_Fin_Root_L/2-EdgeInset,0]) circle(d=1);
+		} // hull
+		
+	} // if
+} // VinylBoosterFinBlack
+
+// color("Gray") VinylBoosterFinBlack(ShowIn3D=false);
+// translate([Booster_Fin_Post_h+4,0,-Booster_Fin_Root_W/2-1.3]) rotate([0,-90,0]) color("Gray") VinylBoosterFinBlack(ShowIn3D=true);
+
+module VinylBoosterFinBlue(ShowIn3D=false){
+	EdgeInset=6;
+	RootInset=5; // for 3D only
+	RootInset2D=-1; // move over from Black
+	MidPointAdj=-6.5;
+	TipAdj=2.4;
+	
+	if (ShowIn3D){
+		hull(){
+			translate([0,-Booster_Fin_Root_L/2+EdgeInset, Booster_Fin_Post_h+RootInset]) 
+				rotate([0,90,0]) cylinder(d=1, h=Booster_Fin_Root_W+1, center=true);
+			
+			translate([0, Booster_Fin_Tip_L/2-4, Booster_Fin_Post_h+Booster_Fin_Span-4]) 
+				rotate([0,90,0]) cylinder(d=1, h=Booster_Fin_Root_W+1, center=true);
+			
+			translate([0,-Booster_Fin_Root_L/2+EdgeInset,Booster_Fin_Post_h+RootInset]) rotate([46,0,0]) 
+				translate([0,Booster_Fin_Root_L+TipAdj,0]) rotate([0,90,0]) cylinder(d=1, h=Booster_Fin_Root_W+1, center=true);
+				
+			translate([0,-Booster_Fin_Root_L/2+EdgeInset,Booster_Fin_Post_h+RootInset]) rotate([23,0,0])
+				translate([0,Booster_Fin_Root_L+MidPointAdj,0]) 
+					rotate([0,90,0]) cylinder(d=1, h=Booster_Fin_Root_W+1, center=true);
+					
+		} // hull
+	}else{
+		hull(){
+			translate([RootInset2D, -Booster_Fin_Root_L/2+EdgeInset, 0]) circle(d=1);
+			
+			translate([RootInset2D-Booster_Fin_Span+9, Booster_Fin_Tip_L/2-4,0]) 
+				circle(d=1);
+			
+			translate([RootInset2D, -Booster_Fin_Root_L/2+EdgeInset, 0]) rotate([0,0,46]) 
+				translate([0,Booster_Fin_Root_L+TipAdj,0]) circle(d=1);
+				
+			translate([RootInset2D, -Booster_Fin_Root_L/2+EdgeInset, 0]) rotate([0,0,23])
+				translate([0,Booster_Fin_Root_L+MidPointAdj,0]) 
+					circle(d=1);
+		
+		}
+	} // if
+
+} // VinylBoosterFinBlue
+
+// color("LightBlue") VinylBoosterFinBlue(ShowIn3D=false);
+// translate([Booster_Fin_Post_h+4,0,-Booster_Fin_Root_W/2-1.3]) rotate([0,-90,0]) color("LightBlue") VinylBoosterFinBlue(ShowIn3D=true);
 
 module RocketOmegaBoosterFin(){
 	//  *** Ogive leading and trailing edges ***
