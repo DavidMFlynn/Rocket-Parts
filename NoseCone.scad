@@ -3,7 +3,7 @@
 // Filename: NoseCone.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.21  7/2/2025
+// Revision: 0.9.22  7/5/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-function NoseConeRev()="NoseCone Rev. 0.9.21";
+function NoseConeRev()="NoseCone Rev. 0.9.22";
 echo(NoseConeRev());
+// 0.9.22  7/5/2025   Worked on BluntConeNoseCone
 // 0.9.21  7/2/2025	  Fixed threaded tip in BluntOgiveNoseCone()
 // 0.9.20  4/19/2025  Added UseHardSpring option to NC_ShockcordRingDual
 // 0.9.19  12/20/2024 Added function Ogive_Cut_Z(), added FillTip parameter to BluntOgiveNoseCone()
@@ -552,18 +553,19 @@ module NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_ID=0, N
 //NC_ShockcordRingDual(Tube_OD=Body_OD+Vinyl_t, Tube_ID=Body_ID, NC_Base_L=NC_Base_L);
 //NC_ShockcordRingDual(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, NC_ID=BT137Coupler_OD, NC_Base_L=20, nRivets=6, nBolts=6, Flat=true);
 
-module BluntConeShape(L=100, D=50, Base_L=2, Tip_R=5){
+module BluntConeShape(L=100, D=50, Base_L=2, Tip_R=5, Thickness=0){
 	//Spherically blunted conic
 	Trans_R=Tip_R<=Base_L? Tip_R:Base_L;
 	
 	difference(){
 		hull(){
-			translate([0,L-Tip_R,0]) circle(r=Tip_R); 
-			translate([D/2-Trans_R,Base_L,0]) circle(r=Trans_R); 
-			translate([-D/2,0,0]) square([D,Base_L]);
+			translate([0,Base_L+L-Tip_R,0]) circle(r=Tip_R-Thickness); 
+			translate([D/2-Trans_R,Base_L,0]) circle(r=Trans_R-Thickness); 
+			translate([-D/2,0,0]) square([D-Thickness,Base_L]);
 		} // hull
 		
-		translate([-D/2-1,-Overlap,0]) square([D/2+1,L+Overlap*2]);
+		// remove left half
+		translate([-D/2-1,-Overlap,0]) square([D/2+1,Base_L+L+Overlap*2]);
 	} // difference
 } // BluntConeShape
 
@@ -571,7 +573,7 @@ module BluntConeShape(L=100, D=50, Base_L=2, Tip_R=5){
 
 // BluntConeShape(L=100, D=50, Base_L=15, Tip_R=10);
 
-module BluntConeNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3, HasRivets=true){
+module BluntConeNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3, HasRivets=true, nRivets=3, ThickerTip=true){
 	
 	difference(){
 		rotate_extrude($fn=$preview? 90:720) 
@@ -581,20 +583,31 @@ module BluntConeNoseCone(ID=54, OD=58, L=160, Base_L=10, Tip_R=5, Wall_T=3, HasR
 		translate([0,0,-Overlap]) cylinder(d=ID, h=Base_L+Overlap*2, $fn=$preview? 90:720);
 		translate([0,0,Base_L]) cylinder(d1=ID, d2=OD-Wall_T*4, h=Wall_T*2, $fn=$preview? 90:720);
 		
+		// remove inside
 		rotate_extrude($fn=$preview? 90:720) 
-			offset(-Wall_T) BluntConeShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R);
-		cylinder(d=Wall_T*3, h=L-Tip_R);
+			BluntConeShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R, Thickness=Wall_T);
+			
 		translate([0,0,L-Tip_R]) sphere(r=Tip_R-Wall_T,$fn=$preview? 36:360);
 		
 		if (Base_L>12 && HasRivets) translate([0,0,Base_L/2])
-			RivetPattern(BT_Dia=OD, nRivets=3, Dia=5/32*25.4);
+			RivetPattern(BT_Dia=OD, nRivets=nRivets, Dia=5/32*25.4);
 		
-		if ($preview==true) translate([0,-100,-1]) cube([100,100,200]);
+		if ($preview==true) translate([0,-100,-1]) cube([100,100,Base_L+L+2]);
 	} // difference
+	
+	if (ThickerTip)
+		difference(){
+			translate([0,0,Base_L+L-Tip_R-1]) sphere(r=Tip_R);
+			
+			translate([0,0,Base_L+L-Tip_R-2]) scale([1,1,0.9]) sphere(r=Tip_R, $fn=$preview? 90:180);
+			translate([0,0,Base_L+L-Tip_R-2]) mirror([0,0,1]) cylinder(r=Tip_R, h=Tip_R+2);
+			
+			if ($preview==true) translate([0,-100,-1]) cube([100,100,Base_L+L+2]);
+		} // difference
 	
 } // BluntConeNoseCone
 
-//BluntConeNoseCone(ID=PML54Body_ID, OD=PML54Body_OD, L=120, Base_L=5, Tip_R=7, Wall_T=2.2);
+//BluntConeNoseCone(ID=BT98Body_ID, OD=BT98Body_OD, L=120, Base_L=15, Tip_R=10, Wall_T=2.2);
 //BluntConeNoseCone();
 /*
 Fairing55_OD=5.5*25.4;

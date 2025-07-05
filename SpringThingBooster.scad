@@ -379,6 +379,7 @@ module STB_DrillingJig(Body_ID=BT75Body_ID, nLockBalls=nLockBalls, Body_OD=BT75B
 // STB_DrillingJig();
 // STB_DrillingJig(Body_ID=PML75Body_ID, Body_OD=PML75Body_OD, Engagement_Len=20);
 
+
 module STB_TubeEnd(Body_ID=BT75Body_ID, nLockBalls=nLockBalls, 
 			Body_OD=BT75Body_OD, Engagement_Len=20){
 
@@ -394,6 +395,8 @@ module STB_TubeEnd(Body_ID=BT75Body_ID, nLockBalls=nLockBalls,
 	Ring_OD=max(Min_Ring_OD,BallCalcdRing_OD);
 	RingLen=Engagement_Len+10-ChamferLen;
 	DepthExtra=0.5;
+	
+	echo("STB_TubeEnd_d = ",Ring_OD);
 	
 	difference(){
 		union(){

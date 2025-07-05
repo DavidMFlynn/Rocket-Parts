@@ -3,7 +3,7 @@
 // Filename: RocketOmegaU157.scad
 // by David M. Flynn
 // Created: 7/1/2025
-// Revision: 0.9.2  7/4/2025
+// Revision: 0.9.3  7/5/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -22,6 +22,7 @@
 // Booster Motor Tube	452mm BT54Body
 //
 //  ***** History *****
+// 0.9.3  7/5/2025    Added Cineroc optional nosecone.
 // 0.9.2  7/4/2025    Added fin art.
 // 0.9.1  7/3/2025	  The Printing Begins! Little fixes.
 // 0.9.0  7/1/2025	  Copied from Omega75
@@ -76,8 +77,8 @@ STB_Xtra_r=0.3;
 MainEB_HasCR=false;
 CouplerLenXtra=MainEB_HasCR? 0:-20; // 0 for use w/ centering ring:servos extend into EBay
 //
-// rotate([180,0,0]) R157_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, EBayTube_OD=EBayTube_OD, Engagement_Len=Engagement_Len, nBolts=6, Xtra_r=STB_Xtra_r, CouplerLenXtra=CouplerLenXtra);
-// rotate([180,0,0]) R157_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, EBayTube_OD=EBayTube_OD, Engagement_Len=Engagement_Len, nBolts=6, Xtra_r=STB_Xtra_r, CouplerLenXtra=-20);  // for Booster
+// rotate([180,0,0]) R157_BallRetainerTop(Body_OD=Body_OD*CF_Comp+Vinyl_t*2, Body_ID=Body_ID, EBayTube_OD=EBayTube_OD, Engagement_Len=Engagement_Len, nBolts=6, Xtra_r=STB_Xtra_r, CouplerLenXtra=CouplerLenXtra);
+// rotate([180,0,0]) R157_BallRetainerTop(Body_OD=Body_OD*CF_Comp+Vinyl_t*2, Body_ID=Body_ID, EBayTube_OD=EBayTube_OD, Engagement_Len=Engagement_Len, nBolts=6, Xtra_r=STB_Xtra_r, CouplerLenXtra=-20);  // for Booster
 // STB_LockDisk(Body_ID=Body_ID, nLockBalls=nLockBalls, HasLargeInnerBearing=true, Xtra_r=STB_Xtra_r);
 // R157_BallRetainerBottom(Body_ID=Body_ID, Engagement_Len=Engagement_Len, Xtra_r=STB_Xtra_r);
 // STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD*CF_Comp, Engagement_Len=Engagement_Len);
@@ -135,7 +136,21 @@ CouplerLenXtra=MainEB_HasCR? 0:-20; // 0 for use w/ centering ring:servos extend
 //
 // RocketOmegaBoosterFin();
 //
+// ================================
+//  ***** Cineroc Only Parts *****
+// ================================
+//  Replaces main parachute bay and nosecone
+//
+// BluntConeNoseCone(ID=CNC_Body_ID, OD=CNC_Body_OD, L=CNC_NC_Len, Base_L=CBC_Base_L, nRivets=NC_nRivets, Tip_R=CNC_NC_Tip_r, Wall_T=CNC_NC_Wall_t);
+// Cineroc_CameraMount();
+// Cineroc_CameraTube();
+// CinerocCoupler();
+// CinerocTube(CNC_LowerTube_Len);
+// Cineroc_Base();
+//
+// ===============
 //  *** Tools ***
+// ===============
 //
 // BodyDrillingJig(Tube_OD=Body_OD*CF_Comp+Vinyl_t*2, Tube_ID=Body_ID, nBolts=6, BoltInset=7.5);
 // BodyDrillingJig(Tube_OD=Body_OD*CF_Comp+Vinyl_t*2, Tube_ID=Body_ID, nBolts=10, BoltInset=7.5);
@@ -168,6 +183,8 @@ CouplerLenXtra=MainEB_HasCR? 0:-20; // 0 for use w/ centering ring:servos extend
 // ***********************************
 //  ***** for Viewing *****
 //
+// ShowCineroc(ShowInternals=false);
+//
 // ShowRocketOmega(ShowInternals=true);
 // ShowRocketOmega(ShowInternals=false);
 //
@@ -189,6 +206,7 @@ use<SpringEndsLib.scad>
 use<SpringThingBooster.scad>
 use<RailGuide.scad>
 use<R157Lib.scad>
+use<GoProCamLib.scad>
 
 //also included
  //include<CommonStuffSAEmm.scad>
@@ -304,12 +322,310 @@ NC_Tip_r=5*Scale;
 NC_Wall_t=2.2;
 NC_nRivets=5;
 
-
 RailGuide_h=Body_OD/2+2;
 RailGuide_Len=40;
 TailConeLen=40;
 
+// ******************************
+//  ***** Cineroc Nosecone *****
 
+CNC_NC_Tip_r=0.375*25.4*Scale;
+CNC_NC_Len=3.3*25.4*Scale;
+CBC_Base_L=15;
+CNC_NC_Wall_t=2.2;
+
+CNC_Body_Wall_t=1.8;
+CNC_Body_OD=1.8*25.4*Scale;
+CNC_Body_ID=CNC_Body_OD-4.4;
+CNC_Body_Len=(4.375+0.125*2)*25.4*Scale-30;
+CNC_ParachuteTube_Len=300;
+CNC_LowerTube_Len=CNC_ParachuteTube_Len-100;
+CNC_UpperTube_Len=CNC_Body_Len-CNC_LowerTube_Len-3;
+
+CNC_BaseTaper_Len=(1.0-0.125)*25.4*Scale;
+CNC_Base_Len=CNC_BaseTaper_Len+15; // tapered portion plus shoulder
+CNC_TubeEnd_OD=162.3;
+
+
+module ShowCineroc(ShowInternals=false){
+	Base_Z=0;
+	ParachuteTube_Z=Base_Z+Engagement_Len/2;
+	Body_Z=Base_Z+CNC_Base_Len;
+	UpperBody_Z=Body_Z+CNC_LowerTube_Len+3;
+	Nosecone_Z=Body_Z+CNC_Body_Len;
+	
+	echo(CBC_Base_L=CBC_Base_L);
+	echo(CNC_NC_Len=CNC_NC_Len);
+	translate([0,0,Nosecone_Z]) 
+		BluntConeNoseCone(ID=CNC_Body_ID, OD=CNC_Body_OD, L=CNC_NC_Len, Base_L=CBC_Base_L, nRivets=NC_nRivets, 
+					Tip_R=CNC_NC_Tip_r, Wall_T=CNC_NC_Wall_t);
+					
+		
+	// Parachute Tube
+	if (ShowInternals)
+		translate([0,0,ParachuteTube_Z+0.1]) color("Tan")
+			Tube(OD=Body_OD, ID=Body_ID, Len=CNC_ParachuteTube_Len-0.2, myfn=$preview? 90:360);
+	
+	//if (ShowInternals)
+		translate([0,0,ParachuteTube_Z+CNC_ParachuteTube_Len-10]){
+			rotate([0,0,180])
+				NC_ShockcordRingDual(Tube_OD=Body_OD*CF_Comp+Vinyl_t*2, Tube_ID=Body_ID, 
+					NC_ID=0, NC_Base_L=NC_Base_L, nRivets=NC_nRivets, nBolts=NC_nRivets, Flat=true);
+					
+			translate([0,0,13]) Cineroc_CameraMount();
+		}
+				
+	// Upper tube
+	if (!ShowInternals)
+	translate([0,0,UpperBody_Z+0.1]) color("Gray") Cineroc_CameraTube();
+	//echo(UpperBody_Z=UpperBody_Z);
+	
+	translate([0,0,Body_Z+CNC_LowerTube_Len]) CinerocCoupler();
+	
+	// Lower tube
+	if (!ShowInternals)
+	translate([0,0,Body_Z+0.1]) color("Gray") CinerocTube(CNC_LowerTube_Len);
+	
+	translate([0,0,Base_Z]) Cineroc_Base();
+	
+	translate([0,0,UpperBody_Z+30]) ShowCamera();
+} // ShowCineroc
+
+// ShowCineroc(ShowInternals=false);
+// ShowCineroc(ShowInternals=true);
+// ShowRocketOmega(ShowInternals=true, ShowCineroc=true);
+
+CNC_CamCowl_W=0.375*25.4*Scale;
+CNC_CamCowl_H=1.187*25.4*Scale; // height from center
+CNC_CamCowl_Offset=(0.25+0.375/2)*25.4*Scale; // left of center
+CNC_CanCowl_Z=3.075*25.4*Scale;
+
+module Cineroc_CamCowl(){
+	// too small for go-pro H11
+	translate([-CNC_CamCowl_Offset, -CNC_CamCowl_H/2, 0]) RoundRect(X=CNC_CamCowl_W, Y=CNC_CamCowl_H, Z=0.2*25.4*Scale, R=1);
+} // Cineroc_CamCowl
+
+//translate([0,0,CNC_CanCowl_Z+50]) Cineroc_CamCowl();
+	GPH11B_W=51;
+	GPH11B_Y=26;
+	GPH11B_H=40;
+	GPH11B_r=7;
+	Cowl_t=2.2;
+	Camera_a=-10; // angle out
+	Camera_Z=50; // from base of upper tube
+
+module Cineroc_CameraTube(){
+	difference(){
+		CinerocTube(CNC_UpperTube_Len, HasCoupler=true);
+		translate([0,0,Camera_Z-6]) GPH11B_Cowl_Hole();
+	} // difference
+	
+	translate([0,0,Camera_Z-6]) GPH11B_Cowl();
+} // Cineroc_CameraTube
+
+//Cineroc_CameraTube();
+
+module GPH11B_Cowl_Hole(){
+	XtraSpace=2;
+	
+		hull(){
+			translate([0, -CNC_Body_OD/2, -Overlap]) rotate([Camera_a,0,0])
+				RoundRect(X=GPH11B_W+XtraSpace*2, Y=GPH11B_Y*2+XtraSpace*2, Z=GPH11B_H+Overlap*2, R=GPH11B_r);
+			
+			translate([0, -CNC_Body_OD/2+2,70])
+				RoundRect(X=10, Y=1, Z=GPH11B_H, R=1);
+		} // hull
+} // GPH11B_Cowl_Hole
+
+module GPH11B_Cowl(){
+	XtraSpace=2;
+	
+	difference(){
+		hull(){
+			translate([0, -CNC_Body_OD/2, 0]) rotate([Camera_a,0,0])
+				RoundRect(X=GPH11B_W+XtraSpace*2+Cowl_t*2, Y=GPH11B_Y*2+XtraSpace*2+Cowl_t*2, Z=GPH11B_H, R=GPH11B_r+Cowl_t);
+				
+			translate([0, -CNC_Body_OD/2+2, 80])
+				RoundRect(X=10, Y=1, Z=GPH11B_H, R=1);
+		} // hull
+			
+		GPH11B_Cowl_Hole();
+		
+		translate([0,0,-10]) cylinder(d=CNC_Body_ID+1, h=150);
+		
+	} // difference
+
+} // GPH11B_Cowl
+
+//translate([0,0,302.3+Camera_Z-6]) GPH11B_Cowl();
+
+module Cineroc_CameraMount(){
+	CameraPlate_t=5;
+	Felt_t=3;
+	CameraPlate_Z=34-CameraPlate_t-Felt_t; // place top of plate at bottom of cowl
+	CameraPlate_W=GPH11B_W+10;
+	CameraPlate_Len=110;
+	Tube_Len=17;
+	C_Block_H=10;
+	C_Block_W=10;
+
+	// Mount to NC_ShockcordRingDual like a nosecone
+	difference(){
+		Tube(OD=Body_OD*CF_Comp, ID=Body_ID+IDXtra*2, Len=Tube_Len, myfn=$preview? 90:360);
+	
+		// Rivets
+		for (j=[0:NC_nRivets-1]) rotate([0,0,360/NC_nRivets*j]) translate([0,Body_OD/2+1,7.5])
+			rotate([90,0,0]) cylinder(d=4, h=6);
+	} // difference
+	
+	
+	module CameraMountingHoles(){
+		translate([0, -CNC_Body_OD/2, CameraPlate_Z+CameraPlate_t]) rotate([Camera_a,0,0]){
+				translate([-GPH11B_W/2-C_Block_W/2,30,C_Block_H]) Bolt8Hole(depth=20);
+				translate([GPH11B_W/2+C_Block_W/2,30,C_Block_H]) Bolt8Hole(depth=20);
+				translate([0,46+C_Block_W/2,C_Block_H]) Bolt8Hole(depth=20);
+			}
+	}
+	
+	difference(){
+		hull(){
+			difference(){
+				translate([0,0,Tube_Len-Overlap]) Tube(OD=Body_OD*CF_Comp, ID=Body_ID+IDXtra*2, Len=1, myfn=$preview? 90:360);
+				translate([-Body_OD/2-5, -25, Tube_Len-Overlap*2]) cube([Body_OD+10,Body_OD,3]);
+			} // difference
+			
+			difference(){
+				intersection(){
+					translate([0, -CNC_Body_OD/2, CameraPlate_Z]) rotate([Camera_a,0,0])
+							RoundRect(X=CameraPlate_W, Y=CameraPlate_Len, Z=CameraPlate_t, R=3);
+					cylinder(d=	CNC_Body_ID-1, h=100, $fn=$preview? 90:360);
+				} // intersection
+				
+				translate([0, -CNC_Body_OD/2, CameraPlate_Z]) rotate([Camera_a,0,0])
+					translate([0,0,5]) cube([GPH11B_W, 10, CameraPlate_t*2+Overlap*2], center=true);
+				
+			} // difference
+		} // hull
+		
+		// Bolt Holes
+		CameraMountingHoles();
+	} // difference
+	
+	// Camera locating bolcks
+	difference(){
+		translate([0, -CNC_Body_OD/2, CameraPlate_Z+CameraPlate_t]) rotate([Camera_a,0,0]){
+			translate([-GPH11B_W/2-C_Block_W/2,30,-1]) 
+				RoundRect(X=C_Block_W, Y=20, Z=C_Block_H, R=2);
+			
+			translate([GPH11B_W/2+C_Block_W/2,30,-1])
+				RoundRect(X=C_Block_W, Y=20, Z=C_Block_H, R=2);
+			
+			translate([0,46+C_Block_W/2,-1])
+				RoundRect(X=20, Y=C_Block_W, Z=C_Block_H, R=2);
+			
+		}
+		CameraMountingHoles();
+	} // difference
+} // Cineroc_CameraMount
+
+//translate([0,0,302.3+16]) Cineroc_CameraMount();
+
+module ShowCamera(){
+	translate([0,-CNC_Body_OD/2,Camera_Z])
+		rotate([Camera_a,0,0]) translate([0,15,0]) rotate([180,0,-90]) 
+			color("LightGray") GPC_GoProHero11Black(Xtra=0, Xtra_Z=0, IncludeVP=false, BackAccess=false, HasMountingEars=false);
+} // ShowCamera
+
+//translate([0,0,302.3+29]) ShowCamera();
+
+module Cineroc_Base(){
+
+	difference(){
+		union(){
+			cylinder(d1=Body_OD*CF_Comp+Vinyl_t*2, d2=CNC_Body_OD*CF_Comp, h=CNC_BaseTaper_Len, $fn=$preview? 90:360);
+			
+			translate([0,0,CNC_BaseTaper_Len-Overlap])
+				Tube(OD=CNC_Body_OD*CF_Comp, ID=CNC_Body_ID, Len=15+Overlap, myfn=$preview? 90:360);
+				
+			translate([0,0,CNC_BaseTaper_Len+15])
+				Tube(OD=CNC_Body_ID, ID=CNC_Body_ID-CNC_Body_Wall_t*2, Len=15, myfn=$preview? 90:360);
+				
+			// connector
+			translate([0,0,CNC_BaseTaper_Len+10])
+			difference(){
+				Tube(OD=CNC_Body_ID+1, ID=CNC_Body_ID-CNC_Body_Wall_t*2, Len=5, myfn=$preview? 90:360);
+					
+				translate([0,0,-Overlap]) cylinder(d1=CNC_Body_ID-Overlap, d2=CNC_Body_ID-CNC_Body_Wall_t*2-Overlap, h=5, $fn=$preview? 90:360);
+			} // difference
+		} // union
+		
+		translate([0,0,-Overlap])
+			cylinder(d1=Body_ID, d2=CNC_Body_ID, h=CNC_BaseTaper_Len+Overlap*2, $fn=$preview? 90:360);
+			
+		translate([0,0,-Overlap]) cylinder(d=Body_OD+1, h=40, $fn=$preview? 90:360);
+			
+		// Bolts
+		for (j=[0:NC_nRivets-1]) rotate([0,0,360/NC_nRivets*j]) translate([0,CNC_Body_OD/2+1,CNC_BaseTaper_Len+15+7.5])
+			rotate([-90,0,0]) Bolt4Hole();
+		
+	} // difference
+	
+	//translate([0,0,-Engagement_Len/2]) 
+	rotate([180,0,0]) 
+		STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD*CF_Comp, Engagement_Len=Engagement_Len);
+} // Cineroc_Base
+
+// Cineroc_Base();
+
+module CinerocTube(Len=CNC_Body_Len/2, HasCoupler=false){
+	UpperBolt_Z=HasCoupler? Len+7.5:Len-7.5;
+	difference(){
+		union(){
+			Tube(OD=CNC_Body_OD*CF_Comp, ID=CNC_Body_ID, Len=Len, myfn=$preview? 90:360);
+			
+			if (HasCoupler){
+				translate([0,0,Len-Overlap]) Tube(OD=CNC_Body_ID, ID=CNC_Body_ID-4.4, Len=15, myfn=$preview? 90:360);
+				translate([0,0,Len-5]) Tube(OD=CNC_Body_ID+1, ID=CNC_Body_ID-4.4, Len=5, myfn=$preview? 90:360);
+			}
+		} // union
+		
+		if (HasCoupler){
+			translate([0,0,Len-5-Overlap]) cylinder(d1=CNC_Body_ID, d2=CNC_Body_ID-4.4, h=5, $fn=$preview? 90:360);
+		}
+		
+		for (j=[0:NC_nRivets]) rotate([0, 0, 360/NC_nRivets*j]){
+			translate([0, CNC_Body_OD/2+1, UpperBolt_Z]) rotate([-90,0,0]) Bolt4Hole();
+			translate([0, CNC_Body_OD/2+1, 7.5]) rotate([-90,0,0]) Bolt4Hole();
+		}
+	} // difference
+} // CinerocTube
+
+// CinerocTube();
+// CinerocTube(CNC_UpperTube_Len,HasCoupler=true);
+
+module CinerocCoupler(){
+	Coulper_ID=CNC_Body_ID-4.4;
+	Len=33;
+	
+	difference(){
+		union(){
+			translate([0,0,-15]) Tube(OD=CNC_Body_ID, ID=Coulper_ID, Len=33, myfn=$preview? 90:360);
+			// outer flange
+			Tube(OD=CNC_Body_OD*CF_Comp, ID=Coulper_ID, Len=3, myfn=$preview? 90:360);
+			// centering ring
+			translate([0,0,-15]) Tube(OD=CNC_Body_ID-1, ID=Body_OD*CF_Comp+IDXtra*2, Len=3, myfn=$preview? 90:360);
+		} // union
+		
+		for (j=[0:NC_nRivets]) rotate([0, 0, 360/NC_nRivets*j]){
+			translate([0, CNC_Body_OD/2+1, 3+7.5]) rotate([-90,0,0]) Bolt4Hole();
+			translate([0, CNC_Body_OD/2+1, -7.5]) rotate([-90,0,0]) Bolt4Hole();
+			// must slide past bolts in parachute tube
+			rotate([0,0,180/NC_nRivets]) translate([0, Body_OD/2, -15-Overlap]) scale([1.5,1,1]) cylinder(d=6, h=4);
+		}
+	} // difference
+} // CinerocCoupler
+
+// CinerocCoupler();
 
 module ShowBooster(ShowInternals=true){
 	MotorTube_Z=-TailConeLen+5;
@@ -336,7 +652,7 @@ module ShowBooster(ShowInternals=true){
 	/**/
 	
 	translate([0,0,STB_Z+0.1]) color("White")
-		R157_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, EBayTube_OD=BT54Body_OD, Engagement_Len=Engagement_Len, nBolts=6, Xtra_r=STB_Xtra_r, CouplerLenXtra=-20);
+		R157_BallRetainerTop(Body_OD=Body_OD*CF_Comp+Vinyl_t*2, Body_ID=Body_ID, EBayTube_OD=BT54Body_OD, Engagement_Len=Engagement_Len, nBolts=6, Xtra_r=STB_Xtra_r, CouplerLenXtra=-20);
 	
 	if (ShowInternals) translate([0,0,STB_Z]) {
 		R157_BallRetainerBottom(Body_ID=Body_ID, Engagement_Len=Engagement_Len, Xtra_r=0.0);
@@ -381,7 +697,7 @@ module ShowBooster(ShowInternals=true){
 // ShowBooster(ShowInternals=false);
 
 
-module ShowRocketOmega(ShowInternals=true){
+module ShowRocketOmega(ShowInternals=true, ShowCineroc=false){
 	
 	InterstageCoupler_Len=InterstageTube_Len;
 	
@@ -428,6 +744,10 @@ module ShowRocketOmega(ShowInternals=true){
 	
 	if (!ShowInternals) translate([0,0,MainSTB_Z]) color("Gray") rotate([180,0,0])
 		STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD, Engagement_Len=Engagement_Len);
+		
+	// Cineroc option
+	if (ShowCineroc)
+		translate([200,0,MainSTB_Z]) ShowCineroc(ShowInternals=ShowInternals);
 
 	if (ShowInternals) translate([0,0,MainSTB_Z]){
 		rotate([180,0,0]) color("Tan")
@@ -435,7 +755,7 @@ module ShowRocketOmega(ShowInternals=true){
 		translate([0,0,Engagement_Len/2]) R157_SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, HasPD_Ring=false, Engagemnet_Len=7);
 	}
 	translate([0,0,MainSTB_Z]) color("White") rotate([180,0,0])
-		R157_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, EBayTube_OD=BT54Body_OD, Engagement_Len=Engagement_Len, 
+		R157_BallRetainerTop(Body_OD=Body_OD*CF_Comp+Vinyl_t*2, Body_ID=Body_ID, EBayTube_OD=BT54Body_OD, Engagement_Len=Engagement_Len, 
 							nBolts=6, Xtra_r=STB_Xtra_r,CouplerLenXtra=CouplerLenXtra);
 
 	translate([0,0,EBay_Z]) 
@@ -443,7 +763,7 @@ module ShowRocketOmega(ShowInternals=true){
 			MainEBay(TopOnly=false, BottomOnly=false, ShowDoors=!ShowInternals);
 	
 	translate([0,0,DrogueSTB_Z]) color("White")
-		R157_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, EBayTube_OD=BT54Body_OD, Engagement_Len=Engagement_Len, 
+		R157_BallRetainerTop(Body_OD=Body_OD*CF_Comp+Vinyl_t*2, Body_ID=Body_ID, EBayTube_OD=BT54Body_OD, Engagement_Len=Engagement_Len, 
 							nBolts=6, Xtra_r=STB_Xtra_r, CouplerLenXtra=CouplerLenXtra);
 
 	if (ShowInternals) translate([0,0,DrogueSTB_Z]){
