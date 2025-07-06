@@ -58,7 +58,7 @@ EB_Electronics_BayUniversal(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, DoorAngl
 /**/
 //
 //  *** Doors ***
-// rotate([-90,0,0]) EB_AltDoor(Tube_OD=BT98Body_OD, BlankDoor=false);
+// rotate([-90,0,0]) EB_AltDoor(Tube_OD=BT98Body_OD, BlankDoor=false, IsLoProfile=false);
 // rotate([-90,0,0]) EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=false, DoubleBatt=false, BlankDoor=false);
 // rotate([-90,0,0]) EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=true, DoubleBatt=false, BlankDoor=false);
 //
@@ -99,8 +99,8 @@ AltBattTwoBattSWBay=[[0],[90],[180,270]]; //Alt, Batt, BattSW, BattSW
 function EB_BattDoor_X(Tube_OD=BT137Body_OD)=Tube_OD>70? BattDoorX():BattDoorX()-4;
 
 	
-module EB_AltDoor(Tube_OD=BT98Body_OD, BlankDoor=false){
-	AltDoor54(Tube_OD=Tube_OD, IsLoProfile=false, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowAlt=true, BlankDoor=BlankDoor);
+module EB_AltDoor(Tube_OD=BT98Body_OD, BlankDoor=false, IsLoProfile=false){
+	AltDoor54(Tube_OD=Tube_OD, IsLoProfile=IsLoProfile, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowAlt=true, BlankDoor=BlankDoor);
 } // EB_AltDoor
 
 //EB_AltDoor(Tube_OD=BT98Body_OD);

@@ -86,7 +86,7 @@
 // 
 // *** Doors ***
 //
-// rotate([-90,0,0]) EB_AltDoor(Tube_OD=Body_OD);
+// rotate([-90,0,0]) EB_AltDoor(Tube_OD=Body_OD, BlankDoor=false, IsLoProfile=true);
 // rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD, HasSwitch=true, DoubleBatt=false);
 // RocketServoHolderRevC(IsDouble=false);
 //
