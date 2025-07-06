@@ -19,7 +19,7 @@
 // Sustainer Motor Tube	645mm BT54Body
 //
 // Booster Body Tube 240mm 	ULine 6" Mailing Tube
-// Booster Motor Tube	452mm BT54Body
+// Booster Motor Tube	452mm BT54Body or BT75Body
 //
 //  ***** History *****
 // 0.9.3  7/5/2025    Added Cineroc optional nosecone.
