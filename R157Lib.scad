@@ -18,7 +18,7 @@
 // ***********************************
 //  ***** for STL output *****
 //
-// R157_NC_PetalHub(OD=Body_ID-BodyTubeAnnulus, nPetals=nPetals, CouplerTube_ID=Coupler_ID);
+// R157_NC_PetalHub(OD=Body_ID-BodyTubeAnnulus, nPetals=nPetals);
 // R157_MotorTubeTopper();
 // R157_PetalHub(OD=Coupler_OD, nPetals=nPetals, nBolts=nPetals);
 // R157_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, EBayTube_OD=BT54Body_OD, nBolts=7, Xtra_r=0.0);
@@ -50,7 +50,7 @@ MotorTube_OD=BT75Body_OD;
 MotorTube_ID=BT75Body_ID;
 
 
-module R157_NC_PetalHub(OD=Body_ID, nPetals=nPetals, nRopes=nPetals, CouplerTube_ID=Coupler_ID){
+module R157_NC_PetalHub(OD=Body_ID, nPetals=nPetals, nRopes=nPetals, Coupler_ID=Coupler_ID){
 	
 	Spring_ID=SE_Spring_CS11890_ID();
 	Spring_OD=SE_Spring_CS11890_OD();
@@ -58,13 +58,7 @@ module R157_NC_PetalHub(OD=Body_ID, nPetals=nPetals, nRopes=nPetals, CouplerTube
 	BodyTube_L=10;
 	SpringHole_ID=Spring_ID-IDXtra*2-4.4;
 	CenterHole_d=SpringHole_ID;
-	
-	
-	// Body tube interface
-	if (CouplerTube_ID==0)
-	translate([0,0,-BodyTube_L]) 
-		Tube(OD=OD, ID=OD-4.4, Len=BodyTube_L+1, myfn=$preview? 90:360);
-									
+										
 	difference(){
 		union(){
 			PD_PetalHub(OD=OD, nPetals=nPetals, HasReplaceableSpringHolder=true,
@@ -86,12 +80,10 @@ module R157_NC_PetalHub(OD=Body_ID, nPetals=nPetals, nRopes=nPetals, CouplerTube
 		translate([0,0,-Overlap]) 
 			cylinder(d=CenterHole_d, h=10, $fn=$preview? 90:360);
 			
-		if (CouplerTube_ID>0){
-			translate([0,0,-BodyTube_L-Overlap]) 
-				cylinder(d=Spring_OD, h=BodyTube_L, $fn=$preview? 90:360);
-			translate([0,0,-BodyTube_L-Overlap]) 
-				cylinder(d1=Spring_OD+5, d2=Spring_OD, h=BodyTube_L-5, $fn=$preview? 90:360);
-		}
+		translate([0,0,-BodyTube_L-Overlap]) 
+			cylinder(d=Spring_OD, h=BodyTube_L, $fn=$preview? 90:360);
+		translate([0,0,-BodyTube_L-Overlap]) 
+			cylinder(d1=Spring_OD+5, d2=Spring_OD, h=BodyTube_L-5, $fn=$preview? 90:360);
 			
 		// Retention cord
 		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*(j+0.5)]) {

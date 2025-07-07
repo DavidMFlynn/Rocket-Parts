@@ -112,7 +112,8 @@ ULine102Body_ID=102.2;
 ULine157Body_OD=157.8;
 ULine157Body_ID=152.0;
 ULine157Coupler_OD=ULine157Body_ID-1;
-ULine157Coupler_ID=ULine157Coupler_OD-4.4;
+ULine157ThinWallCoupler_ID=ULine157Coupler_OD-4.4;
+ULine157Coupler_ID=ULine157Coupler_OD-6.4;
 
 // ULine 8 inch mailing tube
 ULine203Body_OD=210.0; // + IDXtra = Snug fit w/ PETG-CF?

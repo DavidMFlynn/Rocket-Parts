@@ -51,14 +51,13 @@ BoosterHas75mmMotor=true; // Selects 75mm motor size for the booster. false = 54
 // 
 //  *** Spring Management ***
 //
-// SE_SpringEndTypeC(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, Len=10, nRopes=6, UseSmallSpring=false);
+// SE_SpringEndTypeC(Coupler_OD=Coupler_OD, Coupler_ID=CouplerThinWall_ID, Len=10, nRopes=6, UseSmallSpring=false);
 // SE_SlidingBigSpringMiddle(OD=Coupler_OD, SliderLen=50, Extension=0);
-// R157_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4, PetalStop_h=0);
-// R157_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4, PetalStop_h=3);
-// R157_SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, HasPD_Ring=false, Engagemnet_Len=7);
+// R157_PusherRing(OD=Coupler_OD, ID=CouplerThinWall_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4, PetalStop_h=0);
+// R157_PusherRing(OD=Coupler_OD, ID=CouplerThinWall_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4, PetalStop_h=3);
+// R157_SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=CouplerThinWall_ID, HasPD_Ring=false, Engagemnet_Len=7);
 //
-// R157_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4, PetalStop_h=3);
-// SE_SpringEndTypeC(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, nRopes=6, UseSmallSpring=false);
+// SE_SpringEndTypeC(Coupler_OD=Coupler_OD, Coupler_ID=CouplerThinWall_ID, nRopes=6, UseSmallSpring=false);
 //
 //  *** Electronics Bays ***
 //
@@ -91,7 +90,7 @@ CouplerLenXtra=MainEB_HasCR? 0:-20; // 0 for use w/ centering ring:servos extend
 //
 //  *** Petal Deployers ***
 //
-// R157_NC_PetalHub(OD=Coupler_OD, nPetals=3, nRopes=6, CouplerTube_ID=Coupler_ID);
+// R157_NC_PetalHub(OD=Coupler_OD, nPetals=3, nRopes=6, Coupler_ID=CouplerThinWall_ID);
 // R157_PetalHub(OD=Coupler_OD, nPetals=3, nBolts=6); // 2 Req.
 //
 // PD_Petals2(OD=Coupler_OD, Len=MainPetal_Len, nPetals=3, Wall_t=1.8, AntiClimber_h=5, HasLocks=false, Lock_Span_a=180);
@@ -104,7 +103,7 @@ CouplerLenXtra=MainEB_HasCR? 0:-20; // 0 for use w/ centering ring:servos extend
 //  *** Fins & Fin Cans ***
 //
 // SustainerFinCan(LowerHalfOnly=false, UpperHalfOnly=true);
-// rotate([180,0,0]) SustainerFinCan(LowerHalfOnly=true, UpperHalfOnly=false);
+// SustainerFinCan(LowerHalfOnly=true, UpperHalfOnly=false);
 //
 // RocketOmegaFin();
 //
@@ -164,7 +163,11 @@ CouplerLenXtra=MainEB_HasCR? 0:-20; // 0 for use w/ centering ring:servos extend
 //  *** Tools ***
 // ===============
 //
+// FC2_FinFixture(Fin_Root_W=Sustainer_Fin_Root_W, Fin_Root_L=Sustainer_Fin_Root_L, Fin_Post_h=Sustainer_Fin_Post_h, Fin_Chamfer_L=Sustainer_Fin_Chamfer_L);
+// FC2_FinFixture(Fin_Root_W=Booster_Fin_Root_W, Fin_Root_L=Booster_Fin_Root_L, Fin_Post_h=Booster_Fin_Post_h, Fin_Chamfer_L=Booster_Fin_Chamfer_L);
+//
 // BodyDrillingJig(Tube_OD=Body_OD*CF_Comp+Vinyl_t*2, Tube_ID=Body_ID, nBolts=NC_nRivets, BoltInset=7.5);
+// BodyDrillingJig(Tube_OD=Body_OD*CF_Comp+Vinyl_t*2, Tube_ID=Body_ID, nBolts=nEBayBolts, BoltInset=7.5);
 // BodyDrillingJig(Tube_OD=Body_OD*CF_Comp+Vinyl_t*2, Tube_ID=Body_ID, nBolts=nFins*2, BoltInset=7.5);
 //
 // TubeTest(OD=Body_OD, ID=Body_ID, TestOD=false);
@@ -175,13 +178,18 @@ CouplerLenXtra=MainEB_HasCR? 0:-20; // 0 for use w/ centering ring:servos extend
 //
 //  ***** Fin Art *****
 //  Save as dxf for LightBurn to cut on laser cutter.
+//  Best to cut a template and use a knife to cut the vinyl.
 //  Cut 4 of each, 32 pieces total.
 //
+// VinylFinWhite(Border=-1, Fin_Root_L=Sustainer_Fin_Root_L, Fin_Tip_L=Sustainer_Fin_Tip_L, Fin_Span=Sustainer_Fin_Span); // first side
+// VinylFinWhite(Border=6, Fin_Root_L=Sustainer_Fin_Root_L, Fin_Tip_L=Sustainer_Fin_Tip_L, Fin_Span=Sustainer_Fin_Span); // second side
 // VinylSustainerFinBlack(); 
 // VinylSustainerFinBlue();
 // mirror([1,0,0]) VinylSustainerFinBlack(); 
 // mirror([1,0,0]) VinylSustainerFinBlue();
 //
+// VinylFinWhite(Border=-1, Fin_Root_L=Booster_Fin_Root_L, Fin_Tip_L=Booster_Fin_Tip_L, Fin_Span=Booster_Fin_Span); // first side
+// VinylFinWhite(Border=6, Fin_Root_L=Booster_Fin_Root_L, Fin_Tip_L=Booster_Fin_Tip_L, Fin_Span=Booster_Fin_Span); // second side
 // VinylBoosterFinBlack();
 // VinylBoosterFinBlue();
 // mirror([1,0,0]) VinylBoosterFinBlack();
@@ -250,6 +258,7 @@ Body_OD=ULine157Body_OD;
 Body_ID=ULine157Body_ID;
 Coupler_OD=ULine157Coupler_OD;
 Coupler_ID=ULine157Coupler_ID;
+CouplerThinWall_ID=ULine157ThinWallCoupler_ID;
 MotorTube_OD=BT54Body_OD;
 MotorTube_ID=BT54Body_ID;
 BoosterMotorTube_OD=BoosterHas75mmMotor? BT75Body_OD:BT54Body_OD;
@@ -970,6 +979,17 @@ module SustainerFinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 
 // SustainerFinCan();	
 	
+module VinylFinWhite(Border=6, Fin_Root_L=Sustainer_Fin_Root_L, Fin_Tip_L=Sustainer_Fin_Tip_L, Fin_Span=Sustainer_Fin_Span){
+	hull(){
+		translate([0,-Fin_Root_L/2-Border,0]) circle(d=1);
+		translate([0,Root_L/2+Border,0]) circle(d=1);
+		translate([Fin_Span+6,-Fin_Tip_L-Border,0]) circle(d=1);
+		translate([Fin_Span+6,Fin_Tip_L+Border,0]) circle(d=1);
+	} // hull
+} // VinylFinWhite
+
+// VinylFinWhite();
+
 module VinylSustainerFinBlack(ShowIn3D=false){
 	if (ShowIn3D){
 		hull(){
@@ -1063,29 +1083,32 @@ module BoosterFinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 	
 	echo(Can_Len=Can_Len);
 	
-	Wall_t=1.8; // 3 perimeters, can be 1.2 for 2 perimeters
+	Wall_t=2.2; // 3 perimeters, can be 1.2-1.8 for 2 perimeters
 	RailGuide_Z=35;
 	Retainer_d=BoosterHas75mmMotor? 90:65;
 	Rocket_OD=Body_OD*CF_Comp+Vinyl_t*2;
 	
 	difference(){
-		FC2_FinCan(Body_OD=Rocket_OD, Body_ID=Body_ID, Can_Len=Can_Len,
+		FC2_FinCan(Body_OD=Rocket_OD, Body_ID=Body_ID, Coupler_ID=Coupler_ID, Can_Len=Can_Len,
 				MotorTube_OD=BoosterMotorTube_OD, RailGuide_h=RailGuide_h, RailGuide_z=RailGuide_Z,
 				nFins=nFins, HasIntegratedCoupler=true, Coupler_Len=15, nCouplerBolts=nFins*2,
 				HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 				Fin_Root_W=Booster_Fin_Root_W, Fin_Root_L=Booster_Fin_Root_L, Fin_Post_h=Booster_Fin_Post_h, Fin_Chamfer_L=Booster_Fin_Chamfer_L,
 				Cone_Len=TailConeLen, ThreadedTC=false, Extra_OD=2, RailGuideLen=RailGuide_Len,
 				LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly, 
-				HasWireHoles=false, HollowTailcone=true, 
+				HasWireHoles=false, HollowTailcone=false, 
 				HollowFinRoots=true, Wall_t=Wall_t, OgiveTailCone=false, Ogive_Len=400, OgiveCut_d=BT54Body_OD+8,
 				UseTrapFin3=true);
 				
+		// hole for motor retainer
 		translate([0,0,-TailConeLen-Overlap]) cylinder(d=Retainer_d+IDXtra*3, h=20);
 	} // difference
 	
 } // BoosterFinCan
 
 // BoosterFinCan(LowerHalfOnly=false, UpperHalfOnly=false);
+// BoosterFinCan(LowerHalfOnly=false, UpperHalfOnly=true);
+// rotate([180,0,0]) BoosterFinCan(LowerHalfOnly=true, UpperHalfOnly=false);
 
 
 module VinylBoosterFinBlack(ShowIn3D=false){
