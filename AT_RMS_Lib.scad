@@ -1,6 +1,6 @@
 // *******************************************
 // Project: 3D Printed Rocket
-// Filename: AT-RMS-Lib.scad
+// Filename: AT_RMS_Lib.scad
 // by David M. Flynn
 // Created: 9/13/2023 
 // Revision: 0.9.2  9/5/2024 
@@ -9,6 +9,8 @@
 //  ***** Notes *****
 //
 //  ***** History *****
+function AT_RMS_Lib_Rev()="AT-RMS-Lib 0.9.2";
+echo(AT_RMS_Lib_Rev());
 //
 // 0.9.2  9/5/2024    Added 38mm motors 38/120..38/720
 // 0.9.1  5/13/2024   Added ATRMS_75_2560_Motor

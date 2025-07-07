@@ -13,8 +13,8 @@
 // Cup in Saucer w/ locking pins, servo activated active staging system.
 //
 //  ***** History *****
-//
-echo("Stager3Lib 0.9.9");
+function Stager3Lib_Rev()="Stager3Lib 0.9.9";
+echo(Stager3Lib_Rev());
 // 0.9.9  9/14/2024    Removed Al tube from Stager_ServoPlate(), added Stager_ServoMount()
 // 0.9.8  9/3/2024     Fixed some math in Stager_Cup() and Stager_ArmDisarmAccess()
 // 0.9.7  8/29/2024    Made OverCenter a parameter in Stager_ServoPlate()

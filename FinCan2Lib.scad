@@ -12,7 +12,7 @@
 //
 //  ***** History *****
 //
-function FinCan2LibRev()="FinCan2Lib 0.9.10";
+function FinCan2LibRev()="FinCan2Lib 0.9.11";
 echo(FinCan2LibRev());
 //
 // 0.9.11  1/5/2025   Added parameters Coupler_Len and nCouplerBolts to FC2_FinCan()

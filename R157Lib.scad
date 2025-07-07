@@ -3,7 +3,7 @@
 // Filename: R157Lib.scad
 // by David M. Flynn
 // Created: 1/19/2025 
-// Revision: 0.9.1  7/2/2025 
+// Revision: 0.9.2  7/7/2025 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -11,7 +11,10 @@
 // A collection of parts for 157mm (6" mailing tube) rockets.
 //
 //  ***** History *****
+function R157Lib_Rev()="R157Lib 0.9.2";
+echo(R157Lib_Rev());
 //
+// 0.9.2  7/7/2025    Added nBolts clearances to R157_PusherRing()
 // 0.9.1  7/2/2025	  Updated for RocketOmegaU157
 // 0.9.0  1/19/2025   Copied from R203Lib.scad Rev 0.9.3
 //
@@ -23,6 +26,10 @@
 // R157_PetalHub(OD=Coupler_OD, nPetals=nPetals, nBolts=nPetals);
 // R157_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, EBayTube_OD=BT54Body_OD, nBolts=7, Xtra_r=0.0);
 // R157_BallRetainerBottom(Body_ID=Body_ID, HasPD_Ring=false);
+//
+// R157_SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, HasPD_Ring=false, Engagemnet_Len=7);
+// R157_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4, PetalStop_h=0, nBolts=0);
+// R157_BoosterSpringBottom(OD=Body_ID, MotorTube_OD=MotorTube_OD)
 //
 // ***********************************
 include<TubesLib.scad>
@@ -314,12 +321,13 @@ module R157_SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, HasPD_Ring=f
 
 // R157_SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, HasPD_Ring=false, Engagemnet_Len=7);
 
-module R157_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4, PetalStop_h=0){
-	
-	Tube(OD=OD, ID=ID, Len=OA_Len, myfn=$preview? 90:720);
+module R157_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4, PetalStop_h=0, nBolts=0){
 	
 	translate([0,0,Engagemnet_Len]) difference(){
-		Tube(OD=OD, ID=OD-Wall_t*2, Len=OA_Len-Engagemnet_Len, myfn=$preview? 90:720);
+		union(){
+			Tube(OD=OD, ID=OD-Wall_t*2, Len=OA_Len-Engagemnet_Len, myfn=$preview? 90:720);
+			translate([0,0,-Engagemnet_Len]) Tube(OD=OD, ID=ID, Len=OA_Len, myfn=$preview? 90:720);
+		} // union
 		
 		// Reduce mass by thinning inside
 		A=OA_Len-Engagemnet_Len-18;
@@ -328,6 +336,9 @@ module R157_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7
 			translate([0,0,9-Overlap]) cylinder(d=ID, h=A+Overlap*2, $fn=$preview? 90:720);
 			translate([0,0,9+A]) cylinder(d2=OD-Wall_t*2-Overlap, d1=ID, h=6, $fn=$preview? 90:720);
 		}
+		
+		if (nBolts>0)
+		translate([0,0,-Engagemnet_Len]) PD_PetalHubBoltPattern(OD=Coupler_OD, nBolts=nBolts) Bolt4HeadHole(lHead=20);
 	} // difference
 	
 	if (PetalStop_h>0) translate([0,0,OA_Len-Overlap])

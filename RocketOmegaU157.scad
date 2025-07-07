@@ -54,7 +54,7 @@ BoosterHas75mmMotor=true; // Selects 75mm motor size for the booster. false = 54
 // SE_SpringEndTypeC(Coupler_OD=Coupler_OD, Coupler_ID=CouplerThinWall_ID, Len=10, nRopes=6, UseSmallSpring=false);
 // SE_SlidingBigSpringMiddle(OD=Coupler_OD, SliderLen=50, Extension=0);
 // R157_PusherRing(OD=Coupler_OD, ID=CouplerThinWall_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4, PetalStop_h=0);
-// R157_PusherRing(OD=Coupler_OD, ID=CouplerThinWall_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4, PetalStop_h=3);
+// R157_PusherRing(OD=Coupler_OD, ID=CouplerThinWall_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4, PetalStop_h=3, nBolts=6); // for pushing on petals
 // R157_SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=CouplerThinWall_ID, HasPD_Ring=false, Engagemnet_Len=7);
 //
 // SE_SpringEndTypeC(Coupler_OD=Coupler_OD, Coupler_ID=CouplerThinWall_ID, nRopes=6, UseSmallSpring=false);
@@ -93,9 +93,9 @@ CouplerLenXtra=MainEB_HasCR? 0:-20; // 0 for use w/ centering ring:servos extend
 // R157_NC_PetalHub(OD=Coupler_OD, nPetals=3, nRopes=6, Coupler_ID=CouplerThinWall_ID);
 // R157_PetalHub(OD=Coupler_OD, nPetals=3, nBolts=6); // 2 Req.
 //
-// PD_Petals2(OD=Coupler_OD, Len=MainPetal_Len, nPetals=3, Wall_t=1.8, AntiClimber_h=5, HasLocks=false, Lock_Span_a=180);
-// PD_Petals2(OD=Coupler_OD, Len=DroguePetal_Len, nPetals=3, Wall_t=1.8, AntiClimber_h=5, HasLocks=false, Lock_Span_a=180);
-// PD_Petals2(OD=Coupler_OD, Len=BoosterPetalLen, nPetals=3, Wall_t=1.8, AntiClimber_h=5, HasLocks=false, Lock_Span_a=180);
+// PD_Petals2(OD=Coupler_OD, Len=MainPetal_Len, nPetals=3, Wall_t=2.2, AntiClimber_h=5, HasLocks=false, Lock_Span_a=180);
+// PD_Petals2(OD=Coupler_OD, Len=DroguePetal_Len, nPetals=3, Wall_t=2.2, AntiClimber_h=5, HasLocks=false, Lock_Span_a=180);
+// PD_Petals2(OD=Coupler_OD, Len=BoosterPetalLen, nPetals=3, Wall_t=2.2, AntiClimber_h=5, HasLocks=false, Lock_Span_a=180);
 //
 // rotate([-90,0,0]) PD_PetalSpringHolder2();
 // PD_HubSpringHolder();
@@ -214,18 +214,18 @@ CouplerLenXtra=MainEB_HasCR? 0:-20; // 0 for use w/ centering ring:servos extend
 //
 // ***********************************
 include<TubesLib.scad>
-use<AT-RMS-Lib.scad>
-use<PetalDeploymentLib.scad>
-use<ElectronicsBayLib.scad>
+use<AT_RMS_Lib.scad>			echo(AT_RMS_Lib_Rev());
+use<PetalDeploymentLib.scad>	echo(PetalDeploymentLibRev());
+use<ElectronicsBayLib.scad>		echo(ElectronicsBayLibRev());
 include<Stager3Lib.scad>
-use<Fins.scad>
-use<FinCan2Lib.scad>
-use<NoseCone.scad>
-use<SpringEndsLib.scad>
-use<SpringThingBooster.scad>
-use<RailGuide.scad>
-use<R157Lib.scad>
-use<GoProCamLib.scad>
+use<Fins.scad>					echo(FinsRev());
+use<FinCan2Lib.scad>			echo(FinCan2LibRev());
+use<NoseCone.scad>				echo(NoseConeRev());
+use<SpringEndsLib.scad>			echo(SpringEndsLibRev());
+use<SpringThingBooster.scad>	echo(SpringThingBoosterRev());
+use<RailGuide.scad>				echo(RailGuideRev());
+use<R157Lib.scad>  				echo(R157Lib_Rev());
+use<GoProCamLib.scad>			echo(GoProCamLib_Rev());
 
 //also included
  //include<CommonStuffSAEmm.scad>
@@ -269,8 +269,8 @@ EBayTube_OD=ULine38Body_OD; // This tube keeps the shock cord out of the electro
 nLockBalls=6; // Ball Lock (STB) units
 nEBayBolts=6;
 
-MainPetal_Len=100;
-DroguePetal_Len=80;
+MainPetal_Len=180;
+DroguePetal_Len=100;
 
 BoosterPetalLen=80;
 
@@ -773,7 +773,7 @@ module ShowRocketOmega(ShowInternals=true, ShowCineroc=false){
 		translate([0,0,55]) SE_SlidingBigSpringMiddle(OD=ULine157Coupler_OD, SliderLen=50, Extension=0);
 		translate([0,0,0.1]) color("Gray") 
 			R157_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4, PetalStop_h=0);
-		rotate([180,0,0]) R157_NC_PetalHub(OD=Coupler_OD, nPetals=3, nRopes=6, CouplerTube_ID=Coupler_ID);
+		rotate([180,0,0]) R157_NC_PetalHub(OD=Coupler_OD, nPetals=3, nRopes=6, Coupler_ID=Coupler_ID);
 		translate([0,0,-10]) rotate([180,0,0]) 
 			PD_Petals2(OD=Coupler_OD, Len=MainPetal_Len, nPetals=3, Wall_t=1.8, AntiClimber_h=4, HasLocks=false, Lock_Span_a=180);
 		translate([0,0,-10-MainPetal_Len-58]) color("Gray") 
