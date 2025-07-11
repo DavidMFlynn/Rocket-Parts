@@ -3,7 +3,7 @@
 // Filename: RocketOmegaU157.scad
 // by David M. Flynn
 // Created: 7/1/2025
-// Revision: 0.9.3  7/5/2025
+// Revision: 0.9.4  7/10/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -22,6 +22,7 @@
 // Booster Motor Tube	452mm BT54Body or BT75Body
 //
 //  ***** History *****
+// 0.9.4  7/10/2025   Fixed small issues.
 // 0.9.3  7/5/2025    Added Cineroc optional nosecone.
 // 0.9.2  7/4/2025    Added fin art.
 // 0.9.1  7/3/2025	  The Printing Begins! Little fixes.
@@ -59,12 +60,14 @@ BoosterHas75mmMotor=true; // Selects 75mm motor size for the booster. false = 54
 //
 // SE_SpringEndTypeC(Coupler_OD=Coupler_OD, Coupler_ID=CouplerThinWall_ID, nRopes=6, UseSmallSpring=false);
 //
+// rotate([180,0,0]) R157_MotorTubeTopper();
+// CenteringRing(OD=Body_ID, ID=MotorTube_OD+IDXtra, Thickness=4.8, nHoles=6, Offset=0, myfn=$preview? 90:720);
+//
 //  *** Electronics Bays ***
 //
 // rotate([180,0,0]) MainEBay(TopOnly=true, BottomOnly=false, ShowDoors=false);
 // MainEBay(TopOnly=false, BottomOnly=true, ShowDoors=false);
 // CenteringRing(OD=Body_ID, ID=EBayTube_OD+IDXtra, Thickness=4.8, nHoles=0, Offset=0, myfn=$preview? 90:720); // optional
-// CenteringRing(OD=Body_ID, ID=MotorTube_OD, Thickness=4.8, nHoles=6, Offset=0, myfn=$preview? 90:720);
 //
 // rotate([180,0,0]) LowerEBay(TopOnly=true, BottomOnly=false, ShowDoors=false);
 // LowerEBay(TopOnly=false, BottomOnly=true, ShowDoors=false);
@@ -307,7 +310,7 @@ EBayCR_t=5;
 MainEBay_Len=MainEB_HasCR? 170:EBay_Len;
 
 ScaleBooster_Body_Len=5*25.4*Scale;
-echo(ScaleBooster_Body_Len=ScaleBooster_Body_Len);
+echo(str("Scale Booster Body Length = ",ScaleBooster_Body_Len));
 
 PBay_Len=5*25.4*Scale;
 LowerTube_Len=670;
@@ -318,25 +321,25 @@ BoosterFinInset=5;
 BoostFinCan_Len=Booster_Fin_Root_L+BoosterFinInset*2;
 InterstageTube_Len=240;
 Booster_Body_Len=BoostFinCan_Len+InterstageTube_Len+EBay_Len+Engagement_Len+28;
-SustainerMotorTube_Len=SusFinCan_Len+EBay_Len+200;
-echo(Booster_Body_Len=Booster_Body_Len);
+SustainerMotorTube_Len=617; //SusFinCan_Len+EBay_Len+200;
+echo(str("Booster Body Length = ",Booster_Body_Len));
 
 ScaleBody_Len=(14.5+5)*25.4*Scale;
-echo(ScaleBody_Len=ScaleBody_Len);
-echo(" Including scale payload bay len =",PBay_Len);
+echo(str("Scale Body Length = ",ScaleBody_Len));
+echo(str(" Including scale payload bay len = ",PBay_Len));
 
 STB_Len=MainEB_HasCR? 39+Engagement_Len:19+Engagement_Len;
 Body_Len=19+SusFinCan_Len+EBay_Len+LowerTube_Len+MainEBay_Len+STB_Len*2+PBay_Len;
-echo(Body_Len=Body_Len);
+echo(str("Total Body Length = ",Body_Len));
 
 BoosterMotorTubeLen=BoostFinCan_Len+100;
 
 // Body & Motor Tube Lengths
-echo("Upper Body Tube = ",PBay_Len);
-echo("Lower Body Tube = ",LowerTube_Len);
-echo("Sustainer Motor Tube = ",SustainerMotorTube_Len);
-echo("Booster Body = ",InterstageTube_Len);
-echo("Booster Motor Tube = ",BoosterMotorTubeLen);
+echo(str("Upper Body Tube = ",PBay_Len));
+echo(str("Lower Body Tube = ",LowerTube_Len));
+echo(str("Sustainer Motor Tube = ",SustainerMotorTube_Len));
+echo(str("Booster Body = ",InterstageTube_Len));
+echo(str("Booster Motor Tube = ",BoosterMotorTubeLen));
 
 NC_Base_L=15;
 NC_Len=170*Scale-NC_Base_L;
