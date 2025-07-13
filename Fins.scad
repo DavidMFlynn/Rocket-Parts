@@ -3,7 +3,7 @@
 // Filename: Fins.scad
 // by David M. Flynn
 // Created: 6/11/2022 
-// Revision: 1.1.3  6/17/2025
+// Revision: 1.1.4  7/12/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-function FinsRev()="Fins 1.1.3";
+function FinsRev()="Fins 1.1.4";
 echo(FinsRev());
+// 1.1.4  7/12/2025  TrapFin3Slots() now calculates the slot depth.
 // 1.1.3  6/17/2025  Fixed TrapFin3 height, added 1.5mm to fin socket in TrapFin3Slots
 // 1.1.2  4/22/2025  Added IDXtra*3 to width of TrapFin3Tail
 // 1.1.1  1/23/2025  Fin fillets
@@ -224,17 +225,19 @@ module TrapFin2Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_
 		
 } // TrapFin2Slots
 
-// TrapFin2Slots();
+// TrapFin2Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18);
 
 module TrapFin3Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18){
-	LengthComp=1.5;
-	
-	for (j=[0:nFins]) rotate([0,0,360/nFins*j+180/nFins]) translate([0,Tube_OD/2-Post_h,0])
-		rotate([-90,0,0]) TrapFin3Tail(Post_h=Post_h+1, Root_L=Root_L+LengthComp, Root_W=Root_W, Chamfer_L=Chamfer_L);
+	LengthComp=1.1;
+	BottomOfSlot=sqrt((Tube_OD/2)*(Tube_OD/2)-(Root_W/2)*(Root_W/2))-Post_h;
+	//echo(BottomOfSlot=BottomOfSlot);
+
+	for (j=[0:nFins]) rotate([0,0,360/nFins*j+180/nFins]) translate([0,BottomOfSlot,0])
+		rotate([-90,0,0]) TrapFin3Tail(Post_h=Post_h+2, Root_L=Root_L+LengthComp, Root_W=Root_W, Chamfer_L=Chamfer_L);
 		
 } // TrapFin3Slots
 
-// TrapFin3Slots();
+// TrapFin3Slots(Tube_OD=ULine157Body_OD, nFins=4, Post_h=15, Root_L=180, Root_W=21.6, Chamfer_L=18);
 
 module Fin3Fillet(Root_L=100, Root_W=10, Chamfer_L=20, Tube_d=106, Fillet_r=4){
 	Edge_r=1;
