@@ -43,6 +43,7 @@ $fn=$preview? 36:90;
 
 CouplerLenXtra=0;
 nLockBalls=6;
+PetalWall_t=2.6; // minimum to get 4 layers when sliced
 nPetals=6;
 nEBayBolts=6;
 EBayBoltInset=7.5;
@@ -52,6 +53,7 @@ Body_ID=ULine157Body_ID;
 
 Coupler_OD=ULine157Coupler_OD;
 Coupler_ID=ULine157Coupler_ID;
+CouplerThinWall_ID=ULine157ThinWallCoupler_ID;
 
 MotorTube_OD=BT75Body_OD;
 MotorTube_ID=BT75Body_ID;
@@ -375,20 +377,20 @@ module R157_SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, HasPD_Ring=f
 
 // R157_SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, HasPD_Ring=false, Engagemnet_Len=7);
 
-module R157_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4, PetalStop_h=0, nBolts=0){
+module R157_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4, PetalStop_h=0, PetalWall_t=2.2, nBolts=0){
 	
 	translate([0,0,Engagemnet_Len]) difference(){
 		union(){
-			Tube(OD=OD, ID=OD-Wall_t*2, Len=OA_Len-Engagemnet_Len, myfn=$preview? 90:720);
-			translate([0,0,-Engagemnet_Len]) Tube(OD=OD, ID=ID, Len=OA_Len, myfn=$preview? 90:720);
+			Tube(OD=OD, ID=OD-Wall_t*2, Len=OA_Len-Engagemnet_Len, myfn=$preview? 90:360);
+			translate([0,0,-Engagemnet_Len]) Tube(OD=OD, ID=ID, Len=OA_Len, myfn=$preview? 90:360);
 		} // union
 		
 		// Reduce mass by thinning inside
 		A=OA_Len-Engagemnet_Len-18;
 		if (A>0){
-			translate([0,0,3]) cylinder(d1=OD-Wall_t*2-Overlap, d2=ID, h=6, $fn=$preview? 90:720);
-			translate([0,0,9-Overlap]) cylinder(d=ID, h=A+Overlap*2, $fn=$preview? 90:720);
-			translate([0,0,9+A]) cylinder(d2=OD-Wall_t*2-Overlap, d1=ID, h=6, $fn=$preview? 90:720);
+			translate([0,0,3]) cylinder(d1=OD-Wall_t*2-Overlap, d2=ID, h=6, $fn=$preview? 90:360);
+			translate([0,0,9-Overlap]) cylinder(d=ID, h=A+Overlap*2, $fn=$preview? 90:360);
+			translate([0,0,9+A]) cylinder(d2=OD-Wall_t*2-Overlap, d1=ID, h=6, $fn=$preview? 90:360);
 		}
 		
 		if (nBolts>0)
@@ -396,10 +398,12 @@ module R157_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7
 	} // difference
 	
 	if (PetalStop_h>0) translate([0,0,OA_Len-Overlap])
-		Tube(OD=OD-Wall_t*2+Wall_t, ID=OD-Wall_t*2, Len=PetalStop_h, myfn=$preview? 90:720);
+		Tube(OD=OD-PetalWall_t*2, ID=OD-Wall_t*2, Len=PetalStop_h, myfn=$preview? 90:360);
 } // R157_PusherRing
 
 // rotate([180,0,0]) R157_PusherRing(PetalStop_h=3);
+// 
+R157_PusherRing(OD=Coupler_OD*CF_Comp, ID=CouplerThinWall_ID*CF_Comp, OA_Len=50, Engagemnet_Len=7, Wall_t=PetalWall_t+2, PetalStop_h=3, PetalWall_t=PetalWall_t, nBolts=0);
 
 
 module R157_BoosterSpringBottom(OD=Body_ID, MotorTube_OD=MotorTube_OD){

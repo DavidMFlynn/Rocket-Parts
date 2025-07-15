@@ -75,6 +75,7 @@ include<CommonStuffSAEmm.scad>
 Overlap=0.05;
 IDXtra=0.2;
 $fn=$preview? 24:90;
+CF_Comp=1.0031; // PETG-CF comp value, might be too big, but works.
 
 // 6" Airframe
 PML150Body_OD=(6.007+2*0.074)*25.4; // about 155mm

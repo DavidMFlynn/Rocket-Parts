@@ -3,7 +3,7 @@
 // Filename: RocketOmegaU157.scad
 // by David M. Flynn
 // Created: 7/1/2025
-// Revision: 0.9.5  7/11/2025
+// Revision: 0.9.7  7/15/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -22,6 +22,8 @@
 // Booster Motor Tube	452mm BT54Body or BT75Body
 //
 //  ***** History *****
+// 0.9.7  7/15/2025   Petal wall thickness and pusher rings.
+// 0.9.6  7/13/2025   Still printing and fixing problems.
 // 0.9.5  7/11/2025   Moved Cineroc stuff to its own file.
 // 0.9.4  7/10/2025   Fixed small issues.
 // 0.9.3  7/5/2025    Added Cineroc optional nosecone.
@@ -41,7 +43,11 @@
 //  ***** Options *****
 //
 MainEB_HasCR=false;	// Use centering rings in sustainer's main electronics bay?
+CouplerLenXtra=MainEB_HasCR? 0:-20; // 0 for use w/ centering ring:servos extend into EBay
 BoosterHas75mmMotor=true; // Selects 75mm motor size for the booster. false = 54mm
+nPetals=6; // 3? or 6?
+PetalWall_t=2.6; // minimum to get 4 layers when sliced
+STB_Xtra_r=0.3; // Makes the lock tighter
 //
 //
 // ***********************************
@@ -53,16 +59,24 @@ BoosterHas75mmMotor=true; // Selects 75mm motor size for the booster. false = 54
 // 
 //  *** Spring Management ***
 //
-// SE_SpringEndTypeC(Coupler_OD=Coupler_OD, Coupler_ID=CouplerThinWall_ID, Len=10, nRopes=6, UseSmallSpring=false);
-// SE_SlidingBigSpringMiddle(OD=Coupler_OD, SliderLen=50, Extension=0);
-// R157_PusherRing(OD=Coupler_OD, ID=CouplerThinWall_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4, PetalStop_h=0);
-// R157_PusherRing(OD=Coupler_OD, ID=CouplerThinWall_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4, PetalStop_h=3, nBolts=6); // for pushing on petals
-// R157_SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=CouplerThinWall_ID, HasPD_Ring=false, Engagemnet_Len=7);
-// R157_SkirtPHRing(Coupler_OD=Coupler_OD*CF_Comp, Coupler_ID=CouplerThinWall_ID, Engagemnet_Len=7);
-// SE_SpringEndTypeC(Coupler_OD=Coupler_OD, Coupler_ID=CouplerThinWall_ID, nRopes=6, UseSmallSpring=false);
+// SE_SpringEndTypeC(Coupler_OD=Coupler_OD*CF_Comp, Coupler_ID=CouplerThinWall_ID*CF_Comp, Len=10, nRopes=6, UseSmallSpring=false);
+// SE_SlidingBigSpringMiddle(OD=Coupler_OD*CF_Comp, SliderLen=50, Extension=0);
 //
-// rotate([180,0,0]) R157_MotorTubeTopper(OD=Body_ID*CF_Comp, MotorTube_OD=BT54Body_OD+IDXtra, MotorTube_ID=BT54Body_ID, Len=35);
-// EbayAlignmentCR(OD=Body_ID*CF_Comp);
+//  for Sustainer Main Petal Hub
+// rotate([180,0,0]) R157_PusherRing(OD=Coupler_OD*CF_Comp, ID=CouplerThinWall_ID*CF_Comp, OA_Len=50, Engagemnet_Len=7, Wall_t=4, PetalStop_h=0); 
+// R157_SkirtPHRing(Coupler_OD=Coupler_OD*CF_Comp, Coupler_ID=CouplerThinWall_ID*CF_Comp, Engagemnet_Len=7); // for Sustainer Main
+//
+//  for top of Main EBay
+// R157_PusherRing(OD=Coupler_OD*CF_Comp, ID=CouplerThinWall_ID*CF_Comp, OA_Len=50, Engagemnet_Len=7, Wall_t=PetalWall_t+2, PetalStop_h=3, PetalWall_t=PetalWall_t, nBolts=6); 
+// R157_SkirtRing(Coupler_OD=Coupler_OD*CF_Comp, Coupler_ID=CouplerThinWall_ID*CF_Comp, HasPD_Ring=false, Engagemnet_Len=7);
+// 
+// rotate([180,0,0]) R157_MotorTubeTopper(OD=Body_ID*CF_Comp, MotorTube_OD=BT54Body_OD+IDXtra, MotorTube_ID=BT54Body_ID, Len=35); // for Sustainer
+// EbayAlignmentCR(OD=Body_ID*CF_Comp); // for Sustainer, top of lower EBay
+//
+//  for Booster
+// rotate([180,0,0]) R157_PusherRing(OD=Coupler_OD*CF_Comp, ID=CouplerThinWall_ID*CF_Comp, OA_Len=50, Engagemnet_Len=7, Wall_t=PetalWall_t+2, PetalStop_h=3, PetalWall_t=PetalWall_t, nBolts=0);
+// SE_SpringEndTypeC(Coupler_OD=Coupler_OD*CF_Comp, Coupler_ID=CouplerThinWall_ID*CF_Comp, Len=20, nRopes=6, UseSmallSpring=false); // for Booster
+//
 //
 //  *** Electronics Bays ***
 //
@@ -83,9 +97,6 @@ BoosterHas75mmMotor=true; // Selects 75mm motor size for the booster. false = 54
 // 
 //  *** Ball Locks 3Req. ***
 //
-STB_Xtra_r=0.3;
-CouplerLenXtra=MainEB_HasCR? 0:-20; // 0 for use w/ centering ring:servos extend into EBay
-//
 // rotate([180,0,0]) R157_BallRetainerTop(Body_OD=Body_OD*CF_Comp+Vinyl_t*2, Body_ID=Body_ID, EBayTube_OD=EBayTube_OD, Engagement_Len=Engagement_Len, nBolts=6, Xtra_r=STB_Xtra_r, CouplerLenXtra=CouplerLenXtra);
 // rotate([180,0,0]) R157_BallRetainerTop(Body_OD=Body_OD*CF_Comp+Vinyl_t*2, Body_ID=Body_ID, EBayTube_OD=EBayTube_OD, Engagement_Len=Engagement_Len, nBolts=6, Xtra_r=STB_Xtra_r, CouplerLenXtra=-20);  // for Booster
 // STB_LockDisk(Body_ID=Body_ID, nLockBalls=nLockBalls, HasLargeInnerBearing=true, Xtra_r=STB_Xtra_r);
@@ -94,12 +105,12 @@ CouplerLenXtra=MainEB_HasCR? 0:-20; // 0 for use w/ centering ring:servos extend
 //
 //  *** Petal Deployers ***
 //
-// R157_PetalHub(OD=Coupler_OD*CF_Comp, nPetals=3, nBolts=6); // 2 Req.
-// R157_PetalHub(OD=Coupler_OD*CF_Comp, nPetals=6, nBolts=6, nRopes=6);
+// R157_PetalHub(OD=Coupler_OD*CF_Comp, nPetals=nPetals, nBolts=6); // 2 Req.
+// R157_PetalHub(OD=Coupler_OD*CF_Comp, nPetals=nPetals, nBolts=6, nRopes=6); // for Sustainer Main
 //
-// PD_Petals2(OD=Coupler_OD, Len=MainPetal_Len, nPetals=3, Wall_t=2.2, AntiClimber_h=5, HasLocks=false, Lock_Span_a=180);
-// PD_Petals2(OD=Coupler_OD, Len=DroguePetal_Len, nPetals=3, Wall_t=2.2, AntiClimber_h=5, HasLocks=false, Lock_Span_a=180);
-// PD_Petals2(OD=Coupler_OD, Len=BoosterPetalLen, nPetals=3, Wall_t=2.2, AntiClimber_h=5, HasLocks=false, Lock_Span_a=180);
+// PD_Petals2(OD=Coupler_OD*CF_Comp, Len=MainPetal_Len, nPetals=nPetals, Wall_t=PetalWall_t, AntiClimber_h=5, HasLocks=false, Lock_Span_a=180);
+// PD_Petals2(OD=Coupler_OD*CF_Comp, Len=DroguePetal_Len, nPetals=nPetals, Wall_t=PetalWall_t, AntiClimber_h=5, HasLocks=false, Lock_Span_a=180);
+// PD_Petals2(OD=Coupler_OD*CF_Comp, Len=BoosterPetalLen, nPetals=nPetals, Wall_t=PetalWall_t, AntiClimber_h=5, HasLocks=false, Lock_Span_a=180);
 //
 // rotate([-90,0,0]) PD_PetalSpringHolder2();
 // PD_HubSpringHolder();
@@ -154,6 +165,12 @@ CouplerLenXtra=MainEB_HasCR? 0:-20; // 0 for use w/ centering ring:servos extend
 // ===============
 //  *** Tools ***
 // ===============
+//
+//  Holds petal while assmbling the rocket for flight.
+// PD_PetalHolder(Petal_OD=ULine157Coupler_OD*CF_Comp, Is_Top=false); // bottom half
+// PD_PetalHolder(Petal_OD=ULine157Coupler_OD*CF_Comp, Is_Top=true); // top half
+//
+// FinCanAlignmetTool(D=19.5);
 //
 // FC2_FinFixture(Fin_Root_W=Sustainer_Fin_Root_W, Fin_Root_L=Sustainer_Fin_Root_L, Fin_Post_h=Sustainer_Fin_Post_h, Fin_Chamfer_L=Sustainer_Fin_Chamfer_L);
 // FC2_FinFixture(Fin_Root_W=Booster_Fin_Root_W, Fin_Root_L=Booster_Fin_Root_L, Fin_Post_h=Booster_Fin_Post_h, Fin_Chamfer_L=Booster_Fin_Chamfer_L);
@@ -427,8 +444,6 @@ module ShowBooster(ShowInternals=true){
 // ShowBooster(ShowInternals=true);
 // ShowBooster(ShowInternals=false);
 
-//SE_SpringEndTypeC(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, nRopes=6, UseSmallSpring=false);
-
 module ShowRocketOmega(ShowInternals=true, ShowCineroc=false){
 	
 	InterstageCoupler_Len=InterstageTube_Len;
@@ -624,6 +639,21 @@ module LowerEBay(TopOnly=false, BottomOnly=false, ShowDoors=false){
 
 // LowerEBay();
 
+module FinCanAlignmetTool(D=19.5){
+	// print 4 of these rings to align the fincan halves
+	
+	difference(){
+		union(){
+			cylinder(d1=D-0.5, d2=D, h=3);
+			translate([0,0,3-Overlap]) cylinder(d2=D-0.5, d1=D, h=3);
+		} // union
+		
+		translate([0,0,-Overlap]) cylinder(d=D-6, h=6+Overlap*2);
+	} // difference
+} // FinCanAlignmetTool
+
+// FinCanAlignmetTool();
+
 module SustainerFinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 	
 	Can_Len=Sustainer_Fin_Root_L+SustainerFinInset*2;
@@ -692,12 +722,13 @@ module RocketOmegaFin(){
 
 module BoosterEBay(TopOnly=false, BottomOnly=false, ShowDoors=false){
 	Doors_a=[[45],[135],[225,315]];
+	nBolts=nEBayBolts; // connects to STB and Stager
 
 	EB_Electronics_BayUniversal(Tube_OD=Body_OD*CF_Comp+Vinyl_t*2, Tube_ID=Body_ID*CF_Comp, DoorAngles=Doors_a, Len=EBay_Len, 
-									nBolts=nEBayBolts, BoltInset=7.5, ShowDoors=ShowDoors,
+									nBolts=nBolts, BoltInset=7.5, ShowDoors=ShowDoors,
 									HasFwdIntegratedCoupler=true, HasFwdShockMount=false,
 									HasAftIntegratedCoupler=false, HasAftShockMount=false,
-									HasRailGuide=true, RailGuideLen=RailGuide_Len,
+									HasRailGuide=false, RailGuideLen=RailGuide_Len,
 									HasFwdCenteringRing=false, HasAftCenteringRing=false, InnerTube_OD=0,
 									Bolted=true, ExtraBolts=[45], TopOnly=TopOnly, BottomOnly=BottomOnly);
 									
