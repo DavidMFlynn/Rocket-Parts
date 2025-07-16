@@ -3,7 +3,7 @@
 // Filename: AltBay.scad
 // by David M. Flynn
 // Created: 6/23/2022 
-// Revision: 0.9.19  10/29/2023
+// Revision: 0.9.20  7/15/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -11,6 +11,9 @@
 // Altimeter Bay for my MissionControl V3
 //
 //  ***** History *****
+function AltBayRev()="AltBay 0.9.20";
+echo(AltBayRev());
+// 0.9.20  7/15/2025  Fixed door frame bolt boss size, now changes w/ extra Y.
 // 0.9.19  10/29/2023 Extended bolt boss to edge of frame.
 // 0.9.18  9/16/2023  Added DeepHole_t to Alt_BayFrameHole
 // 0.9.17  5/21/2023  Fixed frame ridge error.
@@ -232,7 +235,7 @@ module Alt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=BT98Body_ID, DoorXtra_X=0,
 		} // intersection
 		
 		// Trim Bolt Brackets
-		rotate([90,0,0]) RoundRect(X=16, Y=Alt_Y, Z=Tube_OD/2, R=1);
+		rotate([90,0,0]) RoundRect(X=16, Y=Alt_Y+DoorXtra_Y, Z=Tube_OD/2, R=1);
 		
 		// Alt Door
 		AltDoorHole54(Tube_OD=Tube_OD, DoorXtra_X=DoorXtra_X, DoorXtra_Y=DoorXtra_Y);
@@ -245,7 +248,7 @@ module Alt_BayDoorFrame(Tube_OD=PML98Body_OD, Tube_ID=BT98Body_ID, DoorXtra_X=0,
 	if (ShowDoor) AltDoor54(Tube_OD=Tube_OD, DoorXtra_X=DoorXtra_X, DoorXtra_Y=DoorXtra_Y);
 } // Alt_BayDoorFrame
 
-//Alt_BayDoorFrame(ShowDoor=false);
+//Alt_BayDoorFrame(DoorXtra_Y=4, ShowDoor=false);
 //Alt_BayDoorFrame(Tube_OD=PML75Body_OD, Tube_ID=PML75Body_ID, DoorXtra_X=2, DoorXtra_Y=2, ShowDoor=false);
 
 module AltBay54(Tube_OD=PML54Body_OD, Tube_ID=PML54Body_ID, Tube_Len=136, DoorXtra_X=0, DoorXtra_Y=0, ShowDoor=false){

@@ -170,7 +170,8 @@ STB_Xtra_r=0.3; // Makes the lock tighter
 // PD_PetalHolder(Petal_OD=ULine157Coupler_OD*CF_Comp, Is_Top=false); // bottom half
 // PD_PetalHolder(Petal_OD=ULine157Coupler_OD*CF_Comp, Is_Top=true); // top half
 //
-// FinCanAlignmetTool(D=19.5);
+// FinCanAlignmetTool(D=24.9); // for sustainer
+// FinCanAlignmetTool(D=19.5); // for booster
 //
 // FC2_FinFixture(Fin_Root_W=Sustainer_Fin_Root_W, Fin_Root_L=Sustainer_Fin_Root_L, Fin_Post_h=Sustainer_Fin_Post_h, Fin_Chamfer_L=Sustainer_Fin_Chamfer_L);
 // FC2_FinFixture(Fin_Root_W=Booster_Fin_Root_W, Fin_Root_L=Booster_Fin_Root_L, Fin_Post_h=Booster_Fin_Post_h, Fin_Chamfer_L=Booster_Fin_Chamfer_L);
