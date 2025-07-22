@@ -398,12 +398,11 @@ module R157_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7
 	} // difference
 	
 	if (PetalStop_h>0) translate([0,0,OA_Len-Overlap])
-		Tube(OD=OD-PetalWall_t*2, ID=OD-Wall_t*2, Len=PetalStop_h, myfn=$preview? 90:360);
+		Tube(OD=OD-PetalWall_t*2-IDXtra*2, ID=OD-Wall_t*2, Len=PetalStop_h, myfn=$preview? 90:360);
 } // R157_PusherRing
 
 // rotate([180,0,0]) R157_PusherRing(PetalStop_h=3);
-// 
-R157_PusherRing(OD=Coupler_OD*CF_Comp, ID=CouplerThinWall_ID*CF_Comp, OA_Len=50, Engagemnet_Len=7, Wall_t=PetalWall_t+2, PetalStop_h=3, PetalWall_t=PetalWall_t, nBolts=0);
+// R157_PusherRing(OD=Coupler_OD*CF_Comp, ID=CouplerThinWall_ID*CF_Comp, OA_Len=50, Engagemnet_Len=7, Wall_t=PetalWall_t+2, PetalStop_h=3, PetalWall_t=PetalWall_t, nBolts=0);
 
 
 module R157_BoosterSpringBottom(OD=Body_ID, MotorTube_OD=MotorTube_OD){

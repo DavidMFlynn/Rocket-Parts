@@ -3,25 +3,27 @@
 // Filename: RocketOmegaU157.scad
 // by David M. Flynn
 // Created: 7/1/2025
-// Revision: 0.9.7  7/15/2025
+// Revision: 0.9.8  7/21/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 //
-//  This is a partial design, booster is just too long to look like an Omega
+//  This is a partial design, booster is just too long (by 400mm) to look exactly like an Omega.
+//  In this case the booster is stable after staging.
 //  6" Upscale of Estes Astron Omega
 //  Two Stage Rocket with ULine 6" Body.
 //  K1100T or K1800ST to K550W or K480W
 //
 //  ***** Tubes to Cut *****
-// Sustainer Upper Tube	482mm ULine 6" Mailing Tube
-// Sustainer Lower Tube	670mm ULine 6" Mailing Tube
+// Sustainer Upper Tube	452mm ULine 6" Mailing Tube
+// Sustainer Lower Tube	765mm ULine 6" Mailing Tube
 // Sustainer Motor Tube	645mm BT54Body
 //
-// Booster Body Tube 240mm 	ULine 6" Mailing Tube
+// Booster Body Tube 310mm 	ULine 6" Mailing Tube
 // Booster Motor Tube	452mm BT54Body or BT75Body
 //
 //  ***** History *****
+// 0.9.8  7/21/2025   Corrected tube lengths. Coming together, hope to fly in October.
 // 0.9.7  7/15/2025   Petal wall thickness and pusher rings.
 // 0.9.6  7/13/2025   Still printing and fixing problems.
 // 0.9.5  7/11/2025   Moved Cineroc stuff to its own file.
@@ -67,25 +69,25 @@ STB_Xtra_r=0.3; // Makes the lock tighter
 // R157_SkirtPHRing(Coupler_OD=Coupler_OD*CF_Comp, Coupler_ID=CouplerThinWall_ID*CF_Comp, Engagemnet_Len=7); // for Sustainer Main
 //
 //  for top of Main EBay
-// R157_PusherRing(OD=Coupler_OD*CF_Comp, ID=CouplerThinWall_ID*CF_Comp, OA_Len=50, Engagemnet_Len=7, Wall_t=PetalWall_t+2, PetalStop_h=3, PetalWall_t=PetalWall_t, nBolts=6); 
+// rotate([180,0,0]) R157_PusherRing(OD=Coupler_OD*CF_Comp, ID=CouplerThinWall_ID*CF_Comp, OA_Len=50, Engagemnet_Len=7, Wall_t=PetalWall_t+2.2, PetalStop_h=3, PetalWall_t=PetalWall_t, nBolts=6); 
 // R157_SkirtRing(Coupler_OD=Coupler_OD*CF_Comp, Coupler_ID=CouplerThinWall_ID*CF_Comp, HasPD_Ring=false, Engagemnet_Len=7);
 // 
 // rotate([180,0,0]) R157_MotorTubeTopper(OD=Body_ID*CF_Comp, MotorTube_OD=BT54Body_OD+IDXtra, MotorTube_ID=BT54Body_ID, Len=35); // for Sustainer
-// EbayAlignmentCR(OD=Body_ID*CF_Comp); // for Sustainer, top of lower EBay
 //
 //  for Booster
-// rotate([180,0,0]) R157_PusherRing(OD=Coupler_OD*CF_Comp, ID=CouplerThinWall_ID*CF_Comp, OA_Len=50, Engagemnet_Len=7, Wall_t=PetalWall_t+2, PetalStop_h=3, PetalWall_t=PetalWall_t, nBolts=0);
+// rotate([180,0,0]) R157_PusherRing(OD=Coupler_OD*CF_Comp, ID=CouplerThinWall_ID*CF_Comp, OA_Len=80, Engagemnet_Len=7, Wall_t=PetalWall_t+2.2, PetalStop_h=3, PetalWall_t=PetalWall_t, nBolts=0);
 // SE_SpringEndTypeC(Coupler_OD=Coupler_OD*CF_Comp, Coupler_ID=CouplerThinWall_ID*CF_Comp, Len=20, nRopes=6, UseSmallSpring=false); // for Booster
-//
+// Tube(OD=Coupler_OD*CF_Comp, ID=CouplerThinWall_ID*CF_Comp, Len=30, myfn=$preview? 90:360); // spacer
 //
 //  *** Electronics Bays ***
 //
 // rotate([180,0,0]) MainEBay(TopOnly=true, BottomOnly=false, ShowDoors=false);
 // MainEBay(TopOnly=false, BottomOnly=true, ShowDoors=false);
-// CenteringRing(OD=Body_ID, ID=EBayTube_OD+IDXtra, Thickness=4.8, nHoles=0, Offset=0, myfn=$preview? 90:720); // optional
+// CenteringRing(OD=Body_ID*CF_Comp, ID=EBayTube_OD+IDXtra, Thickness=4.8, nHoles=0, Offset=0, myfn=$preview? 90:720); // optional
 //
 // rotate([180,0,0]) LowerEBay(TopOnly=true, BottomOnly=false, ShowDoors=false);
 // LowerEBay(TopOnly=false, BottomOnly=true, ShowDoors=false);
+// EbayAlignmentCR(OD=Body_ID*CF_Comp); // for Sustainer, top of lower EBay
 //
 // rotate([180,0,0]) BoosterEBay(TopOnly=true, BottomOnly=false, ShowDoors=false);
 // BoosterEBay(TopOnly=false, BottomOnly=true, ShowDoors=false);
@@ -318,13 +320,14 @@ ScaleBooster_Body_Len=5*25.4*Scale;
 echo(str("Scale Booster Body Length = ",ScaleBooster_Body_Len));
 
 PBay_Len=5*25.4*Scale;
-LowerTube_Len=670;
+UpperTube_Len=PBay_Len-Engagement_Len;
+
 SustainerFinInset=5;
 SusFinCan_Len=Sustainer_Fin_Root_L+SustainerFinInset*2;
 
 BoosterFinInset=5;
 BoostFinCan_Len=Booster_Fin_Root_L+BoosterFinInset*2;
-InterstageTube_Len=240;
+InterstageTube_Len=310;
 Booster_Body_Len=BoostFinCan_Len+InterstageTube_Len+EBay_Len+Engagement_Len+28;
 SustainerMotorTube_Len=617; //SusFinCan_Len+EBay_Len+200;
 echo(str("Booster Body Length = ",Booster_Body_Len));
@@ -334,13 +337,15 @@ echo(str("Scale Body Length = ",ScaleBody_Len));
 echo(str(" Including scale payload bay len = ",PBay_Len));
 
 STB_Len=MainEB_HasCR? 39+Engagement_Len:19+Engagement_Len;
+
+LowerTube_Len=14.5*25.4*Scale-SusFinCan_Len-(EBay_Len-15)-Engagement_Len-5-EBay_Len-5;
 Body_Len=19+SusFinCan_Len+EBay_Len+LowerTube_Len+MainEBay_Len+STB_Len*2+PBay_Len;
 echo(str("Total Body Length = ",Body_Len));
 
 BoosterMotorTubeLen=BoostFinCan_Len+100;
 
 // Body & Motor Tube Lengths
-echo(str("Upper Body Tube = ",PBay_Len));
+echo(str("Upper Body Tube = ",UpperTube_Len));
 echo(str("Lower Body Tube = ",LowerTube_Len));
 echo(str("Sustainer Motor Tube = ",SustainerMotorTube_Len));
 echo(str("Booster Body = ",InterstageTube_Len));
@@ -445,6 +450,8 @@ module ShowBooster(ShowInternals=true){
 // ShowBooster(ShowInternals=true);
 // ShowBooster(ShowInternals=false);
 
+
+
 module ShowRocketOmega(ShowInternals=true, ShowCineroc=false){
 	
 	InterstageCoupler_Len=InterstageTube_Len;
@@ -464,7 +471,7 @@ module ShowRocketOmega(ShowInternals=true, ShowCineroc=false){
 	PBay_Z=MainSTB_Z+Engagement_Len/2;
 	
 	MainPetalHub_Z=PBay_Z+50+MainPetal_Len+24;
-	NC_Z=PBay_Z+PBay_Len+3;
+	NC_Z=PBay_Z+UpperTube_Len+3;
 	
 	//*
 	translate([0,0,NC_Z]){
@@ -489,7 +496,7 @@ module ShowRocketOmega(ShowInternals=true, ShowCineroc=false){
 	
 	if (!ShowInternals)
 		translate([0,0,PBay_Z+0.1]) color("Silver") 
-			Tube(OD=Body_OD, ID=Body_ID, Len=PBay_Len-0.2, myfn=$preview? 90:360);
+			Tube(OD=Body_OD, ID=Body_ID, Len=UpperTube_Len-0.2, myfn=$preview? 90:360);
 	
 	
 	if (!ShowInternals) translate([0,0,MainSTB_Z]) color("Gray") rotate([180,0,0])
@@ -617,9 +624,10 @@ module MainEBay(TopOnly=false, BottomOnly=false, ShowDoors=false){
 
 module EbayAlignmentCR(OD=Body_ID*CF_Comp){
 	Thickness=4.8;
+	AlignmentRing_d=OD-6-IDXtra;
 	
 	CenteringRing(OD=OD, ID=MotorTube_OD+IDXtra, Thickness=Thickness, nHoles=6, Offset=0, myfn=$preview? 90:720);
-	Tube(OD=OD-6-IDXtra*2, ID=OD-9, Len=Thickness+2, myfn=$preview? 90:360);
+	Tube(OD=AlignmentRing_d, ID=AlignmentRing_d-4.4, Len=Thickness+3, myfn=$preview? 90:360);
 } // EbayAlignmentCR
 
 // EbayAlignmentCR();

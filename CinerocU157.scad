@@ -8,7 +8,6 @@
 // ***********************************
 //  ***** Notes *****
 //
-//  This is a partial design, booster is just too long to look like an Omega
 //  6" Upscale of Estes Cineroc camera nosecone for Omega rocket
 //  Designed for GoPro Hero 11 Black.
 //  Replaces paylode bay and nosecone on 6" Omega
@@ -22,42 +21,14 @@
 //
 // ***********************************
 //  ***** for STL output *****
-//
-// NC_ShockcordRingDual(Tube_OD=Body_OD*CF_Comp+Vinyl_t*2, Tube_ID=Body_ID, NC_ID=0, NC_Base_L=NC_Base_L, nRivets=NC_nRivets, nBolts=NC_nRivets, Flat=true);
 // 
-//  *** Spring Management ***
-//
-// SE_SpringEndTypeC(Coupler_OD=Coupler_OD, Coupler_ID=CouplerThinWall_ID, Len=10, nRopes=6, UseSmallSpring=false);
-// SE_SlidingBigSpringMiddle(OD=Coupler_OD, SliderLen=50, Extension=0);
-// R157_PusherRing(OD=Coupler_OD, ID=CouplerThinWall_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4, PetalStop_h=0);
-// R157_PusherRing(OD=Coupler_OD, ID=CouplerThinWall_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4, PetalStop_h=3, nBolts=6); // for pushing on petals
-// R157_SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=CouplerThinWall_ID, HasPD_Ring=false, Engagemnet_Len=7);
-//
-// SE_SpringEndTypeC(Coupler_OD=Coupler_OD, Coupler_ID=CouplerThinWall_ID, nRopes=6, UseSmallSpring=false);
-//
-// rotate([180,0,0]) R157_MotorTubeTopper(OD=Body_ID*CF_Comp, MotorTube_OD=BT54Body_OD, MotorTube_ID=BT54Body_ID, Len=35);
-// EbayAlignmentCR(OD=Body_ID*CF_Comp);
-//
-//  *** Ball Lock ***
-//
-STB_Xtra_r=0.3;
-//
-//
-//  *** Petal Deployers ***
-//
-// R157_NC_PetalHub(OD=Coupler_OD, nPetals=3, nRopes=6, Coupler_ID=CouplerThinWall_ID);
-//
-// PD_Petals2(OD=Coupler_OD, Len=MainPetal_Len, nPetals=3, Wall_t=2.2, AntiClimber_h=5, HasLocks=false, Lock_Span_a=180);
-//
-// rotate([-90,0,0]) PD_PetalSpringHolder2();
-// PD_HubSpringHolder();
 //
 // ================================
 //  ***** Cineroc Only Parts *****
 // ================================
 //  Replaces main parachute bay and nosecone
 //
-// BluntConeNoseCone(ID=CNC_Body_ID, OD=CNC_Body_OD, L=CNC_NC_Len, Base_L=CBC_Base_L, nRivets=NC_nRivets, Tip_R=CNC_NC_Tip_r, Wall_T=CNC_NC_Wall_t);
+// BluntConeNoseCone(ID=CNC_Body_ID*CF_Comp, OD=CNC_Body_OD*CF_Comp, L=CNC_NC_Len, Base_L=CBC_Base_L, nRivets=NC_nRivets, Tip_R=CNC_NC_Tip_r, Wall_T=CNC_NC_Wall_t);
 // Cineroc_CameraMount();
 // Cineroc_CameraTube();
 // CinerocCoupler();
@@ -290,7 +261,7 @@ module Cineroc_CameraMount(){
 
 	// Mount to NC_ShockcordRingDual like a nosecone
 	difference(){
-		Tube(OD=Body_OD*CF_Comp, ID=Body_ID+IDXtra*2, Len=Tube_Len, myfn=$preview? 90:360);
+		Tube(OD=Body_OD*CF_Comp, ID=Body_ID*CF_Comp+IDXtra*2, Len=Tube_Len, myfn=$preview? 90:360);
 	
 		// Rivets
 		for (j=[0:NC_nRivets-1]) rotate([0,0,360/NC_nRivets*j]) translate([0,Body_OD/2+1,7.5])
@@ -299,7 +270,7 @@ module Cineroc_CameraMount(){
 	
 	
 	module CameraMountingHoles(){
-		translate([0, -CNC_Body_OD/2, CameraPlate_Z+CameraPlate_t]) rotate([Camera_a,0,0]){
+		translate([0, -CNC_Body_OD/2*CF_Comp, CameraPlate_Z+CameraPlate_t]) rotate([Camera_a,0,0]){
 				translate([-GPH11B_W/2-C_Block_W/2,30,C_Block_H]) Bolt8Hole(depth=20);
 				translate([GPH11B_W/2+C_Block_W/2,30,C_Block_H]) Bolt8Hole(depth=20);
 				translate([0,46+C_Block_W/2,C_Block_H]) Bolt8Hole(depth=20);
@@ -310,17 +281,17 @@ module Cineroc_CameraMount(){
 		hull(){
 			difference(){
 				translate([0,0,Tube_Len-Overlap]) Tube(OD=Body_OD*CF_Comp, ID=Body_ID+IDXtra*2, Len=1, myfn=$preview? 90:360);
-				translate([-Body_OD/2-5, -25, Tube_Len-Overlap*2]) cube([Body_OD+10,Body_OD,3]);
+				translate([-Body_OD/2*CF_Comp-5, -25, Tube_Len-Overlap*2]) cube([Body_OD+10,Body_OD,3]);
 			} // difference
 			
 			difference(){
 				intersection(){
-					translate([0, -CNC_Body_OD/2, CameraPlate_Z]) rotate([Camera_a,0,0])
+					translate([0, -CNC_Body_OD/2*CF_Comp, CameraPlate_Z]) rotate([Camera_a,0,0])
 							RoundRect(X=CameraPlate_W, Y=CameraPlate_Len, Z=CameraPlate_t, R=3);
-					cylinder(d=	CNC_Body_ID-1, h=100, $fn=$preview? 90:360);
+					cylinder(d=	CNC_Body_ID*CF_Comp-1, h=100, $fn=$preview? 90:360);
 				} // intersection
 				
-				translate([0, -CNC_Body_OD/2, CameraPlate_Z]) rotate([Camera_a,0,0])
+				translate([0, -CNC_Body_OD/2*CF_Comp, CameraPlate_Z]) rotate([Camera_a,0,0])
 					translate([0,0,5]) cube([GPH11B_W, 10, CameraPlate_t*2+Overlap*2], center=true);
 				
 			} // difference
@@ -332,7 +303,7 @@ module Cineroc_CameraMount(){
 	
 	// Camera locating bolcks
 	difference(){
-		translate([0, -CNC_Body_OD/2, CameraPlate_Z+CameraPlate_t]) rotate([Camera_a,0,0]){
+		translate([0, -CNC_Body_OD/2*CF_Comp, CameraPlate_Z+CameraPlate_t]) rotate([Camera_a,0,0]){
 			translate([-GPH11B_W/2-C_Block_W/2,30,-1]) 
 				RoundRect(X=C_Block_W, Y=20, Z=C_Block_H, R=2);
 			
@@ -350,7 +321,7 @@ module Cineroc_CameraMount(){
 //translate([0,0,302.3+16]) Cineroc_CameraMount();
 
 module ShowCamera(){
-	translate([0,-CNC_Body_OD/2,Camera_Z])
+	translate([0,-CNC_Body_OD/2*CF_Comp,Camera_Z])
 		rotate([Camera_a,0,0]) translate([0,15,0]) rotate([180,0,-90]) 
 			color("LightGray") GPC_GoProHero11Black(Xtra=0, Xtra_Z=0, IncludeVP=false, BackAccess=false, HasMountingEars=false);
 } // ShowCamera
@@ -364,57 +335,71 @@ module Cineroc_Base(){
 			cylinder(d1=Body_OD*CF_Comp+Vinyl_t*2, d2=CNC_Body_OD*CF_Comp, h=CNC_BaseTaper_Len, $fn=$preview? 90:360);
 			
 			translate([0,0,CNC_BaseTaper_Len-Overlap])
-				Tube(OD=CNC_Body_OD*CF_Comp, ID=CNC_Body_ID, Len=15+Overlap, myfn=$preview? 90:360);
+				Tube(OD=CNC_Body_OD*CF_Comp, ID=CNC_Body_ID*CF_Comp, Len=15+Overlap, myfn=$preview? 90:360);
 				
 			translate([0,0,CNC_BaseTaper_Len+15])
-				Tube(OD=CNC_Body_ID, ID=CNC_Body_ID-CNC_Body_Wall_t*2, Len=15, myfn=$preview? 90:360);
+				Tube(OD=CNC_Body_ID*CF_Comp, ID=CNC_Body_ID*CF_Comp-CNC_Body_Wall_t*2, Len=15, myfn=$preview? 90:360);
 				
 			// connector
 			translate([0,0,CNC_BaseTaper_Len+10])
 			difference(){
-				Tube(OD=CNC_Body_ID+1, ID=CNC_Body_ID-CNC_Body_Wall_t*2, Len=5, myfn=$preview? 90:360);
+				Tube(OD=CNC_Body_ID*CF_Comp+1, ID=CNC_Body_ID*CF_Comp-CNC_Body_Wall_t*2, Len=5, myfn=$preview? 90:360);
 					
-				translate([0,0,-Overlap]) cylinder(d1=CNC_Body_ID-Overlap, d2=CNC_Body_ID-CNC_Body_Wall_t*2-Overlap, h=5, $fn=$preview? 90:360);
+				translate([0,0,-Overlap]) 
+					cylinder(d1=CNC_Body_ID*CF_Comp-Overlap, d2=CNC_Body_ID*CF_Comp-CNC_Body_Wall_t*2-Overlap, h=5, $fn=$preview? 90:360);
 			} // difference
 		} // union
 		
 		translate([0,0,-Overlap])
-			cylinder(d1=Body_ID, d2=CNC_Body_ID, h=CNC_BaseTaper_Len+Overlap*2, $fn=$preview? 90:360);
+			cylinder(d1=Body_ID*CF_Comp, d2=CNC_Body_ID*CF_Comp, h=CNC_BaseTaper_Len+Overlap*2, $fn=$preview? 90:360);
 			
-		translate([0,0,-Overlap]) cylinder(d=Body_OD+1, h=40, $fn=$preview? 90:360);
+		translate([0,0,-Overlap]) cylinder(d=Body_OD*CF_Comp+1, h=40, $fn=$preview? 90:360);
 			
 		// Bolts
-		for (j=[0:NC_nRivets-1]) rotate([0,0,360/NC_nRivets*j]) translate([0,CNC_Body_OD/2+1,CNC_BaseTaper_Len+15+7.5])
+		for (j=[0:NC_nRivets-1]) rotate([0,0,360/NC_nRivets*j]) translate([0,CNC_Body_OD/2*CF_Comp+1,CNC_BaseTaper_Len+15+7.5])
 			rotate([-90,0,0]) Bolt4Hole();
 		
 	} // difference
 	
 	//translate([0,0,-Engagement_Len/2]) 
 	rotate([180,0,0]) 
-		STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD*CF_Comp, Engagement_Len=Engagement_Len);
+		STB_TubeEnd(Body_ID=Body_ID*CF_Comp, nLockBalls=nLockBalls, Body_OD=Body_OD*CF_Comp, Engagement_Len=Engagement_Len);
 } // Cineroc_Base
 
 // Cineroc_Base();
 
 module CinerocTube(Len=CNC_Body_Len/2, HasCoupler=false){
 	UpperBolt_Z=HasCoupler? Len+7.5:Len-7.5;
+	MidTubeLen=HasCoupler? Len-18-5-3:Len-36;
+	Wall_t=1.4;
+	Tube_ID=CNC_Body_ID*CF_Comp;
+	Tube_OD=CNC_Body_OD*CF_Comp;
+	MidTube_ID=Tube_OD-Wall_t*2;
+	
+	//echo((CNC_Body_OD*CF_Comp-CNC_Body_ID*CF_Comp)/2);
 	difference(){
 		union(){
-			Tube(OD=CNC_Body_OD*CF_Comp, ID=CNC_Body_ID, Len=Len, myfn=$preview? 90:360);
+			Tube(OD=Tube_OD, ID=Tube_ID, Len=Len, myfn=$preview? 90:360);
 			
 			if (HasCoupler){
-				translate([0,0,Len-Overlap]) Tube(OD=CNC_Body_ID, ID=CNC_Body_ID-4.4, Len=15, myfn=$preview? 90:360);
-				translate([0,0,Len-5]) Tube(OD=CNC_Body_ID+1, ID=CNC_Body_ID-4.4, Len=5, myfn=$preview? 90:360);
+				translate([0,0,Len-Overlap]) Tube(OD=CNC_Body_ID*CF_Comp, ID=CNC_Body_ID*CF_Comp-4.4, Len=15, myfn=$preview? 90:360);
+				translate([0,0,Len-5]) Tube(OD=CNC_Body_ID*CF_Comp+1, ID=CNC_Body_ID*CF_Comp-4.4, Len=5, myfn=$preview? 90:360);
 			}
 		} // union
 		
+		if ((Tube_OD-Tube_ID)/2 > Wall_t){
+			translate([0,0,15]) cylinder(d1=Tube_ID, d2=MidTube_ID, h=3+Overlap, $fn=$preview? 90:360);
+			translate([0,0,18]) cylinder(d=MidTube_ID, h=MidTubeLen, $fn=$preview? 90:360);
+			translate([0,0,18+MidTubeLen-Overlap]) cylinder(d2=Tube_ID, d1=MidTube_ID, h=3+Overlap, $fn=$preview? 90:360);
+		}
+		
 		if (HasCoupler){
-			translate([0,0,Len-5-Overlap]) cylinder(d1=CNC_Body_ID, d2=CNC_Body_ID-4.4, h=5, $fn=$preview? 90:360);
+			translate([0,0,Len-5-Overlap]) cylinder(d1=CNC_Body_ID*CF_Comp, d2=CNC_Body_ID*CF_Comp-4.4, h=5, $fn=$preview? 90:360);
 		}
 		
 		for (j=[0:NC_nRivets]) rotate([0, 0, 360/NC_nRivets*j]){
-			translate([0, CNC_Body_OD/2+1, UpperBolt_Z]) rotate([-90,0,0]) Bolt4Hole();
-			translate([0, CNC_Body_OD/2+1, 7.5]) rotate([-90,0,0]) Bolt4Hole();
+			translate([0, CNC_Body_OD/2*CF_Comp+1, UpperBolt_Z]) rotate([-90,0,0]) Bolt4Hole();
+			translate([0, CNC_Body_OD/2*CF_Comp+1, 7.5]) rotate([-90,0,0]) Bolt4Hole();
 		}
 	} // difference
 } // CinerocTube
@@ -428,16 +413,16 @@ module CinerocCoupler(){
 	
 	difference(){
 		union(){
-			translate([0,0,-15]) Tube(OD=CNC_Body_ID, ID=Coulper_ID, Len=33, myfn=$preview? 90:360);
+			translate([0,0,-15]) Tube(OD=CNC_Body_ID*CF_Comp, ID=Coulper_ID*CF_Comp, Len=33, myfn=$preview? 90:360);
 			// outer flange
-			Tube(OD=CNC_Body_OD*CF_Comp, ID=Coulper_ID, Len=3, myfn=$preview? 90:360);
+			Tube(OD=CNC_Body_OD*CF_Comp, ID=Coulper_ID*CF_Comp, Len=3, myfn=$preview? 90:360);
 			// centering ring
-			translate([0,0,-15]) Tube(OD=CNC_Body_ID-1, ID=Body_OD*CF_Comp+IDXtra*2, Len=3, myfn=$preview? 90:360);
+			translate([0,0,-15]) Tube(OD=CNC_Body_ID*CF_Comp-1, ID=Body_OD*CF_Comp+IDXtra*2, Len=3, myfn=$preview? 90:360);
 		} // union
 		
 		for (j=[0:NC_nRivets]) rotate([0, 0, 360/NC_nRivets*j]){
-			translate([0, CNC_Body_OD/2+1, 3+7.5]) rotate([-90,0,0]) Bolt4Hole();
-			translate([0, CNC_Body_OD/2+1, -7.5]) rotate([-90,0,0]) Bolt4Hole();
+			translate([0, CNC_Body_OD/2*CF_Comp+1, 3+7.5]) rotate([-90,0,0]) Bolt4Hole();
+			translate([0, CNC_Body_OD/2*CF_Comp+1, -7.5]) rotate([-90,0,0]) Bolt4Hole();
 			// must slide past bolts in parachute tube
 			rotate([0,0,180/NC_nRivets]) translate([0, Body_OD/2, -15-Overlap]) scale([1.5,1,1]) cylinder(d=6, h=4);
 		}
