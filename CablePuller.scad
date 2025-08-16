@@ -75,6 +75,10 @@ echo("CablePuller 1.2.1");
 
 // CP_SpringWindingTool();
 //
+//  ***** for small rockets *****
+//
+// CP_SlidingTrigger();
+//
 // ***********************************
 //  ***** Routines *****
 //
@@ -94,7 +98,7 @@ echo("CablePuller 1.2.1");
 
 include<TubesLib.scad>
 use<DoorLib.scad>
-include<CommonStuffSAEmm.scad>
+//include<CommonStuffSAEmm.scad>
 
 Overlap=0.05;
 IDXtra=0.2; // Add to ID for tight fit, x2 for loose fit
@@ -121,6 +125,27 @@ Bolt4Inset=4;
 CP_Door_Y=120;
 CP_Door_X=CP_SpringBody_YZ+5+Bolt4Inset*4+20; // changed 10/25/2022, was +10
 CP_DoorThickness=3.7;
+
+module CP_SlidingTrigger(){
+	H=8;
+	Len=8;
+	W=7;
+	
+	difference(){
+		union(){
+			hull(){
+				translate([0,1.75,0]) RoundRect(X=Len, Y=W-3.5, Z=H, R=1);
+				translate([3.5,0,0]) RoundRect(X=3, Y=W-2, Z=H, R=1);
+			} // hull
+			translate([3.5,0,0]) RoundRect(X=3, Y=W, Z=H, R=1);
+		} // union
+		
+		translate([Len/2+2,-W/2+4.8,H/2]) rotate([0,-90,0]) cylinder(d=1, h=12);
+		//rotate([0,90,0]) Bolt2Hole(depth=6);
+	} // difference
+} // CP_SlidingTrigger
+
+// CP_SlidingTrigger();
 
 module Bearing(){
 	color("Red")
@@ -537,6 +562,8 @@ module CR_Cage(){
 		cylinder(d=4+IDXtra, h=Cage_YZ+Overlap*2, center=true);
 	} // difference
 } // CR_Cage
+
+//CR_Cage();
 
 // bottom only
 module CP_CageBottom(){

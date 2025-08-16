@@ -58,6 +58,9 @@ echo(TubesLib_Rev());
 // ***********************************
 //  ***** Routines *****
 //
+// TwistLockMale(OD=BT38Coupler_OD, nLocks=5, Inset=3, LockSize=2); // Adds bumps to OD
+// TwistLockFemale(OD=BT38Coupler_OD, nLocks=5, Inset=3, LockSize=2); // Adds grooves to ID
+//
 // TubeTest(OD=BT137Body_OD, ID=BT137Body_ID, TestOD=false); // for test fitting tubes
 // TubeTest(OD=ULine102Body_OD, ID=ULine102Body_ID);
 //
@@ -98,7 +101,7 @@ echo(PML98Coupler_ID=PML98Coupler_ID);
 
 // ULine 1.5  inch mailing tube
 ULine38Body_OD=41.68;
-ULine38Body_ID=38.70; // Works w/ BT38Coupler_OD
+ULine38Body_ID=38.90; // was 38.7 Works w/ BT38Coupler_OD
 
 // ULine 3 inch mailing tube
 ULine75Body_OD=80.30;
@@ -192,6 +195,15 @@ BT54Coupler_ID=50.70;
 BT38Body_OD=41.30;
 BT38Body_ID=38.50;
 BT38Coupler_OD=38.20;
+BT38Coupler_ID=35.30;
+
+BT29Body_ID=1.142*25.4;
+BT29Body_OD=1.266*25.4;
+BT29Coupler_ID=1.018*25.4;
+BT29Coupler_OD=1.122*25.4;
+
+LocP29Body_ID=29; // needs corrections
+LocP29Body_OD=31;
 
 PML38Body_OD=42.2; //(1.525+0.062*2)*25.4; // 42.2 measured
 PML38Body_ID=1.525*25.4;
@@ -210,6 +222,48 @@ LOC65Coupler_ID=63.3;
 
 LOC29Body_OD=30.9;
 LOC29Body_ID=29;
+
+
+module TwistLockMale(OD=BT38Coupler_OD, nLocks=5, Inset=3, LockSize=2){
+	// Adds bumps to OD
+	
+	LockY_Adj=LockSize/2*0.45;
+	
+	for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j]) translate([0,OD/2-LockY_Adj, Inset]) sphere(d=LockSize);
+} // TwistLockMale
+
+// TwistLockMale();
+
+module TwistLockFemale(OD=BT38Coupler_OD, nLocks=5, Inset=3, LockSize=2){
+	// Adds grooves to ID
+	LockY_Adj=LockSize/2*0.3;
+	LockY_Adj2=LockY_Adj*1.5;
+	Lock_a=360/(OD*PI/4)/6;
+
+	module LockChanel(Segment=0, LockAdj1=LockY_Adj, LockAdj2=LockY_Adj){
+		hull(){
+			rotate([0,0,Segment*Lock_a]) translate([0,OD/2-LockAdj1,Inset]) sphere(d=LockSize);
+			
+			rotate([0,0,(Segment+1)*Lock_a]) translate([0,OD/2-LockAdj2,Inset]) sphere(d=LockSize);
+		} // hull
+	} // LockChanel
+	
+	for (j=[0:nLocks-1]) rotate([0,0,360/nLocks*j]){
+		// Slot from end
+		hull(){
+			translate([0,OD/2-LockY_Adj,Inset]) sphere(d=LockSize);
+			translate([0,OD/2-LockY_Adj,0]) sphere(d=LockSize);
+		} // hull
+		
+		// Lock
+		LockChanel(Segment=0, LockAdj1=LockY_Adj, LockAdj2=LockY_Adj);
+		LockChanel(Segment=1, LockAdj1=LockY_Adj, LockAdj2=LockY_Adj2);
+		LockChanel(Segment=2, LockAdj1=LockY_Adj2, LockAdj2=LockY_Adj);
+		for (k=[3:4]) LockChanel(Segment=k, LockAdj1=LockY_Adj);
+	}
+} // TwistLockFemale
+
+// TwistLockFemale();
 
 module TubeTest(OD=ULine75Body_OD, ID=ULine75Body_ID, TestOD=false){
 	

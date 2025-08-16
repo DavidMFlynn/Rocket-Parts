@@ -42,7 +42,7 @@
 // SE_SlidingBigSpringMiddle(OD=BT137Coupler_OD, SliderLen=60, Extension=0);
 //
 // PD_NC_PetalHub(OD=Coupler_OD, nPetals=6, HasReplaceableSpringHolder=true, nRopes=6, ShockCord_a=-1, HasThreadedCore=false, ST_DSpring_ID=SE_Spring_CS11890_ID(), ST_DSpring_OD=SE_Spring_CS11890_OD(), CouplerTube_ID=Coupler_ID);
-// rotate([180,0,0]) R137_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=40, Engagemnet_Len=10, Wall_t=3);
+// rotate([180,0,0]) R137_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=40, Engagemnet_Len=10, Wall_t=4, PetalStop_h=3, PetalWall_t=2.4, nBolts=0);
 
 // PD_HubSpringHolder();
 // rotate([-90,0,0]) PD_PetalSpringHolder2();
@@ -52,7 +52,7 @@
 // rotate([-90,0,0]) PD_PetalSpringHolder(OD=Coupler_OD);
 //
 // SE_SpringEndTypeC(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, Len=20, nRopes=6, UseSmallSpring=false);
-// rotate([180,0,0]) R137_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=40, Engagemnet_Len=7, Wall_t=3.5);
+// rotate([180,0,0]) R137_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=40, Engagemnet_Len=7, Wall_t=4, PetalStop_h=3, PetalWall_t=2.4, nBolts=0);
 //
 //  ***** Ball Lock *****
 //
@@ -116,7 +116,7 @@
 //
 // ***********************************
 
-use<AT-RMS-Lib.scad>
+use<AT_RMS_Lib.scad>
 include<TubesLib.scad>
 use<R137Lib.scad>
 use<LD-20MGServoLib.scad>

@@ -405,14 +405,14 @@ module R157_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7
 // R157_PusherRing(OD=Coupler_OD*CF_Comp, ID=CouplerThinWall_ID*CF_Comp, OA_Len=50, Engagemnet_Len=7, Wall_t=PetalWall_t+2, PetalStop_h=3, PetalWall_t=PetalWall_t, nBolts=0);
 
 
-module R157_BoosterSpringBottom(OD=Body_ID, MotorTube_OD=MotorTube_OD){
+module R157_BoosterSpringBottom(OD=Body_ID, MotorTube_OD=MotorTube_OD, nRopes=5){
 	// Integrated centering ring w/ spring bottom
 	
 	MT_Hole_d=MotorTube_OD+IDXtra*3;
 	Spring_OD=SE_Spring_CS11890_OD();
 	SpringSeat_h=10;
 	Spring_Z=5;
-	nRopes=5;
+	
 	Rope_d=4;
 	
 	difference(){
@@ -439,7 +439,7 @@ module R157_BoosterSpringBottom(OD=Body_ID, MotorTube_OD=MotorTube_OD){
 	
 } // R157_BoosterSpringBottom
 
-// R157_BoosterSpringBottom(OD=Body_ID, MotorTube_OD=MotorTube_OD);
+// R157_BoosterSpringBottom(OD=Body_ID, MotorTube_OD=BT54Body_OD, nRopes=6);
 
 
 

@@ -4,7 +4,7 @@
 // Filename: ElectronicsBayLib.scad
 // by David M. Flynn
 // Created: 3/31/2024 
-// Revision: 1.3.1  9/21/2024 
+// Revision: 1.3.2  10/13/2024 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -14,8 +14,9 @@
 //
 //  ***** History *****
 //
-function ElectronicsBayLibRev()="ElectronicsBayLib Rev. 1.3.1";
+function ElectronicsBayLibRev()="ElectronicsBayLib Rev. 1.3.2";
 echo(ElectronicsBayLibRev());
+// 1.3.2  10/13/2024 Removed +180/nBolts so first bolt aligns with rail guides at Y+ (0°)
 // 1.3.1  9/21/2024  Made integrated coupler 0.4mm bigger.
 // 1.3.0  9/9/2024   Added centering rings to EB_Electronics_BayUniversal(), EB_LowerElectronics_Bay() now calls EB_Electronics_BayUniversal()
 // 1.2.1  9/8/2024   Battery doors are 4mm narrower on small rockets (<70mm OD).
@@ -222,7 +223,7 @@ module EB_IntegratedCoupler(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, nBolts=3, 
 				cylinder(d=Al_Tube_d, h=Tube_OD, center=true);
 				
 		//Bolt holes for nosecone and ball lock
-		if (nBolts>0) for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+180/nBolts])
+		if (nBolts>0) for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) // +180/nBolts removed
 			translate([0, -Tube_OD/2-1, BoltInset]) rotate([90,0,0]) Bolt4Hole();
 	} // difference
 } // EB_IntegratedCoupler
@@ -426,7 +427,7 @@ module EB_Electronics_BayUniversal(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, D
 		
 		//Bolt holes for nosecone and ball lock
 		if (nBolts>0)
-		for (j=[0:nBolts-1]) rotate([0, 0, 360/nBolts*j+180/nBolts]){
+		for (j=[0:nBolts-1]) rotate([0, 0, 360/nBolts*j]){ // +180/nBolts removed
 			if (!HasAftIntegratedCoupler) translate([0, -Tube_OD/2-1, BoltInset]) rotate([90,0,0]) Bolt4Hole();
 			if (!HasFwdIntegratedCoupler) translate([0, -Tube_OD/2-1, Len-BoltInset]) rotate([90,0,0]) Bolt4Hole();
 		} // for
