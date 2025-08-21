@@ -46,6 +46,8 @@ echo(BatteryHolderLibRev());
 // RocketServoHolderRevC(IsDouble=false);
 // RocketServoHolderRevC(IsDouble=true);
 //
+// BlueRavenMount();
+//
 // ***********************************
 //  ***** Routines *****
 //
@@ -133,6 +135,9 @@ module BlueRavenMount(){
 		} // union
 		
 		BlueRavenBoltPattern() Bolt4Hole();
+		
+		// USB 
+		translate([-PCB_X/2+7.5,-(PCB_Y+Edge*2)/2-1,Base_T+PCB_T+PCB_Back_Z-1]) cube([10,10,3]);
 	
 	} // difference
 	

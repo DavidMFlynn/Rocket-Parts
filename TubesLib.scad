@@ -202,8 +202,8 @@ BT29Body_OD=1.266*25.4;
 BT29Coupler_ID=1.018*25.4;
 BT29Coupler_OD=1.122*25.4;
 
-LocP29Body_ID=29; // needs corrections
-LocP29Body_OD=31;
+LocP29Body_ID=29.05; // needs corrections
+LocP29Body_OD=30.70;
 
 PML38Body_OD=42.2; //(1.525+0.062*2)*25.4; // 42.2 measured
 PML38Body_ID=1.525*25.4;

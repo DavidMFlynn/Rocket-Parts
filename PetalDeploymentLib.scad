@@ -689,7 +689,7 @@ module PD_PetalSpringHolder2(){
 			cylinder(d=4, h=40);
 		}
 		
-		translate([0,0,20]) rotate([-90,0,0]) Bolt4Hole(depth=6);
+		translate([0,0,20]) rotate([-90,0,0]) Bolt4Hole(depth=7);
 		translate([0,0,20+Bolt4Inset*2]) rotate([-90,0,0]) Bolt4Hole(depth=9.5);
 	} // difference
 } // PD_PetalSpringHolder2

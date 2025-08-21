@@ -4,7 +4,7 @@
 //  ***** Small Cable Release *****
 // by David M. Flynn
 // Created: 8/12/2025
-// Revision: 0.9.1  8/14/2025
+// Revision: 0.9.2  8/20/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -14,15 +14,17 @@
 //
 //  ***** History *****
 //
-function SCR_BetaRev()="SCR_Beta Rev. 0.9.1";
+function SCR_BetaRev()="SCR_Beta Rev. 0.9.2";
 echo(SCR_BetaRev());
 //
+// 0.9.2  8/20/2025     Changed servo angle so SG90 power on glitch is in the safe direction.
 // 0.9.1  8/14/2025     First working version, still making refinements.
 // 0.9.0  8/12/2025		Created this file, pull only version
 //
 // ****************************
 //  ***** for STL output *****
 //
+//						SCR_AlTubeConnector();
 // rotate([180,0,0]) 	SCR_LockPin(Len=13.3);
 // rotate([180,0,0]) 	SCR_Housing(ShowCut=false);
 // 						SCR_BallCup(ShowLocked=true, ShowCut=false);
@@ -110,7 +112,7 @@ module SCR_ServoMount(){
 	// Mount for SG90 (MS18)
 	
 	
-	Len=36;
+	Len=32.8; // was 36
 	Wall_t=2.2;
 	
 	Servo_w=12.7;
@@ -124,10 +126,11 @@ module SCR_ServoMount(){
 	ServoWheel_d=17;
 	
 	WireHole_d=4;
+	Servo_a=30;
 	
 	module Servo(ExtraBody_h=0, WheelAccsess=0, ExtraWidth=0){
 		
-		translate([0,0,-7]) cylinder(d=ServoWheel_d, h=7+WheelAccsess);
+		translate([0,0,-7]) scale([1,0.8,1]) cylinder(d=ServoWheel_d, h=7+WheelAccsess);
 		
 		translate([-Servo_w/2-ExtraWidth/2, -Servo_l/2+ServoOffset, 0]) mirror([0,0,1]) cube([Servo_w+ExtraWidth,Servo_l,20]);
 		
@@ -150,13 +153,13 @@ module SCR_ServoMount(){
 			rotate([0,0,15]) translate([0,-15,15]) cylinder(d=WireHole_d, h=43);
 			
 			Servo_Y=-15;
-			translate([0,Servo_Y,Len/2-ServoOffset]) rotate([90,0,0]) Servo(ExtraBody_h=3, WheelAccsess=10, ExtraWidth=2);
+			rotate([0,0,Servo_a]) translate([0,Servo_Y,Len/2-ServoOffset]) rotate([90,0,0]) Servo(ExtraBody_h=3, WheelAccsess=10, ExtraWidth=2);
 			
 			difference(){
 				translate([0,0,-Overlap]) cylinder(d=SCR_Body_OD-Wall_t*2, h=Len+Overlap*2);
 				
 				// Servo mount
-				translate([-Servo_w/2,-SCR_Body_OD/2,-Overlap*2]) cube([Servo_w, 17.5, Len+Overlap*4]);
+				rotate([0,0,Servo_a]) translate([-Servo_w/2,-SCR_Body_OD/2,-Overlap*2]) cube([Servo_w, 17.5, Len+Overlap*4]);
 			} // difference
 			
 			
@@ -494,7 +497,7 @@ module SCR_AlTubeConnector(){
 			translate([0,0,1.5-Overlap]) cylinder(d1=SCR_Lock_d+3, d2=AlTube_d+2.4, h=5);
 		} // union
 		
-		translate([0,0,1.5+5]) Bolt10ClearHole();
+		translate([0,0,1.5+5]) Bolt10Hole();
 		translate([0,0,1.5]) cylinder(d=AlTube_d+IDXtra, h=6);
 	} // difference
 	
