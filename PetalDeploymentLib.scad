@@ -145,6 +145,74 @@ module PD_PetalHolder(Petal_OD=BT137Coupler_OD, Is_Top=false){
 //PD_PetalHolder();
 //translate([0,0,30]) rotate([0,180,0]) PD_PetalHolder(Is_Top=true);
 
+module PD_PetalHolder2(Petal_OD=BT137Coupler_OD, Is_Top=false){
+	Len=30;
+	
+	difference(){
+		union(){
+			difference(){
+				cylinder(d=Petal_OD+6, h=Len, $fn=$preview? 90:360);
+				// half
+				translate([0,-Petal_OD/2-20,-Overlap]) cube([Petal_OD/2+20, Petal_OD+40, Len+Overlap*2]);
+			} // difference
+			
+			// Fixed pivot
+			hull(){
+				translate([0,Petal_OD/2+12,0]) cylinder(d=16, h=Len/2-0.2);
+				translate([-16,Petal_OD/2,0]) cylinder(d=10, h=Len/2-0.2);
+			} // hull
+			
+			// Latch
+			mirror([0,1,0])
+			hull(){
+				translate([-9,Petal_OD/2+12,Len/4]) cylinder(d=16, h=Len/2);
+				translate([-6,Petal_OD/2,Len/4]) cylinder(d=10, h=Len/2);
+			} // hull
+		} // union
+		
+		// bolts
+		if (Is_Top){
+			translate([0,Petal_OD/2+12,0]) rotate([180,0,0]) Bolt10HeadHole();
+			mirror([0,1,0])
+				translate([-9,Petal_OD/2+12,Len/4]) rotate([180,0,0]) Bolt10Hole(); //Bolt10HeadHole();
+		}else{
+			
+			translate([0,Petal_OD/2+12,Len/2]) Bolt10Hole();
+			
+			mirror([0,1,0])
+				translate([-9,Petal_OD/2+12,Len-Len/4]) Bolt10Hole();
+		}
+		
+		// remove inside
+		translate([0,0,-Overlap]) cylinder(d=Petal_OD, h=Len+Overlap*2, $fn=$preview? 90:360);
+	} // difference
+	
+} // PD_PetalHolder2
+
+//PD_PetalHolder2(Petal_OD=ULine157Coupler_OD, Is_Top=false);
+//translate([1,0,30]) rotate([0,180,0]) PD_PetalHolder2(Petal_OD=ULine157Coupler_OD, Is_Top=true);
+
+module PD_PetalHolderLockLever(){
+	Len=30;
+	
+	difference(){
+		hull(){
+			translate([-9,0,Len/2]) cylinder(d=16, h=Len, center=true);
+			translate([9+8,0,Len/2]) cylinder(d=16, h=Len, center=true);
+		} // hull
+		
+		hull(){
+			translate([-9,0,Len/2]) cylinder(d=17, h=Len/2+0.4, center=true);
+			translate([9,0,Len/2]) cylinder(d=17, h=Len/2+0.4, center=true);
+			translate([8,-12,Len/2]) cylinder(d=11, h=Len/2+0.4, center=true);
+		} // hull
+		
+		translate([-9,0,Len/2]) cylinder(d=5.2, h=Len+1, center=true);
+	} // difference
+} // PD_PetalHolderLockLever
+
+// translate([0,-ULine157Coupler_OD/2-12,0]) PD_PetalHolderLockLever();
+
 module PD_PetalLockCatch(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, Len=23, LockStop=true){
 	
 	W=10;
@@ -242,9 +310,6 @@ module PD_CatchHolder(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, nPetals=
 		translate([0,0,Len-5]) cylinder(d1=Core_d, d2=ID, h=5+Overlap, $fn=$preview? 90:360);
 		
 		translate([0,0,2]) PD_LockSocket(OD=OD, ID=ID, Len=Len, Wall_t=Wall_t, nPetals=nPetals);
-		
-		
-		
 		
 	} // difference
 	
@@ -624,7 +689,7 @@ module PD_PetalSpringHolder2(){
 			cylinder(d=4, h=40);
 		}
 		
-		translate([0,0,20]) rotate([-90,0,0]) Bolt4Hole(depth=6);
+		translate([0,0,20]) rotate([-90,0,0]) Bolt4Hole(depth=7);
 		translate([0,0,20+Bolt4Inset*2]) rotate([-90,0,0]) Bolt4Hole(depth=9.5);
 	} // difference
 } // PD_PetalSpringHolder2
@@ -724,6 +789,8 @@ module PD_PetalHub(OD=BT75Coupler_OD,
 	Skirt_ID=Skirt_OD-4.4;
 	nMountingBolts=(nBolts==0)? nPetals:nBolts;
 	
+	Slope_d1=(OD<41)? 1:OD-40;
+	
 	module SpringHolderMount(){
 		Shelf_Z=2;
 		Depth=11;
@@ -744,7 +811,8 @@ module PD_PetalHub(OD=BT75Coupler_OD,
 			difference(){
 				cylinder(d=OD, h=16, $fn=$preview? 90:360);
 				
-				translate([0, 0, 6+Overlap]) cylinder(d1=OD-40, d2=OD-6, h=10, $fn=$preview? 90:360);
+				// Slope
+				translate([0, 0, 6+Overlap]) cylinder(d1=Slope_d1, d2=OD-6, h=10, $fn=$preview? 90:360);
 			} // difference
 			
 			// Close bottom

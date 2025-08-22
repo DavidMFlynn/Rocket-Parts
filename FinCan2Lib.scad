@@ -3,7 +3,7 @@
 // Filename: FinCan2Lib.scad
 // by David M. Flynn
 // Created: 12/24/2023 
-// Revision: 0.9.11  1/5/2025
+// Revision: 0.9.12  8/19/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,9 +12,10 @@
 //
 //  ***** History *****
 //
-function FinCan2LibRev()="FinCan2Lib 0.9.11";
+function FinCan2LibRev()="FinCan2Lib 0.9.12";
 echo(FinCan2LibRev());
 //
+// 0.9.12  8/19/2025  Added parameters AftClosure_OD=0, AftClosure_Len=0
 // 0.9.11  1/5/2025   Added parameters Coupler_Len and nCouplerBolts to FC2_FinCan()
 // 0.9.10  12/18/2024 Added Ogive tail cone option
 // 0.9.9  12/17/2024  Fixed some FC2_TailCone() issues
@@ -96,7 +97,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_ID=0, Can_Le
 				Cone_Len=65, ThreadedTC=true, Extra_OD=0, RailGuideLen=30,
 				LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false, HollowTailcone=false, 
 				HollowFinRoots=false, Wall_t=1.2, OgiveTailCone=false, Ogive_Len=400, OgiveCut_d=BT54Body_OD+8,
-				UseTrapFin3=false){
+				UseTrapFin3=false, AftClosure_OD=0, AftClosure_Len=0){
 				
 	FinBox_W=Fin_Root_W+IDXtra*2+Wall_t*2;
 	RailGuideTube_Len=(RailGuideLen-5)*2;
@@ -106,6 +107,8 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_ID=0, Can_Le
 	FB_Xtra_Fwd=HasIntegratedCoupler? Coupler_Len:0;
 	BigTubeFn=(Body_OD>130)? 720:360;
 	MyCoupler_ID=(Coupler_ID>0)? Coupler_ID:Body_ID-4;
+	
+	MyAftClosure_OD=(AftClosure_OD==0)? MotorTubeHole_d:AftClosure_OD+IDXtra*2;
 	
 	difference(){
 		union(){
@@ -203,6 +206,9 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_ID=0, Can_Le
 			
 		} // union
 	
+		// for when the aft closure is bigger than the motor tube
+		if (AftClosure_Len>0) translate([0,0,-Cone_Len-Overlap]) cylinder(d=MyAftClosure_OD, h=AftClosure_Len+Overlap);
+		
 		// Body tube bolts
 		if (nCouplerBolts>0)
 			for (j=[0:nCouplerBolts-1]) rotate([0,0,360/nCouplerBolts*j+180/nFins]) 

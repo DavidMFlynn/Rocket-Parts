@@ -68,7 +68,7 @@
 // ThreadedMount();
 //
 // Chuck2(OD=ULine102Body_ID, nLocks=4, Threaded=true);
-// Chuck2(OD=ULine157Body_ID, nLocks=0, Threaded=true);
+// Chuck2(OD=ULine157Body_ID*CF_Comp+0.5, nLocks=0, Threaded=true); // press fit
 // Chuck2(OD=ULine203Body_ID, nLocks=6, Threaded=true);
 // ChuckLock();
 //

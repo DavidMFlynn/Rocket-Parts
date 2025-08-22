@@ -38,7 +38,9 @@
 // ***********************************
 
 use<SpringThingBooster.scad>
-include<CommonStuffSAEmm.scad>
+include<TubesLib.scad>
+
+//include<CommonStuffSAEmm.scad>
 
 Overlap=0.05;
 IDXtra=0.2;
@@ -187,6 +189,53 @@ module PrepStand_BP4_B(Lower=false){
 
 // PrepStand_BP4_B(Lower=true);
 
+module PrepStand_Omega6_B(Lower=false){
+	Main_OD=ULine157Body_OD*CF_Comp;
+	Felt_t=3;
+	Wall_t=5;
+	Thickness=50;
+	Height=Main_OD/2+75;
+	Fin_t=23;
+	
+	difference(){
+		union(){
+			cylinder(d=Main_OD+Felt_t*2+Wall_t*2, h=Thickness);
+			
+			hull(){
+				translate([-Thickness/4,-Height,0]) cube([Thickness/2,Height,Thickness]);
+				translate([-Thickness/2,-Height/2,Thickness/2]) rotate([90,0,0]) cylinder(d=5, h=Height, center=true);
+				translate([Thickness/2,-Height/2,Thickness/2]) rotate([90,0,0]) cylinder(d=5, h=Height, center=true);
+			} // hull
+			
+			if (Lower){
+				//rotate([0,0,-45]) translate([Main_OD/2+Felt_t+10,-7-Felt_t-10,0]) cylinder(d=20, h=Thickness);
+				rotate([0,0,-45]) translate([Main_OD/2+Felt_t,-Fin_t/2-Felt_t-Wall_t,0]) cube([10, Wall_t, Thickness]);
+				mirror([1,0,0]) rotate([0,0,-45]) translate([Main_OD/2+Felt_t,-Fin_t/2-Felt_t-Wall_t,0]) cube([10, Wall_t, Thickness]);
+			}
+			
+		} // union
+
+		translate([0,0,-Overlap])
+			cylinder(d=Main_OD+Felt_t*2, h=Thickness+Overlap*2);
+		
+			
+		// Trim top
+		translate([0,Main_OD/2-20,Thickness/2]) cube([Main_OD+Felt_t*2+Wall_t*2+1, Main_OD, Thickness+Overlap*2], center=true);
+		
+		if (Lower){
+			rotate([0,0,-45]) translate([0, -Fin_t/2-Felt_t, -Overlap]) cube([Main_OD, 100, Thickness+Overlap*2]);
+			mirror([1,0,0]) rotate([0,0,-45]) translate([0, -Fin_t/2-Felt_t, -Overlap]) cube([Main_OD, 100, Thickness+Overlap*2]);
+		}
+	
+		//core post
+		translate([0,-Height-Overlap, Thickness/2]) rotate([-90,0,0]) cylinder(d=12.7, h=Height);
+	} // difference
+	
+} // PrepStand_Omega6_B
+
+// PrepStand_Omega6_B(Lower=true);
+// PrepStand_Omega6_B(Lower=false);
+
 module PrepStand_BottomCap(){
 	nSides=PrepStand_nSides;
 	
@@ -232,10 +281,12 @@ module PrepStand_Leg2(){
 	difference(){
 		hull(){
 			translate([PrepStand_BaseSpan/2,0,0]) cube([30,30,3]);
-			translate([PrepStand_Hub_d/2,0,50]) cube([3,30,50]);
+			translate([PrepStand_Hub_d/2+1,0,50]) cube([3,30,50]);
 		} // hull
 		
-		translate([PrepStand_Hub_d/2,-Overlap,53]) cube([3+Overlap,30+Overlap*2,44]);
+		translate([PrepStand_Hub_d/2,-Overlap,54]) cube([3+Overlap,30+Overlap*2,43]);
+		
+		//translate([PrepStand_Hub_d/2+3,-Overlap,53]) cube([Overlap,30+Overlap*2,44]);
 		hull(){
 			translate([PrepStand_BaseSpan/2,-Overlap,3]) cube([24,30+Overlap*2,Overlap]);
 			translate([PrepStand_Hub_d/2+3,-Overlap,53]) cube([Overlap,30+Overlap*2,44]);
@@ -243,11 +294,38 @@ module PrepStand_Leg2(){
 	} // difference
 	
 	
-	translate([PrepStand_Hub_d/2-4,0,50]) cube([4+Overlap,30,50]);
+	translate([PrepStand_Hub_d/2-4,0,50]) cube([5+Overlap,30,50]);
 	translate([PrepStand_Hub_d/2-8,0,46]) cube([4+Overlap,30,58]);
 	
-	
+	Web_t=2;
+	// web
+	hull(){
+		translate([PrepStand_Hub_d/2+3,0,53]) rotate([-90,0,0]) cylinder(d=Web_t, h=30);
+		translate([PrepStand_Hub_d/2+3+22,0,53+30]) rotate([-90,0,0]) cylinder(d=Web_t, h=30);
+	} // hull
+	hull(){
+		translate([PrepStand_Hub_d/2+3+22,0,53+30]) rotate([-90,0,0]) cylinder(d=Web_t, h=30);
+		translate([PrepStand_Hub_d/2+3+22,0,53-10]) rotate([-90,0,0]) cylinder(d=Web_t, h=30);
+	} // hull
+	hull(){
+		translate([PrepStand_Hub_d/2+3+22,0,53-10]) rotate([-90,0,0]) cylinder(d=Web_t, h=30);
+		translate([PrepStand_Hub_d/2+3+22+56,0,53-10]) rotate([-90,0,0]) cylinder(d=Web_t, h=30);
+	} // hull
+	hull(){
+		translate([PrepStand_Hub_d/2+3+22+56,0,53-10]) rotate([-90,0,0]) cylinder(d=Web_t, h=30);
+		translate([PrepStand_Hub_d/2+3+22+56,0,53-10-25]) rotate([-90,0,0]) cylinder(d=Web_t, h=30);
+	} // hull
+	hull(){
+		translate([PrepStand_Hub_d/2+3+22+56,0,53-10-25]) rotate([-90,0,0]) cylinder(d=Web_t, h=30);
+		translate([PrepStand_Hub_d/2+3+22+56+36,0,53-10-25]) rotate([-90,0,0]) cylinder(d=Web_t, h=30);
+	} // hull
+	hull(){
+		translate([PrepStand_Hub_d/2+3+22+56+36,0,53-10-25]) rotate([-90,0,0]) cylinder(d=Web_t, h=30);
+		translate([PrepStand_Hub_d/2+3+22+56+36,0,53-10-25-16]) rotate([-90,0,0]) cylinder(d=Web_t, h=30);
+	} // hull
 } // PrepStand_Leg2
+
+// rotate([90,0,0]) PrepStand_Leg2();
 
 module PrepStand_RocketArm(){
 	Len=150;

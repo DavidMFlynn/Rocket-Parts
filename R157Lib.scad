@@ -43,6 +43,7 @@ $fn=$preview? 36:90;
 
 CouplerLenXtra=0;
 nLockBalls=6;
+PetalWall_t=2.6; // minimum to get 4 layers when sliced
 nPetals=6;
 nEBayBolts=6;
 EBayBoltInset=7.5;
@@ -52,6 +53,7 @@ Body_ID=ULine157Body_ID;
 
 Coupler_OD=ULine157Coupler_OD;
 Coupler_ID=ULine157Coupler_ID;
+CouplerThinWall_ID=ULine157ThinWallCoupler_ID;
 
 MotorTube_OD=BT75Body_OD;
 MotorTube_ID=BT75Body_ID;
@@ -159,9 +161,9 @@ module R157_MotorTubeTopper(OD=Body_ID, MotorTube_OD=BT54Body_OD, MotorTube_ID=B
 		//translate([0,0,Al_Tube_Z]) rotate([90,0,0]) cylinder(d=Al_Tube_d+IDXtra, h=Body_OD, center=true);
 		
 		// Rail guide bolts
-		translate([Body_ID/2, 0, -12]) {
-			translate([0,0,6.35]) rotate([0,90,0]) Bolt6Hole();
-			translate([0,0,-6.35]) rotate([0,90,0]) Bolt6Hole();
+		translate([Body_ID/2+2, 0, -12]) {
+			translate([0,0,6.35]) rotate([0,90,0]) Bolt6Hole(depth=25);
+			translate([0,0,-6.35]) rotate([0,90,0]) Bolt6Hole(depth=25);
 		}
 		
 		// Rope holes
@@ -174,21 +176,75 @@ module R157_MotorTubeTopper(OD=Body_ID, MotorTube_OD=BT54Body_OD, MotorTube_ID=B
 
 // R157_MotorTubeTopper();
 
-module R157_PetalHub(OD=Coupler_OD, nPetals=nPetals, nBolts=nPetals){
-
+module R157_PetalHub(OD=Coupler_OD, nPetals=nPetals, nBolts=nPetals, nRopes=0){
+	Center_Hole_d=OD-60;
+	
 	// Bolts to bottom of electronics bay
-	PD_PetalHub(OD=OD, 
+	difference(){
+		PD_PetalHub(OD=OD, 
 					nPetals=nPetals, 
 					HasReplaceableSpringHolder=true,
 					HasBolts=true,
 					nBolts=nBolts,
 					ShockCord_a=-2,
-					HasNCSkirt=false, CenterHole_d=OD-60);
-					
+					HasNCSkirt=false, CenterHole_d=Center_Hole_d);
+				
+		if (nRopes>0)
+			for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) translate([Center_Hole_d/2+6,0,-Overlap]) cylinder(d=4, h=10);
+			
+	} // difference
+	
 } // R157_PetalHub
 
-// translate([0,0,-20]) rotate([180,0,0]) R157_PetalHub();
+// translate([0,0,-20]) rotate([180,0,0]) R157_PetalHub(OD=Coupler_OD, nPetals=3, nBolts=6, nRopes=6);
 // R157_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=true);
+
+module R157_SkirtPHRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, Engagemnet_Len=7){
+	
+	Plate_t=6;
+	ID=Coupler_ID-12;
+	Spring_OD=SE_Spring_CS11890_OD();
+	Spring_ID=SE_Spring_CS11890_ID();
+	SpringHolder_Wall_t=4;
+	SpringHolder_d=Spring_OD+SpringHolder_Wall_t*2;
+	SpringHolder_H=20;
+	nSpokes=6;
+	
+	module SpringHolder(){
+		difference(){
+			cylinder(d=SpringHolder_d, h=SpringHolder_H);
+		
+			translate([0,0,-Overlap]) cylinder(d=Spring_ID, h=SpringHolder_H);
+			translate([0,0,3]) cylinder(d=Spring_OD, h=SpringHolder_H);
+			translate([0,0,8]) cylinder(d1=Spring_OD, d2=Spring_OD+2, h=SpringHolder_H-8+Overlap);
+		} // difference
+	} // SpringHolder
+	
+	SpringHolder();
+	
+	for (j=[0:nSpokes-1]) rotate([0,0,360/nSpokes*j]) hull(){
+		translate([0,Spring_OD/2+SpringHolder_Wall_t-0.5,0]) cylinder(d=3, h=SpringHolder_H-1);
+		translate([0,Coupler_ID/2-2,0]) cylinder(d=3, h=Plate_t+Engagemnet_Len-1);
+	}
+		
+	difference(){
+		union(){
+			cylinder(d=Coupler_ID, h=Plate_t+Engagemnet_Len, $fn=$preview? 90:360);
+			cylinder(d=Coupler_OD, h=Plate_t, $fn=$preview? 90:360);		
+			
+		} // union
+		
+		// Remove Center
+		translate([0,0,-Overlap]) cylinder(d=ID, h=Plate_t+Engagemnet_Len+Overlap*2, $fn=$preview? 90:360);
+		translate([0,0,Plate_t]) cylinder(d1=ID, d2=Coupler_ID-4.4, h=Engagemnet_Len+Overlap, $fn=$preview? 90:360);
+		
+		PD_PetalHubBoltPattern(OD=Coupler_OD, nBolts=6) rotate([180,0,0]) Bolt4Hole(depth=Plate_t+1);
+			
+
+	} // difference
+} // R157_SkirtPHRing
+
+// R157_SkirtPHRing();
 
 module R157_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, EBayTube_OD=ULine38Body_OD, Engagement_Len=30, nBolts=6, Xtra_r=0.0,CouplerLenXtra=0){
 	Tube_d=12.7;
@@ -321,20 +377,20 @@ module R157_SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, HasPD_Ring=f
 
 // R157_SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, HasPD_Ring=false, Engagemnet_Len=7);
 
-module R157_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4, PetalStop_h=0, nBolts=0){
+module R157_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7, Wall_t=4, PetalStop_h=0, PetalWall_t=2.2, nBolts=0){
 	
 	translate([0,0,Engagemnet_Len]) difference(){
 		union(){
-			Tube(OD=OD, ID=OD-Wall_t*2, Len=OA_Len-Engagemnet_Len, myfn=$preview? 90:720);
-			translate([0,0,-Engagemnet_Len]) Tube(OD=OD, ID=ID, Len=OA_Len, myfn=$preview? 90:720);
+			Tube(OD=OD, ID=OD-Wall_t*2, Len=OA_Len-Engagemnet_Len, myfn=$preview? 90:360);
+			translate([0,0,-Engagemnet_Len]) Tube(OD=OD, ID=ID, Len=OA_Len, myfn=$preview? 90:360);
 		} // union
 		
 		// Reduce mass by thinning inside
 		A=OA_Len-Engagemnet_Len-18;
 		if (A>0){
-			translate([0,0,3]) cylinder(d1=OD-Wall_t*2-Overlap, d2=ID, h=6, $fn=$preview? 90:720);
-			translate([0,0,9-Overlap]) cylinder(d=ID, h=A+Overlap*2, $fn=$preview? 90:720);
-			translate([0,0,9+A]) cylinder(d2=OD-Wall_t*2-Overlap, d1=ID, h=6, $fn=$preview? 90:720);
+			translate([0,0,3]) cylinder(d1=OD-Wall_t*2-Overlap, d2=ID, h=6, $fn=$preview? 90:360);
+			translate([0,0,9-Overlap]) cylinder(d=ID, h=A+Overlap*2, $fn=$preview? 90:360);
+			translate([0,0,9+A]) cylinder(d2=OD-Wall_t*2-Overlap, d1=ID, h=6, $fn=$preview? 90:360);
 		}
 		
 		if (nBolts>0)
@@ -342,20 +398,21 @@ module R157_PusherRing(OD=Coupler_OD, ID=Coupler_ID, OA_Len=50, Engagemnet_Len=7
 	} // difference
 	
 	if (PetalStop_h>0) translate([0,0,OA_Len-Overlap])
-		Tube(OD=OD-Wall_t*2+Wall_t, ID=OD-Wall_t*2, Len=PetalStop_h, myfn=$preview? 90:720);
+		Tube(OD=OD-PetalWall_t*2-IDXtra*2, ID=OD-Wall_t*2, Len=PetalStop_h, myfn=$preview? 90:360);
 } // R157_PusherRing
 
 // rotate([180,0,0]) R157_PusherRing(PetalStop_h=3);
+// R157_PusherRing(OD=Coupler_OD*CF_Comp, ID=CouplerThinWall_ID*CF_Comp, OA_Len=50, Engagemnet_Len=7, Wall_t=PetalWall_t+2, PetalStop_h=3, PetalWall_t=PetalWall_t, nBolts=0);
 
 
-module R157_BoosterSpringBottom(OD=Body_ID, MotorTube_OD=MotorTube_OD){
+module R157_BoosterSpringBottom(OD=Body_ID, MotorTube_OD=MotorTube_OD, nRopes=5){
 	// Integrated centering ring w/ spring bottom
 	
 	MT_Hole_d=MotorTube_OD+IDXtra*3;
 	Spring_OD=SE_Spring_CS11890_OD();
 	SpringSeat_h=10;
 	Spring_Z=5;
-	nRopes=5;
+	
 	Rope_d=4;
 	
 	difference(){
@@ -382,7 +439,7 @@ module R157_BoosterSpringBottom(OD=Body_ID, MotorTube_OD=MotorTube_OD){
 	
 } // R157_BoosterSpringBottom
 
-// R157_BoosterSpringBottom(OD=Body_ID, MotorTube_OD=MotorTube_OD);
+// R157_BoosterSpringBottom(OD=Body_ID, MotorTube_OD=BT54Body_OD, nRopes=6);
 
 
 

@@ -3,15 +3,16 @@
 // Filename: SpringEndsLib.scad
 // by David M. Flynn
 // Created: 11/24/2023 
-// Revision: 1.0.15  11/1/2024
+// Revision: 1.0.16  8/21/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 // This is a collection of spring ends used for non-pyro deployment.
 //
 //  ***** History *****
-function SpringEndsLibRev()="SpringEndsLib Rev. 1.0.15";
+function SpringEndsLibRev()="SpringEndsLib Rev. 1.0.16";
 echo(SpringEndsLibRev());
+// 1.0.16  8/21/2025  Added SE_R38SpingTop, SE_R38SpringBottom, SE_R38SlidingSmallSpringMiddle
 // 1.0.15  11/1/2024  Added SE_SpringEndTypeA2()
 // 1.0.14  9/18/2024  Refinement of SE_SpringEndTypeA() for 65mm rockets
 // 1.0.13  9/9/2024   Changed SE_SpringEndTop() to work with 65mm tube
@@ -31,6 +32,10 @@ echo(SpringEndsLibRev());
 //
 // ***********************************
 //  ***** for STL output *****
+//
+// SE_R38SpingTop();
+// SE_R38SpringBottom(OD=ULine38Coupler_OD);
+// SE_R38SlidingSmallSpringMiddle(OD=ULine38Coupler_OD);
 //
 // SE_SpringSeat(Body_OD=BT54Coupler_ID, Base_H=14);
 // SE_SpringEnd(OD=BT75Coupler_OD, CouplerTube_ID=BT75Coupler_ID, SleeveLen=0, nSprings=1, nRopeHoles=6, CenterHole_d=SE_Spring_CS4323_ID());
@@ -68,6 +73,12 @@ echo(SpringEndsLibRev());
 //
 // ***********************************
 //  ***** Routines *****
+//
+// A spring for 38mm rockets
+function SE_Spring3670_OD()=29.7;
+function SE_Spring3670_ID()=27.2;
+function SE_Spring3670_FL()=104;
+function SE_Spring3670_CBL()=13;
 //
 function SE_Spring_CS4009_OD()=Spring_CS4009_OD;
 function SE_Spring_CS4009_ID()=Spring_CS4009_ID;
@@ -107,6 +118,78 @@ Spring_CS4323_OD=44.30;
 Spring_CS4323_ID=40.50;
 Spring_CS4323_CBL=22; // coil bound length
 Spring_CS4323_FL=200; // free length
+
+module SE_R38SpingTop(){
+	nSpokes=4;
+	Spring_OD=SE_Spring3670_OD();
+	Spring_ID=SE_Spring3670_ID();
+	
+	Len=1.5+2.5;
+	
+	difference(){
+		union(){
+			cylinder(d=Spring_OD, h=1.5);
+			cylinder(d=Spring_ID, h=Len);
+		} // union
+		
+		translate([0,0,-Overlap]) cylinder(d=Spring_ID-3.6, h=Len+Overlap*2);
+	} // difference
+	
+	// Threaded rod
+	difference(){
+		union(){
+			cylinder(d=10,h=Len);
+			cylinder(d=6.3,h=Len+2);
+			
+			for (j=[0:nSpokes-1]) rotate([0,0,360/nSpokes*j+180/nSpokes]) hull(){
+				cylinder(d=2.2, h=Len);
+				translate([0,Spring_ID/2-1.1,0]) cylinder(d=2.2, h=Len);
+			} // hull
+		} // union
+		
+		translate([0,0,Len+2]) Bolt10Hole();
+	} // difference
+} // SpingTop
+
+// SE_R38SpingTop();
+
+module SE_R38SpringBottom(OD=ULine38Coupler_OD){
+	Spring_ID=SE_Spring3670_ID();
+	
+	difference(){
+		union(){
+			cylinder(d=OD, h=1.5);
+			cylinder(d=Spring_ID, h=1.5+2.5);
+		} // union
+		
+		translate([0,0,-Overlap]) cylinder(d=Spring_ID-3.6, h=6);
+	} // difference
+} // SpringBottom
+
+// SpringBottom();
+
+module SE_R38SlidingSmallSpringMiddle(OD=ULine38Coupler_OD){
+	Len=30;
+
+	Spring_OD=SE_Spring3670_OD();
+	Spring_ID=SE_Spring3670_ID();
+	SpringHole_H=SE_Spring3670_CBL();
+	
+	difference(){
+		cylinder(d=OD, h=Len);
+		
+		translate([0,0,-Overlap]) cylinder(d=Spring_ID, h=Len+Overlap*2);
+		
+		
+		translate([0,0,-Overlap]) cylinder(d=Spring_OD, h=SpringHole_H+Overlap);
+		translate([0,0,-Overlap]) cylinder(d1=Spring_OD+1, d2=Spring_OD, h=SpringHole_H-2.5);
+		
+		translate([0,0,Len-SpringHole_H]) cylinder(d=Spring_OD, h=SpringHole_H+Overlap);
+		translate([0,0,Len-SpringHole_H+2.5]) cylinder(d2=Spring_OD+1, d1=Spring_OD, h=SpringHole_H-2.5+Overlap);
+	} // difference
+} // SlidingSmallSpringMiddle
+
+// SlidingSmallSpringMiddle();
 
 module SE_SpringSeat(Body_OD=BT54Coupler_ID, Base_H=14){
 	ST_DSpring_CBL=Spring_CS4323_CBL;

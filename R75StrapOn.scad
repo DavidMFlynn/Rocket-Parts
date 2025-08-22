@@ -60,7 +60,7 @@
 //
 // BluntOgiveNoseCone(ID=Coupler_OD, OD=Body_OD, L=NC_Len, Base_L=NC_Base, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
 //
-// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=121, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=true);
+// rotate([180,0,0]) PD_Petals2(OD=Coupler_OD, Len=121, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=true);
 //
 // R75_NC_Base_PetalHub(Body_OD=Body_OD, Body_ID=Body_ID, Coupler_OD=Coupler_OD);
 // R75_NC_Base(Body_OD=Body_OD, Body_ID=Body_ID, NC_Base_L=NC_Base, Coupler_OD=Coupler_OD);
@@ -104,7 +104,7 @@
 // ShowRocketStrapOn(ShowInternals=false);
 //
 // ***********************************
-use<AT-RMS-Lib.scad>
+use<AT_RMS_Lib.scad>
 include<TubesLib.scad>
 use<BoosterDropperLib.scad>
 use<RailGuide.scad>
