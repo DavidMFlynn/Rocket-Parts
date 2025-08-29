@@ -3,7 +3,7 @@
 // Filename: SpringThingBooster.scad
 // by David M. Flynn
 // Created: 2/26/2023
-// Revision: 1.4.8   1/15/2025
+// Revision: 1.4.9   8/28/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -36,9 +36,10 @@
 //  Steel Dowel Pin 4mm (Undersized) x 16mm (3 Req.)
 //
 //  ***** History *****
-function SpringThingBoosterRev()="SpringThingBooster Rev. 1.4.8";
+function SpringThingBoosterRev()="SpringThingBooster Rev. 1.4.9";
 echo(SpringThingBoosterRev());
 //
+// 1.4.9   8/28/2025  Added parameter Lighten to STB_BallRetainerBottom();
 // 1.4.8   1/15/2025  Fixed second servo depth.
 // 1.4.7   12/30/2024 Added Xtra_r parameter
 // 1.4.6   12/29/2024 Fixed a booboo
@@ -82,7 +83,7 @@ echo(SpringThingBoosterRev());
 // ***********************************
 //  ***** for STL output *****
 //
-// STB_BallRetainerBottom(Body_ID=BT75Body_ID, Body_OD=BT75Body_ID, nLockBalls=nLockBalls, Engagement_Len=20, HasLargeInnerBearing=false, Xtra_r=0.0);
+// STB_BallRetainerBottom(Body_ID=BT75Body_ID, Body_OD=BT75Body_ID, nLockBalls=nLockBalls, Engagement_Len=20, HasLargeInnerBearing=false, Lighten=false, Xtra_r=0.0);
 // STB_BallRetainerTop(Outer_OD=PML75Body_OD, Body_OD=BT75Body_ID, nLockBalls=nLockBalls, HasIntegratedCouplerTube=false, nBolts=0, Body_ID=BT75Body_ID, HasSecondServo=false, UsesBigServo=false, Engagement_Len=20, HasLargeInnerBearing=false, Xtra_r=0.0);
 // STB_LockDisk(Body_ID=BT75Body_ID, nLockBalls=nLockBalls, HasLargeInnerBearing=false, Xtra_r=0.0);
 // STB_TubeEnd(Body_ID=BT75Body_ID, nLockBalls=nLockBalls, Body_OD=BT75Body_OD, Engagement_Len=20);
@@ -723,19 +724,19 @@ HasIntegratedCouplerTube=true,
 			IntegratedCouplerLenXtra=-10,
 			HasSecondServo=false,
 			UsesBigServo=true,
-			Engagement_Len=20, HasLargeInnerBearing=true);
+			Engagement_Len=20, HasLargeInnerBearing=true, Xtra_r=0.0);
 			
 STB_LockDisk(Body_ID=ULine102Body_ID, nLockBalls=6, HasLargeInnerBearing=true);	
 	
 /**/
 
-/*
+//*
 STB_BallRetainerTop(Body_ID=ULine203Body_ID, Outer_OD=ULine203Body_OD, Body_OD=ULine203Body_ID, nLockBalls=7,
 HasIntegratedCouplerTube=true,
 			IntegratedCouplerLenXtra=-10,
 			HasSecondServo=true,
 			UsesBigServo=true,
-			Engagement_Len=30);
+			Engagement_Len=30, HasLargeInnerBearing=true, Xtra_r=0.2);
 /**/
 
 /*
@@ -778,7 +779,7 @@ STB_BallRetainerTop(Body_ID=BT137Body_ID, Outer_OD=BT137Body_OD, Body_OD=BT137Bo
 	/**/		
 
 		
-module STB_BallRetainerBottom(Body_ID=BT75Body_ID, Body_OD=BT75Body_ID, nLockBalls=nLockBalls, HasSpringGroove=false, Engagement_Len=20, HasLargeInnerBearing=false, Xtra_r=0.0){
+module STB_BallRetainerBottom(Body_ID=BT75Body_ID, Body_OD=BT75Body_ID, nLockBalls=nLockBalls, HasSpringGroove=false, Engagement_Len=20, HasLargeInnerBearing=false, Lighten=false, Xtra_r=0.0){
 
 	BallPerimeter_d=STB_BallPerimeter_d(Body_ID);
 	Ball_d=STB_LockBall_d(Body_ID);
@@ -844,6 +845,14 @@ module STB_BallRetainerBottom(Body_ID=BT75Body_ID, Body_OD=BT75Body_ID, nLockBal
 			translate([ST_DSpring_OD/2-1,0,0]) circle(d=2);
 			translate([ST_DSpring_OD/2-1,-1,0]) circle(d=2);
 		}
+		
+		LC=Bottom_H-LockDiskHole_H/2-3;
+		if (Lighten && LC>0)
+//			difference(){
+				translate([0,0,-Engagement_Len/2-Overlap]) cylinder(d=LockDisk_d+1+Xtra_r*2, h=LC);
+//				if (HasLargeInnerBearing)
+//					translate([0,0,-Bottom_H-Overlap]) cylinder(d=Bearing_ID, h=Bottom_H);
+//			} // difference
 	} // difference
 	
 	// Large bearing holder
@@ -885,7 +894,7 @@ module STB_BallRetainerBottom(Body_ID=BT75Body_ID, Body_OD=BT75Body_ID, nLockBal
 	} // difference
 } // STB_BallRetainerBottom
 
-// STB_BallRetainerBottom(Body_ID=BT137Body_ID, Body_OD=BT137Body_ID, nLockBalls=nBT137Balls, HasSpringGroove=false, Engagement_Len=25, HasLargeInnerBearing=true);
+// STB_BallRetainerBottom(Body_ID=BT137Body_ID, Body_OD=BT137Body_ID, nLockBalls=nBT137Balls, HasSpringGroove=false, Engagement_Len=30, HasLargeInnerBearing=true, Lighten=true, Xtra_r=0.2);
 
 /*
 STB_BallRetainerBottom(Body_ID=ULine102Body_ID, Body_OD=ULine102Body_ID, nLockBalls=6, HasSpringGroove=false, Engagement_Len=20, HasLargeInnerBearing=true);

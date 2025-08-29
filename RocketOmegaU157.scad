@@ -3,7 +3,7 @@
 // Filename: RocketOmegaU157.scad
 // by David M. Flynn
 // Created: 7/1/2025
-// Revision: 0.9.11 8/16/2025
+// Revision: 1.0.0 8/28/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -24,6 +24,7 @@
 // Booster Motor Tube	452mm BT54Body or BT75Body
 //
 //  ***** History *****
+// 1.0.0  8/28/2025   Constuction nears completion. Added *CF_Comp to all Body_ID instances.
 // 0.9.11 8/16/2025	  Optional redundant electronics in main ebay.
 // 0.9.10 8/3/2025    Longer SE_SlidingBigSpringMiddle for main instead of SE_SpringEndTypeC.
 // 0.9.9  8/1/2025    Added a quik booster design to test fly the Cineroc (GoPro Nosecone)
@@ -76,7 +77,7 @@ STB_Xtra_r=0.3; // Makes the lock tighter
 // rotate([180,0,0]) R157_PusherRing(OD=Coupler_OD*CF_Comp, ID=CouplerThinWall_ID*CF_Comp, OA_Len=50, Engagemnet_Len=7, Wall_t=PetalWall_t+2.2, PetalStop_h=3, PetalWall_t=PetalWall_t, nBolts=6); 
 // R157_SkirtRing(Coupler_OD=Coupler_OD*CF_Comp, Coupler_ID=CouplerThinWall_ID*CF_Comp, HasPD_Ring=false, Engagemnet_Len=7);
 // R157_BoosterSpringBottom(OD=Body_ID*CF_Comp, MotorTube_OD=MotorTube_OD, nRopes=6);
-// rotate([180,0,0]) R157_MotorTubeTopper(OD=Body_ID*CF_Comp, MotorTube_OD=BT54Body_OD+IDXtra, MotorTube_ID=BT54Body_ID, Len=35); // for Sustainer
+// rotate([180,0,0]) R157_MotorTubeTopper(OD=Body_ID*CF_Comp, MotorTube_OD=MotorTube_OD+IDXtra, MotorTube_ID=MotorTube_ID, Len=35); // for Sustainer
 //
 //  for Booster
 // rotate([180,0,0]) R157_PusherRing(OD=Coupler_OD*CF_Comp, ID=CouplerThinWall_ID*CF_Comp, OA_Len=80, Engagemnet_Len=7, Wall_t=PetalWall_t+2.2, PetalStop_h=3, PetalWall_t=PetalWall_t, nBolts=0);
@@ -109,9 +110,9 @@ STB_Xtra_r=0.3; // Makes the lock tighter
 //
 // rotate([180,0,0]) R157_BallRetainerTop(Body_OD=Body_OD*CF_Comp+Vinyl_t*2, Body_ID=Body_ID*CF_Comp, EBayTube_OD=EBayTube_OD, Engagement_Len=Engagement_Len, nBolts=6, Xtra_r=STB_Xtra_r, CouplerLenXtra=CouplerLenXtra); // same if no CR
 // rotate([180,0,0]) R157_BallRetainerTop(Body_OD=Body_OD*CF_Comp+Vinyl_t*2, Body_ID=Body_ID*CF_Comp, EBayTube_OD=EBayTube_OD, Engagement_Len=Engagement_Len, nBolts=6, Xtra_r=STB_Xtra_r, CouplerLenXtra=-20);  // for Booster
-// STB_LockDisk(Body_ID=Body_ID, nLockBalls=nLockBalls, HasLargeInnerBearing=true, Xtra_r=STB_Xtra_r);
-// R157_BallRetainerBottom(Body_ID=Body_ID, Engagement_Len=Engagement_Len, Xtra_r=STB_Xtra_r);
-// STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD*CF_Comp, Engagement_Len=Engagement_Len);
+// STB_LockDisk(Body_ID=Body_ID*CF_Comp, nLockBalls=nLockBalls, HasLargeInnerBearing=true, Xtra_r=STB_Xtra_r);
+// R157_BallRetainerBottom(Body_ID=Body_ID*CF_Comp, Engagement_Len=Engagement_Len, Xtra_r=STB_Xtra_r);
+// STB_TubeEnd(Body_ID=Body_ID*CF_Comp, nLockBalls=nLockBalls, Body_OD=Body_OD*CF_Comp, Engagement_Len=Engagement_Len);
 //
 //  *** Petal Deployers ***
 //
@@ -151,7 +152,7 @@ STB_Xtra_r=0.3; // Makes the lock tighter
 // Stager_Saucer(Tube_OD=Body_OD*CF_Comp+Vinyl_t*2, nLocks=nLocks); // Bolts on
 //
 // Stager_LockRing(Tube_OD=Body_OD*CF_Comp+Vinyl_t*2, nLocks=nLocks); 
-// Stager_Mech(Tube_OD=Body_OD*CF_Comp+Vinyl_t*2, nLocks=nLocks, Skirt_ID=Body_ID, Skirt_Len=Stager_Skirt_Len, nSkirtBolts=nEBayBolts, ShowLocked=true);
+// Stager_Mech(Tube_OD=Body_OD*CF_Comp+Vinyl_t*2, nLocks=nLocks, Skirt_ID=Body_ID*CF_Comp, Skirt_Len=Stager_Skirt_Len, nSkirtBolts=nEBayBolts, ShowLocked=true);
 // Stager_BallSpacer(Tube_OD=Body_OD*CF_Comp+Vinyl_t*2); // print 2
 //
 // Stager_InnerRace(Tube_OD=Body_OD*CF_Comp+Vinyl_t*2);
@@ -198,12 +199,12 @@ STB_Xtra_r=0.3; // Makes the lock tighter
 // FC2_FinFixture(Fin_Root_W=Sustainer_Fin_Root_W, Fin_Root_L=Sustainer_Fin_Root_L, Fin_Post_h=Sustainer_Fin_Post_h, Fin_Chamfer_L=Sustainer_Fin_Chamfer_L);
 // FC2_FinFixture(Fin_Root_W=Booster_Fin_Root_W, Fin_Root_L=Booster_Fin_Root_L, Fin_Post_h=Booster_Fin_Post_h, Fin_Chamfer_L=Booster_Fin_Chamfer_L);
 //
-// BodyDrillingJig(Tube_OD=Body_OD*CF_Comp+Vinyl_t*2, Tube_ID=Body_ID, nBolts=NC_nRivets, BoltInset=7.5);
-// BodyDrillingJig(Tube_OD=Body_OD*CF_Comp+Vinyl_t*2, Tube_ID=Body_ID, nBolts=nEBayBolts, BoltInset=7.5);
-// BodyDrillingJig(Tube_OD=Body_OD*CF_Comp+Vinyl_t*2, Tube_ID=Body_ID, nBolts=nFins*2, BoltInset=7.5);
+// BodyDrillingJig(Tube_OD=Body_OD*CF_Comp+Vinyl_t*2, Tube_ID=Body_ID*CF_Comp, nBolts=NC_nRivets, BoltInset=7.5);
+// BodyDrillingJig(Tube_OD=Body_OD*CF_Comp+Vinyl_t*2, Tube_ID=Body_ID*CF_Comp, nBolts=nEBayBolts, BoltInset=7.5);
+// BodyDrillingJig(Tube_OD=Body_OD*CF_Comp+Vinyl_t*2, Tube_ID=Body_ID*CF_Comp, nBolts=nFins*2, BoltInset=7.5);
 //
-// TubeTest(OD=Body_OD, ID=Body_ID, TestOD=false);
-// TubeTest(OD=Body_OD+IDXtra*2, ID=Body_ID, TestOD=true);
+// TubeTest(OD=Body_OD, ID=Body_ID*CF_Comp, TestOD=false);
+// TubeTest(OD=Body_OD+IDXtra*2, ID=Body_ID*CF_Comp, TestOD=true);
 //
 // ***********************************
 //  ***** for DXF output *****
@@ -724,7 +725,7 @@ module SustainerFinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 				Cone_Len=0, ThreadedTC=false, Extra_OD=0, RailGuideLen=RailGuide_Len,
 				LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly, 
 				HasWireHoles=false, HollowTailcone=true, 
-				HollowFinRoots=true, Wall_t=1.2, OgiveTailCone=false, Ogive_Len=400, OgiveCut_d=BT54Body_OD+8,
+				HollowFinRoots=true, Wall_t=1.2, OgiveTailCone=false, Ogive_Len=400, OgiveCut_d=MotorTube_OD+8,
 				UseTrapFin3=true);
 					
 			if (!UpperHalfOnly){
@@ -782,7 +783,7 @@ module Omega_ServoPlate(){
 	
 	difference(){
 		union(){
-			Stager_ServoPlate(Tube_OD=Body_OD*CF_Comp+Vinyl_t*2, Skirt_ID=Body_ID, nLocks=nLocks, OverCenter=IDXtra+0.8); // Bottom Plate
+			Stager_ServoPlate(Tube_OD=Body_OD*CF_Comp+Vinyl_t*2, Skirt_ID=Body_ID*CF_Comp, nLocks=nLocks, OverCenter=IDXtra+0.8); // Bottom Plate
 			// Bolt boss
 			translate([EyeBolt_X, EyeBolt_Y, 0]) cylinder(d1=Boss_d+16, d2=Boss_d, h=Boss_H);
 		} // union
@@ -828,7 +829,7 @@ module BoosterFinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 				Cone_Len=TailConeLen, ThreadedTC=false, Extra_OD=2, RailGuideLen=RailGuide_Len,
 				LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly, 
 				HasWireHoles=false, HollowTailcone=false, 
-				HollowFinRoots=true, Wall_t=Wall_t, OgiveTailCone=false, Ogive_Len=400, OgiveCut_d=BT54Body_OD+8,
+				HollowFinRoots=true, Wall_t=Wall_t, OgiveTailCone=false, Ogive_Len=400, OgiveCut_d=MotorTube_OD+8,
 				UseTrapFin3=true);
 				
 		// hole for motor retainer

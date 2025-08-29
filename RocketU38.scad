@@ -64,7 +64,7 @@ Vinyl_d=0.5;
 //
 // R38_PetalHub(OD=Body_ID-IDXtra*2);
 // rotate([-90,0,0]) PD_PetalSpringHolder2();
-// rotate([180,0,0]) PD_Petals2(OD=Coupler_OD, Len=ForwardPetal_Len, nPetals=nPetals, Wall_t=1.6, AntiClimber_h=0, HasLocks=true);
+// rotate([180,0,0]) PD_Petals2(OD=Coupler_OD, Len=Petal_Len, nPetals=nPetals, Wall_t=1.4, AntiClimber_h=0, HasLocks=true);
 // rotate([0,-90,0]) PD_PetalLockCatch(OD=Coupler_OD, ID=Coupler_ID, Wall_t=1.8, Len=25.7, LockStop=false);
 // CatchHolder();
 //
@@ -101,7 +101,7 @@ Vinyl_d=0.5;
 //
 // *** Fin Can ***
 //
-// MotorTubeTopper(OD=Body_ID, ID=MotorTube_OD, MT_ID=MotorTube_ID);
+// rotate([180,0,0]) MotorTubeTopper(OD=Body_ID, ID=MotorTube_OD, MT_ID=MotorTube_ID);
 //
 // Fincan(LowerHalfOnly=false, UpperHalfOnly=false, Hollow=true);
 //
@@ -127,8 +127,7 @@ Vinyl_d=0.5;
 //  ***** for Viewing *****
 //
 // ShowRocket(ShowInternals=false);
-// translate([300,0,0]) 
-ShowRocket(ShowInternals=true);
+// translate([300,0,0]) ShowRocket(ShowInternals=true);
 //
 //
 // ***********************************
@@ -159,7 +158,7 @@ NC_Base_L=12;
 
 nPetals=2;
 
-ForwardPetal_Len=120; // 100 is too short, Main 'chute and lots of shock cord
+Petal_Len=120; // 100 is too short, Main 'chute and lots of shock cord
 
 // U-Line 1.5" Mailing Tube version
 Body_OD=ULine38Body_OD;
@@ -219,7 +218,7 @@ module ShowRocket(ShowInternals=false){
 	BodyTube_Z=FinCan_Z+FinCan_Len+Overlap*2;
 	NoseCone_Z=BodyTube_Z+BodyTubeLen+2.1;
 	
-	SCR_Z=NoseCone_Z-7.2-9-ForwardPetal_Len-30.5-35-35-14;
+	SCR_Z=NoseCone_Z-7.2-9-Petal_Len-30.5-35-35-14;
 	
 	echo(str("Overall Length = ",(NoseCone_Z+NC_Len)/25.4));
 
@@ -231,14 +230,14 @@ module ShowRocket(ShowInternals=false){
 		if (ShowInternals){
 			translate([0,0,-7.2]) rotate([180,0,0]) R38_PetalHub();
 			translate([0,0,-7.2-9]) rotate([180,0,0]) 
-				PD_Petals2(OD=Coupler_OD, Len=ForwardPetal_Len, nPetals=nPetals, Wall_t=1.6, AntiClimber_h=0, HasLocks=true);
+				PD_Petals2(OD=Coupler_OD, Len=Petal_Len, nPetals=nPetals, Wall_t=1.6, AntiClimber_h=0, HasLocks=true);
 				
-			translate([0,0,-7.2-9-ForwardPetal_Len-30.5]) CatchHolder();
+			translate([0,0,-7.2-9-Petal_Len-30.5]) CatchHolder();
 			
-			translate([0,0,-7.2-9-ForwardPetal_Len-30.5]) rotate([180,0,0]) SE_R38SpingTop();
-			translate([0,0,-7.2-9-ForwardPetal_Len-30.5-32]) SE_R38SlidingSmallSpringMiddle(OD=Coupler_OD);
-			translate([0,0,-7.2-9-ForwardPetal_Len-30.5-32-32]) SE_R38SlidingSmallSpringMiddle(OD=Coupler_OD);
-			translate([0,0,-7.2-9-ForwardPetal_Len-30.5-32-32-7]) SE_R38SpringBottom(OD=Coupler_OD);
+			translate([0,0,-7.2-9-Petal_Len-30.5]) rotate([180,0,0]) SE_R38SpingTop();
+			translate([0,0,-7.2-9-Petal_Len-30.5-32]) SE_R38SlidingSmallSpringMiddle(OD=Coupler_OD);
+			translate([0,0,-7.2-9-Petal_Len-30.5-32-32]) SE_R38SlidingSmallSpringMiddle(OD=Coupler_OD);
+			translate([0,0,-7.2-9-Petal_Len-30.5-32-32-7]) SE_R38SpringBottom(OD=Coupler_OD);
 
 		}
 	}
@@ -272,7 +271,7 @@ module MotorTubeTopper(OD=Body_ID, ID=MotorTube_OD, MT_ID=MotorTube_ID){
 	Len=20;
 	nSpokes=5;
 	Spoke_W=2;
-	ShockCord_d=1.75;
+	ShockCord_d=2.2;
 	
 	difference(){
 		union(){
@@ -297,8 +296,12 @@ module MotorTubeTopper(OD=Body_ID, ID=MotorTube_OD, MT_ID=MotorTube_ID){
 		translate([0,OD/2+1,Len/2]) rotate([-90,0,0]) Bolt8Hole();
 		
 		// Shock cord
-		rotate([0,0,360/nSpokes]) translate([-1-ShockCord_d/2, OD/2-1-ShockCord_d/2, -Overlap]) cylinder(d=ShockCord_d, h=Len+Overlap*2);
-		rotate([0,0,360/nSpokes]) translate([1+ShockCord_d/2, OD/2-1-ShockCord_d/2, -Overlap]) cylinder(d=ShockCord_d, h=Len+Overlap*2);
+		k=0;
+		a=22.5;
+		rotate([0,0,360/nSpokes*k-a]) 
+			translate([0, OD/2-1-ShockCord_d/2, -Overlap]) cylinder(d=ShockCord_d, h=Len+Overlap*2);
+		rotate([0,0,360/nSpokes*k+a]) 
+			translate([0, OD/2-1-ShockCord_d/2, -Overlap]) cylinder(d=ShockCord_d, h=Len+Overlap*2);
 	} // difference
 } // MotorTubeTopper
 

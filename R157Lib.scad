@@ -128,8 +128,10 @@ module R157_MotorTubeTopper(OD=Body_ID, MotorTube_OD=BT54Body_OD, MotorTube_ID=B
 
 	difference(){
 		union(){
+			// Motor Stop
 			Tube(OD=MotorTube_OD+1, ID=MotorTube_ID, Len=5, myfn=$preview? 36:360);
 			
+			// Motor Tube
 			translate([0,0,-Skirt_Len]) 
 				Tube(OD=MotorTube_OD+IDXtra*3+4.4, ID=MotorTube_OD+IDXtra*3, 
 						Len=Len, myfn=$preview? 36:360);
@@ -174,7 +176,8 @@ module R157_MotorTubeTopper(OD=Body_ID, MotorTube_OD=BT54Body_OD, MotorTube_ID=B
 
 } // R157_MotorTubeTopper
 
-// R157_MotorTubeTopper();
+// 
+R157_MotorTubeTopper();
 
 module R157_PetalHub(OD=Coupler_OD, nPetals=nPetals, nBolts=nPetals, nRopes=0){
 	Center_Hole_d=OD-60;
@@ -339,7 +342,7 @@ module R157_BallRetainerBottom(Body_ID=Body_ID, Engagement_Len=0, Xtra_r=0.0){
 		
 		STB_BallRetainerBottom(Body_ID=Body_ID, Body_OD=Body_ID, 
 					nLockBalls=nLockBalls, HasSpringGroove=false, 
-					Engagement_Len=Engagement_Len, HasLargeInnerBearing=true, Xtra_r=Xtra_r);
+					Engagement_Len=Engagement_Len, Lighten=true, HasLargeInnerBearing=true, Xtra_r=Xtra_r);
 		
 		rotate([0,0,Bolt_a]) translate([0,0,-Engagement_Len/2])
 			PD_PetalHubBoltPattern(OD=Coupler_OD, nBolts=nPetals) rotate([180,0,0]) Bolt4Hole(depth=20);
@@ -347,7 +350,7 @@ module R157_BallRetainerBottom(Body_ID=Body_ID, Engagement_Len=0, Xtra_r=0.0){
 	} // difference
 } // R157_BallRetainerBottom
 
-// R157_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID);
+// R157_BallRetainerBottom(Body_ID=ULine157Body_ID, Engagement_Len=30, Xtra_r=0.2);
 
 module R157_SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, HasPD_Ring=false, Engagemnet_Len=7){
 	

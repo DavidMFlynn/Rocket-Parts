@@ -200,8 +200,9 @@ module CablePullerMountingRing(IsTopRing=true){
 		} // hull
 		
 		// Bolt holes for cable release
+		if (IsTopRing){
 		translate([0,Block_Y/2+4,6]) Bolt4HeadHole();
-		translate([0,-Block_Y/2-4,6]) Bolt4HeadHole();
+		translate([0,-Block_Y/2-4,6]) Bolt4HeadHole();}
 		
 		// Shock Cord
 		rotate([0,0,ShockCord_a]) translate([0,OD/2-4,-Overlap]) cylinder(d=ShockCord_d, h=Len+Overlap*2);
@@ -214,7 +215,7 @@ module CablePullerMountingRing(IsTopRing=true){
 	
 } // CablePullerMountingRing
 
-// CablePullerMountingRing();
+// CablePullerMountingRing(IsTopRing=false);
 
 module SCR_EndStop(ShowCut=false){
 	Base_Z=-30.1;

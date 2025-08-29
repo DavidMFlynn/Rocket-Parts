@@ -125,6 +125,7 @@ module SE_R38SpingTop(){
 	Spring_ID=SE_Spring3670_ID();
 	
 	Len=1.5+2.5;
+	AlTube_ID=6.8;
 	
 	difference(){
 		union(){
@@ -139,7 +140,7 @@ module SE_R38SpingTop(){
 	difference(){
 		union(){
 			cylinder(d=10,h=Len);
-			cylinder(d=6.3,h=Len+2);
+			cylinder(d=AlTube_ID,h=Len+2);
 			
 			for (j=[0:nSpokes-1]) rotate([0,0,360/nSpokes*j+180/nSpokes]) hull(){
 				cylinder(d=2.2, h=Len);
