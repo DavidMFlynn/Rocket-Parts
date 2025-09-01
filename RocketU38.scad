@@ -3,7 +3,7 @@
 // Filename: RocketU38.scad
 // by David M. Flynn
 // Created: 8/9/2025 
-// Revision: 0.9.4  8/21/2025 
+// Revision: 1.0.0  9/1/2025 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -11,12 +11,20 @@
 //  Rocket with 38mm Body and 29mm motor. 
 //  Recommended Motors: G74W, H235T
 //
+//  Built, Ground test successful and ready to fly 9/2025
+//
+//  ***** Tubes *****
+//
+// LOC Motor Tube 29mm x 12"
+// U-Line 1-1/2" x 2' (25") Mailing Tube
+//
 //  ***** Hardware *****
 //
 // Spring 3670CS (3 Req)
 // Spring 3715CS
 // Spring 70807CS
 // Machine Screw #2-56 x 1/4" SHCS (2 Req)
+// Machine Screw #4-40 x 1/4" BHCS (7 Req)
 // Machine Screw #4-40 x 3/8" SHCS (7 Req)
 // Machine Screw #4-40 x 3/4" SHCS (4 Req)
 // Machine Screw #8-32 x 1/2" Pan Ph Nylon
@@ -30,8 +38,8 @@
 // Dowel Pin 4mm Dia (undersize) x 16mm
 // Ball Bearing MR84 (4 Req)
 //
-// Cable Assy 1mm SS wire rope w/ ends
-// Servo Push Rod
+// Cable Assy 1mm SS wire rope x 65mm w/ ends
+// Servo Push Rod 0.031" Dia. Music Wire x 2" w/ Z-Bend
 //
 //  ***** Parts Not In Kit *****
 //
@@ -44,6 +52,7 @@
 //
 //  ***** History *****
 //
+// 1.0.0  9/1/2025   Added notes. Ready for test flight.
 // 0.9.4  8/21/2025  Reversed servo rotation (the glitch caused deployment on power-up), Added Notes
 // 0.9.3  8/19/2025  working on EBay
 // 0.9.2  8/14/2025  worked on ShowRocket(), printing and iterating continues
