@@ -153,7 +153,7 @@ module PD_PetalHolder2(Petal_OD=BT137Coupler_OD, Is_Top=false){
 			difference(){
 				cylinder(d=Petal_OD+6, h=Len, $fn=$preview? 90:360);
 				// half
-				translate([0,-Petal_OD/2-20,-Overlap]) cube([Petal_OD/2+20, Petal_OD+40, Len+Overlap*2]);
+				translate([-0.5,-Petal_OD/2-20,-Overlap]) cube([Petal_OD/2+20, Petal_OD+40, Len+Overlap*2]);
 			} // difference
 			
 			// Fixed pivot
@@ -189,8 +189,11 @@ module PD_PetalHolder2(Petal_OD=BT137Coupler_OD, Is_Top=false){
 	
 } // PD_PetalHolder2
 
-//PD_PetalHolder2(Petal_OD=ULine157Coupler_OD, Is_Top=false);
-//translate([1,0,30]) rotate([0,180,0]) PD_PetalHolder2(Petal_OD=ULine157Coupler_OD, Is_Top=true);
+// PD_PetalHolder2(Petal_OD=BT137Body_ID, Is_Top=false);
+// PD_PetalHolder2(Petal_OD=BT137Body_ID, Is_Top=true);
+// PD_PetalHolder2(Petal_OD=BT75Body_ID, Is_Top=false);
+// PD_PetalHolder2(Petal_OD=BT75Body_ID, Is_Top=true);
+// translate([1,0,30]) rotate([0,180,0]) PD_PetalHolder2(Petal_OD=ULine157Coupler_OD, Is_Top=true);
 
 module PD_PetalHolderLockLever(){
 	Len=30;

@@ -3,7 +3,7 @@
 // Filename: R75Lib.scad
 // by David M. Flynn
 // Created: 7/17/2024 
-// Revision: 0.9.2  7/22/2024 
+// Revision: 0.9.3  8/29/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,6 +12,7 @@
 //
 //  ***** History *****
 //
+// 0.9.3  8/29/2025  Added shock cord sleeve to R75_BallRetainerBottom()
 // 0.9.2  7/22/2024  Added R75_UpperRailGuideMount()
 // 0.9.1  7/18/2024  3 petals, 5 balls, 6 bolts
 // 0.9.0  7/17/2024  First code, copied from many places
@@ -313,6 +314,18 @@ module R75_BallRetainerBottom(Body_ID=Body_ID, HasPD_Ring=false){
 			PD_PetalHubBoltPattern(OD=Coupler_OD, nBolts=6) rotate([180,0,0]) Bolt4Hole(depth=PD_Ring_h-1);
 
 	} // difference
+	
+	// Shock cord hole
+	if (HasPD_Ring)
+		difference(){
+			translate([0,0,-Engagement_Len+1]) 
+			hull() STB_ShockCordHolePattern(Body_ID=Body_ID, Body_OD=Body_ID) 
+				cylinder(d=STB_SCord_T(Body_ID)+4.4, h=PD_Ring_h);
+				
+			translate([0,0,-Engagement_Len-PD_Ring_h-Overlap]) 
+			hull() STB_ShockCordHolePattern(Body_ID=Body_ID, Body_OD=Body_ID) 
+				cylinder(d=STB_SCord_T(Body_ID), h=PD_Ring_h+15);
+		} // difference
 } // R75_BallRetainerBottom
 
 // R75_BallRetainerBottom(Body_ID=Body_ID, HasPD_Ring=false);

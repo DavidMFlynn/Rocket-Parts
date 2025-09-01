@@ -63,7 +63,7 @@ Vinyl_d=0.5;
 // *** petal deployer ***
 //
 // R38_PetalHub(OD=Body_ID-IDXtra*2);
-// rotate([-90,0,0]) PD_PetalSpringHolder2();
+// rotate([-90,0,0]) PetalNotSpringHolder();
 // rotate([180,0,0]) PD_Petals2(OD=Coupler_OD, Len=Petal_Len, nPetals=nPetals, Wall_t=1.4, AntiClimber_h=0, HasLocks=true);
 // rotate([0,-90,0]) PD_PetalLockCatch(OD=Coupler_OD, ID=Coupler_ID, Wall_t=1.8, Len=25.7, LockStop=false);
 // CatchHolder();
@@ -266,6 +266,19 @@ module ShowRocket(ShowInternals=false){
 
 // ShowRocket(ShowInternals=false);
 // ShowRocket(ShowInternals=true);
+
+module PetalNotSpringHolder(){
+	// No Spring
+
+	difference(){
+		PD_PetalSpringHolder2();
+		
+		translate([0,-19.45,5.95]) cube([20,20,20], center=true);
+	} // difference
+	
+} // PetalNotSpringHolder
+
+// rotate([-90,0,0]) PetalNotSpringHolder();
 
 module MotorTubeTopper(OD=Body_ID, ID=MotorTube_OD, MT_ID=MotorTube_ID){
 	Len=20;

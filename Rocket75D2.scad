@@ -3,7 +3,7 @@
 // Filename: Rocket75D2.scad
 // by David M. Flynn
 // Created: 8/13/2024
-// Revision: 0.9.2  8/21/2024
+// Revision: 0.9.3  8/29/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -21,6 +21,7 @@
 // Booster Motor Tube		BT54_Body	 x 370
 //
 //  ***** History *****
+// 0.9.3  8/29/2025   Updates for current libs.
 // 0.9.2  8/21/2024	  Sustainer fincan updated
 // 0.9.1  8/19/2024	  Mostly a booster and fincan for R75D
 // 0.9.0  8/18/2024	  Copied from Omega75 which didn't look like an Omega, now just building a booster and sustainer fincan for R75D
@@ -33,7 +34,8 @@
 //
 // *** Dual Deploy Electronics Bay ***
 //
-// EB_Electronics_Bay3(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=EBay_Len, nBolts=3, BoltInset=NC_Base_L/2, DualDeploy=true, ShowDoors=false);
+// rotate([180,0,0]) SustainerEBay(TopOnly=true, BottomOnly=false);
+// SustainerEBay(TopOnly=false, BottomOnly=true);
 //
 // *** Doors ***
 //
@@ -42,19 +44,19 @@
 //
 // *** Ball Lock ***
 //
-// STB_LockDisk(BallPerimeter_d=Body_OD, nLockBalls=nLockBalls); // Print 2
+// STB_LockDisk(Body_ID=Body_ID, nLockBalls=nLockBalls, HasLargeInnerBearing=false, Xtra_r=0.0); // Print 2
 // rotate([180,0,0]) R75_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=3); // Print 2
-// R75_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=false); // Forward
-// R75_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=true); // Aft
-// rotate([180,0,0]) STB_TubeEnd2(BallPerimeter_d=Body_OD, nLockBalls=nLockBalls, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=20); // Print 2
+// R75_BallRetainerBottom(Body_ID=Body_ID, HasPD_Ring=false); // Forward
+// R75_BallRetainerBottom(Body_ID=Body_ID, HasPD_Ring=true); // Aft
+// rotate([180,0,0]) STB_TubeEnd(nLockBalls=nLockBalls, Body_OD=Body_OD, Body_ID=Body_ID, Engagement_Len=Engagement_Len); // Print 2
 //
 // *** petal deployer ***
 //
 // PD_NC_PetalHub(OD=Coupler_OD, nPetals=nPetals, nRopes=3); // for dual deploy only
 // R75_PetalHub(Body_OD=Body_OD, Body_ID=Body_ID); // for bottom of ebay
-// rotate([-90,0,0]) PD_PetalSpringHolder();  // Print 6
+// rotate([-90,0,0]) PD_PetalSpringHolder2();  // Print 6
 // PD_Petals2(OD=Coupler_OD, Len=ForwardPetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
-// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=AftPetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
+// PD_Petals2(OD=Coupler_OD, Len=AftPetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
 //
 // SE_SpringEndTop(OD=Coupler_OD, Tube_ID=Coupler_OD-4.4, nRopeHoles=3, CutOutCenter=true);
 // SE_SlidingSpringMiddle(OD=Coupler_OD, nRopes=3);
@@ -147,7 +149,7 @@
 //
 // ***********************************
 include<TubesLib.scad>
-use<AT-RMS-Lib.scad>
+use<AT_RMS_Lib.scad>
 use<R75Lib.scad>
 use<PetalDeploymentLib.scad>
 use<ElectronicsBayLib.scad>
@@ -188,10 +190,11 @@ StagerCollarLen=17.5;
 nLocks=3; // Stager locks
 nBoltsBooster=4;
 nLockBalls=5; // Ball Lock (STB) units
-BallPerimeter_d=Body_OD;
+Engagement_Len=20;
 
 nPetals=3;
-ForwardPetal_Len=150;
+ForwardPetal_Len=200;
+AftPetal_Len=150;
 BoosterPetalLen=150;
 
 // 5 smaller fins, from R75D
@@ -227,6 +230,8 @@ Booster_Fin_TipOffset=Sustainer_Fin_TipOffset*FinScale;
 Booster_Fin_Chamfer_L=Sustainer_Fin_Chamfer_L*FinScale;
 
 EBay_Len=162;
+nEBayBolts=3;
+
 RailGuide_h=Body_OD/2+2;
 RailGuideLen=30;
 TailConeLen=35;
@@ -281,7 +286,7 @@ module ShowBooster(ShowInternals=true){
 	/**/
 	
 	translate([0,0,STB_Z+0.1]) 
-		STB_BallRetainerTop(BallPerimeter_d=BallPerimeter_d, Outer_OD=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls, HasIntegratedCouplerTube=true, Body_ID=Body_ID, HasSecondServo=false, UsesBigServo=false, Engagement_Len=20, HasLargeInnerBearing=false);
+		R75_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=nBoltsBooster);
 	
 	if (ShowInternals) translate([0,0,STB_Z]) {
 		R75_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=true);
@@ -300,7 +305,7 @@ module ShowBooster(ShowInternals=true){
 	}
 	
 	if (ShowInternals==false) translate([0,0,STB_Z]) 
-		STB_TubeEnd2(BallPerimeter_d=BallPerimeter_d, nLockBalls=nLockBalls, Body_OD=Body_OD, Body_ID=Body_ID, Skirt_Len=20);
+		STB_TubeEnd(nLockBalls=nLockBalls, Body_OD=Body_OD, Body_ID=Body_ID, Engagement_Len=20);
 	
 	if (ShowInternals==false)
 		translate([0,0,Body_Z]) color("White") 
@@ -323,8 +328,8 @@ module ShowBooster(ShowInternals=true){
 	
 } // ShowBooster
 
-//ShowBooster(ShowInternals=true);
-//ShowBooster(ShowInternals=false);
+// ShowBooster(ShowInternals=true);
+// ShowBooster(ShowInternals=false);
 
 module ShowRocket(ShowInternals=true){
 	MidTubeLen=MiddleTube_Len;
@@ -365,8 +370,7 @@ module ShowRocket(ShowInternals=true){
 	
 	translate([0,0,EBay_Z]) {
 		color("White") 
-			EB_Electronics_Bay(Tube_OD=Body_OD, Tube_ID=Body_ID, Len=EBay_Len, nBolts=4, BoltInset=7.5, ShowDoors=(ShowInternals==false),
-				HasSecondBattDoor=false, HasFwdIntegratedCoupler=false, HasFwdShockMount=false);
+			SustainerEBay(ShowDoors= !ShowInternals);
 	}
 	
 	translate([0,0,STB_Z+0.1]) 
@@ -445,6 +449,20 @@ module FixTube(){
 
 //FixTube();
 
+module SustainerEBay(TopOnly=false, BottomOnly=false, ShowDoors=false){
+	Door_a=[[180],[],[-66,66]];
+	
+	EB_Electronics_BayUniversal(Tube_OD=Body_OD, Tube_ID=Body_ID, DoorAngles=Door_a, Len=EBay_Len, 
+									nBolts=nEBayBolts, BoltInset=7.5, ShowDoors=ShowDoors,
+									HasFwdIntegratedCoupler=false, HasFwdShockMount=false,
+									HasAftIntegratedCoupler=false, HasAftShockMount=false,
+									HasRailGuide=false, RailGuideLen=35,
+									HasFwdCenteringRing=false, HasAftCenteringRing=false, InnerTube_OD=0,
+									Bolted=true, ExtraBolts=[], TopOnly=TopOnly, BottomOnly=BottomOnly);
+} // SustainerEBay
+
+//SustainerEBay();
+
 module SustainerFinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 	
 	Can_Len=Sustainer_Fin_Root_L+SustainerFinInset*2;
@@ -509,10 +527,6 @@ module RocketFin(){
 			Span=Sustainer_Fin_Span, Chamfer_L=Sustainer_Fin_Chamfer_L,
 					TipOffset=Sustainer_Fin_TipOffset);
 
-	if ($preview==false){
-		translate([-Sustainer_Fin_Root_L/2+Sustainer_Fin_Root_W/2,0,0]) cylinder(d=Sustainer_Fin_Root_W*2.5, h=0.9); // Neg
-		translate([Sustainer_Fin_Root_L/2-Sustainer_Fin_Root_W/2,0,0]) cylinder(d=Sustainer_Fin_Root_W*2.5, h=0.9); // Pos
-	}
 } // RocketFin
 
 // RocketFin();
@@ -551,10 +565,6 @@ module BoosterFin(){
 			Span=Booster_Fin_Span, Chamfer_L=Booster_Fin_Chamfer_L,
 					TipOffset=Booster_Fin_TipOffset);
 
-	if ($preview==false){
-		translate([-Booster_Fin_Root_L/2+10,0,0]) cylinder(d=Booster_Fin_Root_W*2.5, h=0.9); // Neg
-		translate([Booster_Fin_Root_L/2-10,0,0]) cylinder(d=Booster_Fin_Root_W*2.5, h=0.9); // Pos
-	}
 } // BoosterFin
 
 // BoosterFin();
