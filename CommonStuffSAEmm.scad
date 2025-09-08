@@ -1,7 +1,7 @@
 // *************************************************
 // filename: CommondStuffSAEmm.scad
 //  by Dave Flynn 2015, GPL v2
-// Rev: 1.0.8 9/19/2023
+// Rev: 1.0.9 9/2/2025
 // Some hole sizes have not been tested.
 //
 // This file contains constants and some common routines
@@ -51,6 +51,10 @@
 // BoltM8Hole(depth=22);
 // BoltM8ClearHole(depth=22);
 // BoltM8HeadHole(depth=22, lAccess=18);
+//  3/8"-16
+// Bolt375Hole(depth=22);
+// Bolt375ClearHole(depth=22);
+// Bolt375NutHole(depth=8);
 //
 //  *** Other Stuff ***
 // Size17StepperBolts() //children();
@@ -60,7 +64,8 @@
 // *************************************************
 //  **** History *****
 //
-echo("CommonStuffSAEmm 1.0.8");
+echo("CommonStuffSAEmm 1.0.9");
+// 1.0.9 9/2/2025   Added Bolt375Hole(), Bolt375ClearHole() and Bolt375NutHole
 // 1.0.8 9/19/2023  Added Bolt6RailNutEnderX
 // 1.0.7 9/19/2023  Added Bolt6RailNutEnder
 // 1.0.6 1/4/2023	Added Bolt250NutHole
@@ -151,6 +156,10 @@ BoltM8_Head_h=8.2;
 BoltM8_BtnHead_r=7;
 BoltM8_BtnHead_h=4.4;
 BoltM8_Clear_r=4.1;
+
+Bolt375_Clear_r=0.185*25.4;
+Bolt375_r=0.153*25.4;
+
 
 // ***** #2-56 *****
 
@@ -618,6 +627,32 @@ module BoltM8HeadHole(depth=22, lAccess=18){
 } // BoltM8HeadHole
 
 //BoltM8HeadHole(depth=22, lAccess=18);
+
+// ***** 3/8-16 *****
+
+module Bolt375Hole(depth=22){
+	// the point
+	translate([0,0,-depth-Bolt375_r])
+		cylinder(r1=Overlap, r2=Bolt375_r+ID_Xtra, h=Bolt375_r, $fn=24);
+
+	translate([0,0,-depth+Overlap])
+		cylinder(r=Bolt375_r+ID_Xtra, h=depth+Overlap*2, $fn=36);
+} // Bolt375Hole
+
+// Bolt375Hole(depth=22);
+
+module Bolt375ClearHole(depth=22){
+	translate([0,0,-depth+Overlap])
+		cylinder(r=Bolt375_Clear_r+ID_Xtra,h=depth+Overlap*2,$fn=24);
+} // Bolt375ClearHole
+
+// Bolt375ClearHole(depth=22);
+
+module Bolt375NutHole(depth=8){
+	cylinder(d=9/16*25.4*1.1339+ID_Xtra*2, h=depth, $fn=6);
+} // Bolt375NutHole
+
+// Bolt375NutHole(depth=8);
 
 // **********************************
 

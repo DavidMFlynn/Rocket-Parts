@@ -164,7 +164,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_ID=0, Can_Le
 			
 			// Fin Boxes
 			difference(){
-				for (j=[0:nFins]) rotate([0,0,360/nFins*j+180/nFins]) 
+				for (j=[0:nFins-1]) rotate([0,0,360/nFins*j+180/nFins]) 
 					translate([-FinBox_W/2,0,0]) cube([FinBox_W, Body_OD/2, Can_Len+FB_Xtra_Fwd]);
 				
 				// remove outside

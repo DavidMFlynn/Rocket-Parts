@@ -107,10 +107,16 @@ ULine38Body_ID=38.90; // was 38.7 Works w/ BT38Coupler_OD
 ULine75Body_OD=80.30;
 ULine75Body_ID=76.60; // Works w/ BT75Coupler_OD
 
+BT98Body_OD=101.9;
+BT98Body_ID=98.9;
+BT98Coupler_OD=98.6;
+BT98Coupler_ID=95.7;
+
 // ULine 4 inch mailing tube
 ULine102Body_OD=106.1;
 ULine102Body_ID=102.2;
-
+ULine102Coupler_OD=BT98Body_OD; // tight fit but works well
+ULine102Coupler_ID=BT98Body_ID;
 
 // ULine 6 inch mailing tube
 ULine157Body_OD=157.8;
@@ -168,10 +174,6 @@ BT137Coupler_OD=135.4; // was BT137Coupler_ID+0.084*2*25.4 measured 135.4
 //echo(BT137Coupler_ID=BT137Coupler_ID);
 //echo(BT137Coupler_OD=BT137Coupler_OD);
 
-BT98Body_OD=101.9;
-BT98Body_ID=98.9;
-BT98Coupler_OD=98.6;
-BT98Coupler_ID=95.7;
 
 BT75Body_ID=3.000*25.4; // 76.2
 BT75Body_OD=BT75Body_ID+0.062*2*25.4;

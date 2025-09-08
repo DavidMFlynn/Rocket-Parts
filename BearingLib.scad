@@ -71,7 +71,7 @@ module TwoPartBallSpacer(BallCircle_d=72,Ball_d=7.9375,nBalls=15){ // 9.525
 
 //TwoPartBallSpacer();
 
-module TwoPartBoltedBallSpacer(BallCircle_d=72,Ball_d=7.9375,nBalls=15){ // 9.525
+module TwoPartBoltedBallSpacer(BallCircle_d=72,Ball_d=7.9375,nBalls=14){ // 9.525
 	// nBalls must be even
 	Race_w=Ball_d+3.5;
 	Race_depth=Ball_d*0.6;

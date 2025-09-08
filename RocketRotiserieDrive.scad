@@ -75,6 +75,7 @@
 // Chuck(OD=BT54Body_ID);
 // Chuck(OD=BT75Body_ID);
 // SmallTubeChuck(OD=ULine38Body_ID);
+// Chuck2(OD=215.9*CF_Comp, nLocks=0); // for Stubby
 //
 // *******************************************************
 //  ***** Routines *****

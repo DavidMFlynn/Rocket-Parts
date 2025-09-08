@@ -307,7 +307,7 @@ module EB_Electronics_BayUniversal(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, D
 									HasAftIntegratedCoupler=false, HasAftShockMount=false,
 									HasRailGuide=false, RailGuideLen=35,
 									HasFwdCenteringRing=false, HasAftCenteringRing=false, InnerTube_OD=BT54Body_OD,
-									Bolted=false, ExtraBolts=[], TopOnly=false, BottomOnly=false){
+									Bolted=false, ExtraBolts=[], GlobalExtraBolts=[], TopOnly=false, BottomOnly=false){
 	
 	Altimeter_Z=HasRailGuide? 80:Len/2;
 	BattSwDoor_Z=HasRailGuide? 80:Len/2;
@@ -410,6 +410,8 @@ module EB_Electronics_BayUniversal(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, D
 						rotate([0,0,j-BattBolt_a]) BoltHole();
 						for (k=ExtraBolts) rotate([0,0,j+k]) BoltHole();
 					}
+					
+					for (k=GlobalExtraBolts) rotate([0,0,k]) BoltHole();
 					
 				} // difference
 		} // union

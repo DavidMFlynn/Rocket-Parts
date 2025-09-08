@@ -3,13 +3,18 @@
 //
 // Filename: involute_gears.scad
 // Modified and expanded by: David M. Flynn
-// Revision: 1.0.1 3/12/2020
+// Revision: 1.0.2 9/7/2025
 // Units: mm
 // ************************************************************************************
+//  ***** Notes *****
+//
+// 
+//
 //  ***** History *****
 //
-echo("involute_gears.scad 1.0.1");
-// 1.0.1 Added this header, some comments and functions.
+echo("involute_gears.scad 1.0.2");
+// 1.0.2 9/7/2025  Code cleanup, worked on bevel gear
+// 1.0.1 3/12/2020 Added this header, some comments and functions.
 // 1.0   3/12/2020 First rev'd version, copied from Parametric Involute Bevel and Spur Gears by GregFrost
 //
 // ************************************************************************************
@@ -65,6 +70,10 @@ echo("involute_gears.scad 1.0.1");
 //
 // ************************************************************************************
 
+Overlap=0.05;
+IDXtra=0.2;
+$fn=$preview? 36:90;
+
 module test_meshing_double_helix(){
     meshing_double_helix();
 } // test_meshing_double_helix
@@ -115,9 +124,9 @@ module bevel_gear_pair(gear1_teeth = 41,
 		
 		translate([0,0,-pitch_apex1])
 			bevel_gear(number_of_teeth=gear1_teeth,
-						cone_distance=cone_distance,face_width=20,
+						cone_distance=cone_distance,face_width=8,
 						outside_circular_pitch=outside_circular_pitch,
-						pressure_angle=30,
+						pressure_angle=22,
 						clearance = 0.2,
 						bore_diameter=15,
 						gear_thickness = 5,
@@ -128,9 +137,9 @@ module bevel_gear_pair(gear1_teeth = 41,
 		rotate([0,-(pitch_angle1+pitch_angle2),0])
 			translate([0,0,-pitch_apex2])
 				bevel_gear(number_of_teeth=gear2_teeth,
-							cone_distance=cone_distance,face_width=20,
+							cone_distance=cone_distance,face_width=8,
 							outside_circular_pitch=outside_circular_pitch,
-							pressure_angle=30,
+							pressure_angle=22,
 							clearance = 0.2,
 							bore_diameter=10,
 							gear_thickness = 15,
@@ -140,7 +149,7 @@ module bevel_gear_pair(gear1_teeth = 41,
 	} // rotate
 } // bevel_gear_pair
 
-// bevel_gear_pair(gear1_teeth = 51, gear2_teeth = 13, axis_angle = 90, outside_circular_pitch=500);
+// bevel_gear_pair(gear1_teeth = 36, gear2_teeth = 24, axis_angle = 90, outside_circular_pitch=300);
 
 //Bevel Gear Finishing Options:
 bevel_gear_flat = 0;
@@ -220,16 +229,15 @@ module bevel_gear(number_of_teeth=11,
 	// For the bevel_gear_flat finish option, calculate the height of a cube to select the portion of the gear that includes the full pitch face.
 	bevel_gear_flat_height = pitch_apex - (cone_distance - face_width) * cos (pitch_angle);
 
-//	translate([0,0,-pitch_apex])
 	difference(){
 		intersection(){
 			union(){
 				rotate (half_thick_angle)
 					translate ([0,0,pitch_apex-apex_to_apex])
-						cylinder ($fn=number_of_teeth*2, r1=root_cone_full_radius,r2=0,h=apex_to_apex);
+						cylinder (r1=root_cone_full_radius, r2=0, h=apex_to_apex, $fn=number_of_teeth*2);
 				
 				for (i = [1:number_of_teeth])
-					rotate ([0,0,i*360/number_of_teeth])
+					rotate ([0,0,i*360/number_of_teeth]) hull()
 						involute_bevel_gear_tooth (
 							back_cone_radius = back_cone_radius,
 							root_radius = root_radius,
@@ -240,49 +248,64 @@ module bevel_gear(number_of_teeth=11,
 							half_thick_angle = half_thick_angle,
 							involute_facets = involute_facets);
 					
-				
 			} // union
 
-			if (finish == bevel_gear_back_cone){
-				translate ([0,0,-back_cone_descent])
-					cylinder (
-						$fn=number_of_teeth*2,
-						r1=back_cone_end_radius,
-						r2=back_cone_full_radius*2,
-						h=apex_to_apex + back_cone_descent);
+		
+			if (finish == bevel_gear_back_cone){				
+				translate([0,0,-back_cone_descent])
+					cylinder(r1=back_cone_end_radius, r2=back_cone_full_radius*2,
+							h=apex_to_apex + back_cone_descent, $fn=number_of_teeth*2);
 			} else {
-				translate ([-1.5*outside_pitch_radius,-1.5*outside_pitch_radius,0])
-					cube ([3*outside_pitch_radius,
-						3*outside_pitch_radius,
-						bevel_gear_flat_height]);
+				translate([-1.5*outside_pitch_radius, -1.5*outside_pitch_radius, 0])
+					cube([3*outside_pitch_radius, 3*outside_pitch_radius, bevel_gear_flat_height]);
 			}
+			
 		} // intersection
 
 		if (finish == bevel_gear_back_cone)
-			translate ([0,0,-face_cone_descent])
+			translate([0,0,-face_cone_descent])
 				cylinder(r1=face_cone_end_radius,
 							r2=face_cone_full_radius * 2,
 							h=face_cone_height + face_cone_descent+pitch_apex);
 			
 
-		translate ([0,0,pitch_apex - apex_to_apex])
-			cylinder(r=bore_diameter/2, h=apex_to_apex);
-	}
+		if (bore_diameter>0)
+		translate([0,0,pitch_apex - apex_to_apex])
+			cylinder(d=bore_diameter, h=apex_to_apex);
+		
+	} // difference
+	
 } // bevel_gear
 
 /*
 bevel_gear (
-	number_of_teeth=16,
-	cone_distance=150,
-	face_width=40,
-	outside_circular_pitch=600,
+	number_of_teeth=24,
+	cone_distance=24.037,
+	face_width=6,
+	outside_circular_pitch=300,
 	pressure_angle=22.5,
 	clearance = 0.2,
-	bore_diameter=5, // 1.125*25.4-1,
-	gear_thickness = 10,
+	bore_diameter=5,
+	gear_thickness = 5,
 	backlash = 0,
-	involute_facets=0,
-	finish = -1);
+	involute_facets=5,
+	finish = bevel_gear_back_cone);
+/**/
+
+/*
+translate([0,18.5,31]) rotate([90,0,0]) rotate([0,0,180/36])
+bevel_gear (
+	number_of_teeth=36,
+	cone_distance=54.0833,
+	face_width=6,
+	outside_circular_pitch=300,
+	pressure_angle=22.5,
+	clearance = 0.2,
+	bore_diameter=5,
+	gear_thickness = 5,
+	backlash = 0,
+	involute_facets=5,
+	finish = bevel_gear_back_cone);
 /**/
 
 module involute_bevel_gear_tooth(
@@ -294,17 +317,6 @@ module involute_bevel_gear_tooth(
 									cone_distance,
 									half_thick_angle,
 									involute_facets){
-										
-	/*
-	echo ("involute_bevel_gear_tooth",
-		back_cone_radius,
-		root_radius,
-		base_radius,
-		outer_radius,
-		pitch_apex,
-		cone_distance,
-		half_thick_angle);
-		/**/
 
 	min_radius = max(base_radius*2,root_radius*2);
 
@@ -316,7 +328,7 @@ module involute_bevel_gear_tooth(
 	start_angle = involute_intersect_angle (base_radius*2, min_radius);
 	stop_angle = involute_intersect_angle (base_radius*2, outer_radius*2);
 
-	res=(involute_facets!=0)?involute_facets:($fn==0)?5:$fn/4;
+	res=(involute_facets!=0)? involute_facets:($fn==0)? 5:$fn/4;
 
 	translate([0,0,pitch_apex])
 		rotate([0,-atan(back_cone_radius/cone_distance),0])
@@ -334,34 +346,35 @@ module involute_bevel_gear_tooth(
 				
 					polyhedron (
 						points=[
-							[back_cone_radius*2+0.1,0,cone_distance*2],
-							[side1_point1[0],side1_point1[1],0],
-							[side1_point2[0],side1_point2[1],0],
-							[side2_point2[0],side2_point2[1],0],
-							[side2_point1[0],side2_point1[1],0],
-							[0.1,0,0]],
-						faces=[[0,1,2],[0,2,3],[0,3,4],[0,5,1],[1,5,2],[2,5,3],[3,5,4],[0,4,5]]);
+							[back_cone_radius*2+0.1, 0, cone_distance*2],
+							[side1_point1[0], side1_point1[1], 0],
+							[side1_point2[0], side1_point2[1], 0],
+							[side2_point2[0], side2_point2[1], 0],
+							[side2_point1[0], side2_point1[1], 0],
+							[0.1, 0, 0]],
+						faces=[[0,1,2], [0,2,3], [0,3,4], [0,5,1], [1,5,2], [2,5,3], [3,5,4], [0,4,5]],
+						convexity=10);
 		} // for
 	
 } // involute_bevel_gear_tooth
 
-module gear (
-	number_of_teeth=15,
-	circular_pitch=false, diametral_pitch=false,
-	pressure_angle=28,
-	clearance = 0.2,
-	gear_thickness=5,
-	rim_thickness=8,
-	rim_width=5,
-	hub_thickness=10,
-	hub_diameter=15,
-	bore_diameter=5,
-	circles=0,
-	backlash=0,
-	twist=0,
-	involute_facets=0,
-	flat=false)
-{
+module gear(
+			number_of_teeth=15,
+			circular_pitch=false, diametral_pitch=false,
+			pressure_angle=28,
+			clearance = 0.2,
+			gear_thickness=5,
+			rim_thickness=8,
+			rim_width=5,
+			hub_thickness=10,
+			hub_diameter=15,
+			bore_diameter=5,
+			circles=0,
+			backlash=0,
+			twist=0,
+			involute_facets=0,
+			flat=false){
+	
 	if (circular_pitch==false && diametral_pitch==false)
 		echo("MCAD ERROR: gear module needs either a diametral_pitch or circular_pitch");
 
@@ -401,16 +414,13 @@ module gear (
 	circle_orbit_curcumference=PI*circle_orbit_diameter;
 
 	// Limit the circle size to 90% of the gear face.
-	circle_diameter=
-		min (
-			0.70*circle_orbit_curcumference/circles,
-			(rim_radius-hub_diameter/2)*0.9);
+	circle_diameter=min(0.70*circle_orbit_curcumference/circles, (rim_radius-hub_diameter/2)*0.9);
 
 	difference(){
-		union (){
-			difference (){
+		union(){
+			difference(){
 				linear_exturde_flat_option(flat=flat, height=rim_thickness, convexity=10, twist=twist)
-					gear_shape (
+					gear_shape(
 						number_of_teeth,
 						pitch_radius = pitch_radius,
 						root_radius = root_radius,
@@ -420,17 +430,17 @@ module gear (
 						involute_facets=involute_facets);
 
 				if (gear_thickness < rim_thickness)
-					translate ([0,0,gear_thickness])
-					cylinder (r=rim_radius,h=rim_thickness-gear_thickness+1);
+					translate([0,0,gear_thickness])
+					cylinder(r=rim_radius,h=rim_thickness-gear_thickness+1);
 			} // diff
 			
 			if (gear_thickness > rim_thickness)
 				linear_exturde_flat_option(flat=flat, height=gear_thickness)
-				circle (r=rim_radius);
+				circle(r=rim_radius);
 			if (flat == false && hub_thickness > gear_thickness)
-				translate ([0,0,gear_thickness])
+				translate([0,0,gear_thickness])
 				linear_exturde_flat_option(flat=flat, height=hub_thickness-gear_thickness)
-				circle (r=hub_diameter/2);
+				circle(r=hub_diameter/2);
 		} // union
 		
 		
@@ -449,18 +459,31 @@ module gear (
 	} // diff
 } // gear
 
-module linear_exturde_flat_option(flat =false, height = 10, center = false, convexity = 2, twist = 0)
-{
-	if(flat==false)
-	{
+/*
+gear(number_of_teeth=15,
+	circular_pitch=300, diametral_pitch=false,
+	pressure_angle=28,
+	clearance = 0.2,
+	gear_thickness=5,
+	rim_thickness=8,
+	rim_width=5,
+	hub_thickness=10,
+	hub_diameter=15,
+	bore_diameter=5,
+	circles=0,
+	backlash=0,
+	twist=0,
+	involute_facets=10,
+	flat=false);
+/**/
+
+module linear_exturde_flat_option(flat =false, height = 10, center = false, convexity = 2, twist = 0){
+	if(flat==false){
 		linear_extrude(height = height, center = center, convexity = convexity, twist= twist) children(0);
-	}
-	else
-	{
+	}else{
 		children(0);
 	}
-
-}
+} // linear_exturde_flat_option
 
 module gear_shape (
 	number_of_teeth,
@@ -469,27 +492,21 @@ module gear_shape (
 	base_radius,
 	outer_radius,
 	half_thick_angle,
-	involute_facets)
-{
-	union()
-	{
-		rotate (half_thick_angle) circle ($fn=number_of_teeth*2, r=root_radius);
+	involute_facets){
+	
+	rotate(half_thick_angle) circle($fn=number_of_teeth*2, r=root_radius);
 
-		for (i = [1:number_of_teeth])
-		{
-			rotate ([0,0,i*360/number_of_teeth])
-			{
-				involute_gear_tooth (
+	for(i = [1:number_of_teeth])
+		rotate([0,0,i*360/number_of_teeth])
+			involute_gear_tooth(
 					pitch_radius = pitch_radius,
 					root_radius = root_radius,
 					base_radius = base_radius,
 					outer_radius = outer_radius,
 					half_thick_angle = half_thick_angle,
 					involute_facets=involute_facets);
-			}
-		}
-	}
-}
+				
+} // gear_shape
 
 module involute_gear_tooth (
 	pitch_radius,
@@ -497,8 +514,8 @@ module involute_gear_tooth (
 	base_radius,
 	outer_radius,
 	half_thick_angle,
-	involute_facets)
-{
+	involute_facets){
+	
 	min_radius = max (base_radius,root_radius);
 
 	pitch_point = involute (base_radius, involute_intersect_angle (base_radius, pitch_radius));
@@ -510,26 +527,23 @@ module involute_gear_tooth (
 
 	res=(involute_facets!=0)?involute_facets:($fn==0)?5:$fn/4;
 
-	union ()
-	{
-		for (i=[1:res])
-		{
-			point1=involute (base_radius,start_angle+(stop_angle - start_angle)*(i-1)/res);
-			point2=involute (base_radius,start_angle+(stop_angle - start_angle)*i/res);
+	for (i=[1:res]){
+		point1=involute (base_radius,start_angle+(stop_angle - start_angle)*(i-1)/res);
+		point2=involute (base_radius,start_angle+(stop_angle - start_angle)*i/res);
+	
 		
-			
-				side1_point1=rotate_point (centre_angle, point1);
-				side1_point2=rotate_point (centre_angle, point2);
-				side2_point1=mirror_point (rotate_point (centre_angle, point1));
-				side2_point2=mirror_point (rotate_point (centre_angle, point2));
-			
-				polygon (
-					points=[[0,0],side1_point1,side1_point2,side2_point2,side2_point1],
-					paths=[[0,1,2,3,4,0]]);
-			
-		}
-	}
-}
+			side1_point1=rotate_point (centre_angle, point1);
+			side1_point2=rotate_point (centre_angle, point2);
+			side2_point1=mirror_point (rotate_point (centre_angle, point1));
+			side2_point2=mirror_point (rotate_point (centre_angle, point2));
+		
+			polygon(
+				points=[[0,0],side1_point1,side1_point2,side2_point2,side2_point1],
+				paths=[[0,1,2,3,4,0]]);
+		
+	} // for
+	
+} // involute_gear_tooth
 
 // Mathematical Functions
 //===============
@@ -537,84 +551,66 @@ module involute_gear_tooth (
 // Finds the angle of the involute about the base radius at the given distance (radius) from it's center.
 //source: http://www.mathhelpforum.com/math-help/geometry/136011-circle-involute-solving-y-any-given-x.html
 
-function involute_intersect_angle (base_radius, radius) = sqrt (pow (radius/base_radius, 2) - 1) * 180 / PI;
+function involute_intersect_angle(base_radius, radius) = sqrt(pow(radius/base_radius, 2) - 1) * 180 / PI;
 
 // Calculate the involute position for a given base radius and involute angle.
 
-function rotated_involute (rotate, base_radius, involute_angle) =
-[
+function rotated_involute(rotate, base_radius, involute_angle) =[
 	cos (rotate) * involute (base_radius, involute_angle)[0] + sin (rotate) * involute (base_radius, involute_angle)[1],
-	cos (rotate) * involute (base_radius, involute_angle)[1] - sin (rotate) * involute (base_radius, involute_angle)[0]
-];
+	cos (rotate) * involute (base_radius, involute_angle)[1] - sin (rotate) * involute (base_radius, involute_angle)[0]];
 
-function mirror_point (coord) =
-[
-	coord[0],
-	-coord[1]
-];
+function mirror_point (coord) =[coord[0], -coord[1]];
 
-function rotate_point (rotate, coord) =
-[
-	cos (rotate) * coord[0] + sin (rotate) * coord[1],
-	cos (rotate) * coord[1] - sin (rotate) * coord[0]
-];
+function rotate_point(rotate, coord) =[cos (rotate) * coord[0] + sin (rotate) * coord[1],
+									   cos (rotate) * coord[1] - sin (rotate) * coord[0]];
 
-function involute (base_radius, involute_angle) =
-[
-	base_radius*(cos (involute_angle) + involute_angle*PI/180*sin (involute_angle)),
-	base_radius*(sin (involute_angle) - involute_angle*PI/180*cos (involute_angle))
-];
+function involute(base_radius, involute_angle) =[base_radius*(cos (involute_angle) + involute_angle*PI/180*sin (involute_angle)),
+												 base_radius*(sin (involute_angle) - involute_angle*PI/180*cos (involute_angle))];
 
 
 // Test Cases
 //===============
 
-module test_gears()
-{
-	translate([17,-15])
-	{
-		gear (number_of_teeth=17,
+module test_gears(){
+	translate([17,-15]){
+		gear(number_of_teeth=17,
 			circular_pitch=500,
 			circles=8);
 
-		rotate ([0,0,360*4/17])
-		translate ([39.088888,0,0])
-		{
+		rotate([0,0,360*4/17]) translate([39.088888,0,0]){
 			gear (number_of_teeth=11,
 				circular_pitch=500,
 				hub_diameter=0,
 				rim_width=65);
-			translate ([0,0,8])
-			{
-				gear (number_of_teeth=6,
+				
+			translate([0,0,8]){
+				gear(number_of_teeth=6,
 					circular_pitch=300,
 					hub_diameter=0,
 					rim_width=5,
 					rim_thickness=6,
 					pressure_angle=31);
-				rotate ([0,0,360*5/6])
-				translate ([22.5,0,1])
-				gear (number_of_teeth=21,
-					circular_pitch=300,
-					bore_diameter=2,
-					hub_diameter=4,
-					rim_width=1,
-					hub_thickness=4,
-					rim_thickness=4,
-					gear_thickness=3,
-					pressure_angle=31);
+					
+				rotate([0,0,360*5/6]) translate([22.5,0,1])
+					gear (number_of_teeth=21,
+						circular_pitch=300,
+						bore_diameter=2,
+						hub_diameter=4,
+						rim_width=1,
+						hub_thickness=4,
+						rim_thickness=4,
+						gear_thickness=3,
+						pressure_angle=31);
 			}
 		}
 
-		translate ([-61.1111111,0,0])
-		{
-			gear (number_of_teeth=27,
+		translate([-61.1111111,0,0]){
+			gear(number_of_teeth=27,
 				circular_pitch=500,
 				circles=5,
 				hub_diameter=2*8.88888889);
 
-			translate ([0,0,10])
-			{
+			translate([0,0,10]){
 				gear (
 					number_of_teeth=14,
 					circular_pitch=200,
@@ -641,35 +637,31 @@ module test_gears()
 			}
 		}
 
-		rotate ([0,0,360*-5/17])
-		translate ([44.444444444,0,0])
-		gear (number_of_teeth=15,
-			circular_pitch=500,
-			hub_diameter=10,
-			rim_width=5,
-			rim_thickness=5,
-			gear_thickness=4,
-			hub_thickness=6,
-			circles=9);
+		rotate([0,0,360*-5/17]) translate([44.444444444,0,0])
+			gear (number_of_teeth=15,
+				circular_pitch=500,
+				hub_diameter=10,
+				rim_width=5,
+				rim_thickness=5,
+				gear_thickness=4,
+				hub_thickness=6,
+				circles=9);
 
-		rotate ([0,0,360*-1/17])
-		translate ([30.5555555,0,-1])
-		gear (number_of_teeth=5,
-			circular_pitch=500,
-			hub_diameter=0,
-			rim_width=5,
-			rim_thickness=10);
+		rotate([0,0,360*-1/17]) translate([30.5555555,0,-1])
+			gear(number_of_teeth=5,
+				circular_pitch=500,
+				hub_diameter=0,
+				rim_width=5,
+				rim_thickness=10);
 	}
 }
 
-module meshing_double_helix ()
-{
-	test_double_helix_gear ();
+module meshing_double_helix(){
+	test_double_helix_gear();
 
-	mirror ([0,1,0])
-	translate ([58.33333333,0,0])
-	test_double_helix_gear (teeth=13,circles=6);
-}
+	mirror([0,1,0]) translate([58.33333333,0,0])
+		test_double_helix_gear(teeth=13,circles=6);
+} // meshing_double_helix
 
 module test_double_helix_gear (
 	teeth=17,

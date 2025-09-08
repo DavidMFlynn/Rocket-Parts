@@ -3,7 +3,7 @@
 // Filename: Stager75BBLib.scad
 // by David M. Flynn
 // Created: 8/14/2024 
-// Revision: 1.0.4  9/25/2024
+// Revision: 1.0.5  9/4/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -29,8 +29,9 @@
 //
 //  ***** History *****
 //
-function Stager75BBLib_Rev()="Stager75BBLib Rev. 1.0.4";
+function Stager75BBLib_Rev()="Stager75BBLib Rev. 1.0.5";
 echo(Stager75BBLib_Rev());
+// 1.0.5  9/4/2025     A little bit of cleanup for viewing.
 // 1.0.4  9/25/2024    Added servo options ServoMG90S_ID 11 gram micro servo, ServoMS75_ID 21 gram mini servo, ServoMZ996_ID 55 gram standard servo
 // 1.0.3  9/15/2024    Little fixes.
 // 1.0.2  9/14/2024    Changed geometry of Stager_LockRing() for 98mm version, testing 98mm version ready for test printing
@@ -166,7 +167,7 @@ ServoMG90S_ID=0; // 11 gram micro servo
 ServoMS75_ID=1;  // 21 gram mini servo
 ServoMZ996_ID=2; // 55 gram standard servo
 
-/*
+//*
 // constants for 98mm stager
 Default_nLocks=3;
 DefaultBody_OD=BT98Body_OD;
@@ -190,7 +191,7 @@ MainBearing_ID=Bearing6807_ID;
 MainBearing_T=Bearing6807_T;
 /**/
 
-//*
+/*
 // constants for 65mm stager
 Default_nLocks=2;
 DefaultBody_OD=BT65Body_OD;
@@ -244,20 +245,20 @@ function Saucer_ID(Tube_OD=DefaultBody_OD)=Tube_OD-StagerLockInset_Y(Tube_OD=Tub
 
 module ShowStager(Tube_OD=DefaultBody_OD, Tube_ID=DefaultBody_ID, nLocks=Default_nLocks){
 	
-	translate([0,0,30]) Stager_Cup(Tube_OD=Tube_OD, ID=Tube_OD-24, nLocks=nLocks);
+	translate([0,0,30]) Stager_Cup(Tube_OD=Tube_OD, nLocks=nLocks);
 	translate([0,0,10]) color("LightBlue") Stager_Saucer(Tube_OD=Tube_OD, nLocks=nLocks);
 	Stager_Mech(Tube_OD=Tube_OD, nLocks=nLocks, Skirt_ID=Tube_ID, Skirt_Len=Default_SkirtLen);
 	
-	translate([0,0,-140]) Stager_LockRing(Tube_OD=Tube_OD, nLocks=nLocks);
+	translate([0,0,-100]) Stager_LockRing(Tube_OD=Tube_OD, nLocks=nLocks);
 	
-	//*
-	translate([0,0,-150]) {
-		translate([20,0,-40]) rotate([180,0,120]) Stager_LockStop(Tube_OD=Tube_OD);
-		translate([0,0,-10]) Stager_InnerRace(Tube_OD=Tube_OD);
-		
-	}
-	/**/
-	translate([0,0,-210]) Stager_ServoPlate(Tube_OD=Tube_OD, Skirt_ID=Tube_ID);		
+	translate([0,0,-110]) rotate([180,0,0]) Stager_OuterBearingCover(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks); // Secures Outer Race of Main Bearing
+	
+	translate([0,0,-130]) Stager_Indexer(Tube_OD=DefaultBody_OD, nLocks=Default_nLocks); // Secures Inner Race of Main Bearing and has Lock Stops
+
+
+	translate([0,0,-160]) Stager_ServoPlate(Tube_OD=Tube_OD, Skirt_ID=Tube_ID);		
+	
+	//translate([0,0,-250]) Stager_ServoMount(Servo_ID=DefaultServo); // shown as part of Stager_ServoPlate
 	
 } // ShowStager
 
@@ -294,19 +295,12 @@ module ShowStagerAssy(Tube_OD=DefaultBody_OD, Tube_ID=DefaultBody_ID, nLocks=Def
 
 	rotate([0,0,Lock_a]){
 		
-		//translate([0,0,InnerRace_Z]) color("LightBlue") 
-		   //Stager_InnerRace(Tube_OD=Tube_OD);
 		  
 		translate([0,0,Bearing_Z]) //color("LightBlue")  
 			Stager_Indexer();
 
 		//Stop_Z= 10+Overlap;
 		
-		//translate([0,0,Stop_Z]) 
-		//	rotate([0,180,-45-60]) color("Tan") Stager_LockStop(Tube_OD=Tube_OD, HasMagnet=true);
-			
-		//translate([0,0,Stop_Z]) 
-		//	rotate([0,180,-15-60+180]) color("Tan") Stager_LockStop(Tube_OD=Tube_OD, HasMagnet=false);
 	}
 	/**/
 					

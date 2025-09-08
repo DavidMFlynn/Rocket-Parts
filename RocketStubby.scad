@@ -108,7 +108,7 @@ PD_PetalHub(OD=Coupler_OD,
 // *** Ball Lock ***
 //
 // BallRetainerBottom();
-// rotate([180,0,0]) STB_BallRetainerTop(Outer_OD=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls, HasIntegratedCouplerTube=true, nBolts=nEBay_Bolts, Body_ID=Body_ID, HasSecondServo=true, UsesBigServo=true, Engagement_Len=Engagement_Len, HasLargeInnerBearing=true, Xtra_r=STB_Xtra_r);
+// rotate([180,0,0]) BallRetainerTop();
 // STB_LockDisk(Body_ID=Body_ID, nLockBalls=nLockBalls, HasLargeInnerBearing=true, Xtra_r=STB_Xtra_r);
 // rotate([180,0,0]) STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD, Engagement_Len=Engagement_Len);
 //
@@ -162,13 +162,13 @@ PD_PetalHub(OD=Coupler_OD,
 // ***********************************
 //  ***** for Viewing *****
 //
-// ShowRocket();
-// ShowRocket(ShowInternals=true);
+// ShowRocket(DualDeploy=true);
+// ShowRocket(DualDeploy=true, ShowInternals=true);
 //
 // ***********************************
 include<TubesLib.scad>
 use<FinCan2Lib.scad> echo(FinCan2LibRev());
-use<AT-RMS-Lib.scad>
+use<AT_RMS_Lib.scad>
 use<RailGuide.scad>
 use<Fins.scad>
 use<NoseCone.scad>
@@ -235,7 +235,6 @@ PetalWall_t=2.2;
 
 Can_Len=Fin_Root_L+FinInset_Len*2;
 Bolt4Inset=4;
-ShockCord_a=17;// offset between PD_PetalHub and R65_BallRetainerBottom
 TailCone_Len=80;
 RailGuide_h=Body_OD/2+2;
 
@@ -295,15 +294,13 @@ module ShowRocket(DualDeploy=false, ShowInternals=false){
 	if (ShowInternals) translate([0,0,AftBallLock_Z+0.2]) rotate([180,0,0]) BallRetainerBottom();
 	
 	translate([0,0,AftBallLock_Z]) rotate([180,0,0])
-		STB_BallRetainerTop(Outer_OD=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls, HasIntegratedCouplerTube=true, nBolts=nEBay_Bolts, Body_ID=Body_ID, HasSecondServo=true, UsesBigServo=true, Engagement_Len=Engagement_Len, HasLargeInnerBearing=true, Xtra_r=0.2);
+		BallRetainerTop();
 	
 	// Drogue Bay
 	if (DualDeploy){
 		
 		translate([0,0,DrogueBallLock_Z])
-			STB_BallRetainerTop(Outer_OD=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls, HasIntegratedCouplerTube=true, 
-				nBolts=nEBay_Bolts, Body_ID=Body_ID, HasSecondServo=true, UsesBigServo=true, Engagement_Len=Engagement_Len, 
-				HasLargeInnerBearing=true, Xtra_r=0.2);
+			BallRetainerTop();
 				
 		if (ShowInternals) translate([0,0,DrogueBallLock_Z]) BallRetainerBottom();
 	
@@ -642,6 +639,66 @@ module RocketFin(){
 
 //RocketFin();
 
+module BallRetainerTop(){
+	AlTube_d=12.7;
+	CT_Len=17;
+	Top_Z=Engagement_Len/2+24+CT_Len;
+	AlTube_Z=Top_Z-1-(AlTube_d+6)/2;
+	AlTube_a=115;
+	Hub_OD=ULine75Body_OD+6;
+	
+	difference(){
+		STB_BallRetainerTop(Outer_OD=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls, HasIntegratedCouplerTube=true, 
+				nBolts=nEBay_Bolts, Body_ID=Body_ID, HasSecondServo=true, UsesBigServo=true, Engagement_Len=Engagement_Len, 
+				HasLargeInnerBearing=true, Xtra_r=STB_Xtra_r);
+				
+		// Aluminum Tube
+		translate([0,0,AlTube_Z]) rotate([0,0,AlTube_a]) rotate([90,0,0]) cylinder(d=AlTube_d+IDXtra, h=Body_OD, center=true);
+		
+	} // difference
+				
+	difference(){
+		union(){
+			
+		
+			// extend coupler section
+			translate([0,0,Engagement_Len/2+24+10]) Tube(OD=Body_ID, ID=Body_ID-6, Len=CT_Len-10, myfn=$preview? 90:360);
+			
+			// Al Tube
+			hull(){
+				translate([0,0,AlTube_Z]) rotate([0,0,AlTube_a]) rotate([90,0,0]) cylinder(d=AlTube_d+IDXtra+6, h=Body_ID-3, center=true);
+				translate([0,0,Top_Z-Overlap]) rotate([0,0,AlTube_a]) 
+					cube([AlTube_d+IDXtra+6,Body_ID-3,Overlap*2], center=true);
+			} // hull
+			
+			hull(){
+				translate([0,0,AlTube_Z]) rotate([0,0,AlTube_a]) cube([10,Body_ID-3,1], center=true);
+				translate([0,0,Engagement_Len/2-2]) rotate([0,0,AlTube_a]) cube([10,Body_ID-3,1], center=true);
+			} // hull
+			
+			// Spokes
+			Spoke_a=[25,80,135,175,-25,-85,-120];
+			for (a=Spoke_a)
+				hull(){
+					translate([0,0,Engagement_Len/2-2]) cylinder(d=3, h=Top_Z-Engagement_Len/2+2);
+					rotate([0,0,a]) translate([0,Body_ID/2-2,Engagement_Len/2-2]) cylinder(d=3, h=Top_Z-Engagement_Len/2+2);
+				} // hull
+				
+			// Hub
+			translate([0,0,Engagement_Len/2-2]) cylinder(d=Hub_OD, h=Top_Z-Engagement_Len/2+2);
+		} // union
+		
+		// Aluminum Tube
+		translate([0,0,AlTube_Z]) rotate([0,0,AlTube_a]) rotate([90,0,0]) cylinder(d=AlTube_d+IDXtra, h=Body_OD, center=true);
+		
+		// Hub
+		translate([0,0,Engagement_Len/2-4]) cylinder(d=ULine75Body_ID, h=Top_Z-Engagement_Len/2+4+Overlap*2);
+		translate([0,0,AlTube_Z+AlTube_d/2]) cylinder(d=ULine75Body_OD, h=10);
+	} // difference
+	
+} // BallRetainerTop
+
+// BallRetainerTop();
 
 module FinCan(LowerHalfOnly=false, UpperHalfOnly=false, HasIntegratedEBay=false, ShowDoors=false){
 	Wall_t=1.4;
