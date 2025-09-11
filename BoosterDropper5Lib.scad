@@ -1,71 +1,99 @@
 // ***********************************
 // Project: 3D Printed Rocket
-// Filename: BoosterDropperLib.scad
+// Filename: BoosterDropper5Lib.scad
 // by David M. Flynn
-// Created: 9/2/2022 
-// Revision: 0.9.9  9/5/2025
+// Created: 9/8/2025 
+// Revision: 0.9.1  9/10/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
 //
 //  Booster Dropper for strap on boosters. 
 //  This is the mechanism for retaining and dropping strap-on boosters.
+//  New design w/ gears for 2 or more boosters
+//  Uses MS62 servo 25kg•cm (2.4Nm)
 //
 //  ***** History *****
 //
-echo("BoosterDropperLib 0.9.9");
+function BoosterDropper5Rev()="BoosterDropper5Lib 0.9.1";
+echo(BoosterDropper5Rev());
+// 0.9.1  9/10/2025 Cleaned up some code. Ready for a printing and test.
+// 0.9.0  9/8/2025  Copied from BoosterDropperLib 9.9, prefix changed to BD5_
 // 0.9.9  9/5/2025  Now ball bearing only. Added ShowLockingThrustPoint()
-// 0.9.8  9/15/2023 Added 1/4-20 threads to BoosterButton for extra strength
-// 0.9.7  9/14/2023 Added function BD_ThrustRing_h()
-// 0.9.6  9/26/2022 Modified for HS5645MG servo
-// 0.9.5  9/25/2022 Added ServoGear. 
-// 0.9.4  9/9/2022  Modified for 6805 ball bearing.
-// 0.9.3  9/8/2022  Added XtraLen to BoosterButton.
-// 0.9.2  9/4/2022  Nearly ready to test. 
-// 0.9.1  9/3/2022  Lowered bearing 0.5mm.
-// 0.9.0  9/2/2022  First code.
 //
 // ***********************************
 //  ***** for STL output *****
 //
-// BoosterThrustRing(MtrTube_OD=PML38Body_OD, BodyTube_OD=PML54Body_OD); // Print 2 per booster
-// BoosterButton(XtraLen=0.3); // Print 2 per booster
-// BB_ThrustPoint(BodyTube_OD=PML98Body_OD, BoosterBody_OD=PML54Body_OD); // Print 1 per booster, incorperate into lower fin can
-// BB_LockingThrustPoint(BodyTube_OD=PML98Body_OD, BoosterBody_OD=PML54Body_OD); // Print 1 per booster, incorperate into rocket body
-// BB_Lock(); // Print 1 per booster
-// BB_BearingStop(); // Only used with ball bearing
-// rotate([180,0,0]) BB_LockShaft(Len=50, nTeeth=24, Gear_z=14);
-// rotate([180,0,0]) ServoGear(nTeeth=24);
-
-// DrivenGear(Hub_Len=5);
+// BD5_BoosterThrustRing(MtrTube_OD=PML38Body_OD, BodyTube_OD=PML54Body_OD); // Print 2 per booster
+//
+// BD5_BoosterButton(XtraLen=0.3); // Print 2 per booster
+// BD5_ServoMountingRing(Body_ID=BT137Body_ID);
+// 
+// BD5_LockingThrustPoint(BodyTube_OD=PML98Body_OD, BoosterBody_OD=PML54Body_OD); // Print 1 per booster, incorperate into rocket body
+// BD5_Lock(); // Print 1 per booster
+// rotate([180,0,0]) BD5_ServoGear(nTeeth=24);
+// BD5_TopRingGear(Bore_d=CenterBore_d, nTeeth=nTeethTopGear);
+// BD5_TopGearMount(Bore_d=CenterBore_d, nBolts=6);
+//
+// BD5_RingGear(Bore_d=CenterBore_d);
+// BD5_InnerRace(Bore_d=CenterBore_d);
+// BD5_OuterRace(Bore_d=CenterBore_d);
+// BD5_BallSpacer(Bore_d=CenterBore_d);
+// BD5_OuterRaceMount(Tube_ID=BT137Body_ID, Bore_d=CenterBore_d);
+//
+// BD5_DrivenGear(Hub_Len=5);
+//
+// RocketBody(Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, nBoosters=nBoosters);
+//
+// CenteringRing(OD=Body_ID-4.4-IDXtra, ID=BT54Body_OD+IDXtra*2, Thickness=5, nHoles=6, Offset=0, myfn=$preview? 90:360);
+// CenteringRing(OD=BT137Body_ID, ID=BT54Body_OD+IDXtra*2, Thickness=5, nHoles=7, Offset=0, myfn=$preview? 90:360);
 //
 // ***********************************
 //  ***** Routines *****
 //
-// LighteningHole(H=10, W=8, L=50);
-// BB_ThrustPoint_Hole(Swell=-Overlap);
-// BB_LTP_Hole(BodyTube_OD=PML98Body_OD);
-// BB_Gear();
-// BB_LockStop(Len=50, Extra_H=2);
+function BD5_BoosterButtonOAH()=BoosterButtonOA_h;
+function BD_ThrustRing_h(Btn_d=BoosterButtonMinor_d)=Btn_d+6;
+function BP5_Calc_nBalls(BallCircle_d=50,Ball_d=6)=floor(BallCircle_d*PI / (Ball_d*2.25)/2)*2;
+//
+// BD5_ThrustPoint(BodyTube_OD=PML98Body_OD, BoosterBody_OD=PML54Body_OD); 
+// BD5_ThrustPoint_Hole(Swell=-Overlap);
+// BD5_LTP_Hole(BodyTube_OD=PML98Body_OD);
+// BD5_Gear(nTeeth=24, Thickness=8);
+// BD5_BearingStop();
+//
 //
 // ***********************************
 //  ***** for Viewing *****
 //
-// ShowLockingThrustPoint();
+// BD5_ShowLockingThrustPoint();
+// ShowRocketBody();
+// BD5_ShowMech(Bore_d=CenterBore_d);
+//
+/*
+  //for (j=[0:nBoosters-1]) rotate([0,0,360/nBoosters*j])
+  translate([0,BT137Body_OD/2-12.4,63]) rotate([-90,0,0]) BD5_ShowLockingThrustPoint(ShowLocked=false);
+  translate([0,0,120.1]) color("Tan") BD5_ServoMountingRing();
+  ShowRocketBody();
+  translate([0,0,63+31]) rotate([180,0,0]) BD5_ShowMech();
+  translate([0,0,63+35]) BD5_OuterRaceMount();
+/**/
 //
 // ***********************************
 
 use<ThreadLib.scad>
 include<involute_gears.scad>
 include<TubesLib.scad>
-include<BearingLib.scad>
+use<BearingLib.scad>
+include<LD-20MGServoLib.scad>
  //include<CommonStuffSAEmm.scad>
 
 Overlap=0.05;
 IDXtra=0.2;
 $fn=$preview? 24:90;
 
+Bolt4Inset=4;
 LooseFit=IDXtra*3;
+
 // Ball Bearing 6805-2RS
 BB6805_2RS_ID=25;
 BB6805_2RS_OD=37;
@@ -78,23 +106,34 @@ BoosterButtonMajor_h=5;
 BoosterButtonTrans_h=(BoosterButtonMajor_d-BoosterButtonMinor_d)/3;
 BoosterButtonOA_h=BoosterButtonMajor_h+BoosterButtonPost_h+BoosterButtonTrans_h;
 
-function BoosterButtonOAH()=BoosterButtonOA_h;
-
-Bolt4Inset=4;
-
-//BB_Lock_Ball_d=6; // use airsoft pellets
-BB_Lock_Wall_t=2.2;
-BB_Lock_BallCircle_d=BoosterButtonMajor_d+BB_Lock_Wall_t*2+6;
+BD5_Lock_Wall_t=2.2;
 
 Housing_OD=BB6805_2RS_OD+Bolt4Inset*4;
 Race_ID=BB6805_2RS_ID-Bolt4Inset*4;
-RaceBC_d=BB6805_2RS_OD+Bolt4Inset*2; //  BB_Lock_BallCircle_d+6+Bolt4Inset*2;
+RaceBC_d=BB6805_2RS_OD+Bolt4Inset*2;
 
 TopOfRace=-3.5; 
 
-function BD_ThrustRing_h(Btn_d=BoosterButtonMinor_d)=Btn_d+6;
+// Values for BT137Body w/ 3 strap-on boosters
+//*
+nBoosters=3;
+nTeethServoGear=20;
+nTeethTopGear=nTeethServoGear*2;
+GearPitch=300;
+BevelGearPitch=300;
+GearPressureAngle=20;
+nDrivenGearTeeth=36;
+DrivenGearConeDistance=54.0833;
+nBevelRingGearTeeth=48;
+BevelRingGearConeDistance=48;
+Ball_d=3/8*25.4;
+Race_w=10;
+BearingPreload=-0.25; // -0.35 was too loose
+CenterBore_d=60; // clear the BT54Body motor tube
+/**/
 
-module ShowLockingThrustPoint(ShowLocked=true){
+
+module BD5_ShowLockingThrustPoint(ShowLocked=true){
 	module Bearing(){
 		difference(){
 			cylinder(d=BB6805_2RS_OD, h=BB6805_2RS_H);
@@ -106,58 +145,207 @@ module ShowLockingThrustPoint(ShowLocked=true){
 		Rot_a=ShowLocked? -90:90;
 		
 		rotate([0,0,Rot_a]){
-			BB_Lock();
+			BD5_Lock();
 			translate([0,0,-10.6]) color("Red") Bearing();
-			//translate([0,0,-12.7]) BB_BearingStop();
-			translate([0,0,-12.7-3.1]) rotate([180,0,0]) DrivenGear();
+			//translate([0,0,-12.7]) BD5_BearingStop();
+			translate([0,0,-12.7-3.1]) rotate([180,0,0]) BD5_DrivenGear();
 		}
 	} // LockWithBearing
 	
-	color("Tan") BoosterButton(XtraLen=0);
+	color("Tan") BD5_BoosterButton(XtraLen=0);
 	
 	//difference(){
-		BB_LockingThrustPoint(BodyTube_OD=BT137Body_OD, BoosterBody_OD=ULine102Body_OD);
+		BD5_LockingThrustPoint(BodyTube_OD=BT137Body_OD, BoosterBody_OD=ULine102Body_OD);
 		//translate([0,0,-20]) cube([50,70,50]);
 	//}
 	LockWithBearing(ShowLocked=ShowLocked);
 	
-	//color("Green") BB_LTP_Hole();
-} // ShowLockingThrustPoint
+	//color("Green") BD5_LTP_Hole();
+} // BD5_ShowLockingThrustPoint
 
-// translate([0,0,BT137Body_OD/2-12.4]) ShowLockingThrustPoint(ShowLocked=false);
+// translate([0,BT137Body_OD/2-12.4,63]) rotate([-90,0,0]) BD5_ShowLockingThrustPoint(ShowLocked=false);
 
-module ShowRocketBody(){
-	MountingBlock_X=Housing_OD+2.4;
-	MountingBlock_Y=92;
-	nBoosters=3;
+module ShowRocketBody(Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, nBoosters=nBoosters){
+	LowerCR_Z=3.5;
 	
-	difference(){
-		union(){
-			translate([0,-30,0]) rotate([-90,0,0]) Tube(OD=BT137Body_OD, ID=BT137Body_ID, Len=100, myfn=$preview? 36:360);
-			
-			intersection(){
-				translate([0,20,0]) rotate([90,0,0]) cylinder(d=BT137Body_OD-1, h=100, center=true);
-				
-				for (j=[0:nBoosters-1]) rotate([0,360/nBoosters*j,0]) 
-				hull(){
-					translate([-MountingBlock_X/2,15-50,BT137Body_OD/2-27]) cube([MountingBlock_X,MountingBlock_Y,1]);
-					translate([-MountingBlock_X/2-10,15-50,BT137Body_OD/2]) cube([MountingBlock_X+20,MountingBlock_Y,1]);
-				} // hull
-			} // intersection
-		} // union
-		
-		for (j=[0:nBoosters-1]) rotate([0,360/nBoosters*j,0]) 
-			translate([0,0,BT137Body_OD/2-12.4]) BB_LTP_Hole();
-	} // difference
+	translate([0,0,LowerCR_Z-5.1])
+		CenteringRing(OD=Body_ID-4.4-IDXtra, ID=BT54Body_OD+IDXtra*2, Thickness=5, nHoles=6, Offset=0, myfn=$preview? 90:360);
 	
-	translate([0,-40,0]) rotate([-90,0,0]) color("LightBlue") Tube(OD=BT54Body_OD, ID=BT54Body_ID, Len=120, myfn=$preview? 36:360);
+	
+	RocketBody(Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, nBoosters=nBoosters);
+	
+	
+	translate([0,0,-50]) color("LightBlue") Tube(OD=BT54Body_OD, ID=BT54Body_ID, Len=250, myfn=$preview? 36:360);
 } // ShowRocketBody
 
 // ShowRocketBody();
 
-module BB_TopGearMount(){
-	Bore_d=60;
+module BD5_ShowMech(Bore_d=CenterBore_d){
+	Bearing_Z=-14.1;
+	
+	module ShowMyBalls(Bore_d=CenterBore_d){
+		Race_t=2.2;
+		Gear_OD=Bore_d+Bolt4Inset*4;
+		Race_ID=Gear_OD+1;
+		BallCircle_d=Race_ID+Race_t*2+Ball_d;
+		
+		nBalls=BP5_Calc_nBalls(BallCircle_d,Ball_d);
+		for (j=[0:nBalls-1]) rotate([0,0,360/nBalls*j]) translate([BallCircle_d/2,0,0]) color("Red") sphere(d=Ball_d);
+	} // ShowMyBalls
+
+	// ShowMyBalls(Bore_d=CenterBore_d);
+
+	rotate([0,0,180/48]) BD5_RingGear(Bore_d=Bore_d);
+	translate([0,0,Bearing_Z]) BD5_InnerRace(Bore_d=Bore_d);
+	translate([0,0,Bearing_Z+Race_w/2]) BD5_BallSpacer(Bore_d=Bore_d);
+	translate([0,0,Bearing_Z+Race_w/2]) rotate([180,0,0]) BD5_BallSpacer(Bore_d=Bore_d);
+	translate([0,0,Bearing_Z+Race_w]) rotate([180,0,0]) BD5_OuterRace(Bore_d=Bore_d);
+	
+	translate([0,0,Bearing_Z-3]) rotate([180,0,0]) BD5_TopGearMount(Bore_d=Bore_d, nBolts=6);
+	translate([0,0,Bearing_Z-3]) rotate([180,0,0]) translate([0,0,3]) BD5_TopRingGear(Bore_d=Bore_d, nTeeth=nTeethTopGear);
+	translate([0,0,Bearing_Z+Race_w/2]) ShowMyBalls(Bore_d=Bore_d);
+	
+	translate([0,GearPitch*(nTeethServoGear+nTeethTopGear)/360,-29]) 
+		rotate([0,0,180/nTeethServoGear]) BD5_ServoGear(nTeeth=nTeethServoGear);
+} // BD5_ShowMech
+
+// translate([0,0,63+31]) rotate([180,0,0]) BD5_ShowMech();
+
+
+module BD5_ServoMountingRing(Body_ID=BT137Body_ID){
+	TubeLen=21;
+	GearCenter_Y=-GearPitch*(nTeethServoGear+nTeethTopGear)/360;
+	Gear_d=37;
+	Gusset_h=8;
 	nBolts=6;
+	
+	difference(){
+		union(){
+			Tube(OD=Body_ID, ID=Body_ID-4.4, Len=TubeLen, myfn=$preview? 36:360);
+			
+			rotate([0,0,24]) 
+			hull(){
+				translate([0,-Body_ID/2+2,0]) cylinder(d=4, h=TubeLen-3);
+				translate([-1,-Body_ID/2+20.5,TubeLen-11]) cylinder(d=4, h=Gusset_h);
+			} // hull
+			
+			rotate([0,0,-50]) 
+			hull(){
+				translate([0,-Body_ID/2+2,0]) cylinder(d=4, h=TubeLen-3);
+				translate([4,-Body_ID/2+19,TubeLen-11]) cylinder(d=4, h=Gusset_h);
+			} // hull
+			
+			rotate([0,0,-36]) 
+			hull(){
+				translate([0,-Body_ID/2+2,0]) cylinder(d=4, h=TubeLen-4);
+				translate([0,-Body_ID/2+4,TubeLen-11]) cylinder(d=4, h=Gusset_h);
+			} // hull
+			
+			rotate([0,0,14]) 
+			hull(){
+				translate([0,-Body_ID/2+2,0]) cylinder(d=4, h=TubeLen-4);
+				translate([0,-Body_ID/2+5,TubeLen-11]) cylinder(d=4, h=Gusset_h);
+			} // hull
+		} // union
+		
+		translate([0,GearCenter_Y,-Overlap]) cylinder(d=Gear_d+2, h=6);
+		
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+180/nBolts]) translate([0,Body_ID/2,7.5]) rotate([-90,0,0]) Bolt4Hole();
+	} // difference
+	
+	
+	translate([0,GearCenter_Y,0]) rotate([0,0,80])
+		rotate([180,0,0]) translate([0,0,-ServoMS62TopOfWheel_z]) ServoMS62TopMount();
+} // BD5_ServoMountingRing
+
+//translate([0,0,120.1]) color("Tan") BD5_ServoMountingRing();
+	
+module RocketBody(Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, nBoosters=nBoosters){
+	MountingBlock_X=Housing_OD+2.4;
+	LTP_Z=63;
+	LTP_Mount_Z=LTP_Z-57;
+	MechMounting_Z=LTP_Z+30;
+	MountingBlockSize_Z=87;
+	nSkirtBolts=6;
+	LowerCR_Z=3.5;
+	Gear_d=37;
+	TubeLen=141+15; // 141 is top of servo ring
+	ServoRing_Z=120;
+	nServoRingBolts=6;	
+	
+	difference(){
+		union(){
+			Tube(OD=Body_OD, ID=Body_ID, Len=TubeLen, myfn=$preview? 36:360);
+			
+			// integrated coupler
+			translate([0,0,-15]) Tube(OD=Body_ID, ID=Body_ID-4.4, Len=19, myfn=$preview? 36:360);
+			Tube(OD=Body_ID+1, ID=Body_ID-4.4, Len=8, myfn=$preview? 36:360);
+			
+			// Stop for Servo Ring
+			translate([0,0,ServoRing_Z]) rotate([180,0,0]) TubeStop(InnerTubeID=Body_ID-4.4, OuterTubeOD=Body_ID+2, myfn=$preview? 36:360);
+			
+			// Stop for lower centering ring
+			translate([0,0,LowerCR_Z]) TubeStop(InnerTubeID=Body_ID-8.8, OuterTubeOD=Body_ID+2, myfn=$preview? 36:360);
+			
+			// Mounting Blocks
+			intersection(){
+				cylinder(d=BT137Body_OD-1, h=100);
+				
+				union(){
+					for (j=[0:nBoosters-1]) rotate([0,0,360/nBoosters*j]) 
+						hull(){
+							translate([-MountingBlock_X/2,Body_OD/2-27,LTP_Mount_Z]) cube([MountingBlock_X,1,MountingBlockSize_Z]);
+							translate([-MountingBlock_X/2-10,Body_OD/2,LTP_Mount_Z]) cube([MountingBlock_X+20,1,MountingBlockSize_Z]);
+						} // hull
+						
+					// key
+					translate([0,BT137Body_ID/2,MechMounting_Z-Overlap]) cylinder(d=4, h=5);
+					
+					// Mounting Face
+					translate([0,0,MechMounting_Z]) 
+						rotate([180,0,0]) TubeStop(InnerTubeID=Body_ID-4.4, OuterTubeOD=Body_OD, myfn=$preview? 36:360);
+				} // union
+			} // intersection
+			
+			// Extra room for servo gear
+			difference(){
+				translate([0,-GearPitch*(nTeethServoGear+nTeethTopGear)/360,120]) hull(){
+					cylinder(d=Gear_d+2+4.4, h=10+4.4, center=true);
+					cylinder(d=Gear_d+2, h=18+8.8, center=true);
+				}
+		
+				translate([0,0,120]) cylinder(d=Body_ID, h=30, center=true, $fn=$preview? 36:360);
+			} // difference
+		} // union
+		
+		// Servo gear goes here
+		translate([0,-GearPitch*(nTeethServoGear+nTeethTopGear)/360,120]) hull(){
+			cylinder(d=Gear_d+2, h=10, center=true);
+			cylinder(d=Gear_d, h=18, center=true);
+		}
+		
+		// Servo Ring Bolts
+		for (j=[0:nServoRingBolts-1]) rotate([0,0,360/nServoRingBolts*j+180/nServoRingBolts]) 
+			translate([0,Body_OD/2,ServoRing_Z+7.5]) rotate([-90,0,0]) Bolt4Hole();
+		
+		// Upper bolts
+		for (j=[0:nSkirtBolts-1]) rotate([0,0,360/nSkirtBolts*j+180/nSkirtBolts]) translate([0,Body_OD/2,TubeLen-7.5]) rotate([-90,0,0]) Bolt4Hole();
+		
+		// Lower integrated coupler bolts
+		for (j=[0:nSkirtBolts-1]) rotate([0,0,360/nSkirtBolts*j]) translate([0,Body_OD/2,-7.5]) rotate([-90,0,0]) Bolt4Hole();
+		
+		// Locking thrust points go here
+		for (j=[0:nBoosters-1]) rotate([0,0,360/nBoosters*j]) 
+			translate([0,Body_OD/2-11.9,LTP_Z]) rotate([-90,0,0]) BD5_LTP_Hole();
+			
+		if ($preview) translate([0,0,-50]) cube([100,100,TubeLen+60]);
+	} // difference
+	
+} // RocketBody
+
+// RocketBody();
+
+module BD5_TopGearMount(Bore_d=CenterBore_d, nBolts=6){
 	BackPlate_t=5;
 	Flange_t=3;
 	
@@ -169,71 +357,54 @@ module BB_TopGearMount(){
 		translate([0,0,-BackPlate_t]) cylinder(d=Hub_d, h=BackPlate_t+Flange_t, $fn=$preview? 90:360);
 			
 		
-		cylinder(d=Flange_ID+IDXtra, h=Flange_t+Overlap, $fn=$preview? 90:360);
+		translate([0,0,-0.6]) cylinder(d=Flange_ID, h=Flange_t+0.6+Overlap, $fn=$preview? 90:360);
+		translate([0,0,1.2]) cylinder(d=Flange_ID+IDXtra, h=1, $fn=$preview? 90:360);
+		
 		translate([0,0,-BackPlate_t-Overlap]) cylinder(d=Bore_d, h=Flange_t+BackPlate_t+Overlap*2, $fn=$preview? 90:360);
 		
 		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) translate([0,Bore_d/2+Bolt4Inset,0]) Bolt4HeadHole();
 	} // difference
 	
 	
-} // BB_TopGearMount
+} // BD5_TopGearMount
 
-//BB_TopGearMount();
+//BD5_TopGearMount();
 
-module BB_TopRingGear(){
-	Bore_d=60;
-	nBolts=6;
+module BD5_TopRingGear(Bore_d=CenterBore_d, nTeeth=nTeethTopGear){
+	// The servo gear drives this gear
 	Flange_t=3;
 	Gear_t=8;
-	BoltCircle_d=Bore_d+Bolt4Inset*2;
 	Hub_d=Bore_d+Bolt4Inset*4;
 	Flange_ID=Hub_d-6;
-	nTeeth=40;
-	
+		
 	difference(){
 		union(){
-			BB_Gear(nTeeth=nTeeth, Thickness=Gear_t);
+			BD5_Gear(nTeeth=nTeeth, Thickness=Gear_t);
 			
 			translate([0,0,-Flange_t]) cylinder(d=Flange_ID, h=Flange_t+Overlap, $fn=$preview? 90:360);
+			translate([0,0,-Flange_t+1.2]) cylinder(d=Flange_ID+IDXtra, h=1, $fn=$preview? 90:360);
 		} // union
 		
 		translate([0,0,-Flange_ID-Overlap]) cylinder(d=Bore_d-1, h=Gear_t+Flange_ID+Overlap*2, $fn=$preview? 90:360);
 		
 	} // difference
-	
-	
-} // BB_TopRingGear
+} // BD5_TopRingGear
 
-// rotate([180,0,0]) translate([0,0,3]) BB_TopRingGear();
+// rotate([180,0,0]) translate([0,0,3]) BD5_TopRingGear();
 
-module BB_RingGear(){
-/*
-	bevel_gear (
-		number_of_teeth=24,
-		cone_distance=24.037,
-		face_width=6,
-		outside_circular_pitch=300,
-		pressure_angle=22.5,
-		clearance = 0.2,
-		bore_diameter=5,
-		gear_thickness = 5,
-		backlash = 0,
-		involute_facets=5,
-		finish = bevel_gear_back_cone);
-		/**/
-		
-	Bore_d=60;
+module BD5_RingGear(Bore_d=CenterBore_d){
 	nBolts=6;
+	BoltCircle_d=Bore_d+Bolt4Inset*2;
 	BackPlate_t=3;
 	
 	difference(){
 		union(){
-			bevel_gear (
-				number_of_teeth=48,
-				cone_distance=48,
+			bevel_gear(
+				number_of_teeth=nBevelRingGearTeeth,
+				cone_distance=BevelRingGearConeDistance,
 				face_width=6,
-				outside_circular_pitch=300,
-				pressure_angle=22.5,
+				outside_circular_pitch=BevelGearPitch,
+				pressure_angle=GearPressureAngle,
 				clearance = 0.2,
 				bore_diameter=5,
 				gear_thickness = 5,
@@ -247,58 +418,21 @@ module BB_RingGear(){
 			
 		translate([0,0,-6-BackPlate_t-Overlap]) cylinder(d=Bore_d, h=30, $fn=$preview? 90:360);
 			
-		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) translate([0, Bore_d/2+Bolt4Inset, -10]) rotate([180,0,0]) Bolt4Hole(depth=BackPlate_t+3);
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) translate([0, BoltCircle_d/2, -10]) rotate([180,0,0]) Bolt4Hole(depth=BackPlate_t+3);
 	} // difference
-} // BB_RingGear
+} // BD5_RingGear
 
-/*
-translate([0,-30,0]) rotate([-90,0,0]) {rotate([0,0,180/48]) 
-BB_RingGear();
-translate([0,0,-14.1]) BB_InnerRace(); 
-translate([0,0,-14.1+5]) BB_BallSpacer();
-translate([0,0,-14.1]) BB_OuterRace();
-translate([0,0,-14.1-3]) rotate([180,0,0]) BB_TopGearMount();
-translate([0,0,-14.1-3]) rotate([180,0,0]) translate([0,0,3]) BB_TopRingGear();}
-nServoGearTeeth=20;
-translate([0,-55-3,0]) rotate([0,60,0]) translate([0,0,300*(nServoGearTeeth+40)/360]) rotate([-90,0,0])  ServoGear2(nTeeth=nServoGearTeeth);
-/**/
-	
-module ServoGear2(nTeeth=24){
-	ServoWheel_d=20.84+IDXtra*2; // MG996R
-	ServoWheel_h=4; //2.7;
-	ServoBC_r=8;
-	ServoBC2_r=8;
-	//ServoWheel_d=23.75+IDXtra*2; // HS5645MG
-	//ServoWheel_h=2.0;
-	//ServoBC_r=17/2;
-	//ServoBC2_r=20/2;
-	
-	difference(){
-		BB_Gear(nTeeth=nTeeth);
-		
-		translate([0,0,-Overlap]) cylinder(d=ServoWheel_d, h=ServoWheel_h);
-		translate([0,0,ServoWheel_h+5.3]){ // gear thickness
-			for (j=[0:1]) rotate([0,0,180*j]) translate([ServoBC_r,0,0]) Bolt4HeadHole();
-			for (j=[0:1]) rotate([0,0,180*j+90]) translate([ServoBC2_r,0,0]) Bolt4HeadHole();
-			}
-	} // difference
-} // ServoGear2
+// BD5_RingGear();
 
-//rotate([180,0,0]) ServoGear2(nTeeth=20);
-
-module BB_InnerRace(){
-	Ball_d=3/8*25.4;
-	Race_w=10;
+module BD5_InnerRace(Bore_d=CenterBore_d){
 	BoltFrame_t=5;
 	Race_t=2.2;
-	Bore_d=60;
+	
 	nBolts=6;
 	BoltCircle_d=Bore_d+Bolt4Inset*2;
 	Gear_OD=Bore_d+Bolt4Inset*4;
 	Race_ID=Gear_OD+1;
 	BallCircle_d=Race_ID+Race_t*2+Ball_d;
-	BearingPreload=-0.35;
-	
 	
 	OnePieceInnerRace(BallCircle_d=BallCircle_d, Race_ID=Race_ID, Ball_d=Ball_d, Race_w=Race_w, 
 						PreLoadAdj=BearingPreload, VOffset=0.00, BI=false, myFn=$preview? 90:720);
@@ -309,17 +443,14 @@ module BB_InnerRace(){
 		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) translate([0,BoltCircle_d/2,BoltFrame_t]) Bolt4ClearHole();
 		translate([0,0,-Overlap]) cylinder(d=Bore_d, h=BoltFrame_t+Overlap*2, $fn=$preview? 90:360);
 	} // difference
-} // BB_InnerRace
+} // BD5_InnerRace
 
-//translate([0,0,-14.1]) BB_InnerRace();
-// translate([0,0,-14.1+5])BB_BallSpacer();
+//translate([0,0,-14.1]) BD5_InnerRace();
+// translate([0,0,-14.1+5])BD5_BallSpacer();
 
-module BB_OuterRace(){
-	Ball_d=3/8*25.4;
-	Race_w=10;
+module BD5_OuterRace(Bore_d=CenterBore_d){
 	BoltFrame_t=5;
 	Race_t=2.2;
-	Bore_d=60;
 	nBolts=6;
 	
 	Gear_OD=Bore_d+Bolt4Inset*4;
@@ -328,7 +459,6 @@ module BB_OuterRace(){
 	Race_OD=BallCircle_d+Ball_d+Race_t*2;
 	BoltCircle_d=Race_OD+Bolt4Inset*2;
 	Boss_OD=Race_OD+Bolt4Inset*4;
-	BearingPreload=-0.35;
 
 	OnePieceOuterRace(BallCircle_d=BallCircle_d, Race_OD=Race_OD, Ball_d=Ball_d, Race_w=Race_w, 
 						PreLoadAdj=BearingPreload, VOffset=0.00, BI=false, myFn=$preview? 90:720);
@@ -339,24 +469,54 @@ module BB_OuterRace(){
 		translate([0,0,-Overlap]) cylinder(d=Race_OD-1, h=3+Overlap*2);
 		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) translate([0,BoltCircle_d/2,3]) Bolt4ClearHole();
 	} // difference
-} // BB_OuterRace
+} // BD5_OuterRace
 
-//translate([0,0,-14.1]) BB_OuterRace();
+//translate([0,0,-14.1]) BD5_OuterRace();
 
-module BB_BallSpacer(){
-	Ball_d=3/8*25.4;
-	Race_w=10;
-	BoltFrame_t=5;
+module BD5_OuterRaceMount(Tube_ID=BT137Body_ID, Bore_d=CenterBore_d){
 	Race_t=2.2;
-	Bore_d=60;
 	nBolts=6;
-	BoltCircle_d=Bore_d+Bolt4Inset*2;
+	Thickness=5;
 	Gear_OD=Bore_d+Bolt4Inset*4;
 	Race_ID=Gear_OD+1;
 	BallCircle_d=Race_ID+Race_t*2+Ball_d;
-
+	Race_OD=BallCircle_d+Ball_d+Race_t*2;
+	BoltCircle_d=Race_OD+Bolt4Inset*2;
+	CenterHole_d=BoltCircle_d-Bolt4Inset*2;
+	nHoles=nBolts*2;
+	LHole_d=(Tube_ID-CenterHole_d)/2-6;
 	
-	module TwoPartBoltedBallSpacer(BallCircle_d=72,Ball_d=7.9375,nBalls=14){ // 9.525
+	translate([0,0,-Thickness])
+	difference(){
+		cylinder(d=Tube_ID, h=Thickness, $fn=$preview? 90:360);
+		
+		// center hole
+		translate([0,0,-Overlap]) cylinder(d=CenterHole_d, h=Thickness+Overlap*2, $fn=$preview? 90:360);
+		
+		// key
+		translate([0,0,-Overlap]) translate([0,Tube_ID/2,0]) cylinder(d=5, h=Thickness+Overlap*2);
+		
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) translate([0,BoltCircle_d/2,Thickness]) Bolt4Hole();
+		
+		for (j=[0:nHoles-1]) rotate([0,0,360/nHoles*j+180/nHoles]) translate([0,Tube_ID/2-LHole_d/2-3,-Overlap])
+			cylinder(d=LHole_d, Thickness+Overlap*2);
+	} // difference
+} // BD5_OuterRaceMount
+
+// BD5_OuterRaceMount();
+
+module BD5_BallSpacer(Bore_d=CenterBore_d){
+	BoltFrame_t=5;
+	Race_t=2.2;
+	BoltCircle_d=Bore_d+Bolt4Inset*2;
+	
+	Gear_OD=Bore_d+Bolt4Inset*4;
+	Race_ID=Gear_OD+1;
+	BallCircle_d=Race_ID+Race_t*2+Ball_d;
+	nBalls=BP5_Calc_nBalls(BallCircle_d,Ball_d);
+	echo(nBalls=nBalls);
+
+	module TwoPartBoltedBallSpacer(BallCircle_d=72, Ball_d=7.9375, nBalls=14){ // 9.525
 		// nBalls must be even
 		Race_w=Ball_d+3.5;
 		Race_depth=Ball_d*0.6;
@@ -375,27 +535,25 @@ module BB_BallSpacer(){
 		} // diff
 	} // TwoPartBoltedBallSpacer
 	
-	TwoPartBoltedBallSpacer(BallCircle_d=BallCircle_d, Ball_d=Ball_d, nBalls=12);
-} // BB_BallSpacer
+	TwoPartBoltedBallSpacer(BallCircle_d=BallCircle_d, Ball_d=Ball_d, nBalls=nBalls);
+} // BD5_BallSpacer
 
-// BB_BallSpacer();
+// BD5_BallSpacer();
 
-module LighteningHole(H=10, W=8, L=50){
-	R=1;
-	hull(){
-		translate([0,H/2-R,0]) cylinder(r=R, h=L);
-		translate([0,-H/2+R,0]) cylinder(r=R, h=L);
-		translate([-W/2+R,0,0]) cylinder(r=R, h=L);
-		translate([W/2-R,0,0]) cylinder(r=R, h=L);
-	} // hull
-} // LighteningHole
-
-//LighteningHole();
-
-module BoosterThrustRing(MtrTube_OD=PML38Body_OD, BodyTube_OD=PML54Body_OD){
+module BD5_BoosterThrustRing(MtrTube_OD=PML38Body_OD, BodyTube_OD=PML54Body_OD){
 	OAL=BD_ThrustRing_h();
 	//echo(MtrTube_OD=MtrTube_OD);
 	
+	module LighteningHole(H=10, W=8, L=50){
+		R=1;
+		hull(){
+			translate([0,H/2-R,0]) cylinder(r=R, h=L);
+			translate([0,-H/2+R,0]) cylinder(r=R, h=L);
+			translate([-W/2+R,0,0]) cylinder(r=R, h=L);
+			translate([W/2-R,0,0]) cylinder(r=R, h=L);
+		} // hull
+	} // LighteningHole
+
 	difference(){
 		union(){
 			cylinder(d=BodyTube_OD, h=OAL, $fn=$preview? 90:360);
@@ -414,11 +572,11 @@ module BoosterThrustRing(MtrTube_OD=PML38Body_OD, BodyTube_OD=PML54Body_OD){
 		translate([0,-BodyTube_OD/2,OAL/2])
 				rotate([90,0,0]) Bolt250Hole();
 	} // difference
-} // BoosterThrustRing
+} // BD5_BoosterThrustRing
 
-//translate([0,BoosterButtonMinor_d/2,PML54Body_OD/2+BoosterButtonOA_h+Overlap]) rotate([90,0,0]) BoosterThrustRing();
+//translate([0,BoosterButtonMinor_d/2,PML54Body_OD/2+BoosterButtonOA_h+Overlap]) rotate([90,0,0]) BD5_BoosterThrustRing();
 
-module BoosterButton(XtraLen=0){
+module BD5_BoosterButton(XtraLen=0){
 	
 	module Bolt250FlatHeadHole(depth=12,lAccess=12){
 		// custom version
@@ -446,25 +604,25 @@ module BoosterButton(XtraLen=0){
 		translate([0,0,1.5]) rotate([180,0,0]) Bolt250FlatHeadHole(depth=BoosterButtonOA_h+Overlap, lAccess=12);
 		
 	} // difference
-} // BoosterButton
+} // BD5_BoosterButton
 
-// BoosterButton(XtraLen=0.3); // XtraLen=0.3 works well
+// BD5_BoosterButton(XtraLen=0.3); // XtraLen=0.3 works well
 
-module BB_ThrustPoint_Hole(Swell=-Overlap){
-	Block_w=BoosterButtonMajor_d+BB_Lock_Wall_t*2+Swell*2;
+module BD5_ThrustPoint_Hole(Swell=-Overlap){
+	Block_w=BoosterButtonMajor_d+BD5_Lock_Wall_t*2+Swell*2;
 	OAL=BoosterButtonMajor_d*3.2+Swell*2;
 	
-	translate([-Block_w/2, -BoosterButtonMajor_d/2-BB_Lock_Wall_t+Swell, -3-Swell])
-					cube([BoosterButtonMajor_d+BB_Lock_Wall_t*2+Swell*2, OAL, BoosterButtonOA_h+4]);
-} // BB_ThrustPoint_Hole
+	translate([-Block_w/2, -BoosterButtonMajor_d/2-BD5_Lock_Wall_t+Swell, -3-Swell])
+					cube([BoosterButtonMajor_d+BD5_Lock_Wall_t*2+Swell*2, OAL, BoosterButtonOA_h+4]);
+} // BD5_ThrustPoint_Hole
 
-//BB_ThrustPoint_Hole();
-//BB_ThrustPoint_Hole(Swell=IDXtra*2);
+//BD5_ThrustPoint_Hole();
+//BD5_ThrustPoint_Hole(Swell=IDXtra*2);
 
-module BB_ThrustPoint(BodyTube_OD=PML98Body_OD, BoosterBody_OD=PML54Body_OD){
+module BD5_ThrustPoint(BodyTube_OD=PML98Body_OD, BoosterBody_OD=PML54Body_OD){
 	Ramp_h=12;
 	OAL=BoosterButtonMajor_d*3.25;
-	Block_w=BoosterButtonMajor_d+BB_Lock_Wall_t*2;
+	Block_w=BoosterButtonMajor_d+BD5_Lock_Wall_t*2;
 	
 	module PostClearance1(){
 		translate([0,0,-Overlap]) cylinder(d=BoosterButtonMinor_d+IDXtra*2, h=BoosterButtonOA_h+Overlap*2);
@@ -482,14 +640,14 @@ module BB_ThrustPoint(BodyTube_OD=PML98Body_OD, BoosterBody_OD=PML54Body_OD){
 	difference(){
 		union(){
 			intersection(){
-				translate([-Block_w/2, -BoosterButtonMajor_d/2-BB_Lock_Wall_t, -3])
-					cube([BoosterButtonMajor_d+BB_Lock_Wall_t*2, OAL, BoosterButtonOA_h+6]);
+				translate([-Block_w/2, -BoosterButtonMajor_d/2-BD5_Lock_Wall_t, -3])
+					cube([BoosterButtonMajor_d+BD5_Lock_Wall_t*2, OAL, BoosterButtonOA_h+6]);
 				translate([0,-Block_w/2-Overlap,BoosterButtonOA_h-BodyTube_OD/2]) 
 					rotate([-90,0,0]) cylinder(d=BodyTube_OD+Overlap, h=OAL+Overlap*2, $fn=$preview? 90:360);
 			} // intersection
 			
-			translate([-BoosterButtonMajor_d/2-BB_Lock_Wall_t, -BoosterButtonMajor_d/2-BB_Lock_Wall_t, 0])
-				cube([BoosterButtonMajor_d+BB_Lock_Wall_t*2, 5.5, BoosterButtonOA_h+3]);
+			translate([-BoosterButtonMajor_d/2-BD5_Lock_Wall_t, -BoosterButtonMajor_d/2-BD5_Lock_Wall_t, 0])
+				cube([BoosterButtonMajor_d+BD5_Lock_Wall_t*2, 5.5, BoosterButtonOA_h+3]);
 		} // union
 		
 		translate([0,-Block_w/2-Overlap,BoosterButtonOA_h+BoosterBody_OD/2]) 
@@ -525,24 +683,23 @@ module BB_ThrustPoint(BodyTube_OD=PML98Body_OD, BoosterBody_OD=PML54Body_OD){
 		} // hull
 		
 	} // difference
-} // BB_ThrustPoint
+} // BD5_ThrustPoint
 
-//translate([0,PML98Body_OD/2-BoosterButtonOA_h,0]) rotate([-90,0,0]) BB_ThrustPoint(BodyTube_OD=BT137Body_OD, BoosterBody_OD=ULine102Body_OD);
+//translate([0,PML98Body_OD/2-BoosterButtonOA_h,0]) rotate([-90,0,0]) BD5_ThrustPoint(BodyTube_OD=BT137Body_OD, BoosterBody_OD=ULine102Body_OD);
 
-module BB_LTP_Hole(){
+module BD5_LTP_Hole(){
 	// This is the hole a locking thrust point fits in. 
-	
 	
 	rotate([180,0,0]) cylinder(d=BB6805_2RS_OD-4, h=50);
 	
-	BB_ThrustPoint_Hole(Swell=IDXtra*3);
+	BD5_ThrustPoint_Hole(Swell=IDXtra*3);
 	translate([0,0,TopOfRace-BB6805_2RS_H-IDXtra*3]) cylinder(d=Housing_OD+IDXtra*3, h=BB6805_2RS_H+17);
-	BB_LTP_BoltPattern() Bolt4Hole(depth=24);
-} // BB_LTP_Hole
+	BD5_LTP_BoltPattern() Bolt4Hole(depth=24);
+} // BD5_LTP_Hole
 
-// BB_LTP_Hole();
+// BD5_LTP_Hole();
 
-module BB_LTP_BoltPattern(){
+module BD5_LTP_BoltPattern(){
 	nBolts=6;
 	
 	for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) translate([0,RaceBC_d/2,TopOfRace+2])
@@ -550,28 +707,26 @@ module BB_LTP_BoltPattern(){
 	
 	translate([9,49,6]) children();
 	translate([-9,49,6]) children();
-} // BB_LTP_BoltPattern
+} // BD5_LTP_BoltPattern
 
-module BB_LockingThrustPoint(BodyTube_OD=PML98Body_OD, BoosterBody_OD=PML54Body_OD){	
-	
+module BD5_LockingThrustPoint(BodyTube_OD=PML98Body_OD, BoosterBody_OD=PML54Body_OD){	
+	// Ball Bearing 6805-2RS
+	//BB6805_2RS_ID=25;
+	//BB6805_2RS_OD=37;
+	//BB6805_2RS_H=7;
+
 	module TheBolts(){
-		BB_LTP_BoltPattern() Bolt4HeadHole(depth=12,lHead=22);
+		BD5_LTP_BoltPattern() Bolt4HeadHole(depth=12,lHead=22);
 	} // TheBolts
-	
-// Ball Bearing 6805-2RS
-//BB6805_2RS_ID=25;
-//BB6805_2RS_OD=37;
-//BB6805_2RS_H=7;
-
 	
 	difference(){
 		translate([0,0,TopOfRace-BB6805_2RS_H]) cylinder(d=Housing_OD, h=BB6805_2RS_H+17, $fn=$preview? 90:360);
 			
 		difference(){
-			BB_ThrustPoint_Hole();
+			BD5_ThrustPoint_Hole();
 			// Rotating lock
 			translate([0,0,TopOfRace-Overlap*3]) 
-				cylinder(d=BoosterButtonMajor_d+BB_Lock_Wall_t*2+6, h=14);
+				cylinder(d=BoosterButtonMajor_d+BD5_Lock_Wall_t*2+6, h=14);
 		}
 		
 		// conform to tube OD
@@ -593,7 +748,7 @@ module BB_LockingThrustPoint(BodyTube_OD=PML98Body_OD, BoosterBody_OD=PML54Body_
 		
 		// Rotating lock
 		translate([0,0,TopOfRace-Overlap*2]) 
-				cylinder(d=BoosterButtonMajor_d+BB_Lock_Wall_t*2+1, h=8+Overlap*2);
+				cylinder(d=BoosterButtonMajor_d+BD5_Lock_Wall_t*2+1, h=8+Overlap*2);
 		
 		// Button clearance
 		translate([0,0,-1.5-Overlap]) hull(){
@@ -603,7 +758,7 @@ module BB_LockingThrustPoint(BodyTube_OD=PML98Body_OD, BoosterBody_OD=PML54Body_
 	} // difference
 	
 	difference(){
-		BB_ThrustPoint(BodyTube_OD=BodyTube_OD, BoosterBody_OD=BoosterBody_OD);
+		BD5_ThrustPoint(BodyTube_OD=BodyTube_OD, BoosterBody_OD=BoosterBody_OD);
 		
 		// Bolt holes
 		TheBolts();
@@ -613,25 +768,25 @@ module BB_LockingThrustPoint(BodyTube_OD=PML98Body_OD, BoosterBody_OD=PML54Body_
 		
 		// Clearance for the rotating lock
 		translate([0,0,TopOfRace-Overlap]) 
-			cylinder(d=BoosterButtonMajor_d+BB_Lock_Wall_t*2+1, h=-TopOfRace+BoosterButtonMajor_h );
+			cylinder(d=BoosterButtonMajor_d+BD5_Lock_Wall_t*2+1, h=-TopOfRace+BoosterButtonMajor_h );
 	} // difference
 	
-} // BB_LockingThrustPoint
+} // BD5_LockingThrustPoint
 
-//BB_LockingThrustPoint(BodyTube_OD=BT137Body_OD, BoosterBody_OD=ULine102Body_OD);
+//BD5_LockingThrustPoint(BodyTube_OD=BT137Body_OD, BoosterBody_OD=ULine102Body_OD);
 
-
-module DrivenGearBevel(){
+module BD5_DrivenGearBevel(){
+	// Rotates the lock
 	BackOfGear_Z=-3;
 	HubThickness=5;
 	
 	difference(){
 		bevel_gear (
-			number_of_teeth=36,
-			cone_distance=54.0833,
+			number_of_teeth=nDrivenGearTeeth,
+			cone_distance=DrivenGearConeDistance,
 			face_width=6,
-			outside_circular_pitch=300,
-			pressure_angle=22.5,
+			outside_circular_pitch=BevelGearPitch,
+			pressure_angle=GearPressureAngle,
 			clearance = 0.2,
 			bore_diameter=0,
 			gear_thickness = 6,
@@ -645,38 +800,35 @@ module DrivenGearBevel(){
  
 	// hub
 	translate([0,0,BackOfGear_Z]) cylinder(d=Housing_OD, h=HubThickness);
-} // DrivenGearBevel
+} // BD5_DrivenGearBevel
 
-//DrivenGearBevel();
+// BD5_DrivenGearBevel();
 
-module DrivenGear(Hub_Len=5){
-	
-	
+module BD5_DrivenGear(Hub_Len=5){
+
 	difference(){
 		union(){
-			//BB_Gear(nTeeth=36, Thickness=6);
-			translate([0,0,Hub_Len-2]) DrivenGearBevel();
+			translate([0,0,Hub_Len-2]) BD5_DrivenGearBevel();
 			translate([0,0,-Hub_Len]) cylinder(d=BB6805_2RS_ID+3, h=Hub_Len+Overlap);
 		} // union
 		
-		translate([0,0,6]) BB_LockBoltPattern() Bolt4HeadHole(depth=6+Hub_Len);
+		translate([0,0,6]) BD5_LockBoltPattern() Bolt4HeadHole(depth=6+Hub_Len);
 		
 		// center hole
 		translate([0,0,-Hub_Len-Overlap]) cylinder(d=Race_ID, h=5+Hub_Len+Overlap*3);
 		
 		translate([0,0,-1]) rotate_extrude(angle=188, start=-4, $fn=90) translate([RaceBC_d/2-2,0,0]) square(4);
 	} // difference
-} // DrivenGear
+} // BD5_DrivenGear
 
-// DrivenGear();
+// BD5_DrivenGear();
 
-module BB_Gear(nTeeth=24, Thickness=8){
-	Pitch=300;
-	PressureAngle=20;
+module BD5_Gear(nTeeth=24, Thickness=8){
+	Pitch=GearPitch;
+	PressureAngle=GearPressureAngle;
 	Clearance=0.4;
 	
 	Backlash=0.2;
-	
 	
 	gear(number_of_teeth=nTeeth, circular_pitch=Pitch, diametral_pitch=false,
 				pressure_angle=PressureAngle, clearance = Clearance,
@@ -684,45 +836,11 @@ module BB_Gear(nTeeth=24, Thickness=8){
 				hub_thickness=Thickness, hub_diameter=15, bore_diameter=7.5, circles=0, 
 				backlash=Backlash, twist=0, 
 				involute_facets=0, flat=false);
-} // BB_Gear
+} // BD5_Gear
 
-//BB_Gear();
+// BD5_Gear();
 
-// TL Torque Limiter, WIP
-
-module TLClutchPlate(){
-	ClutchPlate_d=32;
-	
-	difference(){
-		union(){
-			cylinder(d=ClutchPlate_d, h=2.1);
-			for (j=[0:5]) rotate([0,0,60*j]) translate([ClutchPlate_d/2-3,0,0]) cylinder(d=6, h=7);
-		} // union
-		
-		translate([0,0,8]) // gear thickness
-			for (j=[0:5]) rotate([0,0,60*j]) translate([ClutchPlate_d/2-3,0,0]) Bolt4Hole();
-				
-		translate([0,0,-Overlap]) cylinder(d=22, h=13);
-	} // difference
-} // TLClutchPlate
-
-//TLClutchPlate();
-
-module TLServoGear(nTeeth=24){
-	ClutchPlate_d=32;
-	
-	difference(){
-		BB_Gear(nTeeth=nTeeth);
-		
-		translate([0,0,-Overlap]) cylinder(d=ClutchPlate_d+IDXtra*2, h=6.8);
-		translate([0,0,8]) // gear thickness
-			for (j=[0:5]) rotate([0,0,60*j]) translate([ClutchPlate_d/2-3,0,0]) Bolt4ClearHole();
-	} // difference
-} // TLServoGear
-
-//TLServoGear();
-
-module ServoGear(nTeeth=24){
+module BD5_ServoGear(nTeeth=nTeethServoGear){
 	ServoWheel_d=20.84+IDXtra*2; // MG996R
 	ServoWheel_h=4; //2.7;
 	ServoBC_r=8;
@@ -733,7 +851,7 @@ module ServoGear(nTeeth=24){
 	//ServoBC2_r=20/2;
 	
 	difference(){
-		BB_Gear(nTeeth=nTeeth);
+		BD5_Gear(nTeeth=nTeeth);
 		
 		translate([0,0,-Overlap]) cylinder(d=ServoWheel_d, h=ServoWheel_h);
 		translate([0,0,ServoWheel_h+5.3]){ // gear thickness
@@ -741,106 +859,39 @@ module ServoGear(nTeeth=24){
 			for (j=[0:1]) rotate([0,0,180*j+90]) translate([ServoBC2_r,0,0]) Bolt4HeadHole();
 			}
 	} // difference
-} // ServoGear
+} // BD5_ServoGear
 
-//ServoGear(30);
+//BD5_ServoGear();
 
-module BB_LockShaft(Len=50, nTeeth=24, Gear_z=14){
-	nBolts=3;
-	
-	End_h=8;
-	Taper_h=8;
-	
-	Stop_Len=18;
-	StopBlock_a=22.5;
-	
-	
-	difference(){
-		union(){
-			translate([0,0,Len/2-Gear_z])
-				BB_Gear(nTeeth=nTeeth);
-
-			#cylinder(d=Race_ID+6, h=Len, center=true);
-			
-			translate([0,0,-Len/2])
-				cylinder(d=BB_Lock_BallCircle_d-6*0.7, h=End_h);
-			translate([0,0,-Len/2+End_h-Overlap])
-				cylinder(d1=BB_Lock_BallCircle_d-6*0.7, d2=Race_ID+6, h=Taper_h);
-			
-			mirror([0,0,1]){
-			translate([0,0,-Len/2])
-				cylinder(d=BB_Lock_BallCircle_d-6*0.7, h=End_h);
-			translate([0,0,-Len/2+End_h-Overlap])
-				cylinder(d1=BB_Lock_BallCircle_d-6*0.7, d2=Race_ID+6, h=Taper_h);
-			}
-			
-			
-			// Hard Stops
-			translate([0,0,-Len/2+5]){
-				cube([8,Stop_Len,5]);
-				rotate([0,0,180+StopBlock_a]) mirror([1,0,0]) cube([8,Stop_Len,5]);
-			}
-		} // union
-		
-		cylinder(d=Race_ID, h=Len+Overlap*2, center=true);
-		
-		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j])
-			translate([BB_Lock_BallCircle_d/2-3-Bolt4Inset,0,Len/2])
-				rotate([180,0,0]) Bolt4HeadHole();
-		
-		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j])
-			translate([BB_Lock_BallCircle_d/2-3-Bolt4Inset,0,-Len/2])
-				Bolt4HeadHole();
-	} // difference
-} // BB_LockShaft
-
-//rotate([180,0,0]) BB_LockShaft(Len=50);
-
-module BB_LockStop(Len=50, Extra_H=2){
-	StopBlock_a=22.5;
-	Stop_Len=18;
-	
-	translate([0,0,-Len/2+5-Extra_H]) hull(){
-		translate([-Overlap, Stop_Len-4, 0]) cube([Overlap,10,5+Extra_H]);
-		rotate([0,0,StopBlock_a]) translate([0, Stop_Len-4, 0]) cube([Overlap,10,5+Extra_H]);
-	} // hull
-	
-} // BB_LockStop
-
-// BB_LockStop(Len=50, Extra_H=2);
-
-module BB_LockBoltPattern(){
+module BD5_LockBoltPattern(){
 	nBolts=3;
 	
 	for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j])
 			translate([BB6805_2RS_ID/2-Bolt4Inset,0,0]) children();
 				
-} // BB_LockBoltPattern
+} // BD5_LockBoltPattern
 
-// BB_LockBoltPattern() Bolt4HeadHole();
+// BD5_LockBoltPattern() Bolt4HeadHole();
 
-module BB_Lock(){
+module BD5_Lock(){
 	
 	difference(){
-			difference(){
-				union(){
-					translate([0,0,TopOfRace]) cylinder(d=BB6805_2RS_ID+2, h=2.5);
-					translate([0,0,TopOfRace-BB6805_2RS_H]) cylinder(d=BB6805_2RS_ID, h=BB6805_2RS_H+Overlap);
-				} // union
-				
-				translate([0,0,TopOfRace-BB6805_2RS_H-Overlap]) cylinder(d=Race_ID, h=BB6805_2RS_H+3+Overlap*3);
-			} // difference
+		difference(){
+			union(){
+				translate([0,0,TopOfRace]) cylinder(d=BB6805_2RS_ID+2, h=2.5);
+				translate([0,0,TopOfRace-BB6805_2RS_H]) cylinder(d=BB6805_2RS_ID, h=BB6805_2RS_H+Overlap);
+			} // union
+			
+			translate([0,0,TopOfRace-BB6805_2RS_H-Overlap]) cylinder(d=Race_ID, h=BB6805_2RS_H+3+Overlap*3);
+		} // difference
 		
-		// Bolt holes
-		//for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j])
-		//	translate([BB6805_2RS_ID/2-Bolt4Inset,0,0])
-		translate([0,0,TopOfRace-BB6805_2RS_H-1]) BB_LockBoltPattern() rotate([180,0,0]) Bolt4Hole();
+		translate([0,0,TopOfRace-BB6805_2RS_H-1]) BD5_LockBoltPattern() rotate([180,0,0]) Bolt4Hole();
 			
 	} // difference
 	
-	//*
+	
 	difference(){
-		translate([0,0,TopOfRace-Overlap]) cylinder(d=BoosterButtonMajor_d+BB_Lock_Wall_t*2, 2+BoosterButtonMajor_h+0.5);
+		translate([0,0,TopOfRace-Overlap]) cylinder(d=BoosterButtonMajor_d+BD5_Lock_Wall_t*2, 2+BoosterButtonMajor_h+0.5);
 		
 		// Center hole
 		translate([0,0,TopOfRace-Overlap*2]) cylinder(d=Race_ID, h=BoosterButtonMajor_h+4);
@@ -852,18 +903,13 @@ module BB_Lock(){
 				cylinder(d=BoosterButtonMajor_d+IDXtra*2, h=4+BoosterButtonMajor_h);
 		} // hull
 		
-		
 	} // difference
-	/**/
 	
-} // BB_Lock
+} // BD5_Lock
 
-// BB_Lock();
+// BD5_Lock();
 
-module BB_BearingStop(){
-	// Only used with ball bearing
-	
-	nBolts=3;
+module BD5_BearingStop(){	
 	
 	difference(){
 		cylinder(d=BB6805_2RS_ID+3, h=2);
@@ -871,14 +917,14 @@ module BB_BearingStop(){
 		translate([0,0,-Overlap]) cylinder(d=Race_ID, h=2+Overlap*2);
 		
 		// Bolt holes
-		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j])
-			translate([BB_Lock_BallCircle_d/2-3-Bolt4Inset,0,-Overlap])
+		BD5_LockBoltPattern()
+			translate([0,0,-Overlap])
 				rotate([180,0,0]) Bolt4ClearHole();
 	} // difference
 	
-} // BB_BearingStop
+} // BD5_BearingStop
 
-// BB_BearingStop(); // Only used with ball bearing
+// BD5_BearingStop(); // Only used with ball bearing
 
 
 

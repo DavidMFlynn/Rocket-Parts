@@ -3,18 +3,19 @@
 // David M. Flynn
 // Filename: LD-20MGServoLib.scad
 // Created: 7/16/2018
-// Rev: 1.2.3  4/27/2023
+// Rev: 1.3.0  9/10/2025
 // Units: millimeters
 // **************************************************
 // History:
-	echo("LD-20MGServoLib 1.2.2");
-// 1.2.3 4/27/2023  Added ServoHX5010TopBlock
-// 1.2.2 8/24/2020	Added Xtra_h=0, range is -2..lots to ServoTray_HX5010_2
-// 1.2.1 12/16/2019	ServoTray_HX5010_2(); for tight spaces
-// 1.2.0 12/15/2019	added ServoTray_HX5010(UseH_Slots=false) and ServoTray_HX5010Holes(UseH_Slots=false)
-// 1.1.1 9/29/2019 Added extra width and height to Servo_HX5010
-// 1.1.0 9/27/2019 Added HX5010 servo
-// 1.0.0 7/16/2018 Coppied from HS-5245MGServoLib.scad
+	echo("LD-20MGServoLib 1.3.0");
+// 1.3.0  9/10/2025   Added MS62 servo
+// 1.2.3  4/27/2023   Added ServoHX5010TopBlock
+// 1.2.2  8/24/2020   Added Xtra_h=0, range is -2..lots to ServoTray_HX5010_2
+// 1.2.1  12/16/2019  ServoTray_HX5010_2(); for tight spaces
+// 1.2.0  12/15/2019  added ServoTray_HX5010(UseH_Slots=false) and ServoTray_HX5010Holes(UseH_Slots=false)
+// 1.1.1  9/29/2019   Added extra width and height to Servo_HX5010
+// 1.1.0  9/27/2019   Added HX5010 servo
+// 1.0.0  7/16/2018   Coppied from HS-5245MGServoLib.scad
 // **************************************************
 // Notes:
 //  Mounting of R/C mini servo HS-5245MG.
@@ -25,6 +26,8 @@
 // rotate([90,0,0]) ServoTray_HX5010_2(Xtra_h=2, UseH_Slots=false);
 // **************************************************
 // Routines
+//  ServoMS62TopHole();
+//  ServoMS62TopMount(ExtraWidth=3, ExtraLen=3);
 //	Servo_LD20MG(BottomMount=false,TopAccess=false);
 //  Servo_HX5010(BottomMount=false,TopAccess=false,Xtra_w=1.2, Xtra_h=1);
 //  ServoHX5010TopBlock(Xtra_Len=4, Xtra_Width=4, Xtra_Height=0);
@@ -35,6 +38,53 @@
 include<CommonStuffSAEmm.scad>
 
 $fn=90;
+
+
+ServoMS62Body_w=20.5;
+ServoMS62Body_l=40.5;
+ServoMS62Body_h=43;
+ServoMS62Ear_z=28;		// bottom of servo to bottom of ear
+ServoMS62Ear_t=3.3;	
+ServoMS62Ear_l=55;
+ServoMS62Body_Top=11.5; // top of ears to mid shaft
+ServoMS62Bolt_w=10;
+ServoMS62Bolt_l=49;
+ServoMS62ShaftOffset=10; // center to output shaft
+ServoMS62TopOfWheel_z=50; // bottom of servo to top of wheel
+
+module ServoMS62TopHole(){
+	translate([-ServoMS62Body_w/2, -ServoMS62Body_l/2-ServoMS62ShaftOffset, 0]) 
+		cube([ServoMS62Body_w, ServoMS62Body_l, ServoMS62Body_h]);
+		
+	translate([-ServoMS62Body_w/2,-ServoMS62Ear_l/2-ServoMS62ShaftOffset,ServoMS62Ear_z])
+		cube([ServoMS62Body_w,ServoMS62Ear_l,ServoMS62Ear_t]);
+		
+	translate([0,-ServoMS62ShaftOffset,ServoMS62Ear_z]) {
+		translate([-ServoMS62Bolt_w/2,-ServoMS62Bolt_l/2,0]) rotate([180,0,0]) Bolt4Hole();
+		translate([ServoMS62Bolt_w/2,-ServoMS62Bolt_l/2,0]) rotate([180,0,0]) Bolt4Hole();
+		translate([-ServoMS62Bolt_w/2,ServoMS62Bolt_l/2,0]) rotate([180,0,0]) Bolt4Hole();
+		translate([ServoMS62Bolt_w/2,ServoMS62Bolt_l/2,0]) rotate([180,0,0]) Bolt4Hole();
+		
+		hull(){
+			translate([0,0,ServoMS62Ear_t]) cube([2,ServoMS62Ear_l,Overlap], center=true);
+			translate([0,0,ServoMS62Ear_t]) cube([2,ServoMS62Body_l,4], center=true);
+		} // hull
+	} // translate
+} // ServoMS62TopHole
+
+// ServoMS62TopHole();
+
+module ServoMS62TopMount(ExtraWidth=3, ExtraLen=3){
+	difference(){
+		translate([-(ServoMS62Body_w+ExtraWidth)/2, -(ServoMS62Ear_l+ExtraLen)/2-ServoMS62ShaftOffset, ServoMS62Ear_z+1]) 
+			cube([ServoMS62Body_w+ExtraWidth, ServoMS62Ear_l+ExtraLen, 10]);
+			
+		ServoMS62TopHole();
+	} // difference
+} // ServoMS62TopMount
+
+// ServoMS62TopMount();
+
 
 module Servo_LD20MG(BottomMount=true,TopAccess=true){
 	Servo_Shaft_Offset=9.85; // this moves double
