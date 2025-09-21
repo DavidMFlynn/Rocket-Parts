@@ -3,7 +3,7 @@
 // Filename: Fins.scad
 // by David M. Flynn
 // Created: 6/11/2022 
-// Revision: 1.1.6  8/31/2025
+// Revision: 1.1.7  9/21/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-function FinsRev()="Fins 1.1.6";
+function FinsRev()="Fins 1.1.7";
 echo(FinsRev());
+// 1.1.7  9/21/2025  Changed TrapFin3Slots tighter by 0.2mm
 // 1.1.6  8/31/2025  Added TipBase parameter for rockets that sit on their fins.
 // 1.1.5  8/10/2025  Changed TrapFin3Slots tighter by 0.2mm
 // 1.1.4  7/12/2025  TrapFin3Slots() now calculates the slot depth.
@@ -209,8 +210,9 @@ module TrapFin2Tail(Post_h=5, Root_L=150, Root_W=10, Chamfer_L=18){
 
 module TrapFin3Tail(Post_h=5, Root_L=150, Root_W=10, Chamfer_L=18){
 	Edge_r=1;
+	Offset_r=0.1; // make socket bigger by this much
 	
-	linear_extrude(height=Post_h) offset(r=IDXtra)
+	linear_extrude(height=Post_h) offset(r=Offset_r)
 			hull(){
 				translate([0,Root_L/2-Chamfer_L,0]) Fin_BluntOgiveShape(L=Chamfer_L, W=Root_W, Tip_R=Edge_r);
 				translate([0,-Root_L/2+Chamfer_L,0]) rotate([0,0,180]) Fin_BluntOgiveShape(L=Chamfer_L, W=Root_W, Tip_R=Edge_r);
@@ -230,7 +232,7 @@ module TrapFin2Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_
 // TrapFin2Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18);
 
 module TrapFin3Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18){
-	LengthComp=1.1;
+	LengthComp=0.5; // was 1.1 too loose
 	BottomOfSlot=sqrt((Tube_OD/2)*(Tube_OD/2)-(Root_W/2)*(Root_W/2))-Post_h;
 	//echo(BottomOfSlot=BottomOfSlot);
 

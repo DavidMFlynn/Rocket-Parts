@@ -3,7 +3,7 @@
 // Filename: FinCan2Lib.scad
 // by David M. Flynn
 // Created: 12/24/2023 
-// Revision: 0.9.12  8/19/2025
+// Revision: 0.9.13  9/21/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,9 +12,10 @@
 //
 //  ***** History *****
 //
-function FinCan2LibRev()="FinCan2Lib 0.9.12";
+function FinCan2LibRev()="FinCan2Lib 0.9.13";
 echo(FinCan2LibRev());
 //
+// 0.9.13  9/21/2025  Fewer facets floor(d)*3
 // 0.9.12  8/19/2025  Added parameters AftClosure_OD=0, AftClosure_Len=0
 // 0.9.11  1/5/2025   Added parameters Coupler_Len and nCouplerBolts to FC2_FinCan()
 // 0.9.10  12/18/2024 Added Ogive tail cone option
@@ -105,7 +106,8 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_ID=0, Can_Le
 	MotorTubeHole_d=MotorTube_OD+MotorTubeHoleIDXtra;
 	FinInset_Len=(Can_Len-Fin_Root_L)/2;
 	FB_Xtra_Fwd=HasIntegratedCoupler? Coupler_Len:0;
-	BigTubeFn=(Body_OD>130)? 720:360;
+	BigTubeFn=floor(Body_OD)*3; // was (Body_OD>130)? 720:360;
+	SmallTubeFn=floor(MotorTubeHole_d)*3;
 	MyCoupler_ID=(Coupler_ID>0)? Coupler_ID:Body_ID-4;
 	
 	MyAftClosure_OD=(AftClosure_OD==0)? MotorTubeHole_d:AftClosure_OD+IDXtra*2;
@@ -117,14 +119,14 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_ID=0, Can_Le
 			
 			// Motor Tube Sleeve
 			if (HasMotorSleeve)
-			Tube(OD=MotorTubeHole_d+Wall_t*2, ID=MotorTubeHole_d, Len=Can_Len, myfn=$preview? 36:360);
+			Tube(OD=MotorTubeHole_d+Wall_t*2, ID=MotorTubeHole_d, Len=Can_Len, myfn=$preview? 36:SmallTubeFn);
 			
 			// integrated coupler
 			if (HasIntegratedCoupler){
 				translate([0,0,Can_Len-Overlap]){
 					Tube(OD=Body_ID-IDXtra, ID=MyCoupler_ID, Len=Coupler_Len+Overlap, myfn=$preview? 90:BigTubeFn);
 					if (HasMotorSleeve)
-						Tube(OD=MotorTubeHole_d+Wall_t*2, ID=MotorTubeHole_d, Len=Coupler_Len+Overlap, myfn=$preview? 36:360);
+						Tube(OD=MotorTubeHole_d+Wall_t*2, ID=MotorTubeHole_d, Len=Coupler_Len+Overlap, myfn=$preview? 36:SmallTubeFn);
 				}
 				difference(){
 					translate([0,0,Can_Len-5])
@@ -137,10 +139,10 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_ID=0, Can_Le
 				translate([0,0,-Coupler_Len]){
 					Tube(OD=Body_ID-IDXtra, ID=MyCoupler_ID, Len=Coupler_Len+Overlap, myfn=$preview? 90:BigTubeFn);
 					if (HasMotorSleeve)
-						Tube(OD=MotorTubeHole_d+Wall_t*2, ID=MotorTubeHole_d, Len=Coupler_Len+Overlap, myfn=$preview? 36:360);
+						Tube(OD=MotorTubeHole_d+Wall_t*2, ID=MotorTubeHole_d, Len=Coupler_Len+Overlap, myfn=$preview? 36:SmallTubeFn);
 				}
 				difference(){
-					Tube(OD=Body_OD-1, ID=MyCoupler_ID, Len=5, myfn=$preview? 36:360);
+					Tube(OD=Body_OD-1, ID=MyCoupler_ID, Len=5, myfn=$preview? 90:BigTubeFn);
 					translate([0,0,-Overlap]) cylinder(d2=Body_OD-Wall_t*2, d1=MyCoupler_ID-1, h=5);
 				} // difference
 			} // HasAftIntegratedCoupler
@@ -178,7 +180,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_ID=0, Can_Le
 				
 				// Remove outside of HasIntegratedCoupler
 				if (FB_Xtra_Fwd>0)
-					translate([0,0,Can_Len]) Tube(OD=Body_OD+1, ID=Body_ID-1, Len=Coupler_Len+Overlap, myfn=$preview? 36:360);
+					translate([0,0,Can_Len]) Tube(OD=Body_OD+1, ID=Body_ID-1, Len=Coupler_Len+Overlap, myfn=$preview? 36:BigTubeFn);
 					
 			} // difference
 			

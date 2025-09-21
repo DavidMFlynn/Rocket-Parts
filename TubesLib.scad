@@ -216,14 +216,19 @@ PML38Coupler_ID=1.40*25.4;
 PML29Body_OD=32.3; // messured old tube
 PML29Body_ID=29.1;
 
+LOC54Body_OD=57.0;
+LOC54Body_ID=55.3;
+LOC54Coupler_OD=LOC54Body_ID-0.25;
+
 Estes65Body_OD=66.6; // Same ID as LOC
 LOC65Body_OD=67.6;
 LOC65Body_ID=65;
 LOC65Coupler_OD=64.8;
 LOC65Coupler_ID=63.3;
 
-LOC29Body_OD=30.9;
+LOC29Body_OD=30.7;
 LOC29Body_ID=29;
+
 
 
 module TwistLockMale(OD=BT38Coupler_OD, nLocks=5, Inset=3, LockSize=2){

@@ -169,9 +169,11 @@ module SE_R38SpringBottom(OD=ULine38Coupler_OD){
 
 // SpringBottom();
 
-module SE_R38SlidingSmallSpringMiddle(OD=ULine38Coupler_OD){
-	Len=30;
-
+module SE_R38SlidingSmallSpringMiddle(OD=ULine38Coupler_OD, Len=30, nRopes=0){
+	Wall_t=1.2;
+	Base_t=2.4;
+	Rope_d=3;
+	
 	Spring_OD=SE_Spring3670_OD();
 	Spring_ID=SE_Spring3670_ID();
 	SpringHole_H=SE_Spring3670_CBL();
@@ -179,18 +181,32 @@ module SE_R38SlidingSmallSpringMiddle(OD=ULine38Coupler_OD){
 	difference(){
 		cylinder(d=OD, h=Len);
 		
+		if (OD>40) difference(){
+			translate([0,0,Base_t]) cylinder(d=OD-Wall_t*2, h=Len-Base_t+Overlap*2);
+			
+			translate([0,0,Base_t-Overlap]) cylinder(d=Spring_OD+1+Wall_t*2, h=Len-Base_t+Overlap*4);
+		} // difference
+		
+		// center hole
 		translate([0,0,-Overlap]) cylinder(d=Spring_ID, h=Len+Overlap*2);
 		
+		// bottom spring hole
+		translate([0,0,-Overlap]) cylinder(d=Spring_OD, h=Len/2-1+Overlap);
+		translate([0,0,-Overlap]) cylinder(d1=Spring_OD+1, d2=Spring_OD, h=Len/2-3.5);
 		
-		translate([0,0,-Overlap]) cylinder(d=Spring_OD, h=SpringHole_H+Overlap);
-		translate([0,0,-Overlap]) cylinder(d1=Spring_OD+1, d2=Spring_OD, h=SpringHole_H-2.5);
+		// top spring hole
+		translate([0,0,Len/2+1]) cylinder(d=Spring_OD, h=Len/2-1+Overlap);
+		translate([0,0,Len/2+3.5]) cylinder(d2=Spring_OD+1, d1=Spring_OD, h=Len/2-3.5+Overlap);
 		
-		translate([0,0,Len-SpringHole_H]) cylinder(d=Spring_OD, h=SpringHole_H+Overlap);
-		translate([0,0,Len-SpringHole_H+2.5]) cylinder(d2=Spring_OD+1, d1=Spring_OD, h=SpringHole_H-2.5+Overlap);
+		// Rope holes
+		if (nRopes>0) for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) 
+			translate([0,OD/2-Wall_t-Rope_d/2-1,-Overlap]) cylinder(d=Rope_d, h=Base_t+Overlap*2);
+		
 	} // difference
-} // SlidingSmallSpringMiddle
+} // SE_R38SlidingSmallSpringMiddle
 
-// SlidingSmallSpringMiddle();
+// SE_R38SlidingSmallSpringMiddle(OD=LOC54Coupler_OD, Len=25, nRopes=3);
+// SE_R38SlidingSmallSpringMiddle(OD=LOC54Coupler_OD, Len=30);
 
 module SE_SpringSeat(Body_OD=BT54Coupler_ID, Base_H=14){
 	ST_DSpring_CBL=Spring_CS4323_CBL;
@@ -674,18 +690,18 @@ module SE_SlidingBigSpringMiddle(OD=BT137Coupler_OD, SliderLen=50, Extension=0){
 // SE_SlidingBigSpringMiddle(OD=ULine157Coupler_OD, SliderLen=50, Extension=0);
 
 
-module SE_SlidingSpringMiddle(OD=BT98Coupler_OD, nRopes=6, SliderLen=40, SpLen=40, SpringStop_Z=20, UseSmallSpring=true){
+module SE_SlidingSpringMiddle(OD=BT98Coupler_OD, Wall_t=2.2, nRopes=6, SliderLen=40, SpLen=40, SpringStop_Z=20, UseSmallSpring=true){
 // costom version of ST_SpringMiddle()
 
 	Spring_OD=UseSmallSpring? Spring_CS4323_OD:Spring_CS11890_OD;
 	Spring_ID=UseSmallSpring? Spring_CS4323_ID:Spring_CS11890_ID;
 	
 	// Outside spring tube
-	Tube(OD=Spring_OD+IDXtra*3+4.4, ID=Spring_OD+IDXtra*3, 
+	Tube(OD=Spring_OD+IDXtra*3+Wall_t*2, ID=Spring_OD+IDXtra*3, 
 			Len=SpLen, myfn=$preview? 90:360);
 			
 	// Inside spring tube
-	Tube(OD=Spring_ID-0.5, ID=Spring_ID-0.5-4.4, 
+	Tube(OD=Spring_ID-0.5, ID=Spring_ID-0.5-Wall_t*2, 
 			Len=SpLen, myfn=$preview? 90:360);
 			
 	// Spring stop
@@ -693,7 +709,7 @@ module SE_SlidingSpringMiddle(OD=BT98Coupler_OD, nRopes=6, SliderLen=40, SpLen=4
 			Len=3, myfn=$preview? 90:360);
 		
 	// Sliding tube
-	Tube(OD=OD, ID=OD-4.4, Len=SliderLen, myfn=$preview? 90:360);
+	Tube(OD=OD, ID=OD-Wall_t*2, Len=SliderLen, myfn=$preview? 90:360);
 	
 	
 	ConeLen=OD/3;

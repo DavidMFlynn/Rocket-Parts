@@ -66,14 +66,14 @@ function BP5_Calc_nBalls(BallCircle_d=50,Ball_d=6)=floor(BallCircle_d*PI / (Ball
 //  ***** for Viewing *****
 //
 // BD5_ShowLockingThrustPoint();
-// ShowRocketBody();
+// ShowRocketBody(Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, nBoosters=nBoosters);
 // BD5_ShowMech(Bore_d=CenterBore_d);
 //
 /*
   //for (j=[0:nBoosters-1]) rotate([0,0,360/nBoosters*j])
   translate([0,BT137Body_OD/2-12.4,63]) rotate([-90,0,0]) BD5_ShowLockingThrustPoint(ShowLocked=false);
   translate([0,0,120.1]) color("Tan") BD5_ServoMountingRing();
-  ShowRocketBody();
+  ShowRocketBody(Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, nBoosters=nBoosters);
   translate([0,0,63+31]) rotate([180,0,0]) BD5_ShowMech();
   translate([0,0,63+35]) BD5_OuterRaceMount();
 /**/

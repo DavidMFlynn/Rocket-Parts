@@ -3,7 +3,7 @@
 // Filename: PetalDeploymentLib.scad
 // by David M. Flynn
 // Created: 10/22/2023 
-// Revision: 0.9.13  5/13/2025
+// Revision: 0.9.14  9/14/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -18,8 +18,9 @@
 //
 //  ***** History *****
 //
-function PetalDeploymentLibRev()="PetalDeploymentLib Rev. 0.9.13";
+function PetalDeploymentLibRev()="PetalDeploymentLib Rev. 0.9.14";
 echo(PetalDeploymentLibRev());
+// 0.9.14  9/14/2025  Allows thinner walled petals
 // 0.9.13  5/13/2025  Removed petal stop for easier printing (test).
 // 0.9.12  1/27/2025  Added PD_PetalHolder
 // 0.9.11  1/25/2025  Fixed AntiClimber_h position calculation.
@@ -491,9 +492,16 @@ module PD_Petals2(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_
 			}
 		
 		// Cut here
-		for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*(j+0.5)])
-			translate([0, OD/2, Len/2+BaseOffset]) 
-				cube([2, Wall_t*2-2.4, Len+Overlap*2], center=true); // leave 1.2mm
+		if (Wall_t>1.6){
+			for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*(j+0.5)])
+				translate([0, OD/2, Len/2+BaseOffset]) 
+					cube([2, Wall_t*2-2.4, Len+Overlap*2], center=true); // leave 1.2mm
+		} else {
+			for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*(j+0.5)])
+				translate([0, OD/2, Len/2+BaseOffset]) 
+					cube([2, 0.6, Len+Overlap*2], center=true); // cut 0.6
+		
+		}
 	} // difference
 } // PD_Petals2
 
@@ -923,6 +931,20 @@ module PD_PetalHub(OD=BT75Coupler_OD,
 } // PD_PetalHub
 
 //PD_PetalHub(OD=BT75Coupler_OD, nPetals=3, ShockCord_a=ShockCord_a);
+/*
+PD_PetalHub(OD=LOC54Coupler_OD, 
+					nPetals=3, 
+					HasReplaceableSpringHolder=false,
+					HasBolts=true,
+					nBolts=0, // Same as nPetals
+					ShockCord_a=-1,
+					HasNCSkirt=false, 
+						Body_OD=BT75Body_OD,
+						Body_ID=BT75Body_ID,
+						NC_Base=NC_Base, 
+						SkirtLen=10, 
+					CenterHole_d=15, nRopes=0);
+/**/
 /*
 difference(){
 	union(){

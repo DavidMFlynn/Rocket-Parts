@@ -47,6 +47,7 @@ echo(BatteryHolderLibRev());
 // RocketServoHolderRevC(IsDouble=true);
 //
 // BlueRavenMount();
+// FW_MagSw_Mount(HasMountingEars=false);
 //
 // ***********************************
 //  ***** Routines *****
@@ -61,6 +62,8 @@ echo(BatteryHolderLibRev());
 //
 //  SingleBatteryPocket(ShowBattery=true);
 //  DoubleBatteryPocket(ShowBattery=true);
+//
+//  FW_MagSw_BoltPattern() Bolt4Hole();
 //
 // ***********************************
 //  ***** for Viewing *****
@@ -144,6 +147,54 @@ module BlueRavenMount(){
 } // BlueRavenMount
 
 //BlueRavenMount();
+
+FW_MagSw_BoltSpace_X=6.5;
+FW_MagSw_BoltSpace_Y=11;
+FW_MagSw_PCB_X=13.75;
+FW_MagSw_PCB_Y=18.4;
+FW_MagSw_PCB_Z=1.6;
+
+module FW_MagSw_BoltPattern(){
+	translate([FW_MagSw_BoltSpace_X/2, -FW_MagSw_BoltSpace_Y/2, 0]) children();
+	translate([-FW_MagSw_BoltSpace_X/2, -FW_MagSw_BoltSpace_Y/2, 0]) children();
+	translate([-FW_MagSw_BoltSpace_X/2, FW_MagSw_BoltSpace_Y/2, 0]) children();
+} // FW_MagSw_BoltPattern
+
+// FW_MagSw_BoltPattern() Bolt4Hole();
+
+module FW_MagSw_Mount(HasMountingEars=false){
+	Wall_t=1.6;
+	OAH=4;
+	Base_t=OAH-FW_MagSw_PCB_Z; // for #4-40x 3/16" screws
+	
+	module BoltBoss(){
+		cylinder(d=6, h=Base_t);
+	} // BoltBoss
+	
+	difference(){
+		union(){
+			difference(){
+				RoundRect(X=FW_MagSw_PCB_X+Wall_t*2, Y=FW_MagSw_PCB_Y+Wall_t*2, Z=OAH, R=Wall_t);
+				translate([0,0,Wall_t]) RoundRect(X=FW_MagSw_PCB_X+IDXtra, Y=FW_MagSw_PCB_Y+IDXtra, Z=OAH, R=0.1);
+			} // difference
+			FW_MagSw_BoltPattern() BoltBoss();
+			
+			if (HasMountingEars) hull(){
+				translate([(FW_MagSw_PCB_X+Wall_t*2)/2+Bolt4Inset,0,0]) cylinder(d=8, h=Wall_t);
+				translate([-(FW_MagSw_PCB_X+Wall_t*2)/2-Bolt4Inset,0,0]) cylinder(d=8, h=Wall_t);
+			} // hull
+		} // union
+	
+		translate([0,0,OAH]) FW_MagSw_BoltPattern() Bolt4Hole();
+		
+		if (HasMountingEars) {
+				translate([(FW_MagSw_PCB_X+Wall_t*2)/2+Bolt4Inset,0,Wall_t]) Bolt4ClearHole();
+				translate([-(FW_MagSw_PCB_X+Wall_t*2)/2-Bolt4Inset,0,Wall_t]) Bolt4ClearHole();
+			} // if
+	} // difference
+} // FW_MagSw_Mount
+
+// FW_MagSw_Mount(HasMountingEars=false);
 
 module MiniBoosterEBay(OD=BT54Body_OD, Coupler_OD=BT54Body_ID, ID=BT54Coupler_ID){
 	Base_t=3;
