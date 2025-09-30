@@ -52,6 +52,8 @@ echo(AltBayRev());
 // ***********************************
 //  ***** Routines *****
 //
+//  AltPCB();
+//
 //  AltHoles() Bolt4Hole(); // Altimeter mounting holes. 
 //  AltDoorHole54(Tube_OD=PML54Body_OD, DoorXtra_Y=0);
 //
@@ -92,11 +94,15 @@ $fn=$preview? 24:90;
 
 Alt_X=33.2;
 Alt_Y=91.5;
+function MC_Size_Z()=Alt_Y;
 AltPCB_h=1.6;
 AltHoles_X=28;
 AltHoles_Y=86.35;
+function MC_HoleSpace_Z()=AltHoles_Y;
 AltArmingScrew_Y=19;
+function MC_ArmingScrew_Z()=AltArmingScrew_Y;
 AltLED_Y=35;
+function MC_LED_Z()=AltLED_Y;
 
 Alt54Door_Y=Alt_Y+14;
 Alt54Door_X=Alt_X+5;

@@ -3,7 +3,7 @@
 // Filename: FinCan2Lib.scad
 // by David M. Flynn
 // Created: 12/24/2023 
-// Revision: 0.9.13  9/21/2025
+// Revision: 0.9.14  9/23/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,9 +12,10 @@
 //
 //  ***** History *****
 //
-function FinCan2LibRev()="FinCan2Lib 0.9.13";
+function FinCan2LibRev()="FinCan2Lib 0.9.14";
 echo(FinCan2LibRev());
 //
+// 0.9.14  9/23/2025  Added FC2_FinCanLight()
 // 0.9.13  9/21/2025  Fewer facets floor(d)*3
 // 0.9.12  8/19/2025  Added parameters AftClosure_OD=0, AftClosure_Len=0
 // 0.9.11  1/5/2025   Added parameters Coupler_Len and nCouplerBolts to FC2_FinCan()
@@ -326,14 +327,14 @@ module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 					rotate([180,0,0]) hull() OgiveTailCone(Ogive_L=Ogive_Len, Body_D=Body_OD, End_D=Cut_d, Wall_T=2.4);
 				}
 			}else{
-			hull(){
-				translate([0,0,-Cone_Len]) cylinder(d=Base_d, h=2, $fn=$preview? 90:360);
-				
-				difference(){
-					rotate_extrude($fn=$preview? 90:360) translate([Body_OD/2-Tail_r,0,0]) circle(r=Tail_r);
-					translate([0,0,Overlap]) cylinder(d=Body_OD+1,h=50);
-				}
-			} // hull
+				hull(){
+					translate([0,0,-Cone_Len]) cylinder(d=Base_d, h=2, $fn=$preview? 90:360);
+					
+					difference(){
+						rotate_extrude($fn=$preview? 90:360) translate([Body_OD/2-Tail_r,0,0]) circle(r=Tail_r);
+						translate([0,0,Overlap]) cylinder(d=Body_OD+1,h=50);
+					}
+				} // hull
 			}
 			
 			if (!Ogive)
@@ -360,32 +361,30 @@ module FC2_TailCone(Body_OD=BT98Body_OD, MotorTube_OD=BT54Body_OD,
 				translate([0,0,-Overlap]) cylinder(d=Body_OD-HollowWall_t*2, h=FinInset_Len+FinAlignment_Len+Overlap*2, $fn=$preview? 90:360);
 			} // union
 		
-			if (!Ogive)
 			translate([0,0,-Cone_Len-Overlap]) 
 				cylinder(d=MotorTubeHole_d+HollowWall_t*2, h=Cone_Len+Tail_r+FinInset_Len+FinAlignment_Len+Overlap*2);
 			
-			if (!Ogive)
 			if (Threaded) {
 				translate([0,0,-Cone_Len-Overlap]) cylinder(d=Body_OD, h=Nut_Len+HollowWall_t+Overlap);
 			} else {
-				translate([0,0,-Cone_Len-Overlap]) cylinder(d=Body_OD, h=MotorRetainer_Len+HollowWall_t+Overlap);
+				//translate([0,0,-Cone_Len-Overlap]) cylinder(d=Body_OD, h=MotorRetainer_Len+HollowWall_t+Overlap);
 			}
 			
+			/*
 			// Fin Boxes
-			if (!Ogive)
 			for (j=[0:nFins]) rotate([0,0,360/nFins*j+180/nFins]) 
 				translate([-FinBox_W/2,0,-Cone_Len]) 
 					cube([FinBox_W, Body_OD/2, Cone_Len+Tail_r+FinInset_Len+FinAlignment_Len+Overlap*2]);		
-	
+			/**/
 		} // difference
 		
-		
+		/*
 		// Fin slots, just incase the fins protrude into the tailcone
 		translate([0,0,Fin_Root_L/2+FinInset_Len])
 			TrapFin2Slots(Tube_OD=Body_OD, nFins=nFins, Post_h=Fin_Post_h, 
 							Root_L=Fin_Root_L, Root_W=Fin_Root_W, Chamfer_L=Fin_Chamfer_L);
 		
-		
+		/**/
 		// Motor tube hole
 		if (Ogive){
 			translate([0,0,-Cut_Z-Overlap]) 
@@ -428,10 +427,10 @@ FC2_TailCone(Body_OD=ULine203Body_OD, MotorTube_OD=BT75Body_OD,
 				MakeHollow=true, Extra_OD=0, Ogive=true, Ogive_Len=240, OgiveCut_d=BT75Body_OD+8);
 /**/			
 /*
-rotate([180,0,0]) FC2_TailCone(Body_OD=BT75Body_OD, MotorTube_OD=BT54Body_OD,
+rotate([180,0,0]) FC2_TailCone(Body_OD=BT75Body_OD, MotorTube_OD=BT38Body_OD,
 				nFins=5,
 				Fin_Root_W=12, Fin_Root_L=100, Fin_Post_h=10, Fin_Chamfer_L=22,
-				Threaded=true, Cone_Len=40, Interface_OD=BT75Body_ID, FinInset_Len=5, MakeHollow=false, Extra_OD=2);
+				Threaded=false, Cone_Len=40, Interface_OD=BT75Body_ID, FinInset_Len=5, MakeHollow=true, Extra_OD=2);
 /**/
 /*
 FC2_TailCone(Body_OD=ULine203Body_OD, MotorTube_OD=BT75Body_OD,
@@ -530,10 +529,296 @@ difference(){
 /**/
 
 
+module FC2_FinCanLight(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
+				MotorTube_OD=BT54Body_OD,
+				nFins=5, HasIntegratedCoupler=true, HasFwdCenteringRing=false, Coupler_Len=10, nCouplerBolts=0,
+				HasMotorSleeve=true,
+				Fin_Root_W=14, Fin_Root_L=130, Fin_Post_h=14, Fin_Chamfer_L=32,
+				Cone_Len=65, ThreadedTC=false, Extra_OD=0,
+				LowerHalfOnly=false, UpperHalfOnly=false, 
+				Wall_t=1.2,
+				AftClosure_OD=0, AftClosure_Len=0, IncludeCenteringRings=false){
+				
+// This is a lighter version for small rockets.
+	MinCWall_t=1.8;
+	RailButton_Z=6.5;
+	FinBox_W=Fin_Root_W+IDXtra*2+Wall_t*2;
+	MotorTubeHole_d=MotorTube_OD+MotorTubeHoleIDXtra;
+	FinInset_Len=(Can_Len-Fin_Root_L)/2;
+	FB_Xtra_Fwd=HasIntegratedCoupler? Coupler_Len:0;
+	
+	BigTubeFn=floor(Body_OD)*3;
+	SmallTubeFn=floor(MotorTubeHole_d)*3;
+	MyCoupler_ID=(Wall_t<MinCWall_t)? Body_ID-MinCWall_t*2:Body_ID-Wall_t*2;
+	
+	MyAftClosure_OD=(AftClosure_OD==0)? MotorTubeHole_d:AftClosure_OD+IDXtra*2;
+	
+	difference(){
+		union(){
+			// Body Tube
+			Tube(OD=Body_OD, ID=Body_OD-Wall_t*2, Len=Can_Len, myfn=$preview? 90:BigTubeFn);
+			
+			// Motor Tube Sleeve
+			if (HasMotorSleeve)
+				Tube(OD=MotorTubeHole_d+Wall_t*2, ID=MotorTubeHole_d, Len=Can_Len, myfn=$preview? 36:SmallTubeFn);
+			
+			// integrated coupler
+			if (HasIntegratedCoupler){
+				translate([0,0,Can_Len-Overlap]){
+					Tube(OD=Body_ID, ID=MyCoupler_ID, Len=Coupler_Len+Overlap, myfn=$preview? 90:BigTubeFn);
+					if (HasMotorSleeve)
+						Tube(OD=MotorTubeHole_d+Wall_t*2, ID=MotorTubeHole_d, Len=Coupler_Len+Overlap, myfn=$preview? 36:SmallTubeFn);
+				}
+				difference(){
+					translate([0,0,Can_Len-5])
+						Tube(OD=Body_OD-1, ID=MyCoupler_ID, Len=5, myfn=$preview? 90:BigTubeFn);
+					translate([0,0,Can_Len-5-Overlap]) cylinder(d1=Body_OD-Wall_t*2, d2=MyCoupler_ID-1, h=5);
+				} // difference
+			} // HasIntegratedCoupler
+			
+			// Upper Centering Ring
+			UpperRing_Z=HasIntegratedCoupler? Can_Len+Coupler_Len-3:Can_Len-3;
+			UpperRing_OD=HasIntegratedCoupler? Body_ID-1:Body_OD-1;
+			if (HasFwdCenteringRing)
+				translate([0,0,UpperRing_Z])
+					CenteringRing(OD=UpperRing_OD, ID=MotorTubeHole_d, Thickness=3, nHoles=nFins, Offset=0);
+					
+			// Lower Centering Ring
+			LowerRing_Z=0;
+			LowerRing_OD=Body_OD-1;
+			if (IncludeCenteringRings) 
+			translate([0,0,LowerRing_Z])
+				CenteringRing(OD=LowerRing_OD, ID=MotorTubeHole_d, Thickness=3, nHoles=nFins, Offset=0);
+				
+			// Middle Centering Rings
+			if (IncludeCenteringRings)
+			translate([0,0,Can_Len/2-1.5])
+					CenteringRing(OD=Body_OD-1, ID=MotorTubeHole_d, Thickness=3, nHoles=nFins, Offset=0);
+			
+			// Fin Boxes
+			difference(){
+				union(){
+					translate([0,0,Fin_Root_L/2+FinInset_Len])
+						TrapFin3Slots(Tube_OD=Body_OD, nFins=nFins, Post_h=Fin_Post_h+Wall_t, 
+								Root_L=Fin_Root_L+Wall_t*2, Root_W=Fin_Root_W+Wall_t*2, Chamfer_L=Fin_Chamfer_L);
+				
+					for (j=[0:nFins-1]) rotate([0,0,360/nFins*j+180/nFins])
+						translate([-Wall_t/2,0,0]) cube([Wall_t, Body_OD/2, Can_Len+FB_Xtra_Fwd]);
+						
+				} // union
+				
+				// remove outside
+				difference(){
+					translate([0,0,-Overlap]) cylinder(d=Body_OD+10, h=FB_Xtra_Fwd+Can_Len+Overlap*2);
+					
+					translate([0,0,-Overlap*2]) cylinder(d=Body_OD-1, h=FB_Xtra_Fwd+Can_Len+Overlap*4);
+				} // difference
+				
+				// remove inside
+				translate([0,0,-Overlap]) cylinder(d=MotorTubeHole_d, h=FB_Xtra_Fwd+Can_Len+Overlap*2);
+				
+				// Remove outside of IntegratedCoupler
+				if (FB_Xtra_Fwd>0)
+					translate([0,0,Can_Len]) Tube(OD=Body_OD+1, ID=Body_ID-1, Len=Coupler_Len+Overlap, myfn=$preview? 36:BigTubeFn);
+					
+			} // difference
+			
+			//*
+			if (Cone_Len>0)
+				FC2_TailConeLight(Body_OD=Body_OD, MotorTube_OD=MotorTube_OD, 
+						nFins=nFins,
+						Fin_Root_W=Fin_Root_W, Fin_Root_L=Fin_Root_L, 
+						Fin_Post_h=Fin_Post_h, Fin_Chamfer_L=Fin_Chamfer_L,
+						Threaded=ThreadedTC, Cone_Len=Cone_Len, Interface_OD=Body_OD-1,
+						FinInset_Len=(Can_Len-Fin_Root_L)/2, 
+						Wall_t=Wall_t, Extra_OD=Extra_OD);
+			/**/
+			
+				
+			// Rail button bolt boss
+			difference(){
+				union(){
+					translate([0,Body_OD/2,RailButton_Z]) rotate([90,0,0]) cylinder(d=10, h=(Body_OD-MotorTube_OD)/2+1);
+					
+					// gusset
+					hull(){
+						translate([0,Body_OD/2,RailButton_Z+4]) rotate([90,0,0]) cylinder(d=2, h=(Body_OD-MotorTube_OD)/2+1);
+						translate([0,Body_OD/2,RailButton_Z+4+(Body_OD-MotorTube_OD)/2]) rotate([90,0,0]) cylinder(d=2, h=1);
+					} // hull
+					
+					// rail button gusset
+					hull(){
+						translate([0,Body_OD/2,RailButton_Z-4]) rotate([90,0,0]) cylinder(d=2, h=(Body_OD-MotorTube_OD)/2+1);
+						translate([0,Body_OD/2,RailButton_Z-4-(Body_OD-MotorTube_OD)/2]) rotate([90,0,0]) cylinder(d=2, h=1);
+					} // hull
+				} // union
+				
+				translate([0,0,RailButton_Z]) cylinder(d=MotorTubeHole_d, h=15, center=true);
+				
+				translate([0,0,-Overlap]) mirror([0,0,1]) cylinder(d=Body_OD+1, h=25);
+			} // difference
+			
+		} // union
+	
+		// for when the aft closure is bigger than the motor tube
+		if (AftClosure_Len>0) translate([0,0,-Cone_Len-Overlap]) cylinder(d=MyAftClosure_OD, h=AftClosure_Len+Overlap);
+		
+		// Body tube bolts
+		if (nCouplerBolts>0)
+			for (j=[0:nCouplerBolts-1]) rotate([0,0,360/nCouplerBolts*j+180/nFins]) 
+				translate([0,Body_ID/2,Can_Len+Coupler_Len/2]) rotate([-90,0,0]) Bolt4Hole();
+					
+		// Fin Sockets
+		translate([0,0,Fin_Root_L/2+FinInset_Len])
+			difference(){
+				TrapFin3Slots(Tube_OD=Body_OD, nFins=nFins, Post_h=Fin_Post_h, 
+						Root_L=Fin_Root_L, Root_W=Fin_Root_W, Chamfer_L=Fin_Chamfer_L);
+					
+				cylinder(d=MotorTubeHole_d+Wall_t*2, h=Can_Len, center=true);
+			} // difference
+		
+		// Rail button bolt hole
+		translate([0,Body_OD/2,RailButton_Z]) rotate([-90,0,0]) Bolt8Hole();
+		
+		if (LowerHalfOnly) translate([0,0,Can_Len/2]) cylinder(d=Body_OD+3, h=Can_Len/2+50);
+		if (UpperHalfOnly) translate([0,0,Can_Len/2]) 
+			rotate([180,0,0]) cylinder(d=Body_OD+10, h=Can_Len/2+Cone_Len+1);
+			
+		if ($preview) rotate([0,0,-180/nFins]) translate([0,0,-Cone_Len-Overlap]) cube([Body_OD/2+1,Body_OD/2+1,Cone_Len+Can_Len+20]);
+	} // difference
+} // FC2_FinCanLight
+
+/*
+FC2_FinCanLight(Body_OD=LOC65Body_OD*CF_Comp, Body_ID=LOC65Body_ID*CF_Comp, Can_Len=140,
+				MotorTube_OD=LOC29Body_OD, 
+				nFins=5, HasIntegratedCoupler=true, HasFwdCenteringRing=false, Coupler_Len=10, nCouplerBolts=0,
+				HasMotorSleeve=false, 
+				Fin_Root_W=6, Fin_Root_L=130, Fin_Post_h=12, Fin_Chamfer_L=22,
+				Cone_Len=35, ThreadedTC=false, Extra_OD=0,
+				LowerHalfOnly=false, UpperHalfOnly=false,
+				Wall_t=1.2,
+				AftClosure_OD=0, AftClosure_Len=0);
+/**/
 
 
+module FC2_TailConeLight(Body_OD=LOC65Body_OD, MotorTube_OD=LOC29Body_OD,
+				nFins=5,
+				Fin_Root_W=6, Fin_Root_L=130, Fin_Post_h=12, Fin_Chamfer_L=22,
+				Threaded=false, Cone_Len=35, Interface_OD=LOC65Body_ID, FinInset_Len=5, 
+				Wall_t=1.2, Extra_OD=0){
+				
+	MotorTubeHoleIDXtra=IDXtra*2; // reduced by IDXtra 9/24/25
+	MinCWall_t=1.8;
+	FinAlignment_Len=0;
+	AftClosure_h=(MotorTube_OD>60)? 13:10;
+	Retainer_h=2;
+	Nut_Len=Retainer_h+AftClosure_h+10;
+	Tail_r=Body_OD/4; // was 20
+	Base_d=MotorTube_OD+4.4+Extra_OD;
+	NomonalThread_d=MotorTube_OD+NominalThreadWall_t*2;
+	MotorTubeHole_d=MotorTube_OD+MotorTubeHoleIDXtra;
+	HollowWall_t=(Wall_t<MinCWall_t)? MinCWall_t:Wall_t;
+	FinBox_W=Fin_Root_W+Wall_t*2;
+	MotorRetainer_Len=33;
+	RailButton_Z=6.5;
+	
+	BigTubeFn=floor(Body_OD)*3;
+	SmallTubeFn=floor(MotorTubeHole_d)*3;
 
+	module ConeShape(){
+		hull(){
+			translate([0,0,-Cone_Len]) cylinder(d=Base_d, h=Wall_t, $fn=$preview? 90:BigTubeFn);
+			
+			difference(){
+				rotate_extrude($fn=$preview? 90:360) translate([Body_OD/2-Tail_r,0,0]) circle(r=Tail_r);
+				translate([0,0,Overlap]) cylinder(d=Body_OD+1,h=50);
+			}
+		} // hull
+	} // ConeShape
+	
+	difference(){
+		ConeShape();
+					
+		// Trim Top
+		translate([0,0,Overlap]) cylinder(d=Body_OD+2, h=Body_OD/2);
+		
+		// Hollow core
+		difference(){
+			union(){
+				hull(){
+					translate([0,0,-Cone_Len]) cylinder(d=Base_d-HollowWall_t*2, h=1, $fn=$preview? 90:BigTubeFn);
+					
+					difference(){
+						rotate_extrude($fn=$preview? 90:360) translate([Body_OD/2-Tail_r,0,0]) circle(r=Tail_r-Wall_t);
+						translate([0,0,Overlap]) cylinder(d=Body_OD+1,h=50);
+					}
+				} // hull
+				
+				translate([0,0,-Overlap]) 
+					cylinder(d=Body_OD-Wall_t*2, h=FinInset_Len+FinAlignment_Len+Overlap*2, $fn=$preview? 90:BigTubeFn);
+			} // union
+		
+			// Motor tube hole
+			translate([0,0,-5]) 
+				cylinder(d1=MotorTubeHole_d+HollowWall_t*2, d2=MotorTubeHole_d+HollowWall_t*4, h=5+Overlap*2, $fn=$preview? 90:SmallTubeFn);
 
+			translate([0,0,-Cone_Len-Overlap]) 
+				cylinder(d=MotorTubeHole_d+HollowWall_t*2, h=Cone_Len+Tail_r+FinInset_Len+FinAlignment_Len+Overlap*2);
+			
+			if (Threaded) {
+				translate([0,0,-Cone_Len-Overlap]) cylinder(d=Body_OD, h=Nut_Len+HollowWall_t+Overlap);
+			} else {
+				//translate([0,0,-Cone_Len-Overlap]) cylinder(d=Body_OD, h=MotorRetainer_Len+HollowWall_t+Overlap);
+			}
+			
+		
+		} // difference
+	
+		// Motor tube hole
+		translate([0,0,-Cone_Len-Overlap]) 
+				cylinder(d=MotorTubeHole_d, h=Cone_Len+Tail_r+FinInset_Len+FinAlignment_Len+Overlap*2, $fn=$preview? 90:SmallTubeFn);
+				
+		translate([0,0,-5]) 
+				cylinder(d1=MotorTubeHole_d, d2=MotorTubeHole_d+HollowWall_t*2, h=5+Overlap*2, $fn=$preview? 90:SmallTubeFn);
+			
+		if (Threaded) translate([0,0,-Cone_Len-Overlap]) cylinder(d=Body_OD, h=Nut_Len);
+		
+		if ($preview) 
+			translate([3,3,-Cone_Len-Overlap]) cube([Body_OD/2,Body_OD/2,Cone_Len+10]);
+	} // difference
+	
+	// Fin Boxes
+	difference(){
+		intersection(){
+			union(){
+				for (j=[0:nFins-1]) rotate([0,0,360/nFins*j+180/nFins])
+					translate([-Wall_t/2,0,-Cone_Len]) cube([Wall_t, Body_OD/2, Cone_Len]);
+				// rail button gusset
+					hull(){
+						translate([0,Body_OD/2,RailButton_Z-4]) rotate([90,0,0]) cylinder(d=2, h=(Body_OD-MotorTube_OD)/2+1);
+						translate([0,Body_OD/2,RailButton_Z-4-(Body_OD-MotorTube_OD)/2]) rotate([90,0,0]) cylinder(d=2, h=1);
+					} // hull
+			} // union
+					
+			ConeShape();
+			
+		} // intersection
+		
+				// Motor tube hole
+		translate([0,0,-Cone_Len-Overlap]) 
+				cylinder(d=MotorTubeHole_d, h=Cone_Len+Overlap*2);
+	} // difference
+
+	if (Threaded) difference(){
+		translate([0,0,-Cone_Len+Nut_Len-10]) 
+			ExternalThread(Pitch=ThreadPitch, Dia_Nominal=NomonalThread_d, 
+							Length=10+Overlap, Step_a=$preview? 10:2, TrimEnd=true, TrimRoot=false);
+			
+		// Motor tube
+		translate([0,0,-Cone_Len-Overlap]) 
+			cylinder(d=MotorTubeHole_d, h=Cone_Len+FinInset_Len+FinAlignment_Len+Overlap*2);
+	}
+} // FC2_TailConeLight
 
 
 

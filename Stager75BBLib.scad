@@ -3,7 +3,7 @@
 // Filename: Stager75BBLib.scad
 // by David M. Flynn
 // Created: 8/14/2024 
-// Revision: 1.0.5  9/4/2025
+// Revision: 1.0.6  9/29/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -29,8 +29,9 @@
 //
 //  ***** History *****
 //
-function Stager75BBLib_Rev()="Stager75BBLib Rev. 1.0.5";
+function Stager75BBLib_Rev()="Stager75BBLib Rev. 1.0.6";
 echo(Stager75BBLib_Rev());
+// 1.0.6  9/29/2025    Smaller lighter bearing 6705 for 65mm version.
 // 1.0.5  9/4/2025     A little bit of cleanup for viewing.
 // 1.0.4  9/25/2024    Added servo options ServoMG90S_ID 11 gram micro servo, ServoMS75_ID 21 gram mini servo, ServoMZ996_ID 55 gram standard servo
 // 1.0.3  9/15/2024    Little fixes.
@@ -123,6 +124,10 @@ Bearing6805_OD=37;
 Bearing6805_ID=25;
 Bearing6805_T=7;
 
+Bearing6705_OD=32;
+Bearing6705_ID=25;
+Bearing6705_T=4;
+
 Bearing6806_OD=42;
 Bearing6806_ID=30;
 Bearing6806_T=7;
@@ -167,7 +172,7 @@ ServoMG90S_ID=0; // 11 gram micro servo
 ServoMS75_ID=1;  // 21 gram mini servo
 ServoMZ996_ID=2; // 55 gram standard servo
 
-//*
+/*
 // constants for 98mm stager
 Default_nLocks=3;
 DefaultBody_OD=BT98Body_OD;
@@ -191,16 +196,16 @@ MainBearing_ID=Bearing6807_ID;
 MainBearing_T=Bearing6807_T;
 /**/
 
-/*
+//*
 // constants for 65mm stager
 Default_nLocks=2;
 DefaultBody_OD=BT65Body_OD;
 DefaultBody_ID=BT65Body_ID;
 DefaultMotorTube_OD=BT38Body_OD;
 DefaultServo=ServoMG90S_ID;
-MainBearing_OD=Bearing6805_OD;
-MainBearing_ID=Bearing6805_ID;
-MainBearing_T=Bearing6805_T;
+MainBearing_OD=Bearing6705_OD;
+MainBearing_ID=Bearing6705_ID;
+MainBearing_T=Bearing6705_T;
 /**/
 
 /*
@@ -270,12 +275,12 @@ module ShowStagerAssy(Tube_OD=DefaultBody_OD, Tube_ID=DefaultBody_ID, nLocks=Def
 	// Shown in the locked position?
 	Lock_a=	ShowLocked? 0:Calc_a(11,(BoltCircle_d(Tube_OD=Tube_OD)/2));
 						
-	//translate([0,0,Bearing_Z+0.1]) color("Red") Tube(OD=MainBearing_OD, ID=MainBearing_ID, Len=MainBearing_T-0.2, myfn=90);
+	translate([0,0,Bearing_Z+0.1]) color("Red") Tube(OD=MainBearing_OD, ID=MainBearing_ID, Len=MainBearing_T-0.2, myfn=90);
 	
 	//Stager_CupHoles(Tube_OD=Tube_OD, nLocks=nLocks, BoltsOn=true, Collar_h=DefaultCollarLen);
 	//translate([0,0,0.4]) Stager_Cup(Tube_OD=Tube_OD, ID=BT54Body_ID, nLocks=Default_nLocks, BoltsOn=true);
 	
-	//translate([0,0,0.2]) Stager_Saucer();
+	translate([0,0,0.2]) Stager_Saucer();
 	
 	translate([0,0,-Saucer_H-LockBall_d-2]) rotate([0,0,Lock_a]) Stager_LockRing(Tube_OD=Tube_OD, nLocks=nLocks);
 
@@ -291,7 +296,7 @@ module ShowStagerAssy(Tube_OD=DefaultBody_OD, Tube_ID=DefaultBody_ID, nLocks=Def
 	//*
 	
 	
-	// translate([0,0,Bearing_Z-16.0-ServoPlate_T]) Stager_ServoPlate(Tube_OD=Tube_OD, Skirt_ID=Tube_ID);
+	 translate([0,0,Bearing_Z-16.0-ServoPlate_T]) Stager_ServoPlate(Tube_OD=Tube_OD, Skirt_ID=Tube_ID);
 
 	rotate([0,0,Lock_a]){
 		
@@ -306,7 +311,8 @@ module ShowStagerAssy(Tube_OD=DefaultBody_OD, Tube_ID=DefaultBody_ID, nLocks=Def
 					
 } // ShowStagerAssy
 
-//ShowStagerAssy(ShowLocked=true);
+//
+ShowStagerAssy(ShowLocked=true);
 //ShowStagerAssy(ShowLocked=false);
 //ShowStagerAssy(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, nLocks=Default_nLocks, ShowLocked=true);
 
