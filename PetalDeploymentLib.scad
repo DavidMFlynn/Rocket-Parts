@@ -3,7 +3,7 @@
 // Filename: PetalDeploymentLib.scad
 // by David M. Flynn
 // Created: 10/22/2023 
-// Revision: 0.9.14  9/14/2025
+// Revision: 0.9.15  9/24/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -18,8 +18,9 @@
 //
 //  ***** History *****
 //
-function PetalDeploymentLibRev()="PetalDeploymentLib Rev. 0.9.14";
+function PetalDeploymentLibRev()="PetalDeploymentLib Rev. 0.9.15";
 echo(PetalDeploymentLibRev());
+// 0.9.15  9/24/2025  Removed old versions
 // 0.9.14  9/14/2025  Allows thinner walled petals
 // 0.9.13  5/13/2025  Removed petal stop for easier printing (test).
 // 0.9.12  1/27/2025  Added PD_PetalHolder
@@ -39,11 +40,9 @@ echo(PetalDeploymentLibRev());
 // ***********************************
 //  ***** for STL output *****
 //
-// rotate([180,0,0]) PD_Petals(OD=BT75Coupler_OD, Len=110, nPetals=3, Wall_t=1.8, AntiClimber_h=0, HasLocks=false, Lock_Span_a=0);
-// PD_Petals2(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_h=0, HasLocks=false, Lock_Span_a=0);
+// PD_Petals(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_h=0, HasLocks=false, Lock_Span_a=0);
 // rotate([180,0,0]) PD_GridPetals(OD=BT137Coupler_OD, Len=150, nPetals=3, Wall_t=1.2, HasLocks=false);
 // rotate([-90,0,0]) PD_PetalSpringHolder();
-// rotate([-90,0,0]) PD_PetalSpringHolder2();
 // PD_HubSpringHolder();
 /*
 PD_PetalHub(OD=BT75Coupler_OD, 
@@ -109,51 +108,6 @@ module PD_PetalHolder(Petal_OD=BT137Coupler_OD, Is_Top=false){
 			difference(){
 				cylinder(d=Petal_OD+6, h=Len, $fn=$preview? 90:360);
 				// half
-				translate([0,-Petal_OD/2-20,-Overlap]) cube([Petal_OD/2+20, Petal_OD+40, Len+Overlap*2]);
-			} // difference
-			
-			hull(){
-				translate([0,Petal_OD/2+12,0]) cylinder(d=16, h=Len/2-0.2);
-				translate([-16,Petal_OD/2,0]) cylinder(d=10, h=Len/2-0.2);
-			} // hull
-			
-			mirror([0,1,0])
-			hull(){
-				translate([0,Petal_OD/2+12,0]) cylinder(d=16, h=Len/2-0.2);
-				translate([-16,Petal_OD/2,0]) cylinder(d=10, h=Len/2-0.2);
-			} // hull
-		} // union
-		
-		// bolts
-		if (Is_Top){
-			translate([0,Petal_OD/2+12,0]) rotate([180,0,0]) Bolt10HeadHole();
-			mirror([0,1,0])
-				translate([0,Petal_OD/2+12,0]) rotate([180,0,0]) Bolt10Hole(); //Bolt10HeadHole();
-		}else{
-			
-			translate([0,Petal_OD/2+12,Len/2]) Bolt10Hole();
-			
-			mirror([0,1,0])
-				translate([0,Petal_OD/2+12,Len/2]) Bolt10Hole();
-		}
-		
-		// remove inside
-		translate([0,0,-Overlap]) cylinder(d=Petal_OD, h=Len+Overlap*2, $fn=$preview? 90:360);
-	} // difference
-	
-} // PD_PetalHolder
-
-//PD_PetalHolder();
-//translate([0,0,30]) rotate([0,180,0]) PD_PetalHolder(Is_Top=true);
-
-module PD_PetalHolder2(Petal_OD=BT137Coupler_OD, Is_Top=false){
-	Len=30;
-	
-	difference(){
-		union(){
-			difference(){
-				cylinder(d=Petal_OD+6, h=Len, $fn=$preview? 90:360);
-				// half
 				translate([-0.5,-Petal_OD/2-20,-Overlap]) cube([Petal_OD/2+20, Petal_OD+40, Len+Overlap*2]);
 			} // difference
 			
@@ -188,13 +142,13 @@ module PD_PetalHolder2(Petal_OD=BT137Coupler_OD, Is_Top=false){
 		translate([0,0,-Overlap]) cylinder(d=Petal_OD, h=Len+Overlap*2, $fn=$preview? 90:360);
 	} // difference
 	
-} // PD_PetalHolder2
+} // PD_PetalHolder
 
-// PD_PetalHolder2(Petal_OD=BT137Body_ID, Is_Top=false);
-// PD_PetalHolder2(Petal_OD=BT137Body_ID, Is_Top=true);
-// PD_PetalHolder2(Petal_OD=BT75Body_ID, Is_Top=false);
-// PD_PetalHolder2(Petal_OD=BT75Body_ID, Is_Top=true);
-// translate([1,0,30]) rotate([0,180,0]) PD_PetalHolder2(Petal_OD=ULine157Coupler_OD, Is_Top=true);
+// PD_PetalHolder(Petal_OD=BT137Body_ID, Is_Top=false);
+// PD_PetalHolder(Petal_OD=BT137Body_ID, Is_Top=true);
+// PD_PetalHolder(Petal_OD=BT75Body_ID, Is_Top=false);
+// PD_PetalHolder(Petal_OD=BT75Body_ID, Is_Top=true);
+// translate([1,0,30]) rotate([0,180,0]) PD_PetalHolder(Petal_OD=ULine157Coupler_OD, Is_Top=true);
 
 module PD_PetalHolderLockLever(){
 	Len=30;
@@ -344,94 +298,26 @@ module PD_ShowCatchAssy(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, nPetal
 module PD_PetalLocks(OD=BT75Coupler_OD, Len=25, nPetals=3, Lock_Span_a=0){
 // Lock_Span_a 0=full, else 10 to 360/nPetals
 
-	BaseOffset=8.2;
+	BaseOffset=7.2;
 	Lock_h=1.5;
 	Lock_d=3;
+	Start_a=(Lock_Span_a==0)? 0:-Lock_Span_a/2;
 	
 	Span_a=(Lock_Span_a==0)? 360/nPetals:Lock_Span_a;
 	
 	translate([0,0,BaseOffset+Len-Lock_h])
-		for (j=[0:nPetals-1]) for (k=[0:Span_a-1]) rotate([0,0,360/nPetals*j+k]) hull(){
-			translate([0,OD/2-Lock_d/2,0]) cylinder(d=Lock_d, h=Lock_h);
-			rotate([0,0,1]) translate([0,OD/2-Lock_d/2,0]) cylinder(d=Lock_d, h=Lock_h);
-			translate([0,OD/2-1,Lock_h/2]) cube([Lock_d, Overlap, Lock_h],center=true);
-			rotate([0,0,1]) translate([0,OD/2-1,Lock_h/2]) cube([Lock_d, Overlap, Lock_h],center=true);
-		}
+		for (j=[0:nPetals-1]) 
+			for (k=[0:Span_a-1]) rotate([0,0,360/nPetals*j+k+Start_a]) hull(){
+				translate([0,OD/2-Lock_d/2,0]) cylinder(d=Lock_d, h=Lock_h);
+				rotate([0,0,1]) translate([0,OD/2-Lock_d/2,0]) cylinder(d=Lock_d, h=Lock_h);
+				translate([0,OD/2-1,Lock_h/2]) cube([Lock_d, Overlap, Lock_h],center=true);
+				rotate([0,0,1]) translate([0,OD/2-1,Lock_h/2]) cube([Lock_d, Overlap, Lock_h],center=true);
+			}
 } // PD_PetalLocks
 
 // PD_PetalLocks(OD=BT75Coupler_OD, Len=110, nPetals=3);
 
 module PD_Petals(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_h=0,
-				HasLocks=false, Lock_Span_a=0){
-	Bolt1_Z=9.25; // was 11.75
-	Thickness=3;
-	BaseOffset=8.2; // was 11.2
-	AntiClimber_w=2;
-	AntiClimber_L=AntiClimber_h*4;
-	AntiClimber_LockComp=HasLocks? 10:0;
-	
-	module AntiClimber(){
-		rotate([0,0,180]) translate([0.6, -OD/2+1, 0])
-		hull(){
-			cube([AntiClimber_w+1.5,Overlap,AntiClimber_L]);
-			translate([AntiClimber_w/2, AntiClimber_h, AntiClimber_h]) 
-				cylinder(d=AntiClimber_w,h=AntiClimber_h*2);
-		} // hull
-	} // AntiClimber
-	
-	if (HasLocks) PD_PetalLocks(OD=OD, Len=Len, nPetals=nPetals, Lock_Span_a=Lock_Span_a);
-	
-	difference(){
-		union(){
-			translate([0,0,BaseOffset]) 
-				Tube(OD=OD, ID=OD-Wall_t*2, Len=Len, myfn=$preview? 90:360);
-			
-			for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]) difference(){
-				intersection(){
-					cylinder(d=OD, h=16+BaseOffset, $fn=$preview? 90:360);
-						
-					translate([-PetalWidth/2,OD/2-Thickness,0]) 
-						cube([PetalWidth, OD, 16+BaseOffset]);
-				} // intersection
-				translate([0,0,16+BaseOffset-3])
-					cylinder(d1=OD-Thickness*2, d2=OD-3.6+Overlap, 
-							h=3+Overlap, $fn=$preview? 90:360);
-					
-				
-			} // for difference
-			
-			if (AntiClimber_h>0)
-				for (j=[0:nPetals-1]) 
-					rotate([0,0,360/nPetals*j+180/nPetals]) {
-						translate([0,0,BaseOffset+Len-AntiClimber_L-AntiClimber_LockComp]){
-							AntiClimber();
-							mirror([1,0,0]) AntiClimber();
-						}
-						translate([0,0,BaseOffset]){
-							AntiClimber();
-							mirror([1,0,0]) AntiClimber();
-						}
-				} // for
-		} // union
-		
-		// Bolt Holes
-		for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]){
-			translate([0,OD/2,Bolt1_Z]) rotate([-90,0,0]) Bolt4ButtonHeadHole();
-			translate([0,OD/2,Bolt1_Z+Bolt4Inset*2]) rotate([-90,0,0]) Bolt4ButtonHeadHole();
-			}
-		
-		// Cut here
-		for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*(j+0.5)])
-			translate([0, OD/2, Len/2+BaseOffset]) 
-				cube([2, Wall_t*2-2.4, Len+Overlap*2], center=true); // leave 1.2mm
-	} // difference
-} // PD_Petals
-
-//rotate([180,0,0]) PD_Petals(OD=BT75Coupler_OD, Len=110, nPetals=5, AntiClimber_h=3, HasLocks=true, Lock_Span_a=20);
-//PD_Petals(OD=BT137Coupler_OD, Len=110, nPetals=3, Wall_t=2.4, AntiClimber_h=5);
-//rotate([180,0,0]) PD_Petals(OD=BT98Coupler_OD, Len=55, nPetals=3, Wall_t=1.8, AntiClimber_h=4, HasLocks=true, Lock_Span_a=120);
-
-module PD_Petals2(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_h=0,
 				HasLocks=false, Lock_Span_a=0){
 	Bolt1_Z=9.25+8; // was 11.75
 	Thickness=3;
@@ -503,9 +389,9 @@ module PD_Petals2(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_
 		
 		}
 	} // difference
-} // PD_Petals2
+} // PD_Petals
 
-//PD_Petals2(OD=BT137Coupler_OD, Len=100, nPetals=6, Wall_t=1.8, AntiClimber_h=5, HasLocks=false, Lock_Span_a=0);
+//PD_Petals(OD=BT137Coupler_OD, Len=100, nPetals=6, Wall_t=1.8, AntiClimber_h=5, HasLocks=false, Lock_Span_a=0);
 
 module WallGrigBox(X=10, Y=15, Z=15, R=1.5, A=0){
 	myfn=24;
@@ -618,49 +504,8 @@ module PD_GridPetals(OD=BT137Coupler_OD, Len=150, nPetals=3, Wall_t=1.2, HasLock
 
 //PD_GridPetals(HasLocks=true);
 
+
 module PD_PetalSpringHolder(){
-	Width=11;
-	Thickness=3;
-	Spring_d=5/16*25.4;
-	Axle_d=4;
-	Axle_L=Width+9;
-	AxleBoss_d=Axle_d+2.4;
-	
-	
-	difference(){
-		union(){
-			translate([0,0,8]) hull(){
-				translate([0,-Thickness-Width/2,0]) cylinder(d=Width, h=10);
-				translate([-Width/2,-Thickness-1,0]) cube([Width,1,1]);
-			
-				translate([0,-Thickness,Bolt4Inset*3]) rotate([90,0,0]) cylinder(d=Width,h=3);
-			} // hull
-			
-			translate([0,-Thickness-AxleBoss_d/2,0]) hull(){
-				rotate([0,90,0]) cylinder(d=AxleBoss_d, h=PetalWidth, center=true);
-				translate([0,0,8]) rotate([0,90,0]) cylinder(d=AxleBoss_d, h=Width, center=true);
-			} // hull
-			
-			// Axle
-			translate([0,-Thickness-AxleBoss_d/2,0])
-				rotate([0,90,0]) cylinder(d=Axle_d, h=Axle_L, center=true);
-		} // union
-		
-		
-		// Sping	
-		translate([0,-Thickness-Width/2,-AxleBoss_d/2-Overlap]) {
-			cylinder(d=Spring_d+IDXtra, h=16+AxleBoss_d/2);
-			cylinder(d=4, h=30);
-		}
-		
-		translate([0,0,12]) rotate([-90,0,0]) Bolt4Hole(depth=6);
-		translate([0,0,12+Bolt4Inset*2]) rotate([-90,0,0]) Bolt4Hole(depth=9.5);
-	} // difference
-} // PD_PetalSpringHolder
-
-//PD_PetalSpringHolder();
-
-module PD_PetalSpringHolder2(){
 	Width=11;
 	Thickness=3;
 	Spring_d=5/16*25.4;
@@ -703,11 +548,11 @@ module PD_PetalSpringHolder2(){
 		translate([0,0,20]) rotate([-90,0,0]) Bolt4Hole(depth=7);
 		translate([0,0,20+Bolt4Inset*2]) rotate([-90,0,0]) Bolt4Hole(depth=9.5);
 	} // difference
-} // PD_PetalSpringHolder2
+} // PD_PetalSpringHolder
 
-//PD_PetalSpringHolder2();
+//PD_PetalSpringHolder();
 
-//rotate([-90,0,0]) PD_PetalSpringHolder2();
+//rotate([-90,0,0]) PD_PetalSpringHolder();
 
 module PD_PetalHubBoltPattern(OD=BT75Coupler_OD, nBolts=3){
 	for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*(j+0.5)])

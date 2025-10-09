@@ -3,7 +3,7 @@
 // Filename: RailGuide.scad
 // by David M. Flynn
 // Created: 6/11/2022 
-// Revision: 1.0.6  8/21/2024
+// Revision: 1.0.7  9/29/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-function RailGuideRev()="RailGuide Rev. 1.0.6";
+function RailGuideRev()="RailGuide Rev. 1.0.7";
 echo(RailGuideRev());
+// 1.0.7  9/29/2025  Optomized RailButton for 1010 rail
 // 1.0.6  8/21/2024  Geometry change: All guides and posts are not oriented to 0° (+Y).
 // 1.0.5  11/2/2023  Added RailGuideSpacer()
 // 1.0.4  1/1/2023   Bolt holes now thru in RailGuidePost. 
@@ -27,7 +28,8 @@ echo(RailGuideRev());
 // ***********************************
 //  ***** for STL output *****
 //
-// RailButton();
+// RailButton(OD=10, Flange_h=2, Slot_w=3.8);  // for Black Sky Rail
+// RailButton(OD=11, Flange_h=2, Slot_w=2.8);  // for 1010 Rail
 //
 // rotate([90,0,0]) BoltOnRailGuide(Length = 40, BoltSpace=12.7, RoundEnds=true, ExtraBack=0);
 // RialGuide(TubeOD = 98, Length = 40, Offset = 3);
@@ -73,18 +75,16 @@ RG_Cap_w=0.500*25.4 - 1.0;
 RG_Cap_t=4; //was 0.250*25.4 - 1.0;
 
 
-module RailButton(){
-	OD=10;
+module RailButton(OD=10, Flange_h=2, Slot_w=3.8){
 	ID=4.2+IDXtra*2;
 	Slot_OD=6.3;
-	Slot_w=3.8;
-	Flange_h=2;
+	
+	
 	
 	difference(){
 		union(){
 			cylinder(d=OD, h=Flange_h);
 			cylinder(d=Slot_OD, h=Flange_h+Slot_w/2);
-			//translate([0,0,Flange_h+Slot_w]) cylinder(d=OD, h=Flange_h);
 		} // union
 		
 		translate([0,0,-Overlap]) cylinder(d=ID, h=Flange_h*2+Slot_w+Overlap*2);
