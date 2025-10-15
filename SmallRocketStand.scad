@@ -417,6 +417,44 @@ module SpoolBushing(H=75, Pipe_OD=Pipe15_OD){
 // SpoolBushing(H=75, Pipe_OD=Pipe15_OD);
 // SpoolBushing(H=45, Pipe_OD=Pipe10_OD);
 
+module SpoolBushingAlTube(H=50){
+	Spool_ID=52.8;
+	Spool_OD=58;
+	AlTube_d=12.7;
+	Wall_t=1.6;
+	nSpokes=6;
+
+	//Tube(OD=Spool_OD, ID=Spool_ID-Wall_t*2, Len=3, myfn=$preview? 90:myFn);
+	//Tube(OD=Spool_ID-0.5, ID=Spool_ID-0.5-Wall_t*2, Len=H+3, myfn=$preview? 90:myFn);
+			
+	Tube(OD=AlTube_d+IDXtra+Wall_t*2, ID=AlTube_d+IDXtra, Len=H+3, myfn=90);
+	
+	for (j=[0:nSpokes-1]) rotate([0,0,360/nSpokes*j]) 
+		hull(){
+			translate([0,AlTube_d/2+Wall_t,0]) cylinder(d=1.2, h=H+3);
+			translate([0,Spool_ID/2-Wall_t,0]) cylinder(d=1.2, h=H+3);
+		} // hull
+
+	// taper
+	difference(){
+		union(){
+			translate([0,0,]) cylinder(d1=Spool_ID, d2=Spool_ID-0.5, h=H+3);
+			cylinder(d=Spool_OD, h=3);
+		} // union
+		
+		translate([0,0,-Overlap]) cylinder(d1=Spool_ID-Wall_t*2, d2=Spool_ID-0.5-Wall_t*2, h=H+3+Overlap*2);
+	} // difference
+	
+	// tube stop
+	difference(){
+		translate([0,0,H]) cylinder(d=AlTube_d+1, h=3);
+		translate([0,0,H-Overlap]) cylinder(d1=AlTube_d+IDXtra, d2=AlTube_d-2, h=3+Overlap*2);
+	}
+} // SpoolBushingAlTube
+
+// 
+SpoolBushingAlTube();
+
 module RocketStandBushing(OD=28.5){
 	ID=12.7;
 	

@@ -1,7 +1,7 @@
 // *************************************************
 // filename: CommondStuffSAEmm.scad
 //  by Dave Flynn 2015, GPL v2
-// Rev: 1.0.9 9/2/2025
+// Rev: 1.0.10  9/30/2025
 // Some hole sizes have not been tested.
 //
 // This file contains constants and some common routines
@@ -51,6 +51,8 @@
 // BoltM8Hole(depth=22);
 // BoltM8ClearHole(depth=22);
 // BoltM8HeadHole(depth=22, lAccess=18);
+//  5/16"-18
+// Bolt312NutHole(depth=8);
 //  3/8"-16
 // Bolt375Hole(depth=22);
 // Bolt375ClearHole(depth=22);
@@ -64,7 +66,8 @@
 // *************************************************
 //  **** History *****
 //
-echo("CommonStuffSAEmm 1.0.9");
+echo("CommonStuffSAEmm 1.0.10");
+// 1.0.10 9/30/2025 Added Bolt312NutHole()
 // 1.0.9 9/2/2025   Added Bolt375Hole(), Bolt375ClearHole() and Bolt375NutHole
 // 1.0.8 9/19/2023  Added Bolt6RailNutEnderX
 // 1.0.7 9/19/2023  Added Bolt6RailNutEnder
@@ -627,6 +630,13 @@ module BoltM8HeadHole(depth=22, lAccess=18){
 } // BoltM8HeadHole
 
 //BoltM8HeadHole(depth=22, lAccess=18);
+
+// ***** 5/16-18 *****
+module Bolt312NutHole(depth=8){
+	cylinder(d=1/2*25.4*1.1339+ID_Xtra*3, h=depth, $fn=6);
+} // Bolt312NutHole
+
+// Bolt312NutHole(depth=8);
 
 // ***** 3/8-16 *****
 

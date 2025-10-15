@@ -162,6 +162,23 @@ module FW_MagSw_BoltPattern(){
 
 // FW_MagSw_BoltPattern() Bolt4Hole();
 
+module FW_MagnetHolder(){
+	Len=21;
+	Y=17;
+	
+	difference(){
+		hull() for (j=[0:2]) rotate([0,0,120*j]) translate([0,Y,0]) cylinder(d=4, h=Len);
+		
+		translate([0,0,-Overlap]) cylinder(d=6.35+IDXtra*2, h=Len+Overlap*2);
+		
+		for (j=[0:2]) rotate([0,0,120*j]){
+		translate([0,-9.5,15.5]) rotate([90,0,0]) linear_extrude(2) text(text="ON", size=9, halign="center", valign="center");
+		translate([0,-9.5,5.5]) rotate([90,180,0]) linear_extrude(2) text(text="OFF", size=9, halign="center", valign="center");}
+	} // difference
+} // FW_MagnetHolder
+
+// FW_MagnetHolder();
+
 module FW_MagSw_Mount(HasMountingEars=false){
 	Wall_t=1.6;
 	OAH=4;

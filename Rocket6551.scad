@@ -35,11 +35,13 @@
 //
 // NoseCone();
 //
+DroguePetal_Len=80;
 // PetalHub(OD=Coupler_OD, Skirt_h=5); // also nosecone base
 // PetalHub(OD=Coupler_OD, Skirt_h=1); // Used with NC_GPS_Mounting_Plate
 // NC_GPS_Mounting_Plate(OD=Coupler_OD, Skirt_h=5, HasAlTube=true);
 // rotate([-90,0,0]) PD_PetalSpringHolder();
 // rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=Petal_Len, nPetals=nPetals, Wall_t=1.2, AntiClimber_h=4, HasLocks=true, Lock_Span_a=30);
+// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=DroguePetal_Len, nPetals=nPetals, Wall_t=1.2, AntiClimber_h=4, HasLocks=true, Lock_Span_a=30);
 // FwdSpringEnd(nRopes=6, Skirt_h=25);
 // SE_SlidingSpringMiddle(OD=Coupler_OD, Wall_t=1.2, nRopes=6, SliderLen=35, SpLen=35, SpringStop_Z=17.5, UseSmallSpring=true);
 //
@@ -58,6 +60,7 @@
 // EBay(Light=true);
 //
 //  *** This spacer fills the space between the MotorTubeTopper and the EBay, must pull the nose cone in tight. ***
+// Tube(OD=Coupler_OD, ID=Coupler_OD-2.4, Len=10, myfn=$preview? 90:180); // spacer booster
 // Tube(OD=Coupler_OD, ID=Coupler_OD-2.4, Len=25, myfn=$preview? 90:180); // spacer
 // Tube(OD=Coupler_OD, ID=Coupler_OD-2.4, Len=29, myfn=$preview? 90:180); // spacer
 // Tube(OD=Coupler_OD, ID=Coupler_OD-2.4, Len=30, myfn=$preview? 90:180); // spacer
@@ -69,6 +72,7 @@
 // MotorNutStop(MT_ID=MotorTube_ID, Hole_d=MotorBolt_d);
 //
 // rotate([180,0,0]) Fincan(LowerHalfOnly=false, UpperHalfOnly=false, HasSecurityRods=false, HasMotorRetainer=false);
+// Fincan(LowerHalfOnly=false, UpperHalfOnly=false, HasSecurityRods=false, HasMotorRetainer=false, IsSustainer=true);
 //
 // rotate([0,0,90]) RocketFin(HasSpiralVaseRibs=false, PrinterBrim_H=0.6);
 //
@@ -78,16 +82,19 @@
 //
 //  *** Stager, yes this can be 2 stages ***
 //
-// rotate([180,0,0]) Stager_Cup(Tube_OD=Body_OD*CF_Comp+Vinyl_d, nLocks=nLocks, BoltsOn=true, Collar_h=17);
+// rotate([180,0,0]) Stager_Cup_Light(Collar_H=15);
 // rotate([-90,0,0]) Stager_LockRod(Adj=0.0);
 //
 // Stager_Saucer(Tube_OD=Body_OD*CF_Comp+Vinyl_d, nLocks=nLocks); // Bolts on
 // Stager_LockRing(Tube_OD=Body_OD*CF_Comp+Vinyl_d, nLocks=nLocks);
-// Stager_Mech(Tube_OD=Body_OD*CF_Comp+Vinyl_d, nLocks=nLocks, Skirt_ID=Body_ID*CF_Comp, Skirt_Len=16, nSkirtBolts=4, ShowLocked=true);
+// Stager_Mech(Tube_OD=Body_OD*CF_Comp+Vinyl_d, nLocks=nLocks, Skirt_ID=Body_ID*CF_Comp, Skirt_Len=2, nSkirtBolts=0, ShowLocked=true);
 // Stager_OuterBearingCover(Tube_OD=Body_OD*CF_Comp+Vinyl_d, nLocks=nLocks); // Secures Outer Race of Main Bearing
 // rotate([180,0,0]) Stager_Indexer(Tube_OD=Body_OD*CF_Comp+Vinyl_d, nLocks=nLocks); // Secures Inner Race of Main Bearing and has Lock Stops
-// Stager_ServoPlate(Tube_OD=Body_OD*CF_Comp+Vinyl_d, Skirt_ID=Body_ID*CF_Comp, nLocks=nLocks, OverCenter=IDXtra+0.8, Servo_ID=DefaultServo);
+// Custom_ServoPlate();
 // rotate([180,0,0]) Stager_ServoMount(Servo_ID=DefaultServo);
+//
+// rotate([180,0,0]) Stager_Mech_Mount(); // use with 
+// PetalHub(OD=Coupler_OD, Skirt_h=1, HasWirePath=true);
 //
 // rotate([180,0,0]) BoosterFincan();
 // rotate([0,0,90]) BoosterFin(HasSpiralVaseRibs=false, PrinterBrim_H=0.9);
@@ -99,12 +106,21 @@
 // PD_PetalHolderLockLever();
 //
 // rotate([180,0,0]) DeepSocket();
+// DeepSocket500(); // for 5/16-18 nuts
 //
 // *********************************************
 //  ***** for Viewing *****
 //
+/*
+   translate([0,0,TailCone_Len+BFinCan_Len+BoosterBodyTubeLen+36]) ShowRocket(ShowInternals=false, IsSustainer=true);
+   ShowBooster(ShowInternals=false);
+/**/
+// ShowBooster(ShowInternals=false);
+// ShowBooster(ShowInternals=true);
+//
 // ShowRocket(ShowInternals=false);
 // ShowRocket(ShowInternals=true);
+//
 // ShowCableRelease();
 //
 // ShowStagerAssy(Tube_OD=Body_OD, Tube_ID=Body_ID, nLocks=nLocks, ShowLocked=true);
@@ -236,6 +252,7 @@ FinCan_Len=Fin_Root_L+FinInset_Len*2;
 //*
 // Little Red One Data
 Petal_Len=140; // 80 minimum, 100,120 or 140 is preferred 140 is max for a single 4323 spring
+BPetal_Len=140;
 
 //MotorTube_OD=LOC29Body_OD;
 //MotorTube_ID=LOC29Body_ID;
@@ -245,8 +262,10 @@ MotorBolt_d=5/16*25.4;
 MotorBoltPitch=25.4/18;
 
 MotorTubeLen=304;
+BoosterMotorTubeLen=330; // 330 is min for 38/600 case, 380 is min for 38/720 case
 
 BodyTubeLen=764; // uncut Loc tube
+BoosterBodyTubeLen=540;
 
 NC_Len=185;
 NC_Base_L=6;
@@ -289,6 +308,7 @@ Vinyl_d=0.3;
 TailCone_Len=30;
 TailConeExtra_OD=2;
 
+Thread1024_d=0.190*25.4;
 Thread25020_d=0.250*25.4;
 CRBBm_Activator_Bolt_a=[22.5,162,253,323];
 EBay_Len=84;
@@ -305,7 +325,7 @@ MainBearing_ID=Bearing6705_ID;
 MainBearing_T=Bearing6705_T;
 //
 
-module ShowRocket(ShowInternals=false){
+module ShowRocket(ShowInternals=false, IsSustainer=false){
 	FinCan_Z=TailCone_Len;
 	Fin_Z=FinCan_Z+FinCan_Len/2;
 	MotorTube_Z=FinCan_Z-TailCone_Len;
@@ -326,7 +346,7 @@ module ShowRocket(ShowInternals=false){
 			
 		if (ShowInternals){
 			translate([0,0,-14.5]) rotate([180,0,30]) 
-				PD_Petals2(OD=Coupler_OD, Len=Petal_Len, nPetals=nPetals, Wall_t=1.6, AntiClimber_h=0, HasLocks=true);
+				PD_Petals(OD=Coupler_OD, Len=Petal_Len, nPetals=nPetals, Wall_t=1.6, AntiClimber_h=0, HasLocks=true);
 		}
 	}
 	
@@ -352,13 +372,69 @@ module ShowRocket(ShowInternals=false){
 			translate([0,0,MotorTubeLen-18]) MotorTubeTopper(OD=Body_ID, ID=MotorTube_OD, MT_ID=MotorTube_ID);
 			translate([0,0,MotorTubeLen+3]) color("LightGreen") Tube(OD=Coupler_OD, ID=Coupler_OD-2.4, Len=25, myfn=$preview? 90:180); // spacer
 		}	
-	translate([0,0,FinCan_Z]) color("Orange") Fincan(LowerHalfOnly=false, UpperHalfOnly=false);
+	translate([0,0,FinCan_Z]) color("Orange") Fincan(LowerHalfOnly=false, UpperHalfOnly=false, IsSustainer=IsSustainer);
 	
 	for (j=[0:nFins-1]) rotate([0,0,360/nFins*j+180/nFins])
 		translate([0, Body_OD/2-Fin_Post_h, Fin_Z]) 
 			rotate([-90,0,0]) color("Orange") RocketFin(false);
 		
 } // ShowRocket
+
+// ShowRocket(ShowInternals=false);
+
+module ShowBooster(ShowInternals=false){
+	FinCan_Z=TailCone_Len;
+	Fin_Z=FinCan_Z+BFinCan_Len/2;
+	MotorTube_Z=FinCan_Z-TailCone_Len;
+	EBay_Z=MotorTube_Z+BoosterMotorTubeLen+3+8;
+	BodyTube_Z=FinCan_Z+BFinCan_Len+Overlap*2;
+	NoseCone_Z=BodyTube_Z+BoosterBodyTubeLen+0.1;
+	
+	FwdSpringEnd_Z=NoseCone_Z-36-BPetal_Len-3;
+	SCR_Z=FwdSpringEnd_Z-50;
+	
+
+	translate([0,0,NoseCone_Z]){
+		ShowMyStager(ShowInternals=ShowInternals);
+			
+		if (ShowInternals){
+			translate([0,0,-36]) rotate([180,0,0]) 
+				PD_Petals(OD=Coupler_OD, Len=Petal_Len, nPetals=nPetals, Wall_t=1.6, AntiClimber_h=0, HasLocks=true);
+		}
+	}
+	
+	if (ShowInternals)			
+		translate([0,0,FwdSpringEnd_Z]) color("Tan") rotate([180,0,0]) FwdSpringEnd(nRopes=6, Skirt_h=25);
+
+	
+	if (ShowInternals){
+		translate([0,0,SCR_Z]) ShowCableRelease();
+		translate([0,0,SCR_Z-22.5]) color("LightGreen") rotate([0,0,180]) CRBBm_Activator();
+		translate([0,0,EBay_Z]) rotate([0,0,30]) EBayMC();
+	}
+		
+	if (!ShowInternals)
+		translate([0,0,BodyTube_Z]) color("LightBlue") 
+			Tube(OD=Body_OD, ID=Body_ID, Len=BoosterBodyTubeLen-Overlap*2, myfn=$preview? 90:360);
+		
+	
+	
+	if (ShowInternals)
+		translate([0,0,MotorTube_Z]) {
+			color("Blue") Tube(OD=MotorTube_OD, ID=MotorTube_ID, Len=BoosterMotorTubeLen-Overlap*2, myfn=$preview? 90:360);
+			translate([0,0,BoosterMotorTubeLen-18]) MotorTubeTopper(OD=Body_ID, ID=MotorTube_OD, MT_ID=MotorTube_ID);
+			//translate([0,0,BoosterMotorTubeLen+3]) color("LightGreen") Tube(OD=Coupler_OD, ID=Coupler_OD-2.4, Len=25, myfn=$preview? 90:180); // spacer
+		}	
+	translate([0,0,FinCan_Z]) color("Orange") BoosterFincan(LowerHalfOnly=false, UpperHalfOnly=false);
+	
+	for (j=[0:nFins-1]) rotate([0,0,360/nFins*j+180/nFins])
+		translate([0, Body_OD/2-BFin_Post_h, Fin_Z]) 
+			rotate([-90,0,0]) color("Orange") BoosterFin(false);
+		
+} // ShowBooster
+
+// ShowBooster(ShowInternals=true);
+// translate([0,0,TailCone_Len+BFinCan_Len+BoosterBodyTubeLen+36]) ShowRocket(ShowInternals=false, IsSustainer=true);
 
 module ShowCableRelease(){
 //*
@@ -381,6 +457,37 @@ module ShowCableRelease(){
 
 // ShowCableRelease();
 
+module ShowMyStager(ShowInternals=false){
+	translate([0,0,47]){
+		translate([0,0,0.1]) Stager_Cup_Light(Collar_H=15);
+		// rotate([-90,0,0]) Stager_LockRod(Adj=0.0);
+		color("Blue") Stager_Saucer(Tube_OD=Body_OD*CF_Comp+Vinyl_d, nLocks=nLocks);
+		
+		if (ShowInternals) translate([0,0,-18]) 
+			Stager_LockRing(Tube_OD=Body_OD*CF_Comp+Vinyl_d, nLocks=nLocks);
+			
+		translate([0,0,-0.1]) Stager_Mech(Tube_OD=Body_OD*CF_Comp+Vinyl_d, nLocks=nLocks, Skirt_ID=Body_ID*CF_Comp, Skirt_Len=2, nSkirtBolts=0, ShowLocked=true);
+		if (ShowInternals) translate([0,0,-22]) rotate([180,0,0]) 
+			color("Tan") Stager_OuterBearingCover(Tube_OD=Body_OD*CF_Comp+Vinyl_d, nLocks=nLocks); 
+	 
+		if (ShowInternals) translate([0,0,-23.7]) color("Orange") 
+			Stager_Indexer(Tube_OD=Body_OD*CF_Comp+Vinyl_d, nLocks=nLocks);
+			
+		if (ShowInternals) 
+			color("Tan") translate([0,0,-45]) Custom_ServoPlate();
+		// rotate([180,0,0]) Stager_ServoMount(Servo_ID=DefaultServo);
+
+		if (ShowInternals) 
+			translate([0,0,-71.6]) rotate([0,0,-30]) Stager_Mech_Mount(); // use with 
+			
+		if (ShowInternals) 
+			translate([0,0,-73]) rotate([180,0,0]) PetalHub(OD=Coupler_OD, Skirt_h=1, HasWirePath=true);
+	}
+} // ShowMyStager
+
+// ShowMyStager();
+
+
 module DeepSocket(){
 	Len=40;
 	Al_Tube_d=5/16*25.4;
@@ -400,6 +507,31 @@ module DeepSocket(){
 
 // rotate([180,0,0]) DeepSocket();
 
+module DeepSocket500(){
+	Len=40;
+	Al_Tube_d=1/2*25.4;
+	ID=5/16*25.4+IDXtra*4;
+	Depth=8;
+	
+	difference(){
+		cylinder(d=Al_Tube_d+6, h=Len); 
+			
+		// center hole
+		hull(){
+			translate([0,0,Depth-Overlap*2]) Bolt312NutHole(depth=Overlap);
+			translate([0,0,Depth]) cylinder(d=ID, h=4);
+		} // hull	
+		
+		cylinder(d=ID, h=Len);
+		translate([0,0,Depth+6]) cylinder(d=Al_Tube_d+IDXtra, h=Len);
+	
+		// nut
+		translate([0,0,-Overlap]) Bolt312NutHole(depth=Depth);
+	} // difference
+} // DeepSocket500
+
+// DeepSocket500();
+
 module NoseCone(){
 	
 	BluntOgiveNoseCone(ID=Body_OD-4.4, OD=Body_OD*CF_Comp+Vinyl_d, L=NC_Len, Base_L=NC_Base_L, nRivets=0, RivertInset=0, Tip_R=NC_Tip_R, HasThreadedTip=false, Wall_T=NC_Wall_t, Cut_d=0, LowerPortion=false, FillTip=true);
@@ -416,11 +548,22 @@ module NoseCone(){
 
 // NoseCone();
 
-module PetalHub(OD=Coupler_OD, Skirt_h=5){
+module PetalHub(OD=Coupler_OD, Skirt_h=5, HasWirePath=false){
 	// attaches to nose cone
 	
 	
 	CenterHole_d=5;
+	
+	module WireHole(){
+		// wire path
+		hull(){
+			translate([0,-OD/2+5,-Skirt_h-Overlap]) cylinder(d=3.5, h=Skirt_h+20);
+			translate([0,-OD/2+13,-Skirt_h-Overlap]) cylinder(d=3.5, h=Skirt_h+20);
+		} // hull
+		
+		// Shock cord, must miss servo
+		rotate([0,0,120]) translate([0,-10,-Skirt_h-Overlap]) cylinder(d=4, h=Skirt_h+20);
+	} // WireHole
 	
 	translate([0,0,-Skirt_h])
 	difference(){
@@ -440,8 +583,10 @@ module PetalHub(OD=Coupler_OD, Skirt_h=5){
 			cylinder(d=CenterHole_d+6, h=Skirt_h+Overlap);
 		} // union
 		
-		PD_PetalHubBoltPattern(OD=Coupler_OD, nBolts=nPetals*2) rotate([180,0,0]) Bolt4ClearHole();
+		PD_PetalHubBoltPattern(OD=Coupler_OD, nBolts=nPetals*2) rotate([180,0,0]) Bolt4ClearHole(depth=Skirt_h+10);
 		translate([0,0,-Overlap]) cylinder(d=CenterHole_d, h=Skirt_h+Overlap*3);
+		
+		if (HasWirePath) WireHole();
 	} // difference
 	
 	difference(){
@@ -460,74 +605,103 @@ module PetalHub(OD=Coupler_OD, Skirt_h=5){
 					
 		// center hole
 		//translate([0,0,-Overlap]) cylinder(d=28, h=30);
-		translate([0,0,-Skirt_h-Overlap]) cylinder(d=CenterHole_d, h=30);
+		translate([0,0,-Skirt_h-Overlap]) cylinder(d=CenterHole_d, h=Skirt_h+30);
 		
+		if (HasWirePath) WireHole();
+			
 	} // difference
 } // PetalHub
 
-// translate([0,0,1]) PetalHub(OD=Coupler_OD, Skirt_h=1);
+// translate([0,0,1]) PetalHub(OD=Coupler_OD, Skirt_h=1, HasWirePath=true);
 // translate([0,0,5]) PetalHub(OD=Coupler_OD, Skirt_h=5);
 
-
-	module FW_GPS_SW_Hole(){
-		// Switch
-		translate([5,-1.6-1,-1]) 
-			rotate([90,0,0]) cylinder(d=3, h=100);
+module DroguePetalHub(){
+	Skirt_H=15;
+	
+	difference(){
+		union(){
+			PetalHub(OD=Coupler_OD, Skirt_h=Skirt_H, HasWirePath=true);
+			translate([0,0,-Skirt_H]) cylinder(d=LockPin_d, h=Skirt_H+6);
 			
-		// Terminal block
-		translate([10,0,4]) rotate([0,0,180]) cube([7,10,7]);
-	} // FW_GPS_SW_Hole
+			translate([0,0,-4]) Tube(OD=Spring_ID, ID=Spring_ID-4.4, Len=5, myfn=90);
+		} // union
+		
+		Thread_d=Thread1024_d;
+		Thread_p=25.4/24;
+		
+		translate([0,0,-Skirt_H-Overlap]) 				
+		if ($preview){
+			cylinder(d=Thread_d, h=Skirt_H+7); 
+		}else{
+			ExternalThread(Pitch=Thread_p, Dia_Nominal=Thread_d+IDXtra*2, 
+					Length=Skirt_H+7, 
+					Step_a=2,TrimEnd=true,TrimRoot=true);
+		}
+	} // difference
+} // DroguePetalHub
+
+// DroguePetalHub();
 
 
-	module FW_GPS_Mount(){
-		Boss_d=10;
+module FW_GPS_SW_Hole(){
+	// Switch
+	translate([5,-1.6-1,-1]) 
+		rotate([90,0,0]) cylinder(d=3, h=100);
 		
-		module Boss(){
-			difference(){
-				rotate([-90,0,0]) cylinder(d1=7,d2=Boss_d,h=6);
-					
-				rotate([90,0,0]) Bolt4Hole();
-			} // difference
-		} // Boss
-		
-		// Backing plate
-		
-		Boss_Y=1;
-		Boss_Z=13.5;
-		Post_W=10;
-		Post_Y=6;
-		GPS_BoltSpace_X=12.7;
-		GPS_BoltSpace_Z=25.4;
-		
+	// Terminal block
+	translate([10,0,4]) rotate([0,0,180]) cube([7,10,7]);
+} // FW_GPS_SW_Hole
+
+
+module FW_GPS_Mount(){
+	Boss_d=10;
+	
+	module Boss(){
 		difference(){
-			union(){
-				hull(){
-					translate([-Post_W/2,Post_Y,0]) cube([Post_W,3,44]);
-					translate([-Post_W/2,Post_Y,0]) cube([Post_W,10,1]);
-				} // hull
+			rotate([-90,0,0]) cylinder(d1=7,d2=Boss_d,h=6);
 				
-				hull(){
-					translate([-GPS_BoltSpace_X/2,Post_Y+Boss_Y,Boss_Z]) rotate([-90,0,0]) cylinder(d=Boss_d,h=3);
-					translate([0,Post_Y,Boss_Z]) rotate([-90,0,0]) scale([0.1,1,1]) cylinder(d=Post_W+8,h=6);
-				} // hull
-				
-				hull(){
-					translate([GPS_BoltSpace_X/2,Post_Y+Boss_Y,Boss_Z+GPS_BoltSpace_Z]) rotate([-90,0,0]) cylinder(d=Boss_d,h=3);
-					translate([0,Post_Y,Boss_Z+GPS_BoltSpace_Z-4]) rotate([-90,0,0]) scale([0.1,1,1]) cylinder(d=Post_W+8,h=4);
-				} // hull
-				
-				translate([-GPS_BoltSpace_X/2,Boss_Y,Boss_Z]) Boss();
-				translate([-GPS_BoltSpace_X/2,Boss_Y,Boss_Z]) translate([GPS_BoltSpace_X,0,GPS_BoltSpace_Z]) Boss();
-			} // union
-			
-			translate([-GPS_BoltSpace_X/2,Boss_Y,Boss_Z]) rotate([90,0,0]) Bolt4Hole(depth=20);
-			translate([-GPS_BoltSpace_X/2,Boss_Y,Boss_Z]) translate([GPS_BoltSpace_X,0,GPS_BoltSpace_Z]) rotate([90,0,0]) Bolt4Hole();
+			rotate([90,0,0]) Bolt4Hole();
 		} // difference
+	} // Boss
+	
+	// Backing plate
+	
+	Boss_Y=1;
+	Boss_Z=13.5;
+	Post_W=10;
+	Post_Y=6;
+	GPS_BoltSpace_X=12.7;
+	GPS_BoltSpace_Z=25.4;
+	
+	difference(){
+		union(){
+			hull(){
+				translate([-Post_W/2,Post_Y,0]) cube([Post_W,3,44]);
+				translate([-Post_W/2,Post_Y,0]) cube([Post_W,10,1]);
+			} // hull
+			
+			hull(){
+				translate([-GPS_BoltSpace_X/2,Post_Y+Boss_Y,Boss_Z]) rotate([-90,0,0]) cylinder(d=Boss_d,h=3);
+				translate([0,Post_Y,Boss_Z]) rotate([-90,0,0]) scale([0.1,1,1]) cylinder(d=Post_W+8,h=6);
+			} // hull
+			
+			hull(){
+				translate([GPS_BoltSpace_X/2,Post_Y+Boss_Y,Boss_Z+GPS_BoltSpace_Z]) rotate([-90,0,0]) cylinder(d=Boss_d,h=3);
+				translate([0,Post_Y,Boss_Z+GPS_BoltSpace_Z-4]) rotate([-90,0,0]) scale([0.1,1,1]) cylinder(d=Post_W+8,h=4);
+			} // hull
+			
+			translate([-GPS_BoltSpace_X/2,Boss_Y,Boss_Z]) Boss();
+			translate([-GPS_BoltSpace_X/2,Boss_Y,Boss_Z]) translate([GPS_BoltSpace_X,0,GPS_BoltSpace_Z]) Boss();
+		} // union
 		
-	} // FW_GPS_Mount
+		translate([-GPS_BoltSpace_X/2,Boss_Y,Boss_Z]) rotate([90,0,0]) Bolt4Hole(depth=20);
+		translate([-GPS_BoltSpace_X/2,Boss_Y,Boss_Z]) translate([GPS_BoltSpace_X,0,GPS_BoltSpace_Z]) rotate([90,0,0]) Bolt4Hole();
+	} // difference
 	
-	
-	//translate([20,0,0]) rotate([0,0,90]) FW_GPS_Mount();
+} // FW_GPS_Mount
+
+
+//translate([20,0,0]) rotate([0,0,90]) FW_GPS_Mount();
 	
 module NC_GPS_Mounting_Plate(OD=Coupler_OD, Skirt_h=5, HasAlTube=true){
 // *** not finished ***
@@ -600,7 +774,71 @@ module NC_GPS_Mounting_Plate(OD=Coupler_OD, Skirt_h=5, HasAlTube=true){
 // translate([0,0,-0.1]) rotate([180,0,0]) 
 // NC_GPS_Mounting_Plate(OD=Coupler_OD, Skirt_h=4, HasAlTube=true);
 
-module FwdSpringEnd(nRopes=0, Skirt_h=25){
+module SpringNest(){
+	LargeSping_ID=SE_Spring_CS4323_ID();
+	LargeSping_OD=SE_Spring_CS4323_OD();
+	SmallSpring_ID=SE_Spring3670_ID();
+	SmallSpring_OD=SE_Spring3670_OD();
+	Len=SE_Spring3670_CBL();
+	Wall_t=1.2;
+	
+	difference(){
+		union(){
+			cylinder(d=LargeSping_OD, h=2);
+			cylinder(d=LargeSping_ID, h=5);
+			translate([0,0,5-Overlap]) cylinder(d1=LargeSping_ID, d2=LargeSping_ID-1, h=Len-5+Overlap);
+			cylinder(d=SmallSpring_OD+4.4, h=Len);
+		} // union
+		
+		// center hole
+		translate([0,0,-Overlap]) cylinder(d=SmallSpring_ID, h=Len+Overlap*2);
+		translate([0,0,-Overlap]) cylinder(d=SmallSpring_OD, h=Len-2);
+		translate([0,0,-Overlap]) cylinder(d1=SmallSpring_OD+1, d2=SmallSpring_OD, h=Len-4);
+		
+	} // difference
+} // SpringNest
+
+// SpringNest();
+
+module SpringSliderLight(){
+	OD=Coupler_OD;
+	Wall_t=1.2;
+	Len=35;
+	nSpokes=6;
+	SpringStop_Z=15;
+	Spring_OD=SE_Spring_CS4323_OD();
+	Spring_ID=SE_Spring_CS4323_ID();
+	Taper_d=1;
+	
+	// Outside
+	Tube(OD=OD, ID=OD-Wall_t*2, Len=Len, myfn=$preview? 90:180);
+	
+	// Inside
+	difference(){
+		union(){
+			// Spokes
+			for (j=[0:nSpokes-1]) rotate([0,0,360/nSpokes*j])
+				hull(){
+					translate([0,OD/2-Wall_t/2,0]) cylinder(d=Wall_t, h=Len);
+					translate([0,Spring_OD/2+Wall_t/2,0]) cylinder(d=Wall_t, h=Len);
+				} // hull
+			
+			translate([0,0,SpringStop_Z+8]) cylinder(d2=Spring_OD+Taper_d+Wall_t*2, d1=Spring_OD+Wall_t*2, h=Len-SpringStop_Z-8);
+			translate([0,0,SpringStop_Z-5-Overlap]) cylinder(d=Spring_OD+Wall_t*2, h=13+Overlap*2);
+			cylinder(d1=Spring_OD+Taper_d+Wall_t*2, d2=Spring_OD+Wall_t*2, h=SpringStop_Z-5);
+		} // union
+	
+		translate([0,0,SpringStop_Z+8]) cylinder(d2=Spring_OD+Taper_d, d1=Spring_OD, h=Len-SpringStop_Z-8+Overlap);
+		translate([0,0,SpringStop_Z+3]) cylinder(d=Spring_OD, h=6);
+		cylinder(d=Spring_ID-1, h=Len);
+		cylinder(d=Spring_OD, h=SpringStop_Z);
+		translate([0,0,-Overlap]) cylinder(d1=Spring_OD+Taper_d, d2=Spring_OD, h=SpringStop_Z-5+Overlap);
+	} // difference
+} // SpringSliderLight
+
+// SpringSliderLight();
+
+module FwdSpringEnd(nRopes=0, Skirt_h=25, HasServoConnector=false){
 // This locks onto the bottom of the petals.
 	CR_t=2;
 	Rope_d=3;
@@ -612,35 +850,38 @@ module FwdSpringEnd(nRopes=0, Skirt_h=25){
 	nVentHoles=5;
 	VentHole_d=7;
 	VentHole_Y=LockPin_d/2+VentHole_d/2;
+	myFn=floor(Body_OD)*3;
 	
 	difference(){
 		union(){
 			difference(){
-				cylinder(d=OD, h=6, $fn=$preview? 90:360);
+				cylinder(d=OD, h=6, $fn=$preview? 90:myFn);
 				
-				translate([0,0,CR_t-Overlap]) cylinder(d1=Coupler_ID-4, d2=Coupler_ID, h=4+Overlap*2, $fn=$preview? 90:360);
+				translate([0,0,CR_t-Overlap]) cylinder(d1=Coupler_ID-4, d2=Coupler_ID, h=4+Overlap*2, $fn=$preview? 90:myFn);
 			} // difference
 			
 			cylinder(d=LockPin_d, h=Boss_t);
 			
 			// Skirt
-			Tube(OD=Coupler_OD, ID=Coupler_ID, Len=Skirt_h, myfn=$preview? 90:360);
+			Tube(OD=Coupler_OD, ID=Coupler_ID, Len=Skirt_h, myfn=$preview? 90:myFn);
 			
 			difference(){
-				cylinder(d=Coupler_OD, h=CR_t+5.5, $fn=$preview? 90:360);
+				cylinder(d=Coupler_OD, h=CR_t+5.5, $fn=$preview? 90:myFn);
 				
-				translate([0,0,CR_t]) cylinder(d=PetalLock_ID-2.8, h=4.5, $fn=$preview? 90:360);
+				translate([0,0,CR_t]) cylinder(d=PetalLock_ID-2.8, h=4.5, $fn=$preview? 90:myFn);
 				
-				translate([0,0,CR_t+3.5]) cylinder(d1=PetalLock_ID-2.8, d2=Coupler_ID, h=3.5+Overlap, $fn=$preview? 90:360);
+				translate([0,0,CR_t+3.5]) cylinder(d1=PetalLock_ID-2.8, d2=Coupler_ID, h=3.5+Overlap, $fn=$preview? 90:myFn);
 			} // difference
 			
 			// Spring
-			Tube(OD=Spring_ID, ID=Spring_ID-4.4, Len=CR_t+4, myfn=$preview? 90:360);
+			Tube(OD=Spring_ID, ID=Spring_ID-4.4, Len=CR_t+4, myfn=$preview? 90:myFn);
 			
 		} // union
 		
+		// Servo connector
+		if (HasServoConnector) rotate([0,0,30]) translate([0,OD/2-7,-Overlap]) RoundRect(X=11, Y=4, Z=10, R=0.2);
+		
 		// Center hole
-		Thread1024_d=0.190*25.4;
 		Thread_d=Thread1024_d;
 		Thread_p=25.4/24;
 		translate([0,0,-Overlap]) 
@@ -661,12 +902,12 @@ module FwdSpringEnd(nRopes=0, Skirt_h=25){
 		
 		// Petal Locks
 		difference(){
-			translate([0,0,-Overlap]) cylinder(d=Coupler_OD+1, h=4.5+Overlap*2, $fn=$preview? 90:360);
+			translate([0,0,-Overlap]) cylinder(d=Coupler_OD+1, h=4.5+Overlap*2, $fn=$preview? 90:myFn);
 			
 			// Puller ring
-			translate([0,0,-Overlap*2]) cylinder(d=Petal_ID, h=2+Overlap*3, $fn=$preview? 90:360);
+			translate([0,0,-Overlap*2]) cylinder(d=Petal_ID, h=2+Overlap*3, $fn=$preview? 90:myFn);
 			// Petal lock
-			translate([0,0,-Overlap*2]) cylinder(d=PetalLock_ID, h=4.5+Overlap*3, $fn=$preview? 90:360);
+			translate([0,0,-Overlap*2]) cylinder(d=PetalLock_ID, h=4.5+Overlap*3, $fn=$preview? 90:myFn);
 			
 		} // difference
 		
@@ -679,7 +920,92 @@ module FwdSpringEnd(nRopes=0, Skirt_h=25){
 	
 } // FwdSpringEnd
 
-// FwdSpringEnd(nRopes=6);
+// FwdSpringEnd(nRopes=6, HasServoConnector=true);
+
+
+module AftSpringEnd(nRopes=0, Skirt_h=25){
+// This locks onto the bottom of the petals.
+// For drogue bay
+
+	CR_t=2;
+	Rope_d=3;
+	OD=Coupler_OD;
+	Petal_ID=Coupler_OD-3.5; // should fit loose
+	PetalLock_ID=Coupler_OD-7.5; // Should not touch at all
+	ShockCord_Y=Coupler_ID/2-10;
+	Boss_t=4;
+	nVentHoles=5;
+	VentHole_d=7;
+	VentHole_Y=15+VentHole_d/2;
+	Wall_t=1.8;
+	myFn=floor(Body_OD)*3;
+	
+	difference(){
+		union(){
+			difference(){
+				cylinder(d=OD, h=6, $fn=$preview? 90:myFn);
+				
+				translate([0,0,CR_t-Overlap]) cylinder(d1=Coupler_ID-4, d2=Coupler_ID, h=4+Overlap*2, $fn=$preview? 90:myFn);
+			} // difference
+			
+			cylinder(d=LockPin_d, h=Boss_t);
+			
+			// Skirt
+			Tube(OD=Coupler_OD, ID=Coupler_OD-Wall_t*2, Len=Skirt_h*2+3, myfn=$preview? 90:myFn);
+			
+			// Tube Stop
+			translate([0,0,Skirt_h]) Tube(OD=Body_OD*CF_Comp+Vinyl_d, ID=Coupler_OD-Wall_t*2, Len=3, myfn=$preview? 90:myFn);
+			
+			difference(){
+				cylinder(d=Coupler_OD, h=CR_t+5.5, $fn=$preview? 90:myFn);
+				
+				translate([0,0,CR_t]) cylinder(d=PetalLock_ID-2.8, h=4.5, $fn=$preview? 90:myFn);
+				
+				translate([0,0,CR_t+3.5]) cylinder(d1=PetalLock_ID-2.8, d2=Coupler_ID, h=3.5+Overlap, $fn=$preview? 90:myFn);
+			} // difference
+			
+		} // union
+		
+		// Center hole
+		Thread_d=MotorBolt_d;
+		Thread_p=MotorBoltPitch;
+		translate([0,0,-Overlap]) 
+			if ($preview){
+				cylinder(d=Thread_d, h=Boss_t+Overlap*2); 
+			}else{
+				ExternalThread(Pitch=Thread_p, Dia_Nominal=Thread_d+IDXtra*2, 
+						Length=Boss_t+Overlap*2, 
+						Step_a=2,TrimEnd=true,TrimRoot=true);
+			}
+		
+		// Air Vent Holes
+		for (j=[0:nVentHoles-1]) rotate([0,0,360/nVentHoles*j]) 
+			translate([0,VentHole_Y,-Overlap]) cylinder(d=VentHole_d, h=CR_t+Overlap*2);
+		
+		// Shock cord
+		rotate([0,0,180/nVentHoles]) translate([0,ShockCord_Y,-Overlap]) cylinder(d=4, h=30);
+		
+		// Petal Locks
+		difference(){
+			translate([0,0,-Overlap]) cylinder(d=Coupler_OD+1, h=4.5+Overlap*2, $fn=$preview? 90:myFn);
+			
+			// Puller ring
+			translate([0,0,-Overlap*2]) cylinder(d=Petal_ID, h=2+Overlap*3, $fn=$preview? 90:myFn);
+			// Petal lock
+			translate([0,0,-Overlap*2]) cylinder(d=PetalLock_ID, h=4.5+Overlap*3, $fn=$preview? 90:myFn);
+			
+		} // difference
+		
+		// Rope holes
+		if (nRopes>0) for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) 
+			translate([0,Spring_OD/2+Rope_d/2+2,-Overlap]) cylinder(d=Rope_d, h=CR_t+Overlap*2);
+			
+		//if ($preview) translate([0,0,-Overlap]) cube([100,100,100]);
+	} // difference
+	
+} // AftSpringEnd
+
+// AftSpringEnd();
 
 module Custom_CenteringRingMount(){
 	ShockCordHole_d=5;
@@ -917,6 +1243,7 @@ module CRBBm_Activator(){
 } // CRBBm_Activator
 
 // translate([0,0,81.7]) rotate([0,0,180]) CRBBm_Activator();
+// translate([0,0,-120]) rotate([0,0,155]) EBayMC(Light=true, HasRS_Mount=true);
 // translate([0,0,81.7+22.2]) ShowCableRelease();
 
 module EBay(Light=false){
@@ -1029,11 +1356,11 @@ module EBay(Light=false){
 // EBay(Light=true);
 //translate([0,0,85]) rotate([0,0,155]) CRBBm_Activator();
 
-module EBayMC(Light=true){
+module EBayMC(Light=true, HasRS_Mount=false){
 	// Mission Control version
 	// Featherweight Mag Switch, Rocket Servo PCBA, 2S LiPo
 		
-	Mag_SW_a=-135;
+	Mag_SW_a=-122;
 	Mag_SW_X=23.5;
 	Mag_SW_Y=0;
 	Mag_SW_Z=18;
@@ -1046,6 +1373,7 @@ module EBayMC(Light=true){
 	Battery_X=0;
 	Battery_Y=-20;
 	Battery_a=0;
+	BattRotation_a=90;
 
 	// Battery size
 	Batt_X=20;
@@ -1087,13 +1415,14 @@ module EBayMC(Light=true){
 		} // difference
 	} // BattPocket
 	
-	rotate([0,0,Battery_a]) translate([Battery_X,Battery_Y,Battery_Z]) BattPocket();
+	rotate([0,0,Battery_a]) translate([Battery_X,Battery_Y,Battery_Z]) rotate([0,0,BattRotation_a]) BattPocket();
 	
 	// Base Plate
 	difference(){
 		rotate([0,0,259+180]) EBay_BasePlate(OD=Coupler_OD, IsLowerPlate=false, HasSecBolts=true, ShockCord_a=-20);
+		
 		// Battery pushing hole and cleanup inside
-		rotate([0,0,Battery_a]) translate([Battery_X,Battery_Y,Battery_Z]) rotate([0,0,-90]) {
+		rotate([0,0,Battery_a]) translate([Battery_X,Battery_Y,Battery_Z]) rotate([0,0,BattRotation_a]) rotate([0,0,-90]) {
 			translate([0,0,2]) BattHole(Xtra_X=0, Xtra_Y=0, Xtra_Z=4);
 			translate([0,0,-Batt_Z/2-4-Overlap]) cylinder(d=5,h=5);}
 	} // difference
@@ -1123,12 +1452,15 @@ module EBayMC(Light=true){
 			} // hull
 			
 			// Threaded rod 
-			translate([0,0,Alt_Z+MC_Size_Z()/2-2]) 
+			translate([0, 0, Alt_Z+MC_Size_Z()/2-2]) 
 				hull(){
 					cylinder(d=MotorBolt_d+4.4, h=5, center=true);
 					translate([0, Alt_Y-AltBoltBoss_h-2.5, 0]) scale([1,0.1,1]) cylinder(d=MotorBolt_d+10, h=5, center=true);
 				} // hull
 		} // union
+		
+		// Terminal block clearance
+		translate([-27/2,0,Alt_Z+MC_Size_Z()/2-20.7]) cube([27,20,15]);
 		
 		// connector
 		translate([0, Alt_Y-AltBoltBoss_h-1.5, Alt_Z-MC_Size_Z()/2+5.5]) cube([21,20,12], center=true);
@@ -1137,22 +1469,44 @@ module EBayMC(Light=true){
 		translate([0, Alt_Y-AltBoltBoss_h-1.5, Alt_Z+2.5]) cube([26,20,75], center=true);
 		
 		// Threaded rod
-		cylinder(d=MotorBolt_d, h=EBayMC_Len+10);
+		//cylinder(d=MotorBolt_d, h=EBayMC_Len+10);
+		Boss_t=5;
+		Thread_d=MotorBolt_d;
+		Thread_p=MotorBoltPitch;
+		
+		// Align to lower thread
+		translate([0,0,-Overlap+floor((Alt_Z+MC_Size_Z()/2-2-Boss_t/2)/Thread_p)*Thread_p])
+			if ($preview){
+				cylinder(d=Thread_d, h=Boss_t+Thread_p); 
+			}else{
+				ExternalThread(Pitch=Thread_p, Dia_Nominal=Thread_d+IDXtra*2, 
+						Length=Boss_t+Thread_p, 
+						Step_a=2,TrimEnd=true,TrimRoot=true);
+			} // if
+	
 		
 		// alt bolts
 		translate([0,Alt_Y,Alt_Z]) rotate([90,0,0]) AltHoles() rotate([180,0,0]) Bolt4Hole(depth=AltBoltBoss_h+5);
 	} // difference
 	
+	if (HasRS_Mount){
+		translate([12,-2,0]) rotate([0,0,90]) RocketServoMountVert(Base_h=1);
+		translate([-12,-2,0]) rotate([0,0,-90]) RocketServoMountVert(Base_h=1);
+	}
+	
 	// LED face plate
 	MC_LED_Z=Alt_Z-MC_Size_Z()/2+MC_LED_Z();
 	MC_ArmScrew_Z=Alt_Z-MC_Size_Z()/2+MC_ArmingScrew_Z();
 	RS_LED_Z=MC_LED_Z-7;
+	RS2_LED_Z=MC_ArmScrew_Z-7;
 	difference(){
 		translate([0,Body_ID/2-2.2,0]) RoundRect(X=12, Y=3, Z=MC_LED_Z()+15, R=1.3);
 		
 		translate([0,Alt_Y,MC_LED_Z]) rotate([-90,0,0]) cylinder(d=5, h=20);
 		translate([0,Alt_Y,MC_ArmScrew_Z]) rotate([-90,0,0]) cylinder(d=5, h=20);
+		
 		translate([0,Alt_Y,RS_LED_Z]) rotate([-90,0,0]) cylinder(d=3, h=20);
+		translate([0,Alt_Y,RS2_LED_Z]) rotate([-90,0,0]) cylinder(d=3, h=20);
 	} // difference
 	
 	rotate([0,0,Mag_SW_a]) translate([Mag_SW_X,Mag_SW_Y+2,Mag_SW_Z]) rotate([90,0,0]) FW_MagSw_Mount(HasMountingEars=false);
@@ -1161,7 +1515,236 @@ module EBayMC(Light=true){
 	//if ($preview) translate([0,Alt_Y,Alt_Z]) rotate([0,0,180]) rotate([90,0,0]) AltPCB();
 } // EBayMC
 
-// EBayMC();
+// EBayMC(Light=true, HasRS_Mount=true);
+
+module SustainerMiddleRing(Len=30){
+	OD=Coupler_OD;
+	nSpokes=6;
+	Spoke_t=1.2;
+	Wall_t=1.8;
+	nRivets=3;
+	Thread_d=MotorBolt_d;
+	Thread_p=MotorBoltPitch;
+	nOuterBolts=2;
+	Outer_BC_d=SecurityRod_BC_d;
+	
+	difference(){
+		union(){
+			cylinder(d=Thread_d+4.4, h=Len);
+			
+			for (j=[0:nSpokes-1]) rotate([0,0,360/nSpokes*j])
+					hull(){
+						H=(j==1)? 8:Len;
+						cylinder(d=Spoke_t, h=H);
+						translate([0,OD/2-Wall_t,0]) cylinder(d=Spoke_t, h=H);
+					} // hull
+				
+			
+			Tube(OD=OD, ID=OD-Wall_t*2, Len=Len, myfn=$preview? 36:180);
+			
+			// #10-24 threaded rods
+			for (j=[0:nOuterBolts-1]) rotate([0,0,360/nOuterBolts*j])
+				hull(){
+					translate([0,Outer_BC_d/2,0]) cylinder(d=Thread1024_d+4.4, h=Len);
+					translate([0,OD/2-1,0]) scale([1,0.1,1]) cylinder(d=Thread1024_d+6.4, h=Len);
+				} // hull
+			
+			// shock cord
+			ShockCord_a=-30;
+			rotate([0,0,ShockCord_a])
+				translate([0,10,Len/2]) cylinder(d=11, h=10, center=true);
+				
+		
+			
+		} // union
+		
+		// shock cord
+			ShockCord_a=-30;
+			rotate([0,0,ShockCord_a])
+				translate([0,10,Len/2]) cylinder(d=3.6, h=11, center=true);
+				
+		for (j=[0:nRivets-1]) rotate([0,0,360/nRivets*j+180/nSpokes])
+			translate([0,OD/2,Len/2]) rotate([90,0,0]) cylinder(d=4, h=6, center=true);
+		
+		// center Thread
+		translate([0,0,-Overlap])
+			if ($preview){
+				cylinder(d=Thread_d, h=Len+Overlap*2); 
+			}else{
+				ExternalThread(Pitch=Thread_p, Dia_Nominal=Thread_d+IDXtra*2, 
+						Length=Len+Overlap*2, 
+						Step_a=2,TrimEnd=true,TrimRoot=true);
+			} // if
+			
+		for (j=[0:nOuterBolts-1]) rotate([0,0,360/nOuterBolts*j])
+			translate([0,Outer_BC_d/2,-Overlap]) {
+				Thread_d=Thread1024_d;
+				Thread_p=25.4/24;
+						
+				if ($preview){
+					cylinder(d=Thread_d, h=Len+Overlap*2); 
+				}else{
+					ExternalThread(Pitch=Thread_p, Dia_Nominal=Thread_d+IDXtra*2, 
+							Length=Len+Overlap*2, 
+							Step_a=2,TrimEnd=true,TrimRoot=true);
+				}}
+	} // difference
+
+} // SustainerMiddleRing
+
+// SustainerMiddleRing();
+
+module ShortMotorAdaptor(Len=48){ // One 38mm grain is 48mm in case length
+	// a.k.a. Long Nut
+	
+	Thread_d=MotorBolt_d;
+	Thread_p=MotorBoltPitch;
+		
+	difference(){
+		cylinder(d=1/2*25.4*1.1339, h=Len, $fn=6);
+		
+		// Thread
+		translate([0,0,-Overlap])
+			if ($preview){
+				cylinder(d=Thread_d, h=Len+Overlap*2); 
+			}else{
+				ExternalThread(Pitch=Thread_p, Dia_Nominal=Thread_d+IDXtra*2, 
+						Length=Len+Overlap*2, 
+						Step_a=2,TrimEnd=true,TrimRoot=true);
+			} // if
+	} // difference
+} // ShortMotorAdaptor
+
+//ShortMotorAdaptor();
+
+module ExtensionAlignmentRing(){
+	OD=MotorTube_ID-1;
+	Len=6;
+	nSpokes=6;
+	Wall_t=1.2;
+	Thread_d=MotorBolt_d;
+	Thread_p=MotorBoltPitch;
+	
+	difference(){
+		union(){
+			rotate([0,0,30]) cylinder(d=1/2*25.4*1.1339, h=Len, $fn=6);
+			Tube(OD=OD, ID=OD-Wall_t*2, Len=3, myfn=$preview? 36:90);
+			for (j=[0:nSpokes-1]) rotate([0,0,360/nSpokes*j])
+				hull(){
+					cylinder(d=Wall_t, h=3);
+					translate([0,OD/2-Wall_t,0]) cylinder(d=Wall_t, h=3);
+				} // hull
+		} // union
+		
+		// Thread
+		translate([0,0,-Overlap])
+			if ($preview){
+				cylinder(d=Thread_d, h=Len+Overlap*2); 
+			}else{
+				ExternalThread(Pitch=Thread_p, Dia_Nominal=Thread_d+IDXtra*2, 
+						Length=Len+Overlap*2, 
+						Step_a=2,TrimEnd=true,TrimRoot=true);
+			} // if
+		
+	} // difference
+} // ExtensionAlignmentRing
+
+// ExtensionAlignmentRing();
+
+module EBayMC_Jig(){
+// for drilling airframe holes
+	OD=Body_OD*CF_Comp+Vinyl_d;
+	
+	
+	EBayMC_Len=MC_Size_Z()+10;
+	Alt_Z=EBayMC_Len/2+2;
+	Alt_Y=Body_ID/2-15;
+	MC_LED_Z=Alt_Z-MC_Size_Z()/2+MC_LED_Z();
+	MC_ArmScrew_Z=Alt_Z-MC_Size_Z()/2+MC_ArmingScrew_Z();
+	RS_LED_Z=MC_LED_Z-7;
+	RS2_LED_Z=MC_ArmScrew_Z-7;
+	RailButton_Z=-20;
+	Lock_Unlock_Z=133;
+	Lock_Unlock_a=-90;
+	
+	Rivet_Z=108.5;
+	
+	nDDRivets=3;
+	RivetDD_Z=-15;
+	RivetDD_a=-11;
+	
+	Rivet2_Z=-34;
+	Rivet2_a=-22;
+	
+	echo("Top Rivet ",Rivet_Z);
+	echo("Alt Sw ",MC_ArmScrew_Z);
+	echo("Bottom Rivet ",Rivet2_Z);
+	
+		
+	difference(){
+		translate([0,0,RailButton_Z-20]) Tube(OD=OD+3.6, ID=OD, Len=180, myfn=$preview? 90:180);
+	
+		// LEDs and Alt switch
+		translate([0,OD/2,MC_LED_Z]) rotate([-90,0,0]) cylinder(d=3, h=20, center=true);
+		translate([0,OD/2,MC_ArmScrew_Z]) rotate([-90,0,0]) cylinder(d=3, h=20, center=true);
+		translate([0,OD/2,RS_LED_Z]) rotate([-90,0,0]) cylinder(d=3, h=20, center=true);
+		translate([0,OD/2,RS2_LED_Z]) rotate([-90,0,0]) cylinder(d=3, h=20, center=true);
+		
+		// Rivet
+		translate([0,OD/2,Rivet_Z]) rotate([-90,0,0]) cylinder(d=4, h=20, center=true);
+		rotate([0,0,Rivet2_a]) translate([0,OD/2,Rivet2_Z]) rotate([-90,0,0]) cylinder(d=4, h=20, center=true);
+		
+		// Dual deploy ring rivets
+		for (j=[0:nDDRivets-1]) rotate([0,0,360/nDDRivets*j+RivetDD_a])
+			translate([0,OD/2,RivetDD_Z]) rotate([-90,0,0]) cylinder(d=4, h=20, center=true);
+		
+		// Rail button
+		rotate([0,0,180]) translate([0,OD/2,RailButton_Z]) rotate([-90,0,0]) cylinder(d=3, h=20, center=true);
+		
+		// Lock/unlock access hole
+		rotate([0,0,Lock_Unlock_a]) translate([0,OD/2,Lock_Unlock_Z]) rotate([-90,0,0]) cylinder(d=3, h=20, center=true);
+		
+		
+	} // difference
+} // EBayMC_Jig
+
+// EBayMC_Jig();
+/*
+ EBayMC(Light=true, HasRS_Mount=true);
+ translate([0,0,-0.1]) rotate([0,0,79]) rotate([180,0,0]) color("Gray") SustainerMiddleRing();
+ translate([0,0,-46.7]) rotate([180,0,0]) rotate([0,0,47]) CRBBm_Activator();
+/**/
+
+module RocketServoMountVert(Base_h=0){
+	RS_PCB_X=15;
+	RS_PCB_Z=61;
+	RS_PCB_t=1.6;
+	Wall_t=1.2;
+	
+	// Base
+	difference(){
+		translate([0,1,0]) RoundRect(X=RS_PCB_X+1+Wall_t*2, Y=7, Z=4+Base_h, R=0.5);
+		
+		translate([0,0,4+Base_h]) cube([RS_PCB_X+IDXtra*2, RS_PCB_t+IDXtra*2, 4], center=true);
+	} // difference
+	
+	translate([0,0,2+45+Base_h]) 
+		difference(){
+			hull(){
+				translate([0,2,2]) RoundRect(X=RS_PCB_X+1+Wall_t*2, Y=4, Z=2, R=0.5);
+				translate([0,3,-2]) RoundRect(X=RS_PCB_X+1+Wall_t*2, Y=1.5, Z=1, R=0.5);
+			} // hull
+			
+			translate([0,-2+RS_PCB_t/2,2]) cube([RS_PCB_X+IDXtra*2, 4, 25], center=true);
+			
+			translate([0,-2+RS_PCB_t/2,2]) cube([RS_PCB_X-2, 8, 25], center=true);
+		} //difference
+	
+	// post
+	translate([0,4,0]) RoundRect(X=RS_PCB_X+1+Wall_t*2, Y=3, Z=51+Base_h, R=0.5);
+} // RocketServoMountVert
+
+//RocketServoMountVert(Base_h=0);
 
 module EBay_TopPlate(OD=Coupler_OD){
 	nOuterBolts=2;
@@ -1170,7 +1753,12 @@ module EBay_TopPlate(OD=Coupler_OD){
 	Thread1024_d=0.190*25.4;
 	Activator_a=178;
 	
-	Tube(OD=OD, ID=OD-4, Len=Boss_t, myfn=$preview? 90:360);
+	difference(){
+		Tube(OD=OD, ID=OD-4, Len=Boss_t, myfn=$preview? 90:180);
+		
+		// Rivet hole
+		rotate([0,0,101]) translate([0,OD/2,Boss_t/2]) rotate([90,0,0]) cylinder(d=4, h=10, center=true);
+	} // difference
 	
 	difference(){
 		if (nOuterBolts>0)
@@ -1230,7 +1818,7 @@ module EBay_BasePlate(OD=Coupler_OD, IsLowerPlate=false, HasSecBolts=false, Shoc
 	difference(){
 		union(){
 			cylinder(d=OD, h=Plate_t);
-			Tube(OD=Coupler_OD, ID=Coupler_ID, Len=Boss_t, myfn=$preview? 90:360);
+			Tube(OD=Coupler_OD, ID=Coupler_ID, Len=Boss_t, myfn=$preview? 90:180);
 			
 			// Bolt bosses
 			if (!IsLowerPlate || HasSecBolts)
@@ -1353,7 +1941,7 @@ module MotorNutStop(MT_ID=MotorTube_ID, Hole_d=6.35){
 
 // MotorNutStop();
 
-module Fincan(LowerHalfOnly=false, UpperHalfOnly=false, HasSecurityRods=false, HasMotorRetainer=false){
+module Fincan(LowerHalfOnly=false, UpperHalfOnly=false, HasSecurityRods=false, HasMotorRetainer=false, IsSustainer=false){
 	Wall_t=1.2;
 	HasMotorSleeve=false;
 	AftClosure_OD=HasMotorRetainer? 32.2+IDXtra*2:0;
@@ -1365,23 +1953,42 @@ module Fincan(LowerHalfOnly=false, UpperHalfOnly=false, HasSecurityRods=false, H
 	SecurityWrenchHole_h=TailCone_Len-5;
 	SecurityRodHole_a=17.5;
 	
+	TC_Len=IsSustainer? 0:TailCone_Len;
+	OD=Body_OD*CF_Comp+Vinyl_d;
+	MotorTubeHole_d=MotorTube_OD+IDXtra*2;
+	myfn=180;
+	
 	echo(str("Body OD w/ Comp = ",Body_OD*CF_Comp+Vinyl_d));
 	echo(str("Target OD = ", Body_OD+Vinyl_d));
 	
 	difference(){
-	
-		FC2_FinCanLight(Body_OD=Body_OD*CF_Comp+Vinyl_d, Body_ID=Body_ID*CF_Comp, Can_Len=FinCan_Len,
+		union(){
+			FC2_FinCanLight(Body_OD=OD, Body_ID=Body_ID*CF_Comp, Can_Len=FinCan_Len,
 				MotorTube_OD=MotorTube_OD, 
 				nFins=nFins, HasIntegratedCoupler=true, HasFwdCenteringRing=false, Coupler_Len=10, nCouplerBolts=0,
 				HasMotorSleeve=HasMotorSleeve, 
 				Fin_Root_W=Fin_Root_W, Fin_Root_L=Fin_Root_L, Fin_Post_h=Fin_Post_h, Fin_Chamfer_L=Fin_Chamfer_L,
-				Cone_Len=TailCone_Len, ThreadedTC=false, Extra_OD=TailConeExtra_OD,
+				Cone_Len=TC_Len, ThreadedTC=false, Extra_OD=TailConeExtra_OD,
 				LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly,
 				Wall_t=Wall_t,
 				AftClosure_OD=AftClosure_OD, AftClosure_Len=AftClosure_Len, IncludeCenteringRings=false);
+				
+			if (IsSustainer){
+				//translate([0,0,-8]) Tube(OD=MotorTubeHole_d+3.6, ID=MotorTubeHole_d, Len=8, myfn=$preview? 90:myfn);
+				
+				difference(){
+					translate([0,0,-Overlap]) Tube(OD=OD, ID=MotorTubeHole_d, Len=FinInset_Len-1, myfn=$preview? 90:myfn);
+						
+					translate([0,0,-4-Overlap]) rotate([0,0,90]) Stager_CupHoles(Tube_OD=OD, nLocks=nLocks, BoltsOn=true, Collar_h=0);
+				} // difference
+			}
+		} // union
 
+		// Wire path
+		if (IsSustainer)
+			rotate([0,0,156]) translate([0,OD/2-8,-5]) cylinder(d=5/16*25.4+IDXtra, h=20);
 		
-		//*
+				//*
 		// Snap ring groove
 		if (HasMotorRetainer){
 			translate([0,0,-TailCone_Len+3]) cylinder(d=AftClosure_OD+2.5, h=2);
@@ -1403,6 +2010,7 @@ module Fincan(LowerHalfOnly=false, UpperHalfOnly=false, HasSecurityRods=false, H
 	} // difference
 } // Fincan
 
+// Fincan(LowerHalfOnly=false, UpperHalfOnly=false, HasSecurityRods=false, HasMotorRetainer=false, IsSustainer=true);
 // Fincan(LowerHalfOnly=false, UpperHalfOnly=false, HasSecurityRods=false, HasMotorRetainer=false);
 // Fincan(LowerHalfOnly=false, UpperHalfOnly=true);
 // Fincan(LowerHalfOnly=true, UpperHalfOnly=false);
@@ -1536,6 +2144,102 @@ module ThreadedForwardClosure(){
 } // ThreadedForwardClosure
 
 // ThreadedForwardClosure();
+
+module Stager_Cup_Light(Collar_H=17){
+	OD=Body_OD*CF_Comp+Vinyl_d;
+	
+	difference(){
+		Stager_Cup(Tube_OD=OD, nLocks=nLocks, BoltsOn=true, Collar_h=Collar_H);
+		
+		translate([0,0,-4]) cylinder(d=Body_ID-12.7, h=10, $fn=180);
+		translate([0,0,4]) cylinder(d1=Body_ID-13, d2=Body_ID-7, h=6, $fn=180);
+		translate([0,0,10-Overlap]) cylinder(d=Body_ID-7, h=4, $fn=180);
+		
+		rotate([0,0,156+90]) translate([0,OD/2-8,0]) cylinder(d=5/16*25.4+IDXtra, h=30);
+	} // difference
+} // Stager_Cup_Light
+
+// Stager_Cup_Light(Collar_H=15);
+
+module Stager_Mech_Mount(Len=26, HasSkirtHoles=false){
+	myfn=180;
+	nBolts=4;
+	OD=Coupler_OD*CF_Comp;
+	Boss_h=4;
+	Wall_t=1.2;
+	TopBolt_a=50;
+	
+	module BoltBoss(){
+		hull(){
+			cylinder(d=7, h=Boss_h);
+			translate([0,3.0,0]) scale([1,0.2,1]) cylinder(d=9, h=Boss_h);
+		} // hull
+	} // BoltBoss
+	
+	difference(){
+		union(){
+			Tube(OD=OD, ID=OD-Wall_t*2, Len=Len, myfn=$preview? 90:myfn);
+			
+			PD_PetalHubBoltPattern(OD=Coupler_OD, nBolts=nPetals*2) BoltBoss();
+			translate([0,0,Len-Boss_h])
+				ServoPlateBoltPattern(TopBolt_a) BoltBoss();
+		} // union
+		
+		if (HasSkirtHoles)
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) translate([0,OD/2,Len-7.5])
+			rotate([-90,0,0]) Bolt4Hole();
+		
+		PD_PetalHubBoltPattern(OD=Coupler_OD, nBolts=nPetals*2) rotate([180,0,0]) Bolt4Hole();
+
+		translate([0,0,Len-Boss_h])
+			ServoPlateBoltPattern(TopBolt_a) rotate([180,0,0]) Bolt4ClearHole();		
+	
+	} // difference
+} // Stager_Mech_Mount
+
+// translate([0,0,-26]) rotate([0,0,-30]) Stager_Mech_Mount();
+
+module ServoPlateBoltPattern(Angle=0){
+	Hole_a=[0,60,120,175,260,300];
+	Hole_Y=Coupler_OD*CF_Comp/2-Bolt4Inset;
+	
+	for (j=Hole_a) rotate([0,0,j+Angle]) translate([0,Hole_Y,0]) children();
+} // ServoPlateBoltPattern
+
+// ServoPlateBoltPattern() Bolt4Hole();
+
+module Custom_ServoPlate(){
+	Bolt_a=20;
+	
+	difference(){
+		Stager_ServoPlate(Tube_OD=Body_OD*CF_Comp+Vinyl_d, Skirt_ID=Body_ID*CF_Comp, nLocks=nLocks, OverCenter=IDXtra+0.8, Servo_ID=DefaultServo);
+		
+		translate([0,0,5])
+			ServoPlateBoltPattern(20) Bolt4Hole();
+	} // difference
+} // Custom_ServoPlate
+
+// Custom_ServoPlate();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

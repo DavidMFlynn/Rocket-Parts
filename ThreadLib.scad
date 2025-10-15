@@ -32,9 +32,11 @@ Overlap=0.05;
 IDXtra=0.2;
 $fn=$preview? 24:90;
 
-module ExternalThread_Triangle(Pitch=1) {
-	//H=0.8660254*Pitch; // 30° Thread height, peak to peak
-	H = 0.5*Pitch; // 45°
+function Pitch_a(A=30)=(A==30)? 0.8660254:0.5; // 30° Thread height, peak to peak : 45°
+
+
+module ExternalThread_Triangle(Pitch=1, Tooth_a=45) {
+	H = Pitch_a(Tooth_a)*Pitch; 
 	
 	polyhedron(points=[[-H/8,-0.001,-Pitch/16],[-H,-0.001,-Pitch/2],[-H,-0.001,Pitch/2],[-H/8,-0.001,Pitch/16],
 		[-H/8,0.001,-Pitch/16],[-H,0.001,-Pitch/2],[-H,0.001,Pitch/2],[-H/8,0.001,Pitch/16]],
@@ -44,18 +46,17 @@ module ExternalThread_Triangle(Pitch=1) {
 
 //ExternalThread_Triangle(Pitch=1.27);
 
-module ExternalThread_OneRotation(Pitch=1,Dia_Nominal=6,Step_a=20) {
-	//H = 0.8660254*Pitch;
-	H = 0.5*Pitch;
+module ExternalThread_OneRotation(Pitch=1, Dia_Nominal=6, Step_a=20, Tooth_a=45) {
+	H = Pitch_a(Tooth_a)*Pitch; 
 	D_min = Dia_Nominal - H*2 + H/4;
 
 	for(i=[0:Step_a:360-Step_a]) hull(){
 		rotate([0,0,i])
 			translate([Dia_Nominal/2,0,i/360*Pitch])
-				ExternalThread_Triangle(Pitch);
+				ExternalThread_Triangle(Pitch, Tooth_a=Tooth_a);
 		rotate([0,0,i+Step_a])
 			translate([Dia_Nominal/2,0,(i+Step_a)/360*Pitch])
-				ExternalThread_Triangle(Pitch);
+				ExternalThread_Triangle(Pitch, Tooth_a=Tooth_a);
 	}
 
 	// Central Shaft
@@ -65,14 +66,13 @@ module ExternalThread_OneRotation(Pitch=1,Dia_Nominal=6,Step_a=20) {
 
 //ExternalThread_OneRotation(Pitch=1.27,Dia_Nominal=6.35,Step_a=20);
 
-module ExternalThread(Pitch=1, Dia_Nominal=6, Length=5, Step_a=20, TrimEnd=true, TrimRoot=false){
-	// H = 0.8660254*Pitch; // 60°
-	H = 0.5*Pitch;
+module ExternalThread(Pitch=1, Dia_Nominal=6, Length=5, Step_a=20, TrimEnd=true, TrimRoot=false, Tooth_a=45){
+	H = Pitch_a(Tooth_a)*Pitch; 
 	Dia_min=Dia_Nominal - H*2 + H/2;
 	
 	intersection(){
 		for(i=[-1:Length/Pitch+2]) translate([0,0,i*Pitch])
-			ExternalThread_OneRotation(Pitch=Pitch,Dia_Nominal=Dia_Nominal,Step_a=Step_a);
+			ExternalThread_OneRotation(Pitch=Pitch,Dia_Nominal=Dia_Nominal,Step_a=Step_a,Tooth_a=Tooth_a);
 			
 		
 		union(){
