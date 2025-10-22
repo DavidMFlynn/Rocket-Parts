@@ -124,6 +124,41 @@ module RMS29SetPlate(D=ATRMS_29_Case_OD()){
 
 // RMS29SetPlate();
 
+module CaseEnd29(){
+	ThreadNom_d=1.05*25.4;
+	
+	difference(){
+		union(){
+			ExternalThread(Pitch=25.4/24, Dia_Nominal=ThreadNom_d, Length=7, Step_a=$preview? 20:5, TrimEnd=true, TrimRoot=false, Tooth_a=30);
+			cylinder(d=31, h=2.4, $fn=12);
+		} // union
+		
+		translate([0,0,-Overlap]) cylinder(d=20, h=10);
+	} // difference
+} // CaseEnd29
+
+// CaseEnd29();
+
+module AftClosure29Protector(XtraFwd=0){
+	Len=17+XtraFwd;
+	Thread_d=1.05*25.4+IDXtra*5;
+	difference(){
+		union(){
+			cylinder(d=34, h=2.4, $fn=12);
+			cylinder(d=32, h=Len);
+		} // union
+		
+		translate([0,0,6.5])
+			ExternalThread(Pitch=25.4/24, Dia_Nominal=Thread_d, Length=9, Step_a=$preview? 20:5,TrimEnd=true,TrimRoot=false,Tooth_a=30);
+		
+		translate([0,0,-Overlap]) cylinder(d=20, h=Len+Overlap*2);
+		translate([0,0,2.5]) cylinder(d=Thread_d, h=6);
+		translate([0,0,Len-2-XtraFwd]) cylinder(d=Thread_d, h=6+XtraFwd);
+	} // difference
+
+} // AftClosure29Protector
+
+// AftClosure29Protector(XtraFwd=0);
 
 module RMS38SetPlate(D=ATRMS_38_Case_OD()){
 	Plate_t=7;
@@ -227,8 +262,8 @@ module CaseEnd38(){
 
 // CaseEnd38();
 
-module AftClosure38Protector(){
-	Len=15;
+module AftClosure38Protector(XtraFwd=0){
+	Len=15+XtraFwd;
 	Thread_d=1.437*25.4+IDXtra*3;
 	difference(){
 		union(){
@@ -241,23 +276,55 @@ module AftClosure38Protector(){
 		
 		translate([0,0,-Overlap]) cylinder(d=28, h=Len+Overlap*2);
 		translate([0,0,2.5]) cylinder(d=Thread_d, h=6);
-		translate([0,0,Len-2]) cylinder(d=Thread_d, h=6);
+		translate([0,0,Len-2-XtraFwd]) cylinder(d=Thread_d, h=6+XtraFwd);
 	} // difference
 
 } // AftClosure38Protector
 
-// 
-AftClosure38Protector();
+// AftClosure38Protector();
+
+// AftClosure38Protector(XtraFwd=3);
 
 
 
+module CaseEnd54(){
+	NominalThread_d=2.050*25.4;
+	Base_d=57;
+	
+	difference(){
+		union(){
+			ExternalThread(Pitch=25.4/24, Dia_Nominal=NominalThread_d, Length=9, Step_a=$preview? 20:5, TrimEnd=true, TrimRoot=false, Tooth_a=30);
+			cylinder(d=Base_d, h=2.4, $fn=12);
+		} // union
+		
+		translate([0,0,-Overlap]) cylinder(d=44, h=10);
+	} // difference
+} // CaseEnd54
 
+// CaseEnd54();
 
+module AftClosure54Protector(XtraFwd=0){
+	Len=18+XtraFwd;
+	Base_d=60;
+	NominalThread_d=2.050*25.4+IDXtra*5;
+	
+	difference(){
+		union(){
+			cylinder(d=Base_d, h=2.4, $fn=12);
+			cylinder(d=Base_d-3, h=Len);
+		} // union
+		
+		translate([0,0,6.5])
+			ExternalThread(Pitch=25.4/24, Dia_Nominal=NominalThread_d, Length=12, Step_a=$preview? 20:5,TrimEnd=true,TrimRoot=false,Tooth_a=30);
+		
+		translate([0,0,-Overlap]) cylinder(d=40, h=Len+Overlap*2);
+		translate([0,0,2.5]) cylinder(d=NominalThread_d, h=6);
+		translate([0,0,Len-2-XtraFwd]) cylinder(d=NominalThread_d, h=6+XtraFwd);
+	} // difference
 
+} // AftClosure54Protector
 
-
-
-
+AftClosure54Protector(XtraFwd=0);
 
 
 

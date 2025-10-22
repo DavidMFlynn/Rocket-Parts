@@ -22,6 +22,10 @@
 // ***********************************
 //  ***** for STL output *****
 //
+// SHS_Arms();
+// SHS_Extension(Len=20);
+// SHS_Base();
+//
 // SpoolBushing(H=75, Pipe_OD=Pipe15_OD); // Adaptor to use 1-1/2" PVC pipe and a 2.5kg spool as a stand.
 // SpoolBushing(H=45, Pipe_OD=Pipe10_OD); // Adaptor to use 1" PVC pipe and a 2.5kg spool as a stand.
 //
@@ -57,6 +61,94 @@ Base_t=6;
 PrepStand_BaseSpan=300;
 PrepStand_Hub_d=70;
 PrepStand_nSides=6;
+
+
+// SHS_ Small Horizontal Stand 
+
+module SHS_Base(){
+	nLegs=4;
+	Base_Leg_X=60;
+	Base_Leg_Y=22;
+	Base_Leg_Z1=2;
+	Base_Leg_Z2=10;
+	Base_Leg_R=4;
+	Base_Leg_Inset=2.5;
+	
+	module OneLeg(){
+		hull(){
+			RoundRect(X=Base_Leg_X, Y=Base_Leg_Y, Z=Base_Leg_Z1, R=Base_Leg_R);
+			translate([-Base_Leg_Inset,0,Base_Leg_Z2])
+				RoundRect(X=Base_Leg_X-Base_Leg_Inset*2, Y=Base_Leg_Y-Base_Leg_Inset*2, Z=Overlap, R=Base_Leg_R-Base_Leg_Inset/2);
+		} // hull
+	} // OneLeg
+	
+	Leg_Offset_a=35;
+	Leg_a=[Leg_Offset_a,-Leg_Offset_a,180+Leg_Offset_a,180-Leg_Offset_a];
+	
+	
+	difference(){
+		union(){
+			RoundRect(X=40, Y=30, Z=Base_Leg_Z2+2, R=5);
+			RoundRect(X=36, Y=26, Z=Base_Leg_Z2+12, R=3);
+			for (j=Leg_a) rotate([0,0,j]) translate([Base_Leg_X/2,0,0]) OneLeg();
+		} // union
+			
+		translate([0,0,-Overlap]) RoundRect(X=32, Y=22, Z=Base_Leg_Z2+12+Overlap*2, R=1);
+		rotate([0,0,Leg_Offset_a]) translate([38,0,9]) #linear_extrude(2) text("DMF",size=9, halign="center", valign="center");
+	} // difference
+	
+} // SHS_Base
+
+// SHS_Base();
+
+module SHS_Arms(){
+	Arm_X=60;
+	Arm_Y=30;
+	Arm_Z1=2;
+	Arm_Z2=10;
+	Arm_R=4;
+	Arm_Inset=2;
+	
+	module OneArm(){
+		hull(){
+			translate([-Arm_Inset,0,Arm_Z2]) RoundRect(X=Arm_X, Y=Arm_Y, Z=Arm_Z1, R=Arm_R);
+			
+			RoundRect(X=Arm_X-Arm_Inset*2, Y=Arm_Y-Arm_Inset*2, Z=Overlap, R=Arm_R-Arm_Inset/2);
+		} // hull
+	} // OneArm
+	
+	difference(){
+		union(){
+			translate([-Arm_X/2,0,24]) rotate([0,45,0]) OneArm();
+			mirror([1,0,0]) translate([-Arm_X/2,0,24]) rotate([0,45,0]) OneArm();
+			
+			RoundRect(X=40, Y=30, Z=15, R=5);
+		} // union
+		
+		translate([0,0,-Overlap]) RoundRect(X=36+IDXtra, Y=26+IDXtra, Z=12, R=3);
+	} // difference
+	
+} // SHS_Arms
+
+//translate([0,0,40+12.4]) SHS_Arms();
+
+module SHS_Extension(Len=20){
+	difference(){
+		union(){
+			RoundRect(X=40, Y=30, Z=Len, R=5);
+			RoundRect(X=36, Y=26, Z=Len+10, R=3);
+		} // union
+		
+		hull(){
+			translate([0,0,-Overlap]) RoundRect(X=36+IDXtra, Y=26+IDXtra, Z=Len-5, R=3);
+			translate([0,0,-Overlap]) RoundRect(X=32, Y=22, Z=Len-1, R=1);
+		} // hull
+		
+		RoundRect(X=32, Y=22, Z=Len+12+Overlap, R=1);
+	} // difference
+} // SHS_Extension
+
+//translate([0,0,12.2]) SHS_Extension(Len=20);
 
 module PrepStand_HubBoltPattern(){
 	nSides=PrepStand_nSides;
@@ -452,8 +544,7 @@ module SpoolBushingAlTube(H=50){
 	}
 } // SpoolBushingAlTube
 
-// 
-SpoolBushingAlTube();
+// SpoolBushingAlTube();
 
 module RocketStandBushing(OD=28.5){
 	ID=12.7;

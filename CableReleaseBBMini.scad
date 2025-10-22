@@ -3,7 +3,7 @@
 // Filename: CableReleaseBBMini.scad
 // by David M. Flynn
 // Created: 9/18/2025 
-// Revision: 0.9.1  9/21/2025
+// Revision: 0.9.2  10/21/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -30,14 +30,16 @@
 //
 //  ***** History *****
 //
-function CableReleaseBBMiniRev()="CableReleaseBBMini Rev. 0.9.1";
+function CableReleaseBBMiniRev()="CableReleaseBBMini Rev. 0.9.2";
 echo(CableReleaseBBMiniRev());
+// 0.9.2  10/21/2025  Replaced CRBBm_CenteringRingMount() w/ the one I use
 // 0.9.1  9/21/2025   Seems to work, waiting for 6705-2RS for final testing
 // 0.9.0  9/18/2025   Copied from CableReleaseBB 1.1.3
 //
 // ***********************************
 //  ***** for STL output *****
 //
+// CRBBm_CenteringRingMount(OD=LOC65Body_ID, Thickness=7, Spring_OD=SE_Spring_CS4323_OD(), Spring_ID=SE_Spring_CS4323_ID());
 // CRBBm_ExtensionRod(LockPin_d=LockPin_d, Len=100, ID=0.190*25.4+IDXtra, Light=false);
 // CRBBm_LockingPin(LockPin_d=LockPin_d, LockPin_Len=LockPin_Len, GuidePoint=false);
 // rotate([180,0,0]) CRBBm_LockRing(LockPin_d=LockPin_d, Ball_d=Ball_d, nBalls=nBalls, GuidePoint=false, Light=false);
@@ -439,89 +441,70 @@ module CRBBm_MountingBoltPattern(nTopBolts=nBalls, LockRing_d=CRBBm_LockRingDiam
 
 // CRBBm_MountingBoltPattern(nTopBolts=nBalls) Bolt4Hole();
 
-
-module CRBBm_CenteringRingMount(Tube_ID=BT54Body_ID, Thickness=5, Skirt_Len=0, Skirt_t=2.2, nBolts=5, nRopes=0,
-							HasShockcodeAnchor=false, LockRing_d=CRBB_LockRingDiameter(),
-							Spring_OD=SE_Spring_CS4323_OD(), Spring_ID=SE_Spring_CS4323_ID()){
-	
-	nAnchors=2;
-	PinCenter_Z=2.5;
-	Rope_d=2;
-	
-	module AnchorPinAccess(){
-		translate([0,0,PinCenter_Z]) rotate([-90,0,0]) cylinder(d=4, h=Tube_ID);
-		// Shockcord path
-			translate([0,0,PinCenter_Z]) rotate([-90,0,0]) cylinder(d=8, h=3, center=true);
-	} // AnchorPinAccess
-	
-	module Anchor(){
-		
-		difference(){
-			hull(){
-				translate([0,0,PinCenter_Z]) rotate([-90,0,0]) cylinder(d=10, h=20, center=true);
-				cube([11,20,Overlap],center=true);
-			} // hull
-			
-			// Shockcord path
-			translate([0,0,PinCenter_Z]) rotate([-90,0,0]) cylinder(d=14, h=3, center=true);
-			
-			// Pin
-			translate([0,0,PinCenter_Z]) rotate([-90,0,0]) cylinder(d=4, h=21, center=true);
-		} // difference
-	} // Anchor
+module CRBBm_CenteringRingMount(OD=LOC65Body_ID, Thickness=7,
+					Spring_OD=SE_Spring_CS4323_OD(), Spring_ID=SE_Spring_CS4323_ID()){
+	ShockCordHole_d=5;
+	ShockCord_a=30;
+	Rope_d=3;
+	nRopes=6;
+	Spring_Z=4;
+	Wall_t=1.2;
+	nBolts=3;
+	myFn=floor(OD)*3;
 	
 	difference(){
 		union(){
-			CenteringRing(OD=Tube_ID, ID=LockPin_d+1, Thickness=Thickness, nHoles=0, Offset=0, myfn=$preview? 36:90);
+			// Body centering
+			Tube(OD=OD, ID=OD-Wall_t*2, Len=Thickness, myfn=$preview? 90:myFn);
 			
-			if (Skirt_Len>Thickness)
-				Tube(OD=Tube_ID, ID=Tube_ID-Skirt_t*2, Len=Skirt_Len, myfn=$preview? 36:360);
+			// Spring
+			Tube(OD=Spring_OD+Wall_t*2, ID=Spring_OD, Len=Thickness, myfn=$preview? 90:myFn);
+			Tube(OD=Spring_OD+Wall_t*2, ID=Spring_ID, Len=Spring_Z, myfn=$preview? 90:myFn);
+			
+			// Lock Pin Guide Hole
+			Tube(OD=LockPin_d+1+Wall_t*2, ID=LockPin_d+1, Len=Spring_Z, myfn=$preview? 90:myFn);
+			
+			// Bolts to CRBB_TopRetainer
+			CRBBm_MountingBoltPattern(nTopBolts=nBolts, LockRing_d=CRBBm_LockRingDiameter()) cylinder(d=Bolt4Inset*2, h=Thickness);
+			
+			// Ropes
+			for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) translate([0,Spring_OD/2+Rope_d/2+Wall_t,0])
+				cylinder(d=Rope_d+Wall_t*2, h=Thickness);
 				
-			if (HasShockcodeAnchor)
-				for (j=[0:nAnchors-1]) rotate([0,0,360/nAnchors*j]) translate([14,0,Thickness])
-					Anchor();
-		} // union
-		
-		if (HasShockcodeAnchor)
-				for (j=[0:nAnchors-1]) rotate([0,0,360/nAnchors*j]) translate([14,0,Thickness])
-					AnchorPinAccess();
-		
-		// center hole
-		translate([0,0,-Overlap]) cylinder(d=LockPin_d+1, h=30);
-		
-		// Spring
-		translate([0,0,Thickness-2]) Tube(OD=Spring_OD, ID=Spring_ID-1, Len=Thickness+10, myfn=$preview? 36:360);
-		
-		// Bolts to CRBB_TopRetainer
-		translate([0,0,4]) rotate([0,0,6])
-			CRBBm_MountingBoltPattern(nTopBolts=nBolts, LockRing_d=LockRing_d) Bolt4ButtonHeadHole();
-			
-		// Rope holes
-		if (nRopes>0) for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) 
-			translate([0,Spring_OD/2+Rope_d/2+2,-Overlap])
-				cylinder(d=Rope_d, h=Thickness+Overlap*2);
-			
-		if (nRopes>=4) for (j=[1:nRopes])
-			hull(){
-				rotate([0,0,360/nRopes*j]) translate([0,Spring_OD/2+Rope_d/2+2,0]){
-					translate([0,0,-Overlap]) cylinder(d=Rope_d, h=Rope_d/2+Overlap*2);
-					translate([0,0,Rope_d/2]) sphere(d=Rope_d);
-				}
-				rotate([0,0,360/nRopes*(j-1)]) translate([0,Spring_OD/2+Rope_d/2+2,0]){
-					translate([0,0,-Overlap]) cylinder(d=Rope_d, h=Rope_d/2+Overlap*2);
-					translate([0,0,Rope_d/2]) sphere(d=Rope_d);
-				}
+			// Spokes
+			for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) hull(){
+				translate([0,OD/2-Wall_t,0])
+					cylinder(d=Wall_t, h=Thickness);
+				translate([0,(LockPin_d+1)/2+Wall_t,0])
+					cylinder(d=Wall_t, h=Thickness);
 			} // hull
-			
-	} // difference
+		}
 	
+		// Spring
+		translate([0,0,Spring_Z]) cylinder(d=Spring_OD, h=Thickness);
+				
+		// Bolts to CRBB_TopRetainer
+		translate([0,0,4])
+			CRBBm_MountingBoltPattern(nTopBolts=nBolts, LockRing_d=CRBBm_LockRingDiameter()) Bolt4ButtonHeadHole();
+			
+		// Ropes
+		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) translate([0,Spring_OD/2+Rope_d/2+Wall_t,-Overlap])
+			cylinder(d=Rope_d, h=Thickness+Overlap*2);
+
+		// Shock cord entry		
+		rotate([0,0,ShockCord_a]){
+			translate([0, Spring_ID/2-ShockCordHole_d/2, 5]) cylinder(d=ShockCordHole_d, h=5);
+			hull(){
+				translate([0, Spring_ID/2-ShockCordHole_d/2, 5]) sphere(d=ShockCordHole_d);
+				translate([0, OD/2-ShockCordHole_d/2-2, 1]) sphere(d=ShockCordHole_d);
+			} // hull
+			translate([0, OD/2-ShockCordHole_d/2-2, -Overlap]) cylinder(d=ShockCordHole_d, h=1+Overlap*2);
+		} // rotate
+		
+	} // difference
 } // CRBBm_CenteringRingMount
 
-/*
-CRBBm_CenteringRingMount(Tube_ID=LOC65Coupler_OD, Thickness=7, Skirt_Len=0, Skirt_t=2.2, nBolts=3, nRopes=6,
-							HasShockcodeAnchor=false, LockRing_d=CRBBm_LockRingDiameter(),
-							Spring_OD=SE_Spring_CS4323_OD(), Spring_ID=SE_Spring_CS4323_ID());
-/**/
+//CRBBm_CenteringRingMount();
 
 module CRBBm_TopRetainer(LockPin_d=LockPin_d, nBalls=nBalls, Ball_d=Ball_d, LockRing_d=CRBBm_LockRingDiameter(), Flange_t=6, OD=0, HasMountingBolts=true, GuidePoint=false, Light=false){
 	Point_Len=GuidePoint? GuidePoint_Len:0;

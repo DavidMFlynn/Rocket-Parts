@@ -75,9 +75,9 @@ Overlap=0.05;
 
 Bolt4Inset=4;
 
-Body_OD=LOC54Body_OD;
-Body_ID=LOC54Body_ID;
-Coupler_OD=LOC54Coupler_OD;
+Body_OD=MadCow54Body_OD;
+Body_ID=MadCow54Body_ID;
+Coupler_OD=MadCow54Coupler_OD;
 Coupler_ID=Coupler_OD-1.8; // thin wall
 BodyTubeLen=500;
 
