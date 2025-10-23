@@ -22,6 +22,7 @@ echo(AT_RMS_Lib_Rev());
 // BT54MotorRetainer();
 // UL75MotorRetainer();
 // BT75MotorRetainer();
+// Threaded29mmForwardClosure(); // presses on to a standard 29mm forward closure
 //
 // ***********************************
 //  ***** Routines *****
@@ -149,6 +150,41 @@ kATRMS_75_5120_Case_h=602.5; // K+2J=L
 kATRMS_75_6400_Case_h=737.5; // L+J=M
 
 kATRMS_For75_oal=kATRMS_For75_h4;
+
+module Threaded29mmForwardClosure(){
+	// Top for a standard forward closure with guide cone and 1/4-20 threads
+	// Presses onto forward closure
+	
+	OD=29-IDXtra*2;
+	Len=28;
+	InterfaceDepth=11.5;
+	Thread_d=0.25*25.4;
+	Thread_p=25.4/20;
+	
+	difference(){
+		cylinder(d=OD, h=Len);
+		
+		translate([0,0,-Overlap]) cylinder(d=25.8, h=InterfaceDepth);
+		
+		// Guide cone
+		translate([0,0,Len-8])
+				cylinder(d1=Thread_d, d2=OD-2, h=8+Overlap);
+				
+		// Threads
+		translate([0,0,-Overlap])
+			if ($preview){
+				cylinder(d=Thread_d, h=Len+Overlap*2); 
+			}else{
+				ExternalThread(Pitch=Thread_p, Dia_Nominal=Thread_d+IDXtra*2, 
+						Length=Len+Overlap*2, 
+						Step_a=2,TrimEnd=true,TrimRoot=true);
+			}
+		
+		
+	} // difference
+} // Threaded29mmForwardClosure
+
+// Threaded29mmForwardClosure();
 
 module UL75MotorRetainer(){
 	MotorTubeHole_d=ULine75Body_OD+IDXtra*3;
