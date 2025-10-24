@@ -3,7 +3,7 @@
 // Filename: Rocket6551.scad
 // by David M. Flynn
 // Created: 9/18/2025
-// Revision: 0.9.10  10/23/2025
+// Revision: 0.9.11  10/23/2025
 // Units: mm
 // *********************************************
 //  ***** Notes *****
@@ -13,9 +13,17 @@
 //  Uses one 4323CS spring and petal deployment system (non-pyro).
 //  First built 9/21/2025 w/ LOC 29mm motor tube and 2.6" ??? tube (Estes?)
 //
+//  Assemble dual deploy for flight: 
+//		1) Assemble entire ebay from R65_DrogueCoupler to NoseCone; parachutes, battery, everything.
+//		2) Slide airframe up from the bottom and install 3 rivets to hold it in place. Nosecone should be snug to airframe.
+//		3) Stack onto fincan and nut R65_DrogueCoupler in place. There should be a nut on both sides of R65_MotorNutStop.
+//			Airframe and fincan should be tight against each other.
+//
+//
 //  2 Stage version w/ 38mm motors, I357T, H123W
 //
 //  ***** History *****
+// 0.9.11  10/23/2025 R65_EBayMiddleRing() now has 6 rivet holes.
 // 0.9.10  10/23/2025 Moved ebays to R65Lib.scad
 // 0.9.9   10/21/2025 Moved common routines to R65Lib.scad, working on the 2 stage/dual deploy version
 // 0.9.8   9/29/2025  Got one finished, work on booster for 2 stage version.

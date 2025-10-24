@@ -666,7 +666,7 @@ module R65_EBayMiddleRing(OD=LOC65Coupler_OD, Len=30, Thread_d=5/16*25.4, Thread
 	nSpokes=6;
 	Spoke_t=1.2;
 	Wall_t=1.8;
-	nRivets=3;
+	nRivets=6;
 
 	nOuterBolts=2;
 	Outer_BC_d=OD-Bolt10Inset*2;
