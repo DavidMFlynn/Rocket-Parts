@@ -23,17 +23,21 @@ echo(R65Lib_Rev());
 //
 // R65_NoseCone(Shoulder_OD=LOC65Coupler_OD, OD=LOC65Body_OD, nBolts=6, NC_Len=150, NC_Base_L=6, NC_Tip_R=3, NC_Wall_t=1.2);
 // R65_NC_GPS_Mounting_Plate(OD=LOC65Coupler_OD, nBolts=6, Skirt_h=5, HasAlTube=true);
+// R65_SingleBaseSpacer(OD=LOC65Coupler_OD, CenterBolt_d=0.250*25.4, CenterBolt_p=25.4/20, Len=30);
 // R65_EBay_BasePlate(OD=LOC65Coupler_OD, IsLowerPlate=false, CenterBolt_d=0.250*25.4, CenterBolt_p=25.4/20, HasSecBolts=false, ShockCord_a=-30);
 // R65_EBayBR(OD=LOC65Coupler_OD, CenterBolt_d=0.250*25.4, CenterBolt_p=25.4/20);
 // R65_RocketServoMountVert(Base_h=0);
-// R65_EBayMC(OD=LOC65Coupler_OD, CenterBolt_d=0.250*25.4, CenterBolt_p=25.4/20, HasRS_Mount=false);
+//
+// R65_EBayMC(OD=LOC65Coupler_OD, CenterBolt_d=0.250*25.4, CenterBolt_p=25.4/20, HasRS_Mount=false, BaseOnly=true);
+// R65_EBayMCTop(OD=LOC65Coupler_OD, CenterBolt_d=0.250*25.4, CenterBolt_p=25.4/20);
+//
 // R65_EBayMiddleRing(OD=LOC65Coupler_OD, Len=30, Thread_d=5/16*25.4, Thread_p=25.4/18);
 // R65_PetalHub(OD=LOC65Coupler_OD, nPetals=3, nBolts=6, Skirt_h=5, HasWirePath=false);
 // R65_DroguePetalHub(OD=LOC65Coupler_OD, nPetals=3, nBolts=6, Skirt_h=5, HasWirePath=false);
 /*
 R65_DrogueCoupler(OD=LOC65Body_ID, Coupler_ID=LOC65Coupler_ID, 
-			Thread_d=Thread25020_d, Thread_p=Thread25020_Pitch, LockPin_d=16,
-			nRopes=0, Skirt_h=25, HasTubeStop=false, Body_OD=LOC65Body_OD, HasWirePath=false, HasStiffCore=false);
+			Thread_d=Thread25020_d, Thread_p=Thread25020_Pitch,
+			nRopes=0, Skirt_h=25, HasTubeStop=false, Body_OD=LOC65Body_OD, HasWirePath=false, HasStiffCore=true);
 /**/
 // R65_MotorNutStop(MT_ID=ULine38Body_ID, Hole_d=6.35);
 // R65_FwdSpringEnd(OD=LOC65Coupler_OD, ID=LOC65Coupler_ID, LockPin_d=16, nRopes=0, Skirt_h=25, HasServoConnector=false);
@@ -44,6 +48,8 @@ R65_DrogueCoupler(OD=LOC65Body_ID, Coupler_ID=LOC65Coupler_ID,
 //
 // R65_DeepSocket(); // 7/16" Socket for 1/4-20 nuts (29mm RMS)
 // R65_DeepSocket500(); // 1/2" Socket for 5/16-18 nuts (38mm RMS)
+// R65_ExtensionAlignmentRing38();
+// R65_ShortMotorAdaptor(Len=48); // One 38mm grain is 48mm in case length
 //
 // ***********************************
 include<TubesLib.scad>
@@ -59,9 +65,13 @@ Overlap=0.05;
 IDXtra=0.2;
 $fn=$preview? 36:90;
 
-Thread1024_d=0.190*25.4;
-Thread25020_d=0.250*25.4;
-Thread25020_Pitch=25.4/20;
+Thread1024_d=0.190*25.4; // 10-24 NC
+Thread1024_p=25.4/24;
+Thread25020_d=0.250*25.4; // 1/4-20 NC
+Thread25020_p=25.4/20;
+Thread31218_d=5/16*25.4; // 5/16-18 NC
+Thread31218_p=25.4/18;
+
 Bolt10Inset=5.5;
 Bolt4Inset=4;
 
@@ -107,6 +117,65 @@ module R65_DeepSocket500(){
 } // R65_DeepSocket500
 
 // R65_DeepSocket500();
+
+module R65_ExtensionAlignmentRing38(){
+	Len=6;
+	nSpokes=6;
+	Wall_t=1.2;
+	OD=37;
+	Thread_d=Thread31218_d; // 38mm RMS Threaded Plugged Forward Closure
+	Thread_p=Thread31218_p;
+	
+	difference(){
+		union(){
+			rotate([0,0,30]) cylinder(d=1/2*25.4*1.1339, h=Len, $fn=6);
+			
+			Tube(OD=OD, ID=OD-Wall_t*2, Len=3, myfn=$preview? 36:90);
+			for (j=[0:nSpokes-1]) rotate([0,0,360/nSpokes*j])
+				hull(){
+					cylinder(d=Wall_t, h=3);
+					translate([0,OD/2-Wall_t,0]) cylinder(d=Wall_t, h=3);
+				} // hull
+		} // union
+		
+		// Thread
+		translate([0,0,-Overlap])
+			if ($preview){
+				cylinder(d=Thread_d, h=Len+Overlap*2); 
+			}else{
+				ExternalThread(Pitch=Thread_p, Dia_Nominal=Thread_d+IDXtra*2, 
+						Length=Len+Overlap*2, 
+						Step_a=2,TrimEnd=true,TrimRoot=true);
+			} // if
+		
+	} // difference
+} // R65_ExtensionAlignmentRing38
+
+// R65_ExtensionAlignmentRing38();
+
+module R65_ShortMotorAdaptor(Len=48){ // One 38mm grain is 48mm in case length
+	// a.k.a. Long Nut
+	
+	Thread_d=Thread31218_d;
+	Thread_p=Thread31218_p;
+		
+	difference(){
+		cylinder(d=1/2*25.4*1.1339, h=Len, $fn=6);
+		
+		translate([0,0,Len-4]) cylinder(d1=Thread_d-2, d2=11, h=4+Overlap);
+		// Thread
+		translate([0,0,-Overlap])
+			if ($preview){
+				cylinder(d=Thread_d, h=Len+Overlap*2); 
+			}else{
+				ExternalThread(Pitch=Thread_p, Dia_Nominal=Thread_d+IDXtra*2, 
+						Length=Len+Overlap*2, 
+						Step_a=2,TrimEnd=true,TrimRoot=true);
+			} // if
+	} // difference
+} // R65_ShortMotorAdaptor
+
+// R65_ShortMotorAdaptor();
 
 module R65_NoseCone(Shoulder_OD=LOC65Coupler_OD, OD=LOC65Body_OD, nBolts=6,
 			NC_Len=150, NC_Base_L=6, NC_Tip_R=3, NC_Wall_t=1.2){
@@ -251,6 +320,46 @@ module R65_NC_GPS_Mounting_Plate(OD=LOC65Coupler_OD, nBolts=6, Skirt_h=5, HasAlT
 
 // R65_NC_GPS_Mounting_Plate();
 
+module R65_SingleBaseSpacer(OD=LOC65Coupler_OD, CenterBolt_d=0.250*25.4, CenterBolt_p=25.4/20, Len=30){
+	Wall_t=1.2;
+	nSpokes=6;
+	CenterPost_d=max(12,CenterBolt_d+4.4);
+	
+	difference(){
+		union(){
+			Tube(OD=OD, ID=OD-Wall_t*2, Len=Len, myfn=$preview? 90:180);
+		
+			for (j=[1:nSpokes-1]) rotate([0,0,360/nSpokes*j]) 
+				hull(){
+					cylinder(d=Wall_t, h=Len);
+					translate([0,OD/2-Wall_t,0]) cylinder(d=Wall_t, h=Len);
+				} // hull
+			
+			cylinder(d=CenterPost_d, h=Len);
+			
+			// Shock cord
+			hull(){
+				translate([0,0,Len/2+10]) rotate([-90,0,0]) cylinder(d=6, h=OD/2-Wall_t);
+				translate([0,0,Len/2]) rotate([-90,0,0]) cylinder(d=12, h=OD/2-Wall_t);
+				translate([0,0,Len/2-10]) rotate([-90,0,0]) cylinder(d=6, h=OD/2-Wall_t);
+			} // hull
+		} // union
+		
+		if ($preview){
+				translate([0,0,-Overlap]) cylinder(d=CenterBolt_d, h=Len+Overlap*2); 
+			}else{
+				translate([0,0,-Overlap]) ExternalThread(Pitch=CenterBolt_p, Dia_Nominal=CenterBolt_d+IDXtra*2, 
+						Length=Len+Overlap*2, 
+						Step_a=2,TrimEnd=true,TrimRoot=true);
+						
+				if (Len>20) translate([0,0,10]) cylinder(d=CenterBolt_d+IDXtra*2, h=Len-20);
+			} // if
+		
+	} // difference
+
+} // R65_SingleBaseSpacer
+
+// R65_SingleBaseSpacer();
 
 module R65_EBay_BasePlate(OD=LOC65Coupler_OD, IsLowerPlate=false, 
 					CenterBolt_d=0.250*25.4, CenterBolt_p=25.4/20, HasSecBolts=false, ShockCord_a=-30){
@@ -483,15 +592,19 @@ module R65_RocketServoMountVert(Base_h=0){
 			translate([0,-2+RS_PCB_t/2,2]) cube([RS_PCB_X+IDXtra*2, 4, 25], center=true);
 			
 			translate([0,-2+RS_PCB_t/2,2]) cube([RS_PCB_X-2, 8, 25], center=true);
+			translate([0,-1+RS_PCB_t/2,2]) cube([RS_PCB_X-2, 8, 8], center=true);
 		} //difference
 	
 	// post
-	translate([0,4,0]) RoundRect(X=RS_PCB_X+1+Wall_t*2, Y=3, Z=51+Base_h, R=0.5);
+	difference(){
+		translate([0,4,0]) RoundRect(X=RS_PCB_X+1+Wall_t*2, Y=3, Z=51+Base_h, R=0.5);
+		translate([0,-1+RS_PCB_t/2,2+45+Base_h+2]) cube([RS_PCB_X-2, 8, 8], center=true);
+	} // difference
 } // R65_RocketServoMountVert
 
 //R65_RocketServoMountVert(Base_h=0);
 
-module R65_EBayMC(OD=LOC65Coupler_OD, CenterBolt_d=0.250*25.4, CenterBolt_p=25.4/20, HasRS_Mount=false){
+module R65_EBayMC(OD=LOC65Coupler_OD, CenterBolt_d=0.250*25.4, CenterBolt_p=25.4/20, HasRS_Mount=false, BaseOnly=true){
 	// Mission Control version
 	// Featherweight Mag Switch, Rocket Servo PCBA, 2S LiPo
 		
@@ -510,7 +623,6 @@ module R65_EBayMC(OD=LOC65Coupler_OD, CenterBolt_d=0.250*25.4, CenterBolt_p=25.4
 	BackPlate_W=42;
 	BackPlate_t=4;
 
-	
 	Battery_Z=22.2;
 	Battery_X=0;
 	Battery_Y=-20;
@@ -522,6 +634,17 @@ module R65_EBayMC(OD=LOC65Coupler_OD, CenterBolt_d=0.250*25.4, CenterBolt_p=25.4
 	Batt_Y=12.2;
 	Batt_Z=40; // was 43
 
+	module AltHoles(){
+		AltHoles_X=28;
+		AltHoles_Y=86.35;
+
+		if (!BaseOnly){
+			translate([-AltHoles_X/2, AltHoles_Y/2, 0]) children();
+			translate([AltHoles_X/2, AltHoles_Y/2, 0]) children();
+		}
+		translate([-AltHoles_X/2, -AltHoles_Y/2, 0]) children();
+		translate([AltHoles_X/2, -AltHoles_Y/2, 0]) children();
+	} // AltHoles
 	module BattHole(Xtra_X=0,Xtra_Y=0, Xtra_Z=0){
 		cube([Batt_X+Xtra_X, Batt_Y+Xtra_Y, Batt_Z+Xtra_Z], center=true);
 	} // BattHole
@@ -568,7 +691,18 @@ module R65_EBayMC(OD=LOC65Coupler_OD, CenterBolt_d=0.250*25.4, CenterBolt_p=25.4
 	difference(){
 		rotate([0,0,259+180]) 
 			R65_EBay_BasePlate(OD=OD, IsLowerPlate=false, 
-					CenterBolt_d=CenterBolt_d, CenterBolt_p=CenterBolt_p, HasSecBolts=true, ShockCord_a=-20);
+					CenterBolt_d=CenterBolt_d, CenterBolt_p=CenterBolt_p, HasSecBolts=false, ShockCord_a=22.5);
+		
+		// Sustainer wire path uses SecBolt hole
+		
+		// Servo wire path
+		SWire_a=40;
+		SWire_Y=OD/2-4;
+		rotate([0,0,SWire_a])
+		hull(){
+			translate([3,SWire_Y,-Overlap]) cylinder(d=3.5, h=5);
+			translate([-3,SWire_Y,-Overlap]) cylinder(d=3.5, h=5);
+		} // hull
 		
 		// Battery pushing hole and cleanup inside
 		rotate([0,0,Battery_a]) translate([Battery_X,Battery_Y,Battery_Z]) rotate([0,0,BattRotation_a]) rotate([0,0,-90]) {
@@ -584,25 +718,29 @@ module R65_EBayMC(OD=LOC65Coupler_OD, CenterBolt_d=0.250*25.4, CenterBolt_p=25.4
 			
 			// Backing plate
 			hull(){
-				translate([BackPlate_W/2-6.5, Alt_Y-AltBoltBoss_h-BackPlate_t/2, Alt_Z+MC_HoleSpace_Z()/2]) 
-					rotate([90,0,0]) cylinder(d=10, h=BackPlate_t, center=true);
+				if (!BaseOnly){
+					translate([BackPlate_W/2-6.5, Alt_Y-AltBoltBoss_h-BackPlate_t/2, Alt_Z+MC_HoleSpace_Z()/2]) 
+						rotate([90,0,0]) cylinder(d=10, h=BackPlate_t, center=true);
 					
-				translate([-BackPlate_W/2+6.5, Alt_Y-AltBoltBoss_h-BackPlate_t/2, Alt_Z+MC_HoleSpace_Z()/2]) 
-					rotate([90,0,0]) cylinder(d=10, h=BackPlate_t, center=true);
+					translate([-BackPlate_W/2+6.5, Alt_Y-AltBoltBoss_h-BackPlate_t/2, Alt_Z+MC_HoleSpace_Z()/2]) 
+						rotate([90,0,0]) cylinder(d=10, h=BackPlate_t, center=true);
+				}
 			
 				translate([BackPlate_W/2-BackPlate_t/2, Alt_Y-AltBoltBoss_h-BackPlate_t/2, 0]) 
-					cylinder(d=BackPlate_t, h=Alt_Z+MC_HoleSpace_Z()/2);
+					cylinder(d=BackPlate_t, h=15);
 				
 				translate([-BackPlate_W/2+BackPlate_t/2, Alt_Y-AltBoltBoss_h-BackPlate_t/2, 0]) 
-					cylinder(d=BackPlate_t, h=Alt_Z+MC_HoleSpace_Z()/2);
+					cylinder(d=BackPlate_t, h=15);
 			} // hull
 			
 			// Threaded rod 
+			if (!BaseOnly)
 			translate([0, 0, Alt_Z+MC_Size_Z()/2-2]) 
 				hull(){
 					cylinder(d=CenterBolt_d+4.4, h=5, center=true);
 					translate([0, Alt_Y-AltBoltBoss_h-2.5, 0]) scale([1,0.1,1]) cylinder(d=CenterBolt_d+10, h=5, center=true);
 				} // hull
+				
 		} // union
 		
 		// Terminal block clearance
@@ -659,8 +797,85 @@ module R65_EBayMC(OD=LOC65Coupler_OD, CenterBolt_d=0.250*25.4, CenterBolt_p=25.4
 	//if ($preview) translate([0,Alt_Y,Alt_Z]) rotate([0,0,180]) rotate([90,0,0]) AltPCB();
 } // R65_EBayMC
 
-// R65_EBayMC(HasRS_Mount=true);
+// R65_EBayMC(HasRS_Mount=true, BaseOnly=false);
 
+module R65_EBayMCTop(OD=LOC65Coupler_OD, CenterBolt_d=0.250*25.4, CenterBolt_p=25.4/20){
+	// Mission Control version
+	// Featherweight Mag Switch, Rocket Servo PCBA, 2S LiPo
+		
+	Thread_d=CenterBolt_d;
+	Thread_p=CenterBolt_p;
+
+	EBayMC_Len=MC_Size_Z()+10;
+	Alt_Z=EBayMC_Len/2+2;
+	Alt_Y=OD/2-15;
+	AltBoltBoss_h=3.5;
+	BackPlate_W=42;
+	BackPlate_t=4;
+
+	module AltHoles(){
+		AltHoles_X=28;
+		AltHoles_Y=86.35;
+
+		translate([-AltHoles_X/2, AltHoles_Y/2, 0]) children();
+		translate([AltHoles_X/2, AltHoles_Y/2, 0]) children();
+		//translate([-AltHoles_X/2, -AltHoles_Y/2, 0]) children();
+		//translate([AltHoles_X/2, -AltHoles_Y/2, 0]) children();
+	} // AltHoles
+
+	// Mission Control Mount
+	difference(){
+		union(){
+			// Alt bolt bosses
+			translate([0,Alt_Y,Alt_Z]) rotate([90,0,0]) AltHoles() cylinder(d2=10, d1=6, h=AltBoltBoss_h+0.5+Overlap);
+			
+			// Backing plate
+			hull(){
+				translate([BackPlate_W/2-6.5, Alt_Y-AltBoltBoss_h-BackPlate_t/2, Alt_Z+MC_HoleSpace_Z()/2]) 
+					rotate([90,0,0]) cylinder(d=10, h=BackPlate_t, center=true);
+					
+				translate([-BackPlate_W/2+6.5, Alt_Y-AltBoltBoss_h-BackPlate_t/2, Alt_Z+MC_HoleSpace_Z()/2]) 
+					rotate([90,0,0]) cylinder(d=10, h=BackPlate_t, center=true);
+			} // hull
+			
+			// Threaded rod 
+			H=7;
+			translate([0, 0, Alt_Z+MC_Size_Z()/2-1.1]) 
+				hull(){
+					cylinder(d=CenterBolt_d+4.4, h=H, center=true);
+					translate([0, Alt_Y-AltBoltBoss_h-2.5, 0]) scale([1,0.1,1]) cylinder(d=CenterBolt_d+10, h=H, center=true);
+				} // hull
+		} // union
+		
+		// Terminal block clearance
+		translate([-27/2,0,Alt_Z+MC_Size_Z()/2-20.7]) cube([27,20,15]);
+		
+		// Center cut-out
+		translate([0, Alt_Y-AltBoltBoss_h-1.5, Alt_Z+2.5]) cube([26,20,75], center=true);
+		
+		// Threaded rod
+		//cylinder(d=MotorBolt_d, h=EBayMC_Len+10);
+		Boss_t=7;
+		
+		// Align to lower thread
+		translate([0,0,-Overlap+floor((Alt_Z+MC_Size_Z()/2-2-Boss_t/2)/Thread_p)*Thread_p])
+			if ($preview){
+				cylinder(d=Thread_d, h=Boss_t+Thread_p); 
+			}else{
+				ExternalThread(Pitch=Thread_p, Dia_Nominal=Thread_d+IDXtra*2, 
+						Length=Boss_t+Thread_p*2, 
+						Step_a=2,TrimEnd=true,TrimRoot=true);
+			} // if
+	
+		
+		// alt bolts
+		translate([0,Alt_Y,Alt_Z]) rotate([90,0,0]) AltHoles() rotate([180,0,0]) Bolt4Hole(depth=AltBoltBoss_h+5);
+	} // difference
+	
+	//if ($preview) translate([0,Alt_Y,Alt_Z]) rotate([0,0,180]) rotate([90,0,0]) AltPCB();
+} // R65_EBayMCTop
+
+// R65_EBayMCTop();
 
 module R65_EBayMiddleRing(OD=LOC65Coupler_OD, Len=30, Thread_d=5/16*25.4, Thread_p=25.4/18){
 	nSpokes=6;
@@ -831,7 +1046,7 @@ module R65_DroguePetalHub(OD=LOC65Coupler_OD, nPetals=3, nBolts=6, Skirt_h=5, Ha
 // R65_DroguePetalHub();
 
 module R65_DrogueCoupler(OD=LOC65Body_ID, Coupler_ID=LOC65Coupler_ID, 
-			Thread_d=Thread25020_d, Thread_p=Thread25020_Pitch, LockPin_d=16,
+			Thread_d=Thread25020_d, Thread_p=Thread25020_p,
 			nRopes=0, Skirt_h=25, HasTubeStop=false, Body_OD=LOC65Body_OD, HasWirePath=false, HasStiffCore=false){
 // This locks onto the bottom of the petals.
 // For drogue bay
@@ -856,6 +1071,7 @@ module R65_DrogueCoupler(OD=LOC65Body_ID, Coupler_ID=LOC65Coupler_ID,
 	Spoke_t=1.2;
 	Spoke_a=180/nSpokes;
 	ShockCord_a=Spoke_a;
+	Core_d=max(12,Thread_d+4.4);
 	
 	difference(){
 		union(){
@@ -865,7 +1081,7 @@ module R65_DrogueCoupler(OD=LOC65Body_ID, Coupler_ID=LOC65Coupler_ID,
 				translate([0,0,CR_t-Overlap]) cylinder(d1=Coupler_ID-4, d2=Coupler_ID, h=4+Overlap*2, $fn=$preview? 90:myFn);
 			} // difference
 			
-			cylinder(d=LockPin_d, h=Boss_t);
+			cylinder(d=Core_d, h=Boss_t);
 			
 			// spokes
 			if (HasStiffCore){
@@ -876,7 +1092,7 @@ module R65_DrogueCoupler(OD=LOC65Body_ID, Coupler_ID=LOC65Coupler_ID,
 						translate([0,OD/2-Spoke_t,CR_t-Overlap]) cylinder(d=Spoke_t, h=Len-CR_t+Overlap);
 					} // hull
 					
-				cylinder(d=Thread_d+4.4, h=Len);
+				cylinder(d=Core_d, h=Len);
 				
 				// Shock cord anchor
 				rotate([0,0,ShockCord_a])
@@ -913,6 +1129,8 @@ module R65_DrogueCoupler(OD=LOC65Body_ID, Coupler_ID=LOC65Coupler_ID,
 				ExternalThread(Pitch=Thread_p, Dia_Nominal=Thread_d+IDXtra*2, 
 						Length=CenterHole_H+Overlap*2, 
 						Step_a=2,TrimEnd=true,TrimRoot=true);
+					
+				translate([0,0,12]) cylinder(d=Thread_d+IDXtra*2, h=CenterHole_H-24);
 			}
 		
 		// Air Vent Holes
@@ -1129,9 +1347,187 @@ module R65_MotorTubeTopper(OD=LOC65Body_ID, ID=LOC29Body_OD, MT_ID=LOC29Body_ID-
 
 // rotate([180,0,0]) R65_MotorTubeTopper();
 
+// old code
+/*
 
+module R65_EBayMC(OD=LOC65Coupler_OD, CenterBolt_d=0.250*25.4, CenterBolt_p=25.4/20, HasRS_Mount=false){
+	// Mission Control version
+	// Featherweight Mag Switch, Rocket Servo PCBA, 2S LiPo
+		
+	Thread_d=CenterBolt_d;
+	Thread_p=CenterBolt_p;
 
+	Mag_SW_a=-122;
+	Mag_SW_X=23.5;
+	Mag_SW_Y=0;
+	Mag_SW_Z=18;
 
+	EBayMC_Len=MC_Size_Z()+10;
+	Alt_Z=EBayMC_Len/2+2;
+	Alt_Y=OD/2-15;
+	AltBoltBoss_h=3.5;
+	BackPlate_W=42;
+	BackPlate_t=4;
+
+	Battery_Z=22.2;
+	Battery_X=0;
+	Battery_Y=-20;
+	Battery_a=0;
+	BattRotation_a=90;
+
+	// Battery size
+	Batt_X=20;
+	Batt_Y=12.2;
+	Batt_Z=40; // was 43
+
+	module BattHole(Xtra_X=0,Xtra_Y=0, Xtra_Z=0){
+		cube([Batt_X+Xtra_X, Batt_Y+Xtra_Y, Batt_Z+Xtra_Z], center=true);
+	} // BattHole
+	
+	module BattPocket(){
+		Wall_t=1.2;
+		
+		difference(){
+			BattHole(Xtra_X=Wall_t*2,Xtra_Y=Wall_t*2, Xtra_Z=Wall_t*2);
+			
+			translate([0,0,2]) BattHole(Xtra_X=0, Xtra_Y=0, Xtra_Z=4);
+			
+			// wires
+			translate([0,0,Batt_Z/2+2]) rotate([0,90,0]) cylinder(d=7, h=20);
+			
+			// push-up
+			translate([0,0,-Batt_Z/2-Wall_t-Overlap]) cylinder(d=5,h=5);
+			
+			// Lighter		
+			hull(){
+				rotate([90,0,0]) cylinder(d=14, h=Batt_Y+Wall_t*2+Overlap, center=true);
+				translate([0,0,Batt_Z/3]) rotate([90,0,0]) cylinder(d=3, h=Batt_Y+Wall_t*2+Overlap, center=true);
+				translate([0,0,-Batt_Z/3]) rotate([90,0,0]) cylinder(d=3, h=Batt_Y+Wall_t*2+Overlap, center=true);
+			} // hull
+			
+			hull(){
+				rotate([0,90,0]) cylinder(d=10, h=Batt_X+Wall_t*2+Overlap, center=true);
+				translate([0,0,Batt_Z/3]) rotate([0,90,0]) cylinder(d=3, h=Batt_X+Wall_t*2+Overlap, center=true);
+				translate([0,0,-Batt_Z/3]) rotate([0,90,0]) cylinder(d=3, h=Batt_X+Wall_t*2+Overlap, center=true);
+			} // hull
+			
+		} // difference
+	} // BattPocket
+	
+	difference(){
+		rotate([0,0,Battery_a]) translate([Battery_X,Battery_Y,Battery_Z]) rotate([0,0,BattRotation_a]) 
+			BattPocket();
+			
+		rotate([0,0,Mag_SW_a]) translate([Mag_SW_X,Mag_SW_Y+2,Mag_SW_Z]) rotate([90,0,0]) 
+			FW_MagSw_BoltPattern() Bolt4Hole();
+	} // difference
+	
+	// Base Plate
+	difference(){
+		rotate([0,0,259+180]) 
+			R65_EBay_BasePlate(OD=OD, IsLowerPlate=false, 
+					CenterBolt_d=CenterBolt_d, CenterBolt_p=CenterBolt_p, HasSecBolts=false, ShockCord_a=22.5);
+		
+		// Sustainer wire path uses SecBolt hole
+		
+		// Servo wire path
+		SWire_a=40;
+		SWire_Y=OD/2-4;
+		rotate([0,0,SWire_a])
+		hull(){
+			translate([3,SWire_Y,-Overlap]) cylinder(d=3.5, h=5);
+			translate([-3,SWire_Y,-Overlap]) cylinder(d=3.5, h=5);
+		} // hull
+		
+		// Battery pushing hole and cleanup inside
+		rotate([0,0,Battery_a]) translate([Battery_X,Battery_Y,Battery_Z]) rotate([0,0,BattRotation_a]) rotate([0,0,-90]) {
+			translate([0,0,2]) BattHole(Xtra_X=0, Xtra_Y=0, Xtra_Z=4);
+			translate([0,0,-Batt_Z/2-4-Overlap]) cylinder(d=5,h=5);}
+	} // difference
+	
+	// Mission Control Mount
+	difference(){
+		union(){
+			// Alt bolt bosses
+			translate([0,Alt_Y,Alt_Z]) rotate([90,0,0]) AltHoles() cylinder(d2=10, d1=6, h=AltBoltBoss_h+0.5+Overlap);
+			
+			// Backing plate
+			hull(){
+				translate([BackPlate_W/2-6.5, Alt_Y-AltBoltBoss_h-BackPlate_t/2, Alt_Z+MC_HoleSpace_Z()/2]) 
+					rotate([90,0,0]) cylinder(d=10, h=BackPlate_t, center=true);
+					
+				translate([-BackPlate_W/2+6.5, Alt_Y-AltBoltBoss_h-BackPlate_t/2, Alt_Z+MC_HoleSpace_Z()/2]) 
+					rotate([90,0,0]) cylinder(d=10, h=BackPlate_t, center=true);
+			
+				translate([BackPlate_W/2-BackPlate_t/2, Alt_Y-AltBoltBoss_h-BackPlate_t/2, 0]) 
+					cylinder(d=BackPlate_t, h=Alt_Z+MC_HoleSpace_Z()/2);
+				
+				translate([-BackPlate_W/2+BackPlate_t/2, Alt_Y-AltBoltBoss_h-BackPlate_t/2, 0]) 
+					cylinder(d=BackPlate_t, h=Alt_Z+MC_HoleSpace_Z()/2);
+			} // hull
+			
+			// Threaded rod 
+			translate([0, 0, Alt_Z+MC_Size_Z()/2-2]) 
+				hull(){
+					cylinder(d=CenterBolt_d+4.4, h=5, center=true);
+					translate([0, Alt_Y-AltBoltBoss_h-2.5, 0]) scale([1,0.1,1]) cylinder(d=CenterBolt_d+10, h=5, center=true);
+				} // hull
+		} // union
+		
+		// Terminal block clearance
+		translate([-27/2,0,Alt_Z+MC_Size_Z()/2-20.7]) cube([27,20,15]);
+		
+		// connector
+		translate([0, Alt_Y-AltBoltBoss_h-1.5, Alt_Z-MC_Size_Z()/2+5.5]) cube([21,20,12], center=true);
+		
+		// Center cut-out
+		translate([0, Alt_Y-AltBoltBoss_h-1.5, Alt_Z+2.5]) cube([26,20,75], center=true);
+		
+		// Threaded rod
+		//cylinder(d=MotorBolt_d, h=EBayMC_Len+10);
+		Boss_t=5;
+		
+		// Align to lower thread
+		translate([0,0,-Overlap+floor((Alt_Z+MC_Size_Z()/2-2-Boss_t/2)/Thread_p)*Thread_p])
+			if ($preview){
+				cylinder(d=Thread_d, h=Boss_t+Thread_p); 
+			}else{
+				ExternalThread(Pitch=Thread_p, Dia_Nominal=Thread_d+IDXtra*2, 
+						Length=Boss_t+Thread_p, 
+						Step_a=2,TrimEnd=true,TrimRoot=true);
+			} // if
+	
+		
+		// alt bolts
+		translate([0,Alt_Y,Alt_Z]) rotate([90,0,0]) AltHoles() rotate([180,0,0]) Bolt4Hole(depth=AltBoltBoss_h+5);
+	} // difference
+	
+	if (HasRS_Mount){
+		translate([12,-2,0]) rotate([0,0,90]) R65_RocketServoMountVert(Base_h=1);
+		translate([-12,-2,0]) rotate([0,0,-90]) R65_RocketServoMountVert(Base_h=1);
+	}
+	
+	// LED face plate
+	MC_LED_Z=Alt_Z-MC_Size_Z()/2+MC_LED_Z();
+	MC_ArmScrew_Z=Alt_Z-MC_Size_Z()/2+MC_ArmingScrew_Z();
+	RS_LED_Z=MC_LED_Z-7;
+	RS2_LED_Z=MC_ArmScrew_Z-7;
+	difference(){
+		translate([0,OD/2-2.2,0]) RoundRect(X=12, Y=3, Z=MC_LED_Z()+15, R=1.3);
+		
+		translate([0,Alt_Y,MC_LED_Z]) rotate([-90,0,0]) cylinder(d=5, h=20);
+		translate([0,Alt_Y,MC_ArmScrew_Z]) rotate([-90,0,0]) cylinder(d=5, h=20);
+		
+		translate([0,Alt_Y,RS_LED_Z]) rotate([-90,0,0]) cylinder(d=3, h=20);
+		translate([0,Alt_Y,RS2_LED_Z]) rotate([-90,0,0]) cylinder(d=3, h=20);
+	} // difference
+	
+	rotate([0,0,Mag_SW_a]) translate([Mag_SW_X,Mag_SW_Y+2,Mag_SW_Z]) rotate([90,0,0]) FW_MagSw_Mount(HasMountingEars=false);
+	rotate([0,0,Mag_SW_a]) translate([Mag_SW_X,Mag_SW_Y,0]) RoundRect(X=17,Y=4,Z=Mag_SW_Z-9.5, R=1);
+	
+	//if ($preview) translate([0,Alt_Y,Alt_Z]) rotate([0,0,180]) rotate([90,0,0]) AltPCB();
+} // R65_EBayMC
+/**/
 
 
 

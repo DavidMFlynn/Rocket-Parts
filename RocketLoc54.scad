@@ -405,7 +405,136 @@ module DroguePetalHub(OD=Coupler_OD, Spring_H=0, HasWirePath=false){
 
 // DroguePetalHub(OD=Coupler_OD, Spring_H=0, HasWirePath=false);
 
-module AftSpringEnd(Body_d=Body_OD*CF_Comp+Vinyl_d, OD=Body_ID, nRopes=0, Skirt_h=25, ){
+module R54_DrogueCoupler(OD=LOC65Body_ID, Coupler_ID=LOC65Coupler_ID, 
+			Thread_d=Thread25020_d, Thread_p=Thread25020_Pitch,
+			nRopes=0, Skirt_h=25, HasTubeStop=false, Body_OD=LOC65Body_OD, HasWirePath=false, HasStiffCore=false){
+// Copy of R65_DrogueCoupler
+// This locks onto the bottom of the petals.
+// For drogue bay
+
+	CR_t=3;
+	Rope_d=3;
+
+	Petal_ID=OD-3.5; // should fit loose
+	PetalLock_ID=OD-7.5; // Should not touch at all
+	ShockCord_Y=HasStiffCore? Thread_p/2+10:OD/2-10;
+	
+	Boss_t=4;
+	nVentHoles=5;
+	VentHole_d=7;
+	VentHole_Y=15+VentHole_d/2;
+	Wall_t=1.8;
+	myFn=floor(OD)*3;
+	Len=HasTubeStop? Skirt_h*2+7:Skirt_h*2+4;
+	CenterHole_H=HasStiffCore? Len:Boss_t;
+	
+	nSpokes=(nRopes==0)? nVentHoles:nRopes;
+	Spoke_t=1.2;
+	Spoke_a=180/nSpokes;
+	ShockCord_a=Spoke_a;
+	Core_d=max(12,Thread_d+4.4);
+	
+	difference(){
+		union(){
+			difference(){
+				cylinder(d=OD, h=6, $fn=$preview? 90:myFn);
+				
+				translate([0,0,CR_t-Overlap]) cylinder(d1=Coupler_ID-4, d2=Coupler_ID, h=4+Overlap*2, $fn=$preview? 90:myFn);
+			} // difference
+			
+			cylinder(d=16, h=Boss_t);
+			
+			// spokes
+			if (HasStiffCore){
+				// spokes
+				for (j=[0:nSpokes-1]) rotate([0,0,360/nSpokes*j+Spoke_a])
+					hull(){
+						translate([0,0,CR_t-Overlap]) cylinder(d=Spoke_t, h=Len-CR_t+Overlap);
+						translate([0,OD/2-Spoke_t,CR_t-Overlap]) cylinder(d=Spoke_t, h=Len-CR_t+Overlap);
+					} // hull
+					
+				cylinder(d=Core_d, h=Len);
+				
+				// Shock cord anchor
+				rotate([0,0,ShockCord_a])
+				hull(){
+					translate([0,0,2.5]) rotate([-90,0,0]) cylinder(d=5, h=OD/2-1);
+					translate([0,0,Len/2]) rotate([-90,0,0]) cylinder(d=12, h=OD/2-1);
+					translate([0,0,Len-2.5]) rotate([-90,0,0]) cylinder(d=5, h=OD/2-1);
+				} // hull
+			} // if
+			
+			// Skirt
+			Tube(OD=OD, ID=OD-Wall_t*2, Len=Len, myfn=$preview? 90:myFn);
+			
+			// Tube Stop
+			if (HasTubeStop) translate([0,0,Skirt_h]) 
+				Tube(OD=Body_OD, ID=OD-Wall_t*2, Len=3, myfn=$preview? 90:myFn);
+			
+			// Petal Lock ring
+			difference(){
+				cylinder(d=OD, h=CR_t+5.5, $fn=$preview? 90:myFn);
+				
+				translate([0,0,CR_t]) cylinder(d=PetalLock_ID-2.8, h=4.5, $fn=$preview? 90:myFn);
+				
+				translate([0,0,CR_t+3.5]) cylinder(d1=PetalLock_ID-2.8, d2=Coupler_ID, h=3.5+Overlap, $fn=$preview? 90:myFn);
+			} // difference
+			
+		} // union
+		
+		// Center hole
+		translate([0,0,-Overlap]) 
+			if ($preview){
+				cylinder(d=Thread_d, h=CenterHole_H+Overlap*2); 
+			}else{
+				ExternalThread(Pitch=Thread_p, Dia_Nominal=Thread_d+IDXtra*2, 
+						Length=CenterHole_H+Overlap*2, 
+						Step_a=2,TrimEnd=true,TrimRoot=true);
+						
+				translate([0,0,12]) cylinder(d=Thread_d+IDXtra*2, h=CenterHole_H-24);
+			}
+		
+		// Air Vent Holes
+		for (j=[0:nVentHoles-1]) rotate([0,0,360/nVentHoles*j]) 
+			translate([0,VentHole_Y,-Overlap]) cylinder(d=VentHole_d, h=CR_t+Overlap*2);
+		
+		// Shock cord
+		if (HasStiffCore){
+			rotate([0,0,ShockCord_a+30]) translate([0,ShockCord_Y,-Overlap]) cylinder(d=4, h=CR_t+Overlap*2);
+			rotate([0,0,ShockCord_a-30]) translate([0,ShockCord_Y,-Overlap]) cylinder(d=4, h=CR_t+Overlap*2);
+		}else{
+			rotate([0,0,180/nVentHoles]) translate([0,ShockCord_Y,-Overlap]) cylinder(d=4, h=CR_t+Overlap*2);
+		}
+		
+		if (HasWirePath) rotate([0,0,-Spoke_a*3+15]) translate([0,OD/2-10,-Overlap]) cylinder(d=5, h=30);
+		
+		// Petal Locks
+		difference(){
+			translate([0,0,-Overlap]) cylinder(d=OD+1, h=4.5+Overlap*2, $fn=$preview? 90:myFn);
+			
+			// Puller ring
+			translate([0,0,-Overlap*2]) cylinder(d=Petal_ID, h=2+Overlap*3, $fn=$preview? 90:myFn);
+			// Petal lock
+			translate([0,0,-Overlap*2]) cylinder(d=PetalLock_ID, h=4.5+Overlap*3, $fn=$preview? 90:myFn);
+			
+		} // difference
+		
+		// Rope holes
+		if (nRopes>0) for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) 
+			translate([0,Spring_OD/2+Rope_d/2+2,-Overlap]) cylinder(d=Rope_d, h=CR_t+Overlap*2);
+			
+		//if ($preview) translate([0,0,-Overlap]) cube([100,100,100]);
+	} // difference
+	
+} // R54_DrogueCoupler
+
+/*
+R54_DrogueCoupler(OD=Body_ID, Coupler_ID=Coupler_ID, 
+			Thread_d=MotorBolt_d, Thread_p=MotorBoltPitch,
+			nRopes=0, Skirt_h=25, HasTubeStop=false, Body_OD=Body_OD, HasWirePath=true, HasStiffCore=true);
+/**/
+
+module AftSpringEnd(Body_d=Body_OD*CF_Comp+Vinyl_d, OD=Body_ID, nRopes=0, Skirt_h=25, HasTubeStop=false){
 // This locks onto the bottom of the petals.
 // For drogue bay
 
@@ -435,7 +564,9 @@ module AftSpringEnd(Body_d=Body_OD*CF_Comp+Vinyl_d, OD=Body_ID, nRopes=0, Skirt_
 			Tube(OD=OD, ID=OD-Wall_t*2, Len=Skirt_h*2+3, myfn=$preview? 90:myFn);
 			
 			// Tube Stop
-			translate([0,0,Skirt_h]) Tube(OD=Body_d, ID=Coupler_OD-Wall_t*2, Len=3, myfn=$preview? 90:myFn);
+			if (HasTubeStop)
+				translate([0,0,Skirt_h]) 
+					Tube(OD=Body_d, ID=Coupler_OD-Wall_t*2, Len=3, myfn=$preview? 90:myFn);
 			
 			difference(){
 				cylinder(d=OD, h=CR_t+5.5, $fn=$preview? 90:myFn);

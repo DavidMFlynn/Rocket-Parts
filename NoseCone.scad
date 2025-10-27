@@ -3,7 +3,7 @@
 // Filename: NoseCone.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.22  7/5/2025
+// Revision: 0.9.23  10/26/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-function NoseConeRev()="NoseCone Rev. 0.9.22";
+function NoseConeRev()="NoseCone Rev. 0.9.23";
 echo(NoseConeRev());
+// 0.9.23  10/26/2025 Added ElipticalNoseCone()
 // 0.9.22  7/5/2025   Worked on BluntConeNoseCone
 // 0.9.21  7/2/2025	  Fixed threaded tip in BluntOgiveNoseCone()
 // 0.9.20  4/19/2025  Added UseHardSpring option to NC_ShockcordRingDual
@@ -45,6 +46,7 @@ echo(NoseConeRev());
 // NC_ShockcordRingDual(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, NC_ID=0, NC_Base_L=20, nRivets=3, nBolts=0, Flat=false, UseHardSpring=false);
 //
 // BluntConeNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=180, Base_L=21, nRivets=3, Tip_R=15, HasThreadedTip=false, Wall_T=3);
+// ElipticalNoseCone(L=150, D=LOC54Body_OD, Base_L=5, Wall_T=1.6, nBaseBolts=3);
 // OgiveNoseCone(ID=PML98Body_ID, OD=PML98Body_OD, L=170, Base_L=21, Wall_T=3);
 //
 // OgiveTailCone(Ogive_L=150, Body_D=100, End_D=66, Wall_T=3); // Truncated tangent ogive used to make a tail cone
@@ -615,24 +617,57 @@ BluntConeNoseCone(ID=Fairing55_OD-4.4, OD=Fairing55_OD, L=190, Base_L=15, Tip_R=
 /**/
 
 
-module ElipticalShape(L=645, D=50, Base_L=15){
+module ElipticalShape(L=645, D=50, Base_L=15, Thickness=0){
 	// tangent ogive
-	R=D/2;
-	p=L/R;
+	R=D/2-Thickness;
+	p=(L-Thickness)/R;
+	myfn=max(90,floor(L)*3);
 	
 	translate([0,Base_L,0])
-	difference(){
-		intersection(){
-			square([R,L]);
-			scale([1,p,1]) circle(r=R,$fn=$preview? 90:360);
-		} // intersection
+		difference(){
+			intersection(){
+				square([R,L]);
+				scale([1,p,1]) circle(r=R,$fn=$preview? 90:myfn);
+			} // intersection
+			
+			translate([-D,-Overlap,0]) square([D,L+Overlap*2]);
+		} // difference
 		
-		translate([-100,-Overlap,0]) square([100,L+Overlap*2]);
-	} // difference
 	if (Base_L>0) square([R,Base_L+Overlap]);
 } // ElipticalShape
 
-//rotate_extrude() ElipticalShape(L=645, D=ULine157Body_OD, Base_L=15);
+//rotate_extrude() ElipticalShape(L=150, D=LOC54Body_OD, Base_L=5, Thickness=0);
+
+module ElipticalNoseCone(L=150, D=LOC54Body_OD, Base_L=5, Wall_T=1.6, nBaseBolts=3){
+	myfn=max(90,floor(L)*3);
+	
+	module BoltBoss(){
+		Boss_t=6;
+		BoltInset=4; // match petal hub bolt pattern
+		
+		difference(){
+			hull(){
+				translate([0,D/2-BoltInset,0]) cylinder(d=8, h=Boss_t);
+				translate([0,D/2-Wall_T,0]) scale([1,0.1,1]) cylinder(d=9, h=Boss_t);
+			} // hull
+			translate([0,D/2-BoltInset,Boss_t]) Bolt4Hole();
+		} // difference
+	} // BoltBoss
+	
+	difference(){
+		rotate_extrude($fn=$preview? 90:myfn) ElipticalShape(L=L, D=D, Base_L=Base_L, Thickness=0);
+		
+		translate([0,0,-0.6]) // make tip thicker
+		rotate_extrude($fn=$preview? 90:myfn) ElipticalShape(L=L, D=D, Base_L=Base_L, Thickness=Wall_T);
+		
+		if ($preview) translate([0,0,-Overlap]) cube([D,D,L+Base_L+1]);
+	} // difference
+	
+	if (nBaseBolts>0) for (j=[0:nBaseBolts-1]) rotate([0,0,360/nBaseBolts*j])
+		BoltBoss();
+} // ElipticalNoseCone
+
+// ElipticalNoseCone(L=150, D=BT54Body_OD*CF_Comp+0.3, Base_L=6, Wall_T=1.2, nBaseBolts=3);
 
 module OgiveShape(L=100, D=50, Base_L=2){
 	// tangent ogive
@@ -755,14 +790,15 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, RivertInset
 	//echo(NC_OGiveTipX0(R,L,Cut_d/2));
 	Cut_Z=Base_L+Ogive_Cut_Z(Ogive_L=L, R=R, End_R=Cut_d/2);
 	//echo(Cut_Z=Cut_Z);
+	myfn=max(90,floor(OD)*3);
 	
 	difference(){
 		difference(){
-			rotate_extrude($fn=$preview? 90:720) BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R, Thickness=0);
+			rotate_extrude($fn=$preview? 90:myfn) BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R, Thickness=0);
 			
 			// Remove inside
 			difference(){
-				rotate_extrude($fn=$preview? 90:720) BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R, Thickness=Wall_T);
+				rotate_extrude($fn=$preview? 90:myfn) BluntOgiveShape(L=L, D=OD, Base_L=Base_L, Tip_R=Tip_R, Thickness=Wall_T);
 				
 				if (FillTip) difference(){
 					translate([0,0,Tip_Z-Wall_T*2]) cylinder(r=Tip_R, h=Tip_R+Wall_T*2);

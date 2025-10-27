@@ -289,8 +289,6 @@ module UpperRailBtnMount(){
 
 //UpperRailBtnMount();
 
-
-				
 module FinCan(LowerHalfOnly=false, UpperHalfOnly=false){
 	//Wall_t=1.2; // Normal for LOC tube
 	Wall_t=0.9; // thin for estes tube

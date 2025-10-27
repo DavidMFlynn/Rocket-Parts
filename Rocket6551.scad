@@ -3,7 +3,7 @@
 // Filename: Rocket6551.scad
 // by David M. Flynn
 // Created: 9/18/2025
-// Revision: 0.9.11  10/23/2025
+// Revision: 1.0.0  10/25/2025
 // Units: mm
 // *********************************************
 //  ***** Notes *****
@@ -23,6 +23,7 @@
 //  2 Stage version w/ 38mm motors, I357T, H123W
 //
 //  ***** History *****
+// 1.0.0   10/25/2025 Just a little clean up.
 // 0.9.11  10/23/2025 R65_EBayMiddleRing() now has 6 rivet holes.
 // 0.9.10  10/23/2025 Moved ebays to R65Lib.scad
 // 0.9.9   10/21/2025 Moved common routines to R65Lib.scad, working on the 2 stage/dual deploy version
@@ -53,7 +54,7 @@ SustainerPetal_Len=140; // 140 to 180
 // rotate([-90,0,0]) PD_PetalSpringHolder();
 // rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=Petal_Len, nPetals=nPetals, Wall_t=1.2, AntiClimber_h=4, HasLocks=true, Lock_Span_a=30);
 // rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=DroguePetal_Len, nPetals=nPetals, Wall_t=1.2, AntiClimber_h=4, HasLocks=true, Lock_Span_a=30);
-// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=SustainerPetal_Len, nPetals=nPetals, Wall_t=1.2, AntiClimber_h=4, HasLocks=true, Lock_Span_a=30);
+// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=SustainerPetal_Len, nPetals=nPetals, Wall_t=1.6, AntiClimber_h=4, HasLocks=true, Lock_Span_a=30);
 // R65_FwdSpringEnd(OD=Coupler_OD, ID=Coupler_ID, LockPin_d=16, nRopes=6, Skirt_h=25, HasServoConnector=false);
 // R65_SpringSliderLight(OD=Coupler_OD, Len=35);
 //
@@ -72,7 +73,8 @@ SustainerPetal_Len=140; // 140 to 180
 //  CRBBm_LockPinExtensionEnd(); // Presses onto 5/16" OD Aluminum tube.
 //
 // R65_EBayBR(OD=Coupler_OD, CenterBolt_d=MotorBolt_d , CenterBolt_p=MotorBoltPitch); // Blue Raven
-// R65_EBayMC(OD=Coupler_OD, CenterBolt_d=MotorBolt_d, CenterBolt_p=MotorBoltPitch, HasRS_Mount=true); // Mission Control V3
+// R65_EBayMC(OD=Coupler_OD, CenterBolt_d=MotorBolt_d, CenterBolt_p=MotorBoltPitch, HasRS_Mount=true, BaseOnly=true); // Mission Control V3
+// rotate([180,0,0]) R65_EBayMCTop(OD=Coupler_OD, CenterBolt_d=MotorBolt_d, CenterBolt_p=MotorBoltPitch);
 //
 //  *** Single Deploy Only ***
 //  *** This spacer fills the space between the MotorTubeTopper and the EBay, must pull the nose cone in tight. ***
@@ -96,12 +98,12 @@ R65_DrogueCoupler(OD=Body_ID, Coupler_ID=Coupler_ID,
 // rotate([180,0,0]) R65_MotorTubeTopper(OD=Body_ID, ID=MotorTube_OD, MT_ID=MotorTube_ID-3); // alt w/ flange
 // R65_MotorNutStop(MT_ID=MotorTube_ID, Hole_d=MotorBolt_d);
 //
-// rotate([180,0,0]) Fincan(LowerHalfOnly=false, UpperHalfOnly=false, HasSecurityRods=false, HasMotorRetainer=false);
-// Fincan(LowerHalfOnly=false, UpperHalfOnly=false, HasSecurityRods=false, HasMotorRetainer=false, IsSustainer=true);
+// rotate([180,0,0]) Fincan(LowerHalfOnly=false, UpperHalfOnly=false);
+// Fincan(LowerHalfOnly=false, UpperHalfOnly=false, IsSustainer=true);
 //
 // rotate([0,0,90]) RocketFin(HasSpiralVaseRibs=false, PrinterBrim_H=0.6);
 //
-// RailButton();
+// RailButton(OD=11, Flange_h=2, Slot_w=3.8); //3.8 is rof BlackSky rail
 // RailButton(OD=11, Flange_h=2, Slot_w=2.8);  // for 1010 Rail
 // SnapRing(); // optional, not used for now
 //
@@ -132,6 +134,9 @@ R65_DrogueCoupler(OD=Body_ID, Coupler_ID=Coupler_ID,
 //
 // rotate([180,0,0])// R65_DeepSocket(); // 7/16" Socket for 1/4-20 nuts (29mm RMS)
 // R65_DeepSocket500(); // 1/2" Socket for 5/16-18 nuts (38mm RMS)
+//
+// R65_ExtensionAlignmentRing38(); // Align threaded rod to center of 38mm motor tube
+// R65_ShortMotorAdaptor(Len=48); // One 38mm grain is 48mm in case length
 //
 // *********************************************
 //  ***** for Viewing *****
@@ -523,64 +528,6 @@ module NoseCone(){
 			NC_Len=NC_Len, NC_Base_L=NC_Base_L, NC_Tip_R=NC_Tip_R, NC_Wall_t=NC_Wall_t);
 } // NoseCone
 
-module ShortMotorAdaptor(Len=48){ // One 38mm grain is 48mm in case length
-	// a.k.a. Long Nut
-	
-	Thread_d=MotorBolt_d;
-	Thread_p=MotorBoltPitch;
-		
-	difference(){
-		cylinder(d=1/2*25.4*1.1339, h=Len, $fn=6);
-		
-		// Thread
-		translate([0,0,-Overlap])
-			if ($preview){
-				cylinder(d=Thread_d, h=Len+Overlap*2); 
-			}else{
-				ExternalThread(Pitch=Thread_p, Dia_Nominal=Thread_d+IDXtra*2, 
-						Length=Len+Overlap*2, 
-						Step_a=2,TrimEnd=true,TrimRoot=true);
-			} // if
-	} // difference
-} // ShortMotorAdaptor
-
-//ShortMotorAdaptor();
-
-module ExtensionAlignmentRing(){
-	OD=MotorTube_ID-1;
-	Len=6;
-	nSpokes=6;
-	Wall_t=1.2;
-	Thread_d=MotorBolt_d;
-	Thread_p=MotorBoltPitch;
-	
-	difference(){
-		union(){
-			rotate([0,0,30]) cylinder(d=1/2*25.4*1.1339, h=Len, $fn=6);
-			
-			Tube(OD=OD, ID=OD-Wall_t*2, Len=3, myfn=$preview? 36:90);
-			for (j=[0:nSpokes-1]) rotate([0,0,360/nSpokes*j])
-				hull(){
-					cylinder(d=Wall_t, h=3);
-					translate([0,OD/2-Wall_t,0]) cylinder(d=Wall_t, h=3);
-				} // hull
-		} // union
-		
-		// Thread
-		translate([0,0,-Overlap])
-			if ($preview){
-				cylinder(d=Thread_d, h=Len+Overlap*2); 
-			}else{
-				ExternalThread(Pitch=Thread_p, Dia_Nominal=Thread_d+IDXtra*2, 
-						Length=Len+Overlap*2, 
-						Step_a=2,TrimEnd=true,TrimRoot=true);
-			} // if
-		
-	} // difference
-} // ExtensionAlignmentRing
-
-// ExtensionAlignmentRing();
-
 module EBayMC_Jig(){
 // for drilling airframe holes
 	OD=Body_OD*CF_Comp+Vinyl_d;
@@ -647,19 +594,11 @@ module EBayMC_Jig(){
  translate([0,0,-47.7]) rotate([180,0,0]) rotate([0,0,47]) CRBBm_Activator();
 /**/
 
-
-module Fincan(LowerHalfOnly=false, UpperHalfOnly=false, HasSecurityRods=false, HasMotorRetainer=false, IsSustainer=false){
+module Fincan(LowerHalfOnly=false, UpperHalfOnly=false, IsSustainer=false){
 	Wall_t=1.2;
 	HasMotorSleeve=false;
-	AftClosure_OD=HasMotorRetainer? 32.2+IDXtra*2:0;
-	AftClosure_Len=HasMotorRetainer? 15:0;
-	TailConeExtra_OD=HasMotorRetainer? HasMotorRetainer:0;
-	
-	SecurityRodHole_d=0.190*25.4+LooseFit;
-	SecurityWrenchHole_d=15;
-	SecurityWrenchHole_h=TailCone_Len-5;
-	SecurityRodHole_a=17.5;
-	
+	TailConeExtra_OD=0;
+		
 	TC_Len=IsSustainer? 0:TailCone_Len;
 	OD=Body_OD*CF_Comp+Vinyl_d;
 	MotorTubeHole_d=MotorTube_OD+IDXtra*2;
@@ -678,84 +617,39 @@ module Fincan(LowerHalfOnly=false, UpperHalfOnly=false, HasSecurityRods=false, H
 				Cone_Len=TC_Len, ThreadedTC=false, Extra_OD=TailConeExtra_OD,
 				LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly,
 				Wall_t=Wall_t,
-				AftClosure_OD=AftClosure_OD, AftClosure_Len=AftClosure_Len, IncludeCenteringRings=false);
+				AftClosure_OD=0, AftClosure_Len=0, IncludeCenteringRings=false);
 				
-			if (IsSustainer){
-				//translate([0,0,-8]) Tube(OD=MotorTubeHole_d+3.6, ID=MotorTubeHole_d, Len=8, myfn=$preview? 90:myfn);
-				
+			if (IsSustainer)				
 				difference(){
 					translate([0,0,-Overlap]) Tube(OD=OD, ID=MotorTubeHole_d, Len=FinInset_Len-1, myfn=$preview? 90:myfn);
 						
 					translate([0,0,-4-Overlap]) rotate([0,0,90]) Stager_CupHoles(Tube_OD=OD, nLocks=nLocks, BoltsOn=true, Collar_h=0);
 				} // difference
-			}
+			
 		} // union
 
 		// Wire path
 		if (IsSustainer)
 			rotate([0,0,156]) translate([0,OD/2-8,-5]) cylinder(d=5/16*25.4+IDXtra, h=20);
 		
-				//*
-		// Snap ring groove
-		if (HasMotorRetainer){
-			translate([0,0,-TailCone_Len+3]) cylinder(d=AftClosure_OD+2.5, h=2);
-			translate([0,0,-TailCone_Len+5-Overlap]) cylinder(d1=AftClosure_OD+2.5, d2=AftClosure_OD+IDXtra*3, h=3);
-		}
-		
-		// Security Rods
-		if (HasSecurityRods) rotate([0,0,SecurityRodHole_a]){
-			translate([0,SecurityRod_BC_d/2,-TailCone_Len]){
-				cylinder(d=SecurityRodHole_d, h=FinCan_Len+TailCone_Len);
-				cylinder(d=SecurityWrenchHole_d, h=SecurityWrenchHole_h);
-			}
-			translate([0,-SecurityRod_BC_d/2,-TailCone_Len]){
-				cylinder(d=SecurityRodHole_d, h=FinCan_Len+TailCone_Len);
-				cylinder(d=SecurityWrenchHole_d, h=SecurityWrenchHole_h);
-			}
-		} // if (HasSecurityRods)
-		/**/
 	} // difference
 } // Fincan
 
-// Fincan(LowerHalfOnly=false, UpperHalfOnly=false, HasSecurityRods=false, HasMotorRetainer=false, IsSustainer=true);
-// Fincan(LowerHalfOnly=false, UpperHalfOnly=false, HasSecurityRods=false, HasMotorRetainer=false);
+// Fincan(LowerHalfOnly=false, UpperHalfOnly=false, IsSustainer=true);
+// Fincan(LowerHalfOnly=false, UpperHalfOnly=false, IsSustainer=false);
 // Fincan(LowerHalfOnly=false, UpperHalfOnly=true);
 // Fincan(LowerHalfOnly=true, UpperHalfOnly=false);
 
-module SnapRing(){
-	Thickness=1.5;
-	OD=MotorTube_OD+3;
-	ID=MotorTube_ID-1;
-	Notch_XY=(ID-5)/2*0.707;
-	
-	difference(){
-		cylinder(d=OD, h=Thickness);
-		
-		translate([0,0,-Overlap]) cylinder(d=ID, h=Thickness+Overlap*2);
-		translate([Notch_XY,Notch_XY,-Overlap]) cube([20,20,Thickness+Overlap*2]);
-	} // difference
-} // SnapRing
-
-// SnapRing();
-
-module BoosterFincan(LowerHalfOnly=false, UpperHalfOnly=false, HasSecurityRods=false, HasMotorRetainer=false){
+module BoosterFincan(LowerHalfOnly=false, UpperHalfOnly=false){
 	Wall_t=1.2;
 	HasMotorSleeve=false;
-	AftClosure_OD=HasMotorRetainer? 32.2+IDXtra*2:0;
-	AftClosure_Len=HasMotorRetainer? 15:0;
-	TailConeExtra_OD=HasMotorRetainer? HasMotorRetainer:0;
-	
-	SecurityRodHole_d=0.190*25.4+LooseFit;
-	SecurityWrenchHole_d=15;
-	SecurityWrenchHole_h=TailCone_Len-5;
-	SecurityRodHole_a=17.5;
-	
+	TailConeExtra_OD=0;
+	OD=Body_OD*CF_Comp+Vinyl_d;
+		
 	echo(str("Body OD w/ Comp = ",Body_OD*CF_Comp+Vinyl_d));
 	echo(str("Target OD = ", Body_OD+Vinyl_d));
 	
-	difference(){
-	
-		FC2_FinCanLight(Body_OD=Body_OD*CF_Comp+Vinyl_d, Body_ID=Body_ID*CF_Comp, Can_Len=BFinCan_Len,
+	FC2_FinCanLight(Body_OD=OD, Body_ID=Body_ID*CF_Comp, Can_Len=BFinCan_Len,
 				MotorTube_OD=MotorTube_OD, 
 				nFins=nFins, HasIntegratedCoupler=true, HasFwdCenteringRing=false, Coupler_Len=10, nCouplerBolts=0,
 				HasMotorSleeve=HasMotorSleeve, 
@@ -763,29 +657,9 @@ module BoosterFincan(LowerHalfOnly=false, UpperHalfOnly=false, HasSecurityRods=f
 				Cone_Len=TailCone_Len, ThreadedTC=false, Extra_OD=TailConeExtra_OD,
 				LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly,
 				Wall_t=Wall_t,
-				AftClosure_OD=AftClosure_OD, AftClosure_Len=AftClosure_Len, IncludeCenteringRings=false);
+				AftClosure_OD=0, AftClosure_Len=0, IncludeCenteringRings=false);
 
 		
-		//*
-		// Snap ring groove
-		if (HasMotorRetainer){
-			translate([0,0,-TailCone_Len+3]) cylinder(d=AftClosure_OD+2.5, h=2);
-			translate([0,0,-TailCone_Len+5-Overlap]) cylinder(d1=AftClosure_OD+2.5, d2=AftClosure_OD+IDXtra*3, h=3);
-		}
-		
-		// Security Rods
-		if (HasSecurityRods) rotate([0,0,SecurityRodHole_a]){
-			translate([0,SecurityRod_BC_d/2,-TailCone_Len]){
-				cylinder(d=SecurityRodHole_d, h=FinCan_Len+TailCone_Len);
-				cylinder(d=SecurityWrenchHole_d, h=SecurityWrenchHole_h);
-			}
-			translate([0,-SecurityRod_BC_d/2,-TailCone_Len]){
-				cylinder(d=SecurityRodHole_d, h=FinCan_Len+TailCone_Len);
-				cylinder(d=SecurityWrenchHole_d, h=SecurityWrenchHole_h);
-			}
-		} // if (HasSecurityRods)
-		/**/
-	} // difference
 } // BoosterFincan
 
 // BoosterFincan();
