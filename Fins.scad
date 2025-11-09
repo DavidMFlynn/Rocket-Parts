@@ -3,7 +3,7 @@
 // Filename: Fins.scad
 // by David M. Flynn
 // Created: 6/11/2022 
-// Revision: 1.1.7  9/21/2025
+// Revision: 1.1.8  11/9/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-function FinsRev()="Fins 1.1.7";
+function FinsRev()="Fins 1.1.8";
 echo(FinsRev());
+// 1.1.8  11/9/2025  Fixed Fin_BluntOgiveShape() to put the tip at the correct length.
 // 1.1.7  9/21/2025  Changed TrapFin3Slots tighter by 0.2mm
 // 1.1.6  8/31/2025  Added TipBase parameter for rockets that sit on their fins.
 // 1.1.5  8/10/2025  Changed TrapFin3Slots tighter by 0.2mm
@@ -134,32 +135,29 @@ module Fin_BluntOgiveShape(L=24, W=12, Tip_R=1){
 	p=OGiveArcOffset(R,L);
 	X0 = OGiveTipX0(R,L,Tip_R); //L-sqrt((p-Tip_R)*(p-Tip_R)-(p-R)*(p-R));
 	
-	L1=L+(X0-Tip_R); // move the tip
-	
-	p1=OGiveArcOffset(R,L1);
-	X01= OGiveTipX0(R,L1,Tip_R);
+	Tip_Y=L-X0+Tip_R;
+	Xtra_Len=L-Tip_Y;
 	
 	// calculate tangent point
-	Yt=(Tip_R*(p1-R))/(p1-Tip_R);
-	Xt=X01-sqrt(Tip_R*Tip_R-Yt*Yt);
+	Yt=(Tip_R*(p-R))/(p-Tip_R);
+	Xt=X0-sqrt(Tip_R*Tip_R-Yt*Yt);
 	
 	//echo(Xt=Xt);
 
-		//hull(){
+	translate([0,Xtra_Len,0]){
 			intersection(){
-				translate([-R,0,0]) square([R*2,L1-Xt]);// clip at tangent point, keep first and fourth quadrants only
+				translate([-R,0,0]) square([R*2,L-Xt]);// clip at tangent point, keep first and fourth quadrants only
 				
-				translate([-p1+R, 0, 0]) circle(r=p1, $fn=$preview? 90:720);
-				translate([p1-R, 0, 0]) circle(r=p1, $fn=$preview? 90:720);
+				translate([-p+R, 0, 0]) circle(r=p, $fn=$preview? 90:720);
+				translate([p-R, 0, 0]) circle(r=p, $fn=$preview? 90:720);
 			} // intersection
 			
 			// Tip
-			translate([0, L1-X01, 0]) circle(r=Tip_R, $fn=$preview? 90:360);
-		//} // hull
-	
+			translate([0, L-X0, 0]) circle(r=Tip_R, $fn=90);
+	}
 } // Fin_BluntOgiveShape
 
-// translate([0,-24,0]) Fin_BluntOgiveShape(L=24, W=12, Tip_R=1);
+// translate([0,-24,0]) Fin_BluntOgiveShape(L=30, W=8, Tip_R=1);
 
 
 module Fin_BluntOgiveFillet(L=18, W=10, Tip_R=1, Fillet_Z=4, Fillet_r=4){
@@ -244,7 +242,7 @@ module TrapFin3Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_
 		
 } // TrapFin3Slots
 
-// TrapFin3Slots(Tube_OD=ULine157Body_OD, nFins=4, Post_h=15, Root_L=180, Root_W=21.6, Chamfer_L=18);
+// TrapFin3Slots(Tube_OD=ULine157Body_OD, nFins=4, Post_h=15, Root_L=180, Root_W=21.6, Chamfer_L=28);
 
 module Fin3Fillet(Root_L=100, Root_W=10, Chamfer_L=20, Tube_d=106, Fillet_r=4){
 	Edge_r=1;
@@ -554,6 +552,7 @@ module TrapFin3Shape(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span
 } // TrapFin3Shape
 
 // TrapFin3Shape(Post_h=15, Root_L=180, Tip_L=80, Root_W=12, Tip_W=2.0, Span=100, Chamfer_L=34, TipOffset=100, TipInset=0, TipPost_h=0, HasBluntTip=false, TipBase=30);
+// TrapFin3Shape(Post_h=12, Root_L=160, Tip_L=80, Root_W=12, Tip_W=2.0, Span=100, Chamfer_L=34, TipOffset=0, TipInset=0, TipPost_h=0, HasBluntTip=false, TipBase=0);
 					
 
 module TrapFin3(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=2.0, Span=100, Chamfer_L=18,
