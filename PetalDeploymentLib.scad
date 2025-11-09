@@ -67,6 +67,8 @@ PD_PetalHub(OD=BT75Coupler_OD,
 // PD_Booster_PetalHub(OD=BT54Coupler_OD, nPetals=2, nRopes=2, ShockCord_a=-1, HasThreadedCore=true, ST_DSpring_ID=SE_Spring_CS4323_ID(), ST_DSpring_OD=SE_Spring_CS4323_OD(), CouplerTube_ID=0);
 //
 //  *** Tools ***
+//
+// PD_PetalHolderLockLever();
 // PD_PetalHolder(Petal_OD=BT137Coupler_OD, Is_Top=false); // bottom half
 // PD_PetalHolder(Petal_OD=BT137Coupler_OD, Is_Top=true); // top half
 // PD_PetalHolder(Petal_OD=BT98Coupler_OD, Is_Top=false); // bottom half
@@ -295,27 +297,28 @@ module PD_ShowCatchAssy(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Wall_t=1.8, nPetal
 //PD_ShowCatchAssy();
 
 
-module PD_PetalLocks(OD=BT75Coupler_OD, Len=25, nPetals=3, Lock_Span_a=0){
+module PD_PetalLocks(OD=BT75Coupler_OD, Len=25, nPetals=3, Lock_Span_a=0, Wall_t=1.8){
 // Lock_Span_a 0=full, else 10 to 360/nPetals
 
 	BaseOffset=7.2;
 	Lock_h=1.5;
-	Lock_d=3;
+	Lock_d=2.4+Wall_t;
 	Start_a=(Lock_Span_a==0)? 0:-Lock_Span_a/2;
 	
 	Span_a=(Lock_Span_a==0)? 360/nPetals:Lock_Span_a;
 	
 	translate([0,0,BaseOffset+Len-Lock_h])
 		for (j=[0:nPetals-1]) 
-			for (k=[0:Span_a-1]) rotate([0,0,360/nPetals*j+k+Start_a]) hull(){
-				translate([0,OD/2-Lock_d/2,0]) cylinder(d=Lock_d, h=Lock_h);
-				rotate([0,0,1]) translate([0,OD/2-Lock_d/2,0]) cylinder(d=Lock_d, h=Lock_h);
-				translate([0,OD/2-1,Lock_h/2]) cube([Lock_d, Overlap, Lock_h],center=true);
-				rotate([0,0,1]) translate([0,OD/2-1,Lock_h/2]) cube([Lock_d, Overlap, Lock_h],center=true);
-			}
+			for (k=[0:Span_a-1]) rotate([0,0,360/nPetals*j+k+Start_a]) 
+				hull(){
+					translate([0,OD/2-Lock_d/2,0]) cylinder(d=Lock_d, h=Lock_h);
+					rotate([0,0,1]) translate([0,OD/2-Lock_d/2,0]) cylinder(d=Lock_d, h=Lock_h);
+					translate([0,OD/2-1,Lock_h/2]) cube([Lock_d, Overlap, Lock_h],center=true);
+					rotate([0,0,1]) translate([0,OD/2-1,Lock_h/2]) cube([Lock_d, Overlap, Lock_h],center=true);
+				} // hull
 } // PD_PetalLocks
 
-// PD_PetalLocks(OD=BT75Coupler_OD, Len=110, nPetals=3);
+// PD_PetalLocks(OD=BT75Coupler_OD, Len=110, nPetals=3, Lock_Span_a=30);
 
 module PD_Petals(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_h=0,
 				HasLocks=false, Lock_Span_a=0){
@@ -325,6 +328,7 @@ module PD_Petals(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_h
 	AntiClimber_w=2;
 	AntiClimber_L=AntiClimber_h*4;
 	AntiClimber_LockComp=HasLocks? 10:4;
+	myfn=floor(OD)*2;
 	
 	module AntiClimber(){
 		rotate([0,0,180]) translate([0.6, -OD/2+1, 0])
@@ -335,16 +339,16 @@ module PD_Petals(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_h
 		} // hull
 	} // AntiClimber
 	
-	if (HasLocks) PD_PetalLocks(OD=OD, Len=Len, nPetals=nPetals, Lock_Span_a=Lock_Span_a);
+	if (HasLocks) PD_PetalLocks(OD=OD, Len=Len, nPetals=nPetals, Lock_Span_a=Lock_Span_a, Wall_t=Wall_t);
 	
 	difference(){
 		union(){
 			translate([0,0,BaseOffset]) 
-				Tube(OD=OD, ID=OD-Wall_t*2, Len=Len, myfn=$preview? 90:360);
+				Tube(OD=OD, ID=OD-Wall_t*2, Len=Len, myfn=$preview? 90:myfn);
 			
 			for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]) difference(){
 				intersection(){
-					translate([0,0,BaseOffset]) cylinder(d=OD, h=16+10+BaseOffset, $fn=$preview? 90:360);
+					translate([0,0,BaseOffset]) cylinder(d=OD, h=16+10+BaseOffset, $fn=$preview? 90:myfn);
 						
 					translate([-PetalWidth/2,OD/2-Thickness,0]) 
 						cube([PetalWidth, OD, 16+10+BaseOffset]);
@@ -352,7 +356,7 @@ module PD_Petals(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_h
 				
 				translate([0,0,16+10+BaseOffset-3])
 					cylinder(d1=OD-Thickness*2, d2=OD-3.6+Overlap, 
-							h=3+Overlap, $fn=$preview? 90:360);
+							h=3+Overlap, $fn=$preview? 90:myfn);
 					
 				
 			} // for difference
@@ -391,7 +395,7 @@ module PD_Petals(OD=BT75Coupler_OD, Len=25, nPetals=3, Wall_t=1.8, AntiClimber_h
 	} // difference
 } // PD_Petals
 
-//PD_Petals(OD=BT137Coupler_OD, Len=100, nPetals=6, Wall_t=1.8, AntiClimber_h=5, HasLocks=false, Lock_Span_a=0);
+// PD_Petals(OD=BT137Coupler_OD, Len=100, nPetals=6, Wall_t=2.4, AntiClimber_h=5, HasLocks=true, Lock_Span_a=30);
 
 module WallGrigBox(X=10, Y=15, Z=15, R=1.5, A=0){
 	myfn=24;

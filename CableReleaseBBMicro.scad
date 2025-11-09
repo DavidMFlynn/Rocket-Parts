@@ -63,7 +63,8 @@ echo(CableReleaseBBMicroRev());
 // ***********************************
 //  ***** for Viewing *****
 //
-// ShowCableReleaseBB(GuidePoint=true);
+// 
+ShowCableReleaseBBMicro(GuidePoint=false);
 //
 // ***********************************
 include<TubesLib.scad>
@@ -79,11 +80,12 @@ $fn=$preview? 24:90;
 Bolt4Inset=3;
 
 LockPin_d=12;
-LockPin_Len=23;
+LockPin_Len=18;
 nBalls=3;
 Ball_d=5/16*25.4;
+//Ball_d=6;
 GuidePoint_Len=LockPin_d/3;
-GuidePoint_d=7.5;
+GuidePoint_d=5;
 
 BearingMR84_ID=4;
 BearingMR84_OD=8;

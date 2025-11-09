@@ -128,7 +128,7 @@ use<PetalDeploymentLib.scad>
 use<SpringThing2.scad>
 use<Fairing54.scad>
 use<NoseCone.scad>
-use<FinCan.scad>
+use<FinCan2Lib.scad>
 use<AltBay.scad>
 use<CableRelease.scad>
 use<BatteryHolderLib.scad>
@@ -216,7 +216,7 @@ NC_Len=170*Scale;
 NC_Tip_r=5;
 NC_Base=5;
 NC_Lock_H=5;
-
+echo(NC_Len=NC_Len);
 //BodyTubeLen=36*25.4;
 
 module ShowCableRelease(){

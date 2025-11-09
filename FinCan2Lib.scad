@@ -93,7 +93,7 @@ NominalThreadWall_t=ThreadPitch+1.5; // added to motor tube radius
 
 module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_ID=0, Can_Len=160,
 				MotorTube_OD=BT54Body_OD, RailGuide_h=BT98Body_OD/2+2, RailGuide_z=0,
-				nFins=5, HasIntegratedCoupler=true, HasFwdCenteringRing=false, Coupler_Len=10, nCouplerBolts=0,
+				nFins=5, HasIntegratedCoupler=true, HasFwdCenteringRing=false, HasMidCenteringRing=true, Coupler_Len=10, nCouplerBolts=0,
 				HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 				Fin_Root_W=14, Fin_Root_L=130, Fin_Post_h=14, Fin_Chamfer_L=32,
 				Cone_Len=65, ThreadedTC=true, Extra_OD=0, RailGuideLen=30,
@@ -107,8 +107,8 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_ID=0, Can_Le
 	MotorTubeHole_d=MotorTube_OD+MotorTubeHoleIDXtra;
 	FinInset_Len=(Can_Len-Fin_Root_L)/2;
 	FB_Xtra_Fwd=HasIntegratedCoupler? Coupler_Len:0;
-	BigTubeFn=floor(Body_OD)*3; // was (Body_OD>130)? 720:360;
-	SmallTubeFn=floor(MotorTubeHole_d)*3;
+	BigTubeFn=floor(Body_OD)*2; // was (Body_OD>130)? 720:360;
+	SmallTubeFn=floor(MotorTubeHole_d)*2;
 	MyCoupler_ID=(Coupler_ID>0)? Coupler_ID:Body_ID-4;
 	
 	MyAftClosure_OD=(AftClosure_OD==0)? MotorTubeHole_d:AftClosure_OD+IDXtra*2;
@@ -162,7 +162,8 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_ID=0, Can_Le
 				CenteringRing(OD=LowerRing_OD, ID=MotorTubeHole_d, Thickness=3, nHoles=nFins, Offset=0);
 				
 			// Middle Centering Rings
-			translate([0,0,Can_Len/2-3])
+			if (HasMidCenteringRing)
+				translate([0,0,Can_Len/2-3])
 					CenteringRing(OD=Body_OD-1, ID=MotorTubeHole_d, Thickness=6, nHoles=nFins, Offset=0);
 			
 			// Fin Boxes
@@ -220,6 +221,11 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_ID=0, Can_Le
 		// Hollow roots
 		if (HollowFinRoots && (Body_OD/2-MotorTubeHole_d/2-Fin_Post_h)>5) 
 			for (j=[0:nFins]) rotate([0,0,360/nFins*j+180/nFins]){
+			
+				if (!HasMidCenteringRing)
+					translate([-FinBox_W/2+Wall_t, MotorTubeHole_d/2+Wall_t, Can_Len/2-7])
+						cube([FinBox_W-Wall_t*2, Body_OD/2-MotorTubeHole_d/2-Fin_Post_h-Wall_t*2, 14]);
+					
 				// Forward box
 				translate([-FinBox_W/2+Wall_t, MotorTubeHole_d/2+Wall_t, Can_Len/2+3])
 					cube([FinBox_W-Wall_t*2, Body_OD/2-MotorTubeHole_d/2-Fin_Post_h-Wall_t*2, Can_Len/2+FB_Xtra_Fwd-Wall_t-6]);
@@ -547,8 +553,8 @@ module FC2_FinCanLight(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Can_Len=160,
 	FinInset_Len=(Can_Len-Fin_Root_L)/2;
 	FB_Xtra_Fwd=HasIntegratedCoupler? Coupler_Len:0;
 	
-	BigTubeFn=floor(Body_OD)*3;
-	SmallTubeFn=floor(MotorTubeHole_d)*3;
+	BigTubeFn=floor(Body_OD)*2;
+	SmallTubeFn=floor(MotorTubeHole_d)*2;
 	MyCoupler_ID=(Wall_t<MinCWall_t)? Body_ID-MinCWall_t*2:Body_ID-Wall_t*2;
 	
 	MyAftClosure_OD=(AftClosure_OD==0)? MotorTubeHole_d:AftClosure_OD+IDXtra*2;

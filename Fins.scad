@@ -72,11 +72,9 @@ echo(FinsRev());
 //
 // Fin(Root_L=150, Root_W=5, Tip_W=2.5, Span=70, Chamfer_a=15);
 //
-// TrapFin2Tail(Post_h=5, Root_L=150, Root_W=10, Chamfer_L=18);
 // TrapFin2Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18);
 // TrapFin2Shape(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100, Chamfer_L=18);
 //
-// TrapFin3Tail(Post_h=5, Root_L=150, Root_W=10, Chamfer_L=18);
 // TrapFin3Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18);
 // TrapFin3Shape(Post_h=5, Root_L=150, Tip_L=100, Root_W=10, Tip_W=4.0, Span=100, Chamfer_L=18, TipOffset=0, TipInset=0, TipPost_h=0, HasBluntTip=false);
 // 
@@ -136,25 +134,33 @@ module Fin_BluntOgiveShape(L=24, W=12, Tip_R=1){
 	p=OGiveArcOffset(R,L);
 	X0 = OGiveTipX0(R,L,Tip_R); //L-sqrt((p-Tip_R)*(p-Tip_R)-(p-R)*(p-R));
 	
+	L1=L+(X0-Tip_R); // move the tip
+	
+	p1=OGiveArcOffset(R,L1);
+	X01= OGiveTipX0(R,L1,Tip_R);
+	
 	// calculate tangent point
-	Yt=(Tip_R*(p-R))/(p-Tip_R);
-	Xt=X0-sqrt(Tip_R*Tip_R-Yt*Yt);
+	Yt=(Tip_R*(p1-R))/(p1-Tip_R);
+	Xt=X01-sqrt(Tip_R*Tip_R-Yt*Yt);
 	
 	//echo(Xt=Xt);
 
 		//hull(){
 			intersection(){
-				translate([-R,0,0]) square([R*2,L-Xt]);// clip at tangent point, keep first and fourth quadrants only
+				translate([-R,0,0]) square([R*2,L1-Xt]);// clip at tangent point, keep first and fourth quadrants only
 				
-				translate([-p+R, 0, 0]) circle(r=p, $fn=$preview? 90:720);
-				translate([p-R, 0, 0]) circle(r=p, $fn=$preview? 90:720);
+				translate([-p1+R, 0, 0]) circle(r=p1, $fn=$preview? 90:720);
+				translate([p1-R, 0, 0]) circle(r=p1, $fn=$preview? 90:720);
 			} // intersection
 			
 			// Tip
-			translate([0, L-X0, 0]) circle(r=Tip_R, $fn=$preview? 90:360);
+			translate([0, L1-X01, 0]) circle(r=Tip_R, $fn=$preview? 90:360);
 		//} // hull
 	
 } // Fin_BluntOgiveShape
+
+// translate([0,-24,0]) Fin_BluntOgiveShape(L=24, W=12, Tip_R=1);
+
 
 module Fin_BluntOgiveFillet(L=18, W=10, Tip_R=1, Fillet_Z=4, Fillet_r=4){
 	// Spherically blunted tangent ogive
@@ -195,34 +201,17 @@ module Fin_BluntOgiveFillet(L=18, W=10, Tip_R=1, Fillet_Z=4, Fillet_r=4){
 	
 // Fin_BluntOgiveFillet();
 
-module TrapFin2Tail(Post_h=5, Root_L=150, Root_W=10, Chamfer_L=18){
-	Edge_r=1;
-	
-	hull(){
-		translate([0,-Root_L/2+Edge_r,0]) cylinder(r=Edge_r+IDXtra*2, h=Post_h);
-		translate([0,-Root_L/2+Chamfer_L,0]) cylinder(d=Root_W+IDXtra*2, h=Post_h);
-		translate([0,Root_L/2-Chamfer_L,0]) cylinder(d=Root_W+IDXtra*2, h=Post_h);
-		translate([0,Root_L/2-Edge_r,0]) cylinder(r=Edge_r+IDXtra*2, h=Post_h);
-	} // hull
-} // TrapFin2Tail
-
-// TrapFin2Tail(Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18);
-
-module TrapFin3Tail(Post_h=5, Root_L=150, Root_W=10, Chamfer_L=18){
-	Edge_r=1;
-	Offset_r=0.1; // make socket bigger by this much
-	
-	linear_extrude(height=Post_h) offset(r=Offset_r)
-			hull(){
-				translate([0,Root_L/2-Chamfer_L,0]) Fin_BluntOgiveShape(L=Chamfer_L, W=Root_W, Tip_R=Edge_r);
-				translate([0,-Root_L/2+Chamfer_L,0]) rotate([0,0,180]) Fin_BluntOgiveShape(L=Chamfer_L, W=Root_W, Tip_R=Edge_r);
-			} // hull
-			
-} // TrapFin3Tail
-
-// TrapFin3Tail(Post_h=10, Root_L=180, Root_W=10, Chamfer_L=30);
-
 module TrapFin2Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_W=10, Chamfer_L=18){
+	module TrapFin2Tail(Post_h=5, Root_L=150, Root_W=10, Chamfer_L=18){
+		Edge_r=1;
+		
+		hull(){
+			translate([0,-Root_L/2+Edge_r,0]) cylinder(r=Edge_r+IDXtra*2, h=Post_h);
+			translate([0,-Root_L/2+Chamfer_L,0]) cylinder(d=Root_W+IDXtra*2, h=Post_h);
+			translate([0,Root_L/2-Chamfer_L,0]) cylinder(d=Root_W+IDXtra*2, h=Post_h);
+			translate([0,Root_L/2-Edge_r,0]) cylinder(r=Edge_r+IDXtra*2, h=Post_h);
+		} // hull
+	} // TrapFin2Tail
 	
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j+180/nFins]) translate([0,Tube_OD/2-Post_h,0])
 		rotate([-90,0,0]) TrapFin2Tail(Post_h=Post_h+1, Root_L=Root_L, Root_W=Root_W, Chamfer_L=Chamfer_L);
@@ -235,9 +224,23 @@ module TrapFin3Slots(Tube_OD=PML98Body_OD, nFins=5, Post_h=10, Root_L=180, Root_
 	LengthComp=0.5; // was 1.1 too loose
 	BottomOfSlot=sqrt((Tube_OD/2)*(Tube_OD/2)-(Root_W/2)*(Root_W/2))-Post_h;
 	//echo(BottomOfSlot=BottomOfSlot);
+	
+	module TrapFin3Tail(Post_h=5, Root_L=150, Root_W=10, Chamfer_L=18, Xtra_Len=0){
+		Edge_r=1;
+		Offset_r=0.1; // make socket bigger by this much
+		
+		linear_extrude(height=Post_h) offset(r=Offset_r)
+				hull(){
+					translate([0,Root_L/2-Chamfer_L+Xtra_Len,0]) Fin_BluntOgiveShape(L=Chamfer_L, W=Root_W, Tip_R=Edge_r);
+					translate([0,-Root_L/2+Chamfer_L-Xtra_Len,0]) rotate([0,0,180]) Fin_BluntOgiveShape(L=Chamfer_L, W=Root_W, Tip_R=Edge_r);
+				} // hull
+				
+	} // TrapFin3Tail
+
+	// TrapFin3Tail(Post_h=10, Root_L=180, Root_W=10, Chamfer_L=30);
 
 	for (j=[0:nFins]) rotate([0,0,360/nFins*j+180/nFins]) translate([0,BottomOfSlot,0])
-		rotate([-90,0,0]) TrapFin3Tail(Post_h=Post_h+2, Root_L=Root_L+LengthComp, Root_W=Root_W, Chamfer_L=Chamfer_L);
+		rotate([-90,0,0]) TrapFin3Tail(Post_h=Post_h+2, Root_L=Root_L, Root_W=Root_W, Chamfer_L=Chamfer_L, Xtra_Len=LengthComp);
 		
 } // TrapFin3Slots
 
@@ -248,17 +251,15 @@ module Fin3Fillet(Root_L=100, Root_W=10, Chamfer_L=20, Tube_d=106, Fillet_r=4){
 	
 	difference(){
 		hull(){
-	
-			difference(){
-				
+			difference(){			
 				translate([0,0,-5])
-				linear_extrude(height=5+Overlap)
-					hull(){
-						translate([0,Root_L/2-Chamfer_L,0]) 
-							Fin_BluntOgiveShape(L=Chamfer_L+Fillet_r*2, W=Root_W+Fillet_r*2, Tip_R=Edge_r);
-						translate([0,-Root_L/2+Chamfer_L,0]) rotate([0,0,180])
-							Fin_BluntOgiveShape(L=Chamfer_L+Fillet_r*2, W=Root_W+Fillet_r*2, Tip_R=Edge_r);
-					} // hull
+					linear_extrude(height=5+Overlap)
+						hull(){
+							translate([0,Root_L/2-Chamfer_L,0]) 
+								Fin_BluntOgiveShape(L=Chamfer_L+Fillet_r*2, W=Root_W+Fillet_r*2, Tip_R=Edge_r);
+							translate([0,-Root_L/2+Chamfer_L,0]) rotate([0,0,180])
+								Fin_BluntOgiveShape(L=Chamfer_L+Fillet_r*2, W=Root_W+Fillet_r*2, Tip_R=Edge_r);
+						} // hull
 					
 				difference(){
 					translate([0,0,-Tube_d/2]) rotate([90,0,0]) cylinder(d=Tube_d+10, h=Root_L+Fillet_r*2+10, center=true, $fn=360);
@@ -267,9 +268,7 @@ module Fin3Fillet(Root_L=100, Root_W=10, Chamfer_L=20, Tube_d=106, Fillet_r=4){
 				
 				translate([0,0,-Tube_d/2]) rotate([90,0,0]) cylinder(d=Tube_d, h=Root_L+Fillet_r*2+10, center=true, $fn=360);
 				
-				
 			} // difference
-	
 	
 			linear_extrude(height=Fillet_r)
 				hull(){
@@ -668,6 +667,38 @@ module TooBigFin(KeepNegXHalf=false){
 // **********************************************************************************
 
 
+/* 
+// old version
+module Fin_BluntOgiveShape(L=24, W=12, Tip_R=1){
+	// Spherically blunted tangent ogive
+	function OGiveArcOffset(R=10,L=50)=(R*R+L*L)/(2*R); // p:center of arc = -p+R or p-R
+	function OGiveTipX0(R=10,L=50,Tip_R)=L-sqrt( (OGiveArcOffset(R,L)-Tip_R) * (OGiveArcOffset(R,L)-Tip_R)
+		- (OGiveArcOffset(R,L)-R) * (OGiveArcOffset(R,L)-R)); // X0:End of Ogive portion = L-X0
+		
+	R=W/2;
+	p=OGiveArcOffset(R,L);
+	X0 = OGiveTipX0(R,L,Tip_R); //L-sqrt((p-Tip_R)*(p-Tip_R)-(p-R)*(p-R));
+	
+	// calculate tangent point
+	Yt=(Tip_R*(p-R))/(p-Tip_R);
+	Xt=X0-sqrt(Tip_R*Tip_R-Yt*Yt);
+	
+	//echo(Xt=Xt);
+
+		//hull(){
+			intersection(){
+				translate([-R,0,0]) square([R*2,L-Xt]);// clip at tangent point, keep first and fourth quadrants only
+				
+				translate([-p+R, 0, 0]) circle(r=p, $fn=$preview? 90:720);
+				translate([p-R, 0, 0]) circle(r=p, $fn=$preview? 90:720);
+			} // intersection
+			
+			// Tip
+			translate([0, L-X0, 0]) circle(r=Tip_R, $fn=$preview? 90:360);
+		//} // hull
+	
+} // Fin_BluntOgiveShape
+/**/
 
 
 

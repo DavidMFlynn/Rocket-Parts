@@ -213,10 +213,11 @@ module R102UL_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=3, Xtra_r
 	
 	difference(){
 		union(){
-			STB_BallRetainerTop(Body_ID=Body_ID, Outer_OD=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls,
+		
+			STB_BallRetainerTop(Body_ID=Body_ID, Outer_OD=Body_OD, Engagement_d=Body_ID, nLockBalls=nLockBalls,
 								HasIntegratedCouplerTube=true, nBolts=0,
 								IntegratedCouplerLenXtra=CouplerLenXtra,
-								HasSecondServo=false,UsesBigServo=true,
+								HasSecondServo=false, UsesBigServo=true,
 								Engagement_Len=Engagement_Len, HasLargeInnerBearing=true, Xtra_r=Xtra_r);
 			
 		

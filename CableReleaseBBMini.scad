@@ -453,7 +453,7 @@ module CRBBm_CenteringRingMount(OD=LOC65Body_ID, Thickness=7,
 	Spring_Z=4;
 	Wall_t=1.2;
 	nBolts=3;
-	myFn=floor(OD)*3;
+	myFn=floor(OD)*2;
 	
 	difference(){
 		union(){

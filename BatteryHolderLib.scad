@@ -150,8 +150,8 @@ module BlueRavenMount(){
 
 FW_MagSw_BoltSpace_X=6.5;
 FW_MagSw_BoltSpace_Y=11;
-FW_MagSw_PCB_X=13.75;
-FW_MagSw_PCB_Y=18.4;
+FW_MagSw_PCB_X=14.2;
+FW_MagSw_PCB_Y=18.6;
 FW_MagSw_PCB_Z=1.6;
 
 module FW_MagSw_BoltPattern(){

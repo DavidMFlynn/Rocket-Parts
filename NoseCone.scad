@@ -667,7 +667,7 @@ module ElipticalNoseCone(L=150, D=LOC54Body_OD, Base_L=5, Wall_T=1.6, nBaseBolts
 		BoltBoss();
 } // ElipticalNoseCone
 
-// ElipticalNoseCone(L=150, D=BT54Body_OD*CF_Comp+0.3, Base_L=6, Wall_T=1.2, nBaseBolts=3);
+// ElipticalNoseCone(L=228, D=BT54Body_OD*CF_Comp+0.3, Base_L=6, Wall_T=1.2, nBaseBolts=3);
 
 module OgiveShape(L=100, D=50, Base_L=2){
 	// tangent ogive
@@ -790,7 +790,7 @@ module BluntOgiveNoseCone(ID=54, OD=58, L=160, Base_L=10, nRivets=3, RivertInset
 	//echo(NC_OGiveTipX0(R,L,Cut_d/2));
 	Cut_Z=Base_L+Ogive_Cut_Z(Ogive_L=L, R=R, End_R=Cut_d/2);
 	//echo(Cut_Z=Cut_Z);
-	myfn=max(90,floor(OD)*3);
+	myfn=max(90,floor(OD)*2);
 	
 	difference(){
 		difference(){
