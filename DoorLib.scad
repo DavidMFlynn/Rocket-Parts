@@ -154,11 +154,11 @@ module DoorFrameEdge(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, Borde
 //DoorFrameEdge(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, BorderXtra_w=1, BorderXtra_h=1);
 //DoorFrameEdge(Door_X=48, Door_Y=74, Door_t=1, Tube_OD=BT98Body_OD, BorderXtra_w=7, BorderXtra_h=8);
 
-module DoorFrame(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBolts=true, HasBoltBosses=true){
+module DoorFrame(Door_X=30, Door_Y=50, Door_t=3, Tube_OD=PML98Body_OD, HasSixBolts=true, HasBoltBosses=true, BoltBoss_t=2.2){
 	DY=Door_Y;
 	DX=Door_X;
 	DR=4+2;
-	BoltBoss_t=2.2;
+	
 	Sill_t=1.5;
 	Sill_w=1.5;
 	InnerBorder_w=4;

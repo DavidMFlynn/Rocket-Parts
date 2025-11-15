@@ -113,6 +113,16 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_ID=0, Can_Le
 	
 	MyAftClosure_OD=(AftClosure_OD==0)? MotorTubeHole_d:AftClosure_OD+IDXtra*2;
 	
+	module HollowBox(Z=1, Len=10){
+		//difference(){
+			translate([-FinBox_W/2+Wall_t, MotorTubeHole_d/2, Z])
+				cube([FinBox_W-Wall_t*2, Body_OD/2-MotorTubeHole_d/2-Fin_Post_h-Wall_t, Len]);
+				
+		//	translate([0, 0, Z-Overlap]) 
+		//		cylinder(d=MotorTubeHole_d+Wall_t*2, h=Len+Overlap*2, $fn=90);
+		//} // difference
+	} // HollowBox
+
 	difference(){
 		union(){
 			// Body Tube
@@ -120,7 +130,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_ID=0, Can_Le
 			
 			// Motor Tube Sleeve
 			if (HasMotorSleeve)
-			Tube(OD=MotorTubeHole_d+Wall_t*2, ID=MotorTubeHole_d, Len=Can_Len, myfn=$preview? 36:SmallTubeFn);
+				Tube(OD=MotorTubeHole_d+Wall_t*2, ID=MotorTubeHole_d, Len=Can_Len, myfn=$preview? 36:SmallTubeFn);
 			
 			// integrated coupler
 			if (HasIntegratedCoupler){
@@ -198,12 +208,14 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_ID=0, Can_Le
 						Ogive=OgiveTailCone, Ogive_Len=Ogive_Len, OgiveCut_d=OgiveCut_d);
 			/**/
 			
+			//*
 			// Rail guide bolt boss
 			if (RailGuide_h>5)
 				translate([0,0,RailGuide_Z]) 
-					RailGuidePost(OD=Body_OD, MtrTube_OD=MotorTubeHole_d, H=RailGuide_h, 
+					RailGuidePost(OD=Body_OD, MtrTube_OD=MotorTube_OD, H=RailGuide_h, 
 						TubeLen=RailGuideTube_Len, Length = RailGuideLen, BoltSpace=12.7, AddTaper=false, Wall_t=Wall_t);
-					
+			/**/
+			
 			// Rail button bolt boss
 			if (RailGuide_h==1)
 				translate([0,Body_OD/2,10]) rotate([90,0,0]) cylinder(d=10, h=(Body_OD-MotorTubeHole_d)/2);
@@ -218,23 +230,28 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_ID=0, Can_Le
 			for (j=[0:nCouplerBolts-1]) rotate([0,0,360/nCouplerBolts*j+180/nFins]) 
 				translate([0,Body_ID/2,Can_Len+Coupler_Len/2]) rotate([-90,0,0]) Bolt4Hole();
 			
+		
 		// Hollow roots
 		if (HollowFinRoots && (Body_OD/2-MotorTubeHole_d/2-Fin_Post_h)>5) 
-			for (j=[0:nFins]) rotate([0,0,360/nFins*j+180/nFins]){
-			
-				if (!HasMidCenteringRing)
-					translate([-FinBox_W/2+Wall_t, MotorTubeHole_d/2+Wall_t, Can_Len/2-7])
-						cube([FinBox_W-Wall_t*2, Body_OD/2-MotorTubeHole_d/2-Fin_Post_h-Wall_t*2, 14]);
+			difference(){
+				for (j=[0:nFins]) rotate([0,0,360/nFins*j+180/nFins])
+				
+					union(){
+						if (!HasMidCenteringRing) HollowBox(Z=Can_Len/2-7, Len=14);
 					
-				// Forward box
-				translate([-FinBox_W/2+Wall_t, MotorTubeHole_d/2+Wall_t, Can_Len/2+3])
-					cube([FinBox_W-Wall_t*2, Body_OD/2-MotorTubeHole_d/2-Fin_Post_h-Wall_t*2, Can_Len/2+FB_Xtra_Fwd-Wall_t-6]);
-				// Aft box
-				translate([-FinBox_W/2+Wall_t, MotorTubeHole_d/2+Wall_t, 3])
-					cube([FinBox_W-Wall_t*2, Body_OD/2-MotorTubeHole_d/2-Fin_Post_h-Wall_t*2, Can_Len/2-6]);
-				// Make manifold for printing
-				translate([0, MotorTubeHole_d/2+Wall_t+2.5, Can_Len/2-6]) cylinder(d=1, h=Can_Len);
-			}
+						// Forward box
+						HollowBox(Z=Can_Len/2+3, Len=Can_Len/2+FB_Xtra_Fwd-Wall_t-6);
+					
+						// Aft box
+						HollowBox(Z=3, Len=Can_Len/2-6);					
+					
+						// Make manifold for printing
+						translate([0, MotorTubeHole_d/2+Wall_t+2.5, Can_Len/2-6]) cylinder(d=1, h=Can_Len, $fn=18);
+					} // union
+					
+				translate([0, 0, -Overlap]) 
+					cylinder(d=MotorTubeHole_d+Wall_t*2, h=Can_Len+FB_Xtra_Fwd+Overlap*2, $fn=90);
+			} // difference
 					
 		// Fin Sockets
 		translate([0,0,Fin_Root_L/2+FinInset_Len])
@@ -257,7 +274,7 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_ID=0, Can_Le
 		// Rail guide bolt holes
 		if (RailGuide_h>5)
 			translate([0,RailGuide_h,RailGuide_Z])
-				RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole();
+				RailGuideBoltPattern(BoltSpace=12.7) Bolt6Hole(depth=Body_OD/2);
 				
 		// Rail button bolt hole
 		if (RailGuide_h==1)
@@ -267,12 +284,41 @@ module FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_ID=0, Can_Le
 		if (UpperHalfOnly) translate([0,0,Can_Len/2]) 
 			rotate([180,0,0]) cylinder(d=Body_OD+10, h=Can_Len/2+Cone_Len+1);
 			
-		if ($preview) rotate([0,0,-180/nFins]) translate([0,0,-Cone_Len-Overlap]) cube([Body_OD/2+1,Body_OD/2+1,Cone_Len+Can_Len+20]);
+		if ($preview){
+			rotate([0,0,-180/nFins]) translate([0,0,-Cone_Len-Overlap]) cube([Body_OD/2+1,Body_OD/2+1,Cone_Len+Can_Len+20]);
+			//translate([0,0,50]) cylinder(d=200, h=200);
+		}
 	} // difference
 } // FC2_FinCan
 
 //rotate([180,0,0]) FC2_FinCan(RailGuide_h=1, LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false, HollowFinRoots=true);
 
+/*
+FC2_FinCan(Body_OD=BT98Body_OD, Body_ID=BT98Body_ID, Coupler_ID=0, Can_Len=160,
+				MotorTube_OD=BT54Body_OD, RailGuide_h=BT98Body_OD/2+2, RailGuide_z=0,
+				nFins=5, HasIntegratedCoupler=false, HasFwdCenteringRing=false, HasMidCenteringRing=false, Coupler_Len=15, nCouplerBolts=5,
+				HasMotorSleeve=false, HasAftIntegratedCoupler=false,
+				Fin_Root_W=12, Fin_Root_L=150, Fin_Post_h=12, Fin_Chamfer_L=32,
+				Cone_Len=0, ThreadedTC=false, Extra_OD=0, RailGuideLen=30,
+				LowerHalfOnly=false, UpperHalfOnly=false, HasWireHoles=false, HollowTailcone=false, 
+				HollowFinRoots=true, Wall_t=1.2, OgiveTailCone=false, Ogive_Len=400, OgiveCut_d=BT54Body_OD+8,
+				UseTrapFin3=true, AftClosure_OD=0, AftClosure_Len=0);
+/**/
+/*
+FC2_FinCan(Body_OD=OD, Body_ID=Body_ID, Can_Len=Can_Len, 
+						MotorTube_OD=MotorTube_OD, RailGuide_h=RailGuide_h, RailGuide_z=0,
+						nFins=nFins,
+						HasIntegratedCoupler=true, HasFwdCenteringRing=false, HasMidCenteringRing=false, Coupler_Len=15, nCouplerBolts=5,
+						HasMotorSleeve=false, HasAftIntegratedCoupler=false,
+						
+						Fin_Root_W=Fin_Root_W, Fin_Root_L=Fin_Root_L, 
+						Fin_Post_h=Fin_Post_h, Fin_Chamfer_L=Fin_Chamfer_L,
+						
+						Cone_Len=0, ThreadedTC=false, Extra_OD=0, RailGuideLen=R102_RailGuideLen,
+						LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly, HasWireHoles=false, 
+						HollowTailcone=false, HollowFinRoots=true, Wall_t=1.2,
+						UseTrapFin3=true, AftClosure_OD=0, AftClosure_Len=0);
+/**/
 module FC2_FinFixture(Fin_Root_W=14, Fin_Root_L=130, Fin_Post_h=14, Fin_Chamfer_L=32){
 	Wall_t=3;
 	

@@ -196,6 +196,7 @@ module R102UL_MotorTubeTopper(MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_
 
 // R102UL_MotorTubeTopper();
 
+// R102UL_MotorTubeTopper(MotorTube_OD=MotorTube_OD, MotorTube_ID=MotorTube_ID, HasPassThru=true, nRopes=6);
 
 module R102UL_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=3, Xtra_r=0.0){
 	Tube_d=12.7;

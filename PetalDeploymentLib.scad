@@ -819,6 +819,106 @@ PD_PetalHub(OD=BT137Coupler_OD, Body_OD=BT137Body_OD,
 							SkirtLen=10);
 /**/
 
+module PD_SmallPetalHub(OD=ULine38Body_ID, 
+					nPetals=2, 
+					HasBolts=true,
+					nBolts=0, // Same as nPetals
+					nRopes=0){
+					
+	Width=PetalWidth+1;
+	Thickness=3;
+	Spring_d=5/16*25.4;
+	Shelf_Z=16;
+	SpringEnd_Y=OD/2-16;
+	Axle_d=4+IDXtra*3;
+	Axle_L=Width+7;
+	AxleBoss_d=Axle_d+2.4;
+	nMountingBolts=(nBolts==0)? nPetals:nBolts;
+	
+	Slope_d1=(OD<41)? 1:OD-40;
+	
+	difference(){
+		union(){
+			difference(){
+				cylinder(d=OD, h=16, $fn=$preview? 90:360);
+				
+				// Slope
+				translate([0, 0, 6+Overlap]) cylinder(d1=Slope_d1, d2=OD-6, h=10, $fn=$preview? 90:360);
+			} // difference
+			
+			// Close bottom
+			cylinder(d=OD-1, h=6);
+			
+			// Spring holders
+			for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]) 
+				hull(){
+					translate([0, SpringEnd_Y, Shelf_Z-10+Spring_d/2]) 
+						rotate([90,0,0]) cylinder(d=Spring_d+3, h=11);
+					translate([-(Spring_d+5)/2, SpringEnd_Y-11, Shelf_Z-12]) 
+						cube([Spring_d+5, 11, 1]);
+				} // hull
+				
+			
+		} // union
+		
+		// Bolt to BallRetainerBottom
+		
+			if (HasBolts)
+				PD_PetalHubBoltPattern(OD=OD, nBolts=nMountingBolts) 
+					translate([0,0,5]) Bolt4HeadHole(lHead=20);
+		
+		
+		// Petal ledge and Spring slot
+		for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]){
+			translate([-Width/2,5,Shelf_Z]) cube([Width,OD/2,20]);
+			
+			// Axle 
+			translate([0, OD/2-Thickness-AxleBoss_d/2-0.5, 7]){
+			
+				// Petal pivot socket
+				hull(){
+					rotate([0,90,0]) cylinder(d=Axle_d, h=Axle_L, center=true);
+					translate([0,6,0])
+						rotate([0,90,0]) cylinder(d=Axle_d, h=Axle_L, center=true);
+				} // hull
+				
+				// Petal clearance
+				hull(){
+					translate([0,-3,0]) rotate([0,90,0]) cylinder(d=AxleBoss_d+5, h=Width, center=true);
+					translate([0,-3,10]) rotate([0,90,0]) cylinder(d=AxleBoss_d+5, h=Width, center=true);
+					translate([0,10,0]) rotate([0,90,0]) cylinder(d=AxleBoss_d+5, h=Width, center=true);
+					translate([0,3,10]) rotate([0,90,0]) cylinder(d=AxleBoss_d+4, h=Width, center=true);
+					}}
+				
+			// Spring clearance
+			hull(){
+				translate([0, OD/2-16, Shelf_Z-10+Spring_d/2]) 
+					rotate([-90,0,0]) cylinder(d=Spring_d+1, h=20);
+				translate([0, OD/2-16, Shelf_Z+Spring_d/2]) 
+					rotate([-90,0,0]) cylinder(d=Spring_d+1, h=20);
+			} // hull
+		}
+		
+		// Spring holders
+		
+		for (j=[0:nPetals-1]) rotate([0,0,360/nPetals*j]) 
+			translate([0,SpringEnd_Y+Overlap,Shelf_Z-10+Spring_d/2]) {
+				rotate([90,0,0]) cylinder(d=Spring_d, h=8);
+				rotate([90,0,0]) cylinder(d=4, h=12);
+		}
+				
+							
+		// Retention cord
+		if (nRopes>0)
+		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*(j+0.5)]) {
+				translate([0,OD/2-6,-Overlap]) cylinder(d=4, h=30);
+				translate([0,OD/2-6,5]) cylinder(d=8, h=30);
+			}
+	} // difference
+	
+} // PD_SmallPetalHub
+
+// PD_SmallPetalHub();
 
 module PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, HasReplaceableSpringHolder=false, nRopes=3, ShockCord_a=-1, HasThreadedCore=false,
 				ST_DSpring_ID=SE_Spring_CS4323_ID(), ST_DSpring_OD=SE_Spring_CS4323_OD(), CouplerTube_ID=0, CouplerTubeLen=0){

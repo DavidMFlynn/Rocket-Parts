@@ -74,7 +74,8 @@ include<TubesLib.scad>
 
 $fn=90;
 Overlap=0.05;
-
+kATRMS_29_AftClosure_d=32.40;
+function ATRMS_29_Aft_d()=kATRMS_29_AftClosure_d;
 kATRMS_29_Case_d=28.60;
 function ATRMS_29_Case_OD()=kATRMS_29_Case_d;
 
