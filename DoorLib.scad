@@ -12,7 +12,8 @@
 //
 //  ***** History *****
 //
-echo("DoorLib 1.0.4");
+function DoorLibRev()="DoorLib 1.0.4";
+echo(DoorLibRev());
 //
 // 1.0.4  12/30/2024  Changed slope of door frame to improve no-support printing.
 // 1.0.3  3/19/2024   Fixed a co-planer bug in DoorFrame()

@@ -92,9 +92,8 @@ module R65_DeepSocket(){
 
 // R65_DeepSocket();
 
-module R65_DeepSocket500(){
+module R65_DeepSocket500(Len=40){
 	// 1/2" Socket for 5/16-18 nuts (38mm RMS)
-	Len=40;
 	Al_Tube_d=1/2*25.4;
 	ID=5/16*25.4+IDXtra*4;
 	Depth=8;
@@ -118,11 +117,44 @@ module R65_DeepSocket500(){
 
 // R65_DeepSocket500();
 
-module R65_ExtensionAlignmentRing38(){
-	Len=6;
+module PluggedThreadedFwd54(){
+	Thread_d=Thread31218_d; // 38mm RMS Threaded Plugged Forward Closure
+	Thread_p=Thread31218_p;
+	H=28;
+	ID=38.2;
+	H1=17;
+	
+	difference(){
+		union(){
+			difference(){
+				cylinder(d=ID+6, h=H1+2);
+				translate([0,0,-Overlap]) cylinder(d=ID, h=H1);
+			} // difference
+			
+			translate([0,0,H1+2-Overlap]) cylinder(d1=ID+6, d2=25, h=H-(H1+2)+Overlap);
+			translate([0,0,H1-6]) cylinder(d=21.5, h=7);
+		} // union
+		
+		
+		
+		// Thread
+		translate([0,0,-Overlap])
+			if ($preview){
+				cylinder(d=Thread_d, h=H+Overlap*2); 
+			}else{
+				ExternalThread(Pitch=Thread_p, Dia_Nominal=Thread_d+IDXtra*2, 
+						Length=H+Overlap*2, 
+						Step_a=2,TrimEnd=true,TrimRoot=true);
+			} // if
+	} // difference
+	
+} // PluggedThreadedFwd54
+
+// PluggedThreadedFwd54();
+
+module R65_ExtensionAlignmentRing38(OD=37, Len=6){
 	nSpokes=6;
 	Wall_t=1.2;
-	OD=37;
 	Thread_d=Thread31218_d; // 38mm RMS Threaded Plugged Forward Closure
 	Thread_p=Thread31218_p;
 	
@@ -152,6 +184,7 @@ module R65_ExtensionAlignmentRing38(){
 } // R65_ExtensionAlignmentRing38
 
 // R65_ExtensionAlignmentRing38();
+// R65_ExtensionAlignmentRing38(OD=53, Len=7);
 
 module R65_ShortMotorAdaptor(Len=48){ // One 38mm grain is 48mm in case length
 	// a.k.a. Long Nut
@@ -176,6 +209,7 @@ module R65_ShortMotorAdaptor(Len=48){ // One 38mm grain is 48mm in case length
 } // R65_ShortMotorAdaptor
 
 // R65_ShortMotorAdaptor();
+// R65_ShortMotorAdaptor(Len=84.5-7);
 
 module R65_NoseCone(Shoulder_OD=LOC65Coupler_OD, OD=LOC65Body_OD, nBolts=6,
 			NC_Len=150, NC_Base_L=6, NC_Tip_R=3, NC_Wall_t=1.2){

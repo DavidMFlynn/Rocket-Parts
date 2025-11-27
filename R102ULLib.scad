@@ -12,6 +12,8 @@
 //
 //  ***** History *****
 //
+function R102ULLibRev()="R102ULLib 0.9.6";
+echo(R102ULLibRev());
 // 0.9.6  12/30/2024 Fixed it again.
 // 0.9.5  12/30/2024 Better ball lock w/ 6806 bearing.
 // 0.9.4  12/27/2024 Updated for ULine 4 inch tubes

@@ -75,6 +75,7 @@
 // Chuck(OD=BT54Body_ID);
 // Chuck(OD=LOC65Body_ID);
 // Chuck(OD=BT75Body_ID);
+// Chuck(OD=BT98Coupler_ID, Threaded=true, HasBackStop=true);
 // SmallTubeChuck(OD=ULine38Body_ID);
 // Chuck2(OD=215.9*CF_Comp, nLocks=0); // for Stubby
 //
@@ -253,26 +254,31 @@ module Chuck2(OD=ULine203Body_ID, nLocks=6, Threaded=true){
 
 // Chuck2(OD=ULine102Body_ID, nLocks=4);
 				
-module Chuck(OD=ULine203Body_ID, Threaded=true){
+module Chuck(OD=ULine203Body_ID, Threaded=true, HasBackStop=true){
 	// Press-in friction fit chuck
 	
 	ChuckMountPlate_d=80;
 	ChuckMountPlate_t=8;
 	nChuckMountingBolts=8;
+	myfn=floor(OD)*2;
 	
 	difference(){
 		union(){
 			// Hub
-			cylinder(d=ChuckMountPlate_d-1, h=ChuckMountPlate_t, $fn=$preview? 90:360);
+			cylinder(d=ChuckMountPlate_d-1, h=ChuckMountPlate_t, $fn=myfn);
+			if (Threaded) cylinder(d=ChuckMount_d+10, h=20);
 			
 			// Rim
 			difference(){
-				cylinder(d1=OD+2, d2=OD-2, h=30, $fn=$preview? 90:360);
-				cylinder(d=OD-10, h=31, $fn=$preview? 90:360);
+				cylinder(d1=OD+2, d2=OD-2, h=30, $fn=myfn);
+				cylinder(d=OD-10, h=31, $fn=myfn);
 			} // difference
 			
 			// Plate
 			cylinder(d=OD-1, h=3);
+			
+			if (HasBackStop)
+			cylinder(d=OD+5, h=3, $fn=myfn);
 		} // union
 		
 		if (Threaded) ChuckInternalThread(Len=30);
