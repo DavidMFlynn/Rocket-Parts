@@ -79,13 +79,14 @@ PD_PetalHub(OD=BT75Coupler_OD,
 // ***********************************
 //  ***** Routines *****
 //
+// PD_PetalLockGroove(Tube_ID=LOC54Body_ID);
 // PD_LockSocket(OD=BT98Coupler_OD, ID=BT98Coupler_ID, Len=22, Wall_t=1.8, nPetals=3);
 //
 function PD_ShockCordAngle()=ShockCord_a;
 //
 // PD_PetalLocks(OD=BT75Coupler_OD, Len=25, nPetals=3);
 // PD_PetalHubBoltPattern(OD=BT75Coupler_OD, nBolts=3) Bolt4Hole();
-// PD_ShockCordHolePattern(OD=BT75Coupler_OD, ShockCord_a=ShockCordAngle()) cylinder(d=4, h=15);
+// PD_ShockCordHolePattern(OD=BT75Coupler_OD, ShockCord_a=PD_ShockCordAngle()) cylinder(d=4, h=15);
 //
 // ***********************************
 
@@ -101,6 +102,24 @@ Bolt4Inset=4;
 ShockCord_a=45;
 NC_Base=15;
 PetalWidth=15;
+
+module PD_PetalLockGroove(Tube_ID=LOC54Body_ID){
+	Petal_ID=Tube_ID-4.0; // should fit loose
+	PetalLock_ID=Tube_ID-7.5; // Should not touch at all
+	myFn=floor(Tube_ID)*2;
+	
+	difference(){
+		translate([0,0,-Overlap]) cylinder(d=Tube_ID+1, h=4.5+Overlap*2, $fn=$preview? 90:myFn);
+			
+		// Puller ring
+		translate([0,0,-Overlap*2]) cylinder(d=Petal_ID, h=2+Overlap*3, $fn=$preview? 90:myFn);
+		// Petal lock
+		translate([0,0,-Overlap*2]) cylinder(d=PetalLock_ID, h=4.5+Overlap*4, $fn=$preview? 90:myFn);
+			
+	} // difference
+} // PD_PetalLockGroove
+
+//PD_PetalLockGroove();
 
 module PD_PetalHolder(Petal_OD=BT137Coupler_OD, Is_Top=false){
 	Len=30;

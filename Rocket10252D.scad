@@ -3,7 +3,7 @@
 // Filename: Rocket10252D.scad
 // by David M. Flynn
 // Created: 12/27/2024
-// Revision: 0.9.2  11/15/2025
+// Revision: 0.9.3  12/17/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -50,6 +50,7 @@
 //
 //  ***** History *****
 //
+// 0.9.3  12/17/2025 Added Stager.
 // 0.9.2  11/15/2025 Customizing for a stubby 2 stage
 // 0.9.1  11/14/2025 Copied from Rocket102UL
 // 1.0.5  1/3/2025   Added body tube bolt holes to fin can.
@@ -93,6 +94,19 @@
 //
 // SE_SlidingSpringMiddle(OD=Body_ID-BodyTubeAnnulus, nRopes=nRopes, SliderLen=30, SpLen=40, SpringStop_Z=20); // for Main
 //
+//  *** Stager ***
+//
+// rotate([180,0,0]) Stager_Cup_Light(Collar_H=17);
+// Stager_Saucer(Tube_OD=Body_OD*CF_Comp+Vinyl_d, nLocks=Default_nLocks);
+// rotate([-90,0,0]) Stager_LockRod(Adj=0);
+// rotate([-90,0,0]) Stager_LockRod(Adj=-0.5); // works but tight
+// Stager_LockRing(Tube_OD=Body_OD*CF_Comp+Vinyl_d, nLocks=Default_nLocks);
+// Stager_Mech(Tube_OD=Body_OD*CF_Comp+Vinyl_d, nLocks=Default_nLocks, Skirt_ID=Body_ID, Skirt_Len=2, nSkirtBolts=0, ShowLocked=true);
+// Stager_OuterBearingCover(Tube_OD=Body_OD*CF_Comp+Vinyl_d, nLocks=Default_nLocks); // Secures Outer Race of Main Bearing
+// rotate([180,0,0]) Stager_Indexer(Tube_OD=Body_OD*CF_Comp+Vinyl_d, nLocks=Default_nLocks); // Secures Inner Race of Main Bearing and has Lock Stops
+// Custom_ServoPlate();
+// rotate([180,0,0]) Stager_ServoMount(Servo_ID=DefaultServo);
+// Stager_Mech_Mount(Len=28, HasSkirtHoles=false);
 //
 //  *** Spacer ***
 //
@@ -172,6 +186,18 @@ use<BatteryHolderLib.scad>	echo(BatteryHolderLibRev());
 use<DoorLib.scad>			echo(DoorLibRev());
 use<ThreadLib.scad>			echo(ThreadLibRev());
 use<HD0411MGServoLib.scad>
+
+
+include<Stager75BBLib.scad>
+
+Default_nLocks=3;
+DefaultBody_OD=ULine102Body_OD;
+DefaultBody_ID=ULine102Body_ID;
+DefaultMotorTube_OD=BT54Body_OD;
+DefaultServo=1;
+MainBearing_OD=Bearing6809_OD;
+MainBearing_ID=Bearing6809_ID;
+MainBearing_T=Bearing6809_T;
 
 //also included
  //include<CommonStuffSAEmm.scad>
@@ -992,14 +1018,14 @@ module BoosterPetalHub(){
 		PD_PetalHub(OD=Body_ID-BodyTubeAnnulus, 
 					nPetals=3, 
 					HasReplaceableSpringHolder=true,
-					HasBolts=false,
-					nBolts=0, // Same as nPetals
+					HasBolts=true,
+					nBolts=6, // Same as nPetals
 					ShockCord_a=-1,
 					HasNCSkirt=false, 
 						Body_OD=Coupler_OD,
 						Body_ID=Coupler_ID,
 						NC_Base=0, 
-						SkirtLen=15, 
+						SkirtLen=0, 
 					CenterHole_d=0);
 				
 		// Shock cord hole
@@ -1007,9 +1033,12 @@ module BoosterPetalHub(){
 			translate([0,Coupler_OD/2-8,-Overlap]) cylinder(d=8, h=6);
 			translate([0,Coupler_OD/2-8,-Overlap]) cylinder(d=4, h=26);
 		}
+		
+		// Servo wire
+		translate([0,-Coupler_OD/2+8,-Overlap]) RoundRect(X=9, Y=3.5, Z=30, R=0.2);
 	} // difference
 					
-		translate([0,0,-15]) Tube(OD=Coupler_ID, ID=Coupler_ID-4.4, Len=15+Overlap, myfn=$preview? 90:360);
+	
 } // BoosterPetalHub
 
 // BoosterPetalHub();
@@ -1230,6 +1259,44 @@ module EBayDoor2(OD=Body_OD*CF_Comp+Vinyl_d){
 
 // rotate([90,0,0]) EBayDoor2();
 
+module EBayDoor3(OD=Body_OD*CF_Comp+Vinyl_d){
+	// Rocket Servo Rev C x2
+	// WIP
+	
+	Door_t=3.0;
+	DoorFace_Y=OD/2;
+	BattPocket_Y=-0.2;
+	MagSw_Y=-3;
+	BlueRaven_Y=8;
+	
+	
+	difference(){
+		union(){
+			translate([0,DoorFace_Y-10,-5])
+				translate([-2,-2,10]) rotate([-90,0,110]) RocketServoHolderRevC(IsDouble=false, HasBackHoles=false);
+				
+			translate([0,DoorFace_Y-10,-5])
+				translate([2,-2,10]) rotate([-90,0,250]) RocketServoHolderRevC(IsDouble=false, HasBackHoles=false);
+			
+			rotate([0,0,180]) Door(Door_X=BoosterEBayDoor_X, Door_Y=BoosterEBayDoor_Y, Door_t=Door_t, Tube_OD=OD, HasSixBolts=true, HasBoltHoles=true);
+		} // union
+		
+		// LED hole
+		translate([0,0,-35]) rotate([-90,0,0]) cylinder(d=3,h=OD/2+1);
+		
+		// Rocket servo bolts
+		//translate([0,DoorFace_Y-10,-5]) translate([0,8,10]) rotate([-90,0,180]) 
+		//	RocketServoRevCBoltPattern() Bolt4Hole();
+		
+		//translate([0,DoorFace_Y-10,-5]) translate([13.5,MagSw_Y,20]) rotate([90,0,90]) FW_MagSw_BoltPattern() Bolt4Hole(depth=5);
+	} // difference
+	//
+	Tube(OD=Body_OD, ID=Coupler_ID, Len=5, myfn=$preview? 90:360);
+	//
+	Tube(OD=MotorTube_OD, ID=MotorTube_ID, Len=5, myfn=$preview? 90:360);
+} // EBayDoor3
+
+//EBayDoor3(OD=Body_OD*CF_Comp+Vinyl_d);
 
 module Custom_CRBBm_Activator(){
 	nRivets=5;
@@ -1478,6 +1545,101 @@ module R102_FwdSpringEnd(OD=Body_ID-BodyTubeAnnulus, ID=Body_ID-3.6, LockPin_d=1
 
 // R102_FwdSpringEnd();
 
+
+module Stager_Cup_Light(Collar_H=17){
+	OD=Body_OD*CF_Comp+Vinyl_d;
+	nBaseBolts=nFins*2;
+	BaseBolts=[36,72,108,144,180,216,252,288,324];
+	Bolt_a=0;
+
+	difference(){
+		union(){
+			Stager_Cup(Tube_OD=OD, nLocks=Default_nLocks, BoltsOn=false, Collar_h=Collar_H);
+			
+			// Base Bolt Bosses
+			for (j=BaseBolts) rotate([0,0,j+Bolt_a]) translate([0,OD/2-Bolt4Inset*2,Collar_H-3])
+				hull(){
+					cylinder(d=8, h=6);
+					translate([0,3,0]) scale([1,0.1,1]) cylinder(d=9, h=6);
+				} // hull
+				
+		} // union
+
+		translate([0,0,-4]) cylinder(d=Body_ID-10, h=10, $fn=180);
+		translate([0,0,4]) cylinder(d1=Body_ID-10, d2=Body_ID-7, h=6, $fn=180);
+		translate([0,0,10-Overlap]) cylinder(d=Body_ID-7, h=Collar_H-11, $fn=180);
+
+		// Base Bolt Holes
+		for (j=BaseBolts) rotate([0,0,j+Bolt_a]) translate([0,OD/2-Bolt4Inset*2,Collar_H-4])
+			rotate([180,0,0]) Bolt4HeadHole(depth=8,lHead=Collar_H+5);
+		
+		//rotate([0,0,156+90]) translate([0,OD/2-8,0]) cylinder(d=5/16*25.4+IDXtra, h=30);
+	} // difference
+} // Stager_Cup_Light
+
+// Stager_Cup_Light(Collar_H=17);
+
+module Stager_Mech_Mount(Len=26, HasSkirtHoles=false){
+	myfn=180;
+	nBolts=4;
+	OD=Coupler_OD*CF_Comp-0.4;
+	Boss_h=4;
+	Wall_t=1.2;
+	TopBolt_a=50;
+	
+	module BoltBoss(){
+		hull(){
+			cylinder(d=7, h=Boss_h);
+			translate([0,3.0,0]) scale([1,0.2,1]) cylinder(d=9, h=Boss_h);
+		} // hull
+	} // BoltBoss
+	
+	difference(){
+		union(){
+			Tube(OD=OD, ID=OD-Wall_t*2, Len=Len, myfn=$preview? 90:myfn);
+			
+			PD_PetalHubBoltPattern(OD=Coupler_OD, nBolts=nPetals*2) BoltBoss();
+			translate([0,0,Len-Boss_h])
+				ServoPlateBoltPattern(TopBolt_a) BoltBoss();
+		} // union
+		
+		if (HasSkirtHoles)
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) translate([0,OD/2,Len-7.5])
+			rotate([-90,0,0]) Bolt4Hole();
+		
+		PD_PetalHubBoltPattern(OD=Coupler_OD, nBolts=nPetals*2) rotate([180,0,0]) Bolt4Hole();
+
+		translate([0,0,Len-Boss_h])
+			ServoPlateBoltPattern(TopBolt_a) rotate([180,0,0]) Bolt4ClearHole();		
+	
+	} // difference
+} // Stager_Mech_Mount
+
+// translate([0,0,-26]) rotate([0,0,-30]) Stager_Mech_Mount();
+// Stager_Mech_Mount(Len=28, HasSkirtHoles=false);
+
+module ServoPlateBoltPattern(Angle=0){
+	Hole_a=[0,60,120,175,260,300];
+	Hole_Y=Coupler_OD*CF_Comp/2-Bolt4Inset;
+	
+	for (j=Hole_a) rotate([0,0,j+Angle]) translate([0,Hole_Y,0]) children();
+} // ServoPlateBoltPattern
+
+// ServoPlateBoltPattern() Bolt4Hole();
+
+module Custom_ServoPlate(){
+	Bolt_a=20;
+	
+	difference(){
+		Stager_ServoPlate(Tube_OD=Body_OD*CF_Comp+Vinyl_d, Skirt_ID=Body_ID*CF_Comp, nLocks=Default_nLocks, OverCenter=IDXtra+0.8, Servo_ID=DefaultServo);
+		
+		// Bolt holes for coupler and petal hub
+		translate([0,0,5])
+			ServoPlateBoltPattern(Angle=Bolt_a) Bolt4Hole();
+	} // difference
+} // Custom_ServoPlate
+
+// Custom_ServoPlate();
 
 
 

@@ -44,6 +44,7 @@
 // *********************************************
 //  ***** for STL output *****
 //
+// 
 // NoseCone();
 //
 DroguePetal_Len=80; // 80 to 100
@@ -104,6 +105,7 @@ R65_DrogueCoupler(OD=Body_ID, Coupler_ID=Coupler_ID,
 // rotate([0,0,90]) RocketFin(HasSpiralVaseRibs=false, PrinterBrim_H=0.6);
 //
 // RailButton(OD=11, Flange_h=2, Slot_w=3.8); //3.8 is rof BlackSky rail
+// RailButton(OD=11, Flange_h=1.6, Slot_w=2.0); //Top?
 // RailButton(OD=11, Flange_h=2, Slot_w=2.8);  // for 1010 Rail
 // SnapRing(); // optional, not used for now
 //
@@ -245,10 +247,13 @@ Fin_Chamfer_L=20;
 FinInset_Len=5;
 Fin_TipBase=0;
 FinCan_Len=Fin_Root_L+FinInset_Len*2;
+FinCanWall_t=1.2;
 /**/
 
-/*
+//*
 // Little Bird data
+
+// DR65Body_OD
 MotorTube_OD=LOC29Body_OD;
 MotorTube_ID=LOC29Body_ID;
 MotorBolt_d=6.35;
@@ -260,7 +265,8 @@ BodyTubeLen=18*25.4; // uncut estes tube
 NC_Len=185;
 NC_Base_L=6;
 NC_Tip_R=4;
-NC_Wall_t=1.2;
+NC_Wall_t=1.0;
+Petal_Len=140;
 
 // Little Bird fins
 nFins=5;
@@ -275,9 +281,10 @@ Fin_Chamfer_L=20;
 FinInset_Len=5;
 Fin_TipBase=10;
 FinCan_Len=Fin_Root_L+FinInset_Len*2;
+FinCanWall_t=0.8;
 /**/
 
-//*
+/*
 // Little Red One Data
 Petal_Len=140; // 80 minimum, 100,120 or 140 is preferred 140 is max for a single 4323 spring
 BPetal_Len=140;
@@ -313,6 +320,7 @@ Fin_Chamfer_L=24;
 FinInset_Len=5;
 Fin_TipBase=0;
 FinCan_Len=Fin_Root_L+FinInset_Len*2;
+FinCanWall_t=1.2;
 
 // Booster fins
 B_Scale=1.25; // Booster fins are 125% of sustainer fins
@@ -594,8 +602,10 @@ module EBayMC_Jig(){
  translate([0,0,-47.7]) rotate([180,0,0]) rotate([0,0,47]) CRBBm_Activator();
 /**/
 
+
+
 module Fincan(LowerHalfOnly=false, UpperHalfOnly=false, IsSustainer=false){
-	Wall_t=1.2;
+	Wall_t=FinCanWall_t;
 	HasMotorSleeve=false;
 	TailConeExtra_OD=0;
 		
@@ -641,7 +651,7 @@ module Fincan(LowerHalfOnly=false, UpperHalfOnly=false, IsSustainer=false){
 // Fincan(LowerHalfOnly=true, UpperHalfOnly=false);
 
 module BoosterFincan(LowerHalfOnly=false, UpperHalfOnly=false){
-	Wall_t=1.2;
+	Wall_t=FinCanWall_t;
 	HasMotorSleeve=false;
 	TailConeExtra_OD=0;
 	OD=Body_OD*CF_Comp+Vinyl_d;

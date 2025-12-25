@@ -93,6 +93,51 @@ CK_RotSw_Face_h=0.6;
 CK_RotSw_Access_d=8;
 CK_RotSw_AO_h=15;
 
+module LiPo2S320mAh_BattHole(Xtra_X=0,Xtra_Y=0, Xtra_Z=0){
+	Batt_X=20;
+	Batt_Y=12.2;
+	Batt_Z=40; // was 43
+
+	cube([Batt_X+Xtra_X, Batt_Y+Xtra_Y, Batt_Z+Xtra_Z], center=true);
+} // LiPo2S320mAh_BattHole
+	
+// LiPo2S320mAh_BattHole(Xtra_X=0,Xtra_Y=0, Xtra_Z=0);
+
+module LiPo2S320mAh_BattPocket(){
+	Wall_t=1.2;
+	Batt_X=20;
+	Batt_Y=12.2;
+	Batt_Z=40; // was 43
+
+	difference(){
+		LiPo2S320mAh_BattHole(Xtra_X=Wall_t*2,Xtra_Y=Wall_t*2, Xtra_Z=Wall_t*2);
+		
+		translate([0,0,2]) LiPo2S320mAh_BattHole(Xtra_X=0, Xtra_Y=0, Xtra_Z=4);
+		
+		// wires
+		translate([0,0,Batt_Z/2+2]) rotate([0,90,0]) cylinder(d=7, h=20);
+		
+		// push-up
+		translate([0,0,-Batt_Z/2-Wall_t-Overlap]) cylinder(d=5,h=5);
+		
+		// Lighter
+		hull(){
+			rotate([90,0,0]) cylinder(d=14, h=Batt_Y+Wall_t*2+Overlap, center=true);
+			translate([0,0,Batt_Z/2-5]) rotate([90,0,0]) cylinder(d=4, h=Batt_Y+Wall_t*2+Overlap, center=true);
+			translate([0,0,-Batt_Z/2+5]) rotate([90,0,0]) cylinder(d=4, h=Batt_Y+Wall_t*2+Overlap, center=true);
+		} // hull
+		
+		hull(){
+			rotate([0,90,0]) cylinder(d=10, h=Batt_X+Wall_t*2+Overlap, center=true);
+			translate([0,0,Batt_Z/2-5]) rotate([0,90,0]) cylinder(d=4, h=Batt_X+Wall_t*2+Overlap, center=true);
+			translate([0,0,-Batt_Z/2+5]) rotate([0,90,0]) cylinder(d=4, h=Batt_X+Wall_t*2+Overlap, center=true);
+		} // hull
+		
+	} // difference
+} // LiPo2S320mAh_BattPocket
+
+// LiPo2S320mAh_BattPocket();
+
 module BlueRavenBoltPattern(){
 
 	// copied from BlueRavenMount
@@ -154,10 +199,14 @@ FW_MagSw_PCB_X=14.2;
 FW_MagSw_PCB_Y=18.6;
 FW_MagSw_PCB_Z=1.6;
 
-module FW_MagSw_BoltPattern(){
+module FW_MagSw_BoltPattern(Reversed=false){
+	Mirror_X=Reversed? 1:0;
+
+	mirror([Mirror_X,0,0]){
 	translate([FW_MagSw_BoltSpace_X/2, -FW_MagSw_BoltSpace_Y/2, 0]) children();
 	translate([-FW_MagSw_BoltSpace_X/2, -FW_MagSw_BoltSpace_Y/2, 0]) children();
 	translate([-FW_MagSw_BoltSpace_X/2, FW_MagSw_BoltSpace_Y/2, 0]) children();
+	}
 } // FW_MagSw_BoltPattern
 
 // FW_MagSw_BoltPattern() Bolt4Hole();
@@ -179,9 +228,10 @@ module FW_MagnetHolder(){
 
 // FW_MagnetHolder();
 
-module FW_MagSw_Mount(HasMountingEars=false){
+module FW_MagSw_Mount(HasMountingEars=false, Reversed=false){
 	Wall_t=1.6;
-	OAH=4;
+	Part_H=Reversed? 2:1;
+	OAH=3+Part_H;
 	Base_t=OAH-FW_MagSw_PCB_Z; // for #4-40x 3/16" screws
 	
 	module BoltBoss(){
@@ -194,7 +244,7 @@ module FW_MagSw_Mount(HasMountingEars=false){
 				RoundRect(X=FW_MagSw_PCB_X+Wall_t*2, Y=FW_MagSw_PCB_Y+Wall_t*2, Z=OAH, R=Wall_t);
 				translate([0,0,Wall_t]) RoundRect(X=FW_MagSw_PCB_X+IDXtra, Y=FW_MagSw_PCB_Y+IDXtra, Z=OAH, R=0.1);
 			} // difference
-			FW_MagSw_BoltPattern() BoltBoss();
+			FW_MagSw_BoltPattern(Reversed=Reversed) BoltBoss();
 			
 			if (HasMountingEars) hull(){
 				translate([(FW_MagSw_PCB_X+Wall_t*2)/2+Bolt4Inset,0,0]) cylinder(d=8, h=Wall_t);
@@ -202,7 +252,7 @@ module FW_MagSw_Mount(HasMountingEars=false){
 			} // hull
 		} // union
 	
-		translate([0,0,OAH]) FW_MagSw_BoltPattern() Bolt4Hole();
+		translate([0,0,OAH]) FW_MagSw_BoltPattern(Reversed=Reversed) Bolt4Hole();
 		
 		if (HasMountingEars) {
 				translate([(FW_MagSw_PCB_X+Wall_t*2)/2+Bolt4Inset,0,Wall_t]) Bolt4ClearHole();
@@ -211,7 +261,8 @@ module FW_MagSw_Mount(HasMountingEars=false){
 	} // difference
 } // FW_MagSw_Mount
 
-// FW_MagSw_Mount(HasMountingEars=false);
+// FW_MagSw_Mount(HasMountingEars=false, Reversed=true);
+// FW_MagSw_Mount(HasMountingEars=false, Reversed=false);
 
 module MiniBoosterEBay(OD=BT54Body_OD, Coupler_OD=BT54Body_ID, ID=BT54Coupler_ID){
 	Base_t=3;
@@ -278,11 +329,15 @@ module MiniBoosterEBay(OD=BT54Body_OD, Coupler_OD=BT54Body_ID, ID=BT54Coupler_ID
 
 //MiniBoosterEBay();
 
+RocketServoRevC_PCB_X=14.8;
+RocketServoRevC_PCB_Y=60.8;
+RocketServoRevC_PCB_Z=1.65;
+
 module RocketServoRevCBoltPattern(){
 	// copied from RocketServoHolderRevC
-	PCB_X=14.8;
-	PCB_Y=60.5;
-	PCB_Z=1.65;
+	PCB_X=RocketServoRevC_PCB_X;
+	PCB_Y=RocketServoRevC_PCB_Y;
+	PCB_Z=RocketServoRevC_PCB_Z;
 	PCB_BackSpace_Z=2.2;
 	Sup1_Y=7;
 	Sup1a_Y=23;
@@ -305,15 +360,19 @@ module RocketServoRevCBoltPattern(){
 	
 } // RocketServoRevCBoltPattern
 
-module RocketServoHolderRevC(IsDouble=false){
-	PCB_X=14.8;
-	PCB_Y=60.5;
-	PCB_Z=1.65;
+function RSHolder_OAY()=RocketServoRevC_PCB_Y+5;
+function RSHolder_OAX()=RocketServoRevC_PCB_X+5;
+function RSHolder_OAZ()=RocketServoRevC_PCB_Z+2.2+2.1;
+
+module RocketServoHolderRevC(IsDouble=false, HasBackHoles=true){
+	PCB_X=RocketServoRevC_PCB_X;
+	PCB_Y=RocketServoRevC_PCB_Y;
+	PCB_Z=RocketServoRevC_PCB_Z;
 	PCB_BackSpace_Z=2.2;
-	Sup1_Y=7;
+	Sup1_Y=7; // left, wire end
 	Sup1a_Y=23;
 	Sup2_Y=46.5;
-	Sup2a_Y=49.5;
+	Sup2a_Y=50.5;
 	Sup_w=3;
 	
 	Screw2_Y=11.5;
@@ -324,31 +383,31 @@ module RocketServoHolderRevC(IsDouble=false){
 	Base_t=2.1;
 	
 	OAH=Base_t+PCB_BackSpace_Z+PCB_Z;
+	echo(OAH=OAH);
 	nRS=IsDouble? 2:1;
 	Spacing_X=PCB_X+Foot_Xtra-1;
 	
 	module PCB_Sups(){
 		for (j=[0:nRS-1]) translate([(Spacing_X)*j,0,0]){
-		// PCB support
-		translate([-PCB_X/2-1, -PCB_Y/2+Sup1_Y, Base_t-Overlap]) hull(){
-			cylinder(d=Sup_w, h=PCB_BackSpace_Z);
-			translate([3,0,0]) cylinder(d=Sup_w, h=PCB_BackSpace_Z);
-		}
-		translate([PCB_X/2+1, -PCB_Y/2+Sup1a_Y, Base_t-Overlap]) hull(){
-			cylinder(d=Sup_w, h=PCB_BackSpace_Z);
-			translate([-3,0,0]) cylinder(d=Sup_w, h=PCB_BackSpace_Z);
-		}
-		
-		translate([-PCB_X/2-1, -PCB_Y/2+Sup2a_Y, Base_t-Overlap]) hull(){
-			cylinder(d=Sup_w, h=PCB_BackSpace_Z);
-			translate([3,0,0]) cylinder(d=Sup_w, h=PCB_BackSpace_Z);
-		}
-		translate([PCB_X/2+1, -PCB_Y/2+Sup2_Y, Base_t-Overlap]) hull(){
-			cylinder(d=Sup_w, h=PCB_BackSpace_Z);
-			translate([-3,0,0]) cylinder(d=Sup_w, h=PCB_BackSpace_Z);
-		}
-	} // for
-	
+			// PCB support
+			translate([-PCB_X/2-1, -PCB_Y/2+Sup1_Y, Base_t-Overlap]) hull(){
+				cylinder(d=Sup_w, h=PCB_BackSpace_Z+Overlap);
+				translate([3,0,0]) cylinder(d=Sup_w, h=PCB_BackSpace_Z+Overlap);
+			}
+			translate([PCB_X/2+1, -PCB_Y/2+Sup1a_Y, Base_t-Overlap]) hull(){
+				cylinder(d=Sup_w, h=PCB_BackSpace_Z+Overlap);
+				translate([-3,0,0]) cylinder(d=Sup_w, h=PCB_BackSpace_Z+Overlap);
+			}
+			
+			translate([-PCB_X/2-1, -PCB_Y/2+Sup2a_Y, Base_t-Overlap]) hull(){
+				cylinder(d=Sup_w, h=PCB_BackSpace_Z+Overlap);
+				translate([3,0,0]) cylinder(d=Sup_w, h=PCB_BackSpace_Z+Overlap);
+			}
+			translate([PCB_X/2+1, -PCB_Y/2+Sup2_Y, Base_t-Overlap]) hull(){
+				cylinder(d=Sup_w, h=PCB_BackSpace_Z+Overlap);
+				translate([-3,0,0]) cylinder(d=Sup_w, h=PCB_BackSpace_Z+Overlap);
+			}
+		} // for
 	} // PCB_Sups
 	
 	difference(){
@@ -373,11 +432,17 @@ module RocketServoHolderRevC(IsDouble=false){
 		for (j=[0:nRS-1]) translate([(Spacing_X)*j,0,0]){
 			translate([0,0,Base_t+PCB_BackSpace_Z]) RoundRect(X=PCB_X+IDXtra*2, Y=PCB_Y+IDXtra*2, Z=PCB_BackSpace_Z+PCB_Z+Overlap, R=0.1);
 			
+			// trim boss to clear SSR
+			translate([PCB_X/2-2,-PCB_Y/2+Screw2_Y,Base_t])
+				RoundRect(X=2.5, Y=10, Z=PCB_BackSpace_Z+PCB_Z+Overlap, R=0.1);
+			
 			// bolt holes
 			RocketServoRevCBoltPattern() Bolt4Hole();
 			
-			translate([0, -PCB_Y/2+3.5, Base_t+0.6]) Bolt4ButtonHeadHole();
-			translate([0, PCB_Y/2-7, Base_t+0.6]) Bolt4ButtonHeadHole();
+			if (HasBackHoles){
+				translate([0, -PCB_Y/2+3.5, Base_t+0.6]) Bolt4ButtonHeadHole();
+				translate([0, PCB_Y/2-7, Base_t+0.6]) Bolt4ButtonHeadHole();
+			}
 		
 		} // for
 	} // difference
@@ -385,7 +450,7 @@ module RocketServoHolderRevC(IsDouble=false){
 
 } // RocketServoHolderRevC
 
-// RocketServoHolderRevC();
+// RocketServoHolderRevC(HasBackHoles=false);
 // RocketServoHolderRevC(IsDouble=true);
 
 module RocketServoHolder(IsDouble=false){

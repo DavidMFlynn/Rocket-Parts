@@ -220,7 +220,7 @@ MadCow54Body_OD=57.0;
 MadCow54Body_ID=55.3;
 MadCow54Coupler_OD=LOC54Body_ID-0.25;
 
-Estes65Body_OD=66.6; // Same ID as LOC
+DR65Body_OD=66.6; // Discount Rocketry tube was Estes, Same ID as LOC
 LOC65Body_OD=67.6;
 LOC65Body_ID=65;
 LOC65Coupler_OD=64.8;

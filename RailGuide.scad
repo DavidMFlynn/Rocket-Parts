@@ -160,6 +160,69 @@ module BoltOnRailGuide(Length = 40, BoltSpace=12.7, RoundEnds=true, ExtraBack=0)
 
 //BoltOnRailGuide();
 
+module BoltOnRailGuide1515(Length = 30, BoltSpace=12.7, RoundEnds=true, ExtraBack=0){
+	Back_T=3;
+
+RG_Back_w=0.626*25.4;
+RG_Web_w=0.320*25.4 - 0.8;
+RG_Web_t=0.160*25.4 + 0.8;
+RG_Cap_w=0.810*25.4 - 1.0;
+RG_Cap_t=0.324*25.4 - 1.2;
+
+	difference(){
+		union(){
+			if (RoundEnds){
+				hull(){
+				translate([0,-ExtraBack,-Length/2+RG_Back_w/2]) 
+					rotate([-90,0,0]) cylinder(d=RG_Back_w, h=Back_T+ExtraBack);
+				translate([0,-ExtraBack,Length/2-RG_Back_w/2]) 
+					rotate([-90,0,0]) cylinder(d=RG_Back_w, h=Back_T+ExtraBack);
+				} // hull
+			}else{
+			translate([0,Back_T/2,-Length/2])
+				RoundRect(X=RG_Back_w, Y=Back_T, Z=Length, R=Back_T/2);
+			}
+			
+			if (RoundEnds){
+				hull(){
+					translate([0,0,-Length/2+RG_Web_w/2]) 
+						rotate([-90,0,0]) cylinder(d=RG_Web_w, h=Back_T+RG_Web_t+Overlap);
+					translate([0,0,Length/2-RG_Web_w/2]) 
+						rotate([-90,0,0]) cylinder(d=RG_Web_w, h=Back_T+RG_Web_t+Overlap);
+				} // hull
+			}else{
+			translate([-RG_Web_w/2,0,-Length/2]) 
+				cube([RG_Web_w,Back_T+RG_Web_t+Overlap,Length]);
+			}
+			
+			hull(){
+				translate([0,Back_T+RG_Web_t+1,-Length/2]){
+					translate([-RG_Cap_w/2+1,0,0]) cylinder(r=1, h=Length);
+					translate([RG_Cap_w/2-1,0,0]) cylinder(r=1, h=Length);
+				}
+				translate([0,Back_T+RG_Web_t+RG_Cap_t-1,-Length/2]){
+					translate([-RG_Web_w/2+1,0,0]) cylinder(r=1, h=Length);
+					translate([RG_Web_w/2-1,0,0]) cylinder(r=1, h=Length);
+				}
+			} // hull
+		} // union
+		
+		// Bolts 
+		translate([0,Back_T+RG_Web_t+4,0]) 
+			RailGuideBoltPattern(BoltSpace=BoltSpace) Bolt6ButtonHeadHole();
+		
+		//Chamfer
+		translate([-RG_Cap_w,-5,-Length/2-8]) 
+			rotate([-45,0,0]) cube([RG_Cap_w*2,Back_T+50,Length]);
+		mirror([0,0,1])
+		translate([-RG_Cap_w,-5,-Length/2-8]) 
+			rotate([-45,0,0]) cube([RG_Cap_w*2,Back_T+50,Length]);
+		
+	} // difference
+} // BoltOnRailGuide1515
+
+//rotate([90,0,0]) BoltOnRailGuide1515(Length = 35, BoltSpace=12.7, RoundEnds=true, ExtraBack=0);
+
 module RailGuideMountingPlate(Length = 40, BoltSpace=12.7){
 	Plate_t=5;
 	

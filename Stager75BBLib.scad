@@ -196,7 +196,7 @@ MainBearing_ID=Bearing6807_ID;
 MainBearing_T=Bearing6807_T;
 /**/
 
-//*
+/*
 // constants for 65mm stager
 Default_nLocks=2;
 DefaultBody_OD=BT65Body_OD;
@@ -208,7 +208,7 @@ MainBearing_ID=Bearing6705_ID;
 MainBearing_T=Bearing6705_T;
 /**/
 
-/*
+//*
 // constants for 54mm stager, too small
 Default_nLocks=2;
 DefaultBody_OD=BT54Body_OD;
