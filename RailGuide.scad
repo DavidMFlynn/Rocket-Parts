@@ -3,7 +3,7 @@
 // Filename: RailGuide.scad
 // by David M. Flynn
 // Created: 6/11/2022 
-// Revision: 1.0.7  9/29/2025
+// Revision: 1.0.8  12/26/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -14,6 +14,7 @@
 //
 function RailGuideRev()="RailGuide Rev. 1.0.7";
 echo(RailGuideRev());
+// 1.0.8  12/26/2025 Added BoltOnRailGuide1515()
 // 1.0.7  9/29/2025  Optomized RailButton for 1010 rail
 // 1.0.6  8/21/2024  Geometry change: All guides and posts are not oriented to 0° (+Y).
 // 1.0.5  11/2/2023  Added RailGuideSpacer()
@@ -32,6 +33,7 @@ echo(RailGuideRev());
 // RailButton(OD=11, Flange_h=2, Slot_w=2.8);  // for 1010 Rail
 //
 // rotate([90,0,0]) BoltOnRailGuide(Length = 40, BoltSpace=12.7, RoundEnds=true, ExtraBack=0);
+// rotate([90,0,0]) BoltOnRailGuide1515(Length = 35, BoltSpace=12.7, RoundEnds=true, ExtraBack=0);
 // RialGuide(TubeOD = 98, Length = 40, Offset = 3);
 //
 // rotate([-90,0,0]) RailGuideSpacer(OD=PML98Body_OD, H=PML98Body_OD/2+2, Length = 30, BoltSpace=12.7);
@@ -165,9 +167,10 @@ module BoltOnRailGuide1515(Length = 30, BoltSpace=12.7, RoundEnds=true, ExtraBac
 
 RG_Back_w=0.626*25.4;
 RG_Web_w=0.320*25.4 - 0.8;
-RG_Web_t=0.160*25.4 + 0.8;
-RG_Cap_w=0.810*25.4 - 1.0;
-RG_Cap_t=0.324*25.4 - 1.2;
+RG_Web_t=0.160*25.4 + 1.2;
+RG_Cap_w=0.710*25.4 - 1.5;
+RG_Cap_t=0.315*25.4 - 2.2;
+RG_CapTop_w=0.320*25.4;
 
 	difference(){
 		union(){
@@ -201,8 +204,8 @@ RG_Cap_t=0.324*25.4 - 1.2;
 					translate([RG_Cap_w/2-1,0,0]) cylinder(r=1, h=Length);
 				}
 				translate([0,Back_T+RG_Web_t+RG_Cap_t-1,-Length/2]){
-					translate([-RG_Web_w/2+1,0,0]) cylinder(r=1, h=Length);
-					translate([RG_Web_w/2-1,0,0]) cylinder(r=1, h=Length);
+					translate([-RG_CapTop_w/2+1,0,0]) cylinder(r=1, h=Length);
+					translate([RG_CapTop_w/2-1,0,0]) cylinder(r=1, h=Length);
 				}
 			} // hull
 		} // union
@@ -221,7 +224,7 @@ RG_Cap_t=0.324*25.4 - 1.2;
 	} // difference
 } // BoltOnRailGuide1515
 
-//rotate([90,0,0]) BoltOnRailGuide1515(Length = 35, BoltSpace=12.7, RoundEnds=true, ExtraBack=0);
+// rotate([90,0,0]) BoltOnRailGuide1515(Length = 35, BoltSpace=12.7, RoundEnds=true, ExtraBack=0);
 
 module RailGuideMountingPlate(Length = 40, BoltSpace=12.7){
 	Plate_t=5;

@@ -331,7 +331,7 @@ module SE_SpringGuide(OD=BT54Coupler_OD){
 
 // SE_SpringGuide();
 
-module SE_SpringMiddle(OD=BT54Coupler_OD){
+module SE_SpringMiddle(OD=BT54Coupler_OD, Wall_t=2.2){
 	ST_DSpring_ID=Spring_CS4323_ID;
 	ST_DSpring_CBL=Spring_CS4323_CBL;
 	
@@ -339,7 +339,7 @@ module SE_SpringMiddle(OD=BT54Coupler_OD){
 		translate([0,0,-ST_DSpring_CBL-2]) cylinder(d=OD, h=ST_DSpring_CBL*2+4);
 		
 		// center hole
-		translate([0,0,-ST_DSpring_CBL-2-Overlap]) cylinder(d=OD-4.4, h=ST_DSpring_CBL*2+4+Overlap*2);
+		translate([0,0,-ST_DSpring_CBL-2-Overlap]) cylinder(d=OD-Wall_t*2, h=ST_DSpring_CBL*2+4+Overlap*2);
 	} // difference
 	
 	difference(){
@@ -354,7 +354,7 @@ module SE_SpringMiddle(OD=BT54Coupler_OD){
 	} // difference
 } // SE_SpringMiddle
 
-// SE_SpringMiddle();
+// SE_SpringMiddle(OD=BT54Coupler_OD, Wall_t=2.2);
 
 module SE_SpringCupTOMT(OD=BT98Coupler_OD, nRopeHoles=6){
    // Top Of Motor Tube Spring Holder
@@ -692,7 +692,7 @@ module SE_SlidingBigSpringMiddle(OD=BT137Coupler_OD, SliderLen=50, Extension=0){
 // SE_SlidingBigSpringMiddle(OD=ULine157Coupler_OD, SliderLen=50, Extension=0);
 
 
-module SE_SlidingSpringMiddle(OD=BT98Coupler_OD, Wall_t=2.2, nRopes=6, SliderLen=40, SpLen=40, SpringStop_Z=20, UseSmallSpring=true){
+module SE_SlidingSpringMiddle(OD=BT98Coupler_OD, Wall_t=2.2, nRopes=6, SliderLen=40, SpLen=40, SpringStop_Z=20, UseSmallSpring=true, nSpokes=0, HasInnerTube=true){
 // costom version of ST_SpringMiddle()
 
 	Spring_OD=UseSmallSpring? Spring_CS4323_OD:Spring_CS11890_OD;
@@ -703,6 +703,7 @@ module SE_SlidingSpringMiddle(OD=BT98Coupler_OD, Wall_t=2.2, nRopes=6, SliderLen
 			Len=SpLen, myfn=$preview? 90:360);
 			
 	// Inside spring tube
+	if (HasInnerTube)
 	Tube(OD=Spring_ID-0.5, ID=Spring_ID-0.5-Wall_t*2, 
 			Len=SpLen, myfn=$preview? 90:360);
 			
@@ -713,7 +714,7 @@ module SE_SlidingSpringMiddle(OD=BT98Coupler_OD, Wall_t=2.2, nRopes=6, SliderLen
 	// Sliding tube
 	Tube(OD=OD, ID=OD-Wall_t*2, Len=SliderLen, myfn=$preview? 90:360);
 	
-	
+	if (nSpokes<1){
 	ConeLen=OD/3;
 	difference(){
 		cylinder(d1=OD-1, d2=Spring_OD+1, h=ConeLen);
@@ -725,10 +726,18 @@ module SE_SlidingSpringMiddle(OD=BT98Coupler_OD, Wall_t=2.2, nRopes=6, SliderLen
 		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) translate([0,OD/2-7,-Overlap])
 			cylinder(d=10,h=SliderLen);
 	} // difference
+	}else{
+		Spoke_t=1.2;
+		for (j=[0:nSpokes-1]) rotate([0,0,360/nSpokes*j]) 
+			hull(){
+				translate([0, OD/2-Spoke_t, 0]) cylinder(d=Spoke_t, h=SliderLen);
+				translate([0, Spring_OD/2+Wall_t, 0]) cylinder(d=Spoke_t, h=SliderLen);
+			} // hull
+	}
 
 } // SE_SlidingSpringMiddle
 
-//SE_SlidingSpringMiddle(OD=BT137Coupler_OD, nRopes=6, SliderLen=50, SpLen=50, SpringStop_Z=20, UseSmallSpring=false);
+//SE_SlidingSpringMiddle(OD=BT137Coupler_OD, nRopes=6, SliderLen=50, SpLen=50, SpringStop_Z=20, UseSmallSpring=false, nSpokes=6, HasInnerTube=false);
 
 //SE_SlidingSpringMiddle(OD=BT98Coupler_OD, nRopes=6, SliderLen=40, SpLen=40, SpringStop_Z=20);
 //SE_SlidingSpringMiddle(OD=BT75Coupler_OD, nRopes=3);

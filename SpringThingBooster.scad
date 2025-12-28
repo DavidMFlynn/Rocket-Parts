@@ -99,6 +99,7 @@ echo(SpringThingBoosterRev());
 // ***********************************
 //  ***** Routines *****
 //
+// STB_BR_BoltPattern(Body_ID=BT75Body_ID, Body_OD=BT75Body_ID, nLockBalls=nLockBalls) Bolt4HeadHole();
 // function STB_LockPinBC_d(BallPerimeter_d=BT75Body_OD)
 // STB_ShockCordHolePattern(BallPerimeter_d=BT75Body_OD, Body_OD=BT75Body_ID);
 // STB_ManualDisArmingHole(BallPerimeter_d=BT75Body_OD, nLockBalls=nLockBalls);
@@ -856,7 +857,9 @@ STB_BallRetainerTop(Body_ID=BT137Body_ID, Outer_OD=BT137Body_OD, Body_OD=BT137Bo
 module STB_BallRetainerBottom(Body_ID=BT75Body_ID, Body_OD=BT75Body_ID, nLockBalls=nLockBalls, HasSpringGroove=false, Engagement_Len=20, HasLargeInnerBearing=false, Lighten=false, Xtra_r=0.0){
 
 	BallPerimeter_d=STB_BallPerimeter_d(Body_ID);
+	echo(BallPerimeter_d=BallPerimeter_d);
 	Ball_d=STB_LockBall_d(Body_ID);
+	echo(Ball_d=Ball_d);
 	Plate_T=Engagement_Len/2-LockDiskHole_H+4;
 	SpringGroove_H=HasSpringGroove? 1.5:0;
 	
