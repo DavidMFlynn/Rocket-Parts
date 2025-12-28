@@ -3,7 +3,7 @@
 // Filename: SpringThingInside.scad
 // by David M. Flynn
 // Created: 11/26/2025
-// Revision: 1.0.3   12/7/2025
+// Revision: 1.0.4   12/28/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -28,9 +28,10 @@
 //
 //
 //  ***** History *****
-function SpringThingInsideRev()="SpringThingInside Rev. 1.0.2";
+function SpringThingInsideRev()="SpringThingInside Rev. 1.0.4";
 echo(SpringThingInsideRev());
 //
+// 1.0.4   12/28/2025 Added rope holes to STI_SmallSpringSplice();
 // 1.0.3   12/7/2025  More parametric
 // 1.0.2   12/6/2025  54mm version
 // 1.0.1   11/27/2025 It works. Ready for testing.
@@ -819,6 +820,12 @@ module STI_SmallSpringSplice(Shield_OD=LOC54Body_ID-4.8){
 	Wall_t=1.6;
 	Devider_OD=(Shield_OD>Spring_OD)? Shield_OD:Spring_OD+1;
 	
+	nRopes=6;
+	Rope_d=5;
+	RopeBC_d=Spring_OD+Rope_d+2;
+	
+
+	
 	difference(){
 		union(){
 			cylinder(d=Spring_ID, h=Len);
@@ -827,6 +834,12 @@ module STI_SmallSpringSplice(Shield_OD=LOC54Body_ID-4.8){
 		} // union
 		
 		translate([0,0,-Overlap]) cylinder(d=Spring_ID-Wall_t*2, h=Len+Overlap*2);
+		
+		// Ropes
+		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) 
+			translate([0,RopeBC_d/2,0])
+				cylinder(d=Rope_d, h=Len);
+
 	} // difference
 } // STI_SmallSpringSplice
 

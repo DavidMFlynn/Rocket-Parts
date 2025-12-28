@@ -46,8 +46,7 @@
 // ***********************************
 //  ***** for Viewing *****
 //
-// 
-FNL_Show_Fairing(ShowInternals=false);
+// FNL_Show_Fairing(ShowInternals=false);
 // FNL_Show_Fairing(ShowInternals=true);
 //
 // ***********************************
