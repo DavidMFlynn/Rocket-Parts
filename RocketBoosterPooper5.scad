@@ -1,6 +1,6 @@
 // ***********************************
 // Project: 3D Printed Rocket
-// Filename: RocketBoosterPooper4.scad
+// Filename: RocketBoosterPooper5.scad
 // by David M. Flynn
 // Created: 9/15/2023 
 // Revision: 0.9.10  8/6/2024
@@ -8,16 +8,16 @@
 // ***********************************
 //  ***** Notes *****
 //
-//  Booster Pooper 4 is the 4th rocket I've built w/ strap-on boosters. 
-//  Rocket with 2 strap-on boosters. 
-//  Boosters have 54mm motors w/ 75mm body
+//  Booster Pooper 5 is the 5th rocket I've built w/ strap-on boosters. 
+//  Rocket with 3 strap-on boosters. 
+//  Boosters have 54mm motors w/ 102mm body
 //  Sustainer has 54mm motor w/ 137mm body
 //   550mm BoosterButton spacing
 //
 //  Motor Tube Length 642mm
 //  Body Tube Length 130.8mm
 //
-//  Boosters are in R75StrapOn.scad
+//  Boosters are in RU102StrapOn.scad
 //
 //  ***** History *****
 // 0.9.10  8/6/2024 STB parts have been reworked, stop angle has changed.
@@ -35,7 +35,7 @@
 // ***********************************
 //  ***** for STL output *****
 //
-// BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD, L=NC_Len, Base_L=NC_Base_L, nRivets=6, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, Cut_Z=0, LowerPortion=false);
+// BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD, L=NC_Len, Base_L=NC_Base_L, nRivets=6, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, LowerPortion=false);
 //
 // NC_ShockcordRingDual(Tube_OD=Body_OD+Vinyl_t, Tube_ID=Body_ID, NC_Base_L=NC_Base_L, nRivets=6);
 //

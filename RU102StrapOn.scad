@@ -59,7 +59,7 @@
 // rotate([180,0,0]) SpingTop();
 // SE_SlidingSpringMiddle(OD=InnerTube_ID-IDXtra*3, nRopes=3, SliderLen=30, SpLen=30, SpringStop_Z=10, UseSmallSpring=true);
 // Petal_Hub();
-// PD_Petals2(OD=InnerTube_ID-IDXtra*3, Len=150, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
+// PD_Petals(OD=InnerTube_ID-IDXtra*3, Len=150, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
 // rotate([-90,0,0]) PD_PetalSpringHolder2();
 //
 // *** Ball Lock ***
@@ -69,13 +69,16 @@
 // STB_BallRetainerBottom(Body_ID=Engagement_D, Body_OD=Engagement_D, nLockBalls=nLockBalls, Engagement_Len=Engagement_Len, HasLargeInnerBearing=true, Lighten=false, Xtra_r=0.2);
 // rotate([180,0,0]) BallRetainerTop();
 // CenteringRing(OD=Body_ID, ID=InnerTube_OD+IDXtra, Thickness=3, nHoles=0, Offset=0, myfn=$preview? 90:360);
+// EBay_CR(IsUpper=true);
+// EBay_CR(IsUpper=false);
 //
 // *** Electronics Bay ***
 //
-// rotate([180,0,0]) Electronics_Bay(TopOnly=true, BottomOnly=false, ShowDoors=false);
-// Electronics_Bay(TopOnly=false, BottomOnly=true, ShowDoors=false);
+// rotate([180,0,0]) Electronics_Bay(TopOnly=true, BottomOnly=false, ShowDoors=false); // Top
+// Electronics_Bay(TopOnly=false, BottomOnly=true, ShowDoors=false); // Bottom
 // rotate([-90,0,0]) EB_AltDoor(Tube_OD=Body_OD, BlankDoor=false, IsLoProfile=false);
-// rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD, HasSwitch=true, DoubleBatt=false, BlankDoor=false);
+// rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD, HasSwitch=true, DoubleBatt=false, BlankDoor=false); // alt
+// rotate([-90,0,0]) EB_BattDoorMagRS(Tube_OD=Body_OD, HasRS_PCB=true, HasSwitch=true, BlankDoor=false); // alt
 //
 // RocketFin(HasSpiralVaseRibs=false);
 // rotate([180,0,0]) FinCan();
@@ -266,6 +269,13 @@ module EBay_CR(IsUpper=true){
 	TopCR_Z=TopOfEBay-16-CR_t;
 	BotCR_Z=EBay_Z+9;
 	
+	Servo_X=15;
+	Servo_Y=25;
+	Servo_a=55;
+	ServoPos_X=0;
+	ServoPos_Y=31;
+	ServoPos_a=98;
+	
 	difference(){
 		if (IsUpper){
 			translate([0,0,TopCR_Z]) cylinder(d=Body_ID, h=CR_t);
@@ -275,6 +285,15 @@ module EBay_CR(IsUpper=true){
 		
 		translate([MotorTubeOffset,0,MotorTube_Z]) rotate([0,MotorTube_a,0])
 			cylinder(d=MotorTube_OD+IDXtra*2, h=TopOfEBay);
+			
+		// Servo Hole
+		#if (IsUpper)
+			rotate([0,0,ServoPos_a]) translate([ServoPos_X,ServoPos_Y,TopCR_Z-Overlap]) 
+				rotate([0,0,Servo_a]) {
+					RoundRect(X=Servo_X, Servo_Y, Z=CR_t+Overlap*2, R=1);
+					// wires
+					translate([0,Servo_Y/2,0]) cylinder(d=8, h=CR_t+Overlap*2);
+				}
 			
 		// Key
 		if (IsUpper){
@@ -286,7 +305,8 @@ module EBay_CR(IsUpper=true){
 	
 } // EBay_CR
 
-// EBay_CR(IsUpper=true); 
+// 
+EBay_CR(IsUpper=true); 
 // EBay_CR(IsUpper=false);
 
 module Nosecone(){
@@ -334,30 +354,39 @@ module SpingTop(Tube_OD=InnerTube_OD, Tube_ID=InnerTube_ID, Spring_OD=SE_Spring_
 	HasAlTube=true;
 	AlTube_OD=12.7;
 	AlTube_a=30;
+	AlTube_Z=-14;
+	AlTube_Len=66;
 	
 	difference(){
-		cylinder(d=Tube_OD, h=Len, $fn=$preview? 90:360);
+		union(){
+			cylinder(d=Tube_OD, h=3+Overlap, $fn=$preview? 90:360);
+			
+			translate([0,0,3]) Tube(OD=Tube_ID, ID=Tube_ID-4.4, Len=Len-3+Overlap, myfn=$preview? 90:360);
+			
+			translate([0,0,-10]) cylinder(d=Spring_OD+6, h=10);
+			
+			rotate([0,0,AlTube_a])
+				hull(){
+					translate([0,0,AlTube_Z]) rotate([90,0,0]) cylinder(d=AlTube_OD+6, h=AlTube_Len, center=true, $fn=$preview? 90:360);
+					cube([AlTube_OD+8, AlTube_Len, Overlap], center=true);
+				} // hull
+		} // union
+				
+		// center hole
+		translate([0,0,AlTube_Z-10]) cylinder(d=Spring_ID, h=50, $fn=$preview? 90:180);
 		
-		translate([0,0,3]) Tube(OD=Tube_OD+1, ID=Tube_ID, Len=Len-3+Overlap, myfn=$preview? 90:360);
-		translate([0,0,3]) Tube(OD=Tube_ID-4.4, ID=Spring_OD+6, Len=Len-3+Overlap, myfn=$preview? 90:360);
-		
-		translate([0,0,-Overlap]) cylinder(d=Spring_ID, h=Len+Overlap*2, $fn=$preview? 90:360);
-		translate([0,0,3]) cylinder(d=Spring_OD, h=Len+Overlap*2, $fn=$preview? 90:360);
-		translate([0,0,6]) cylinder(d1=Spring_OD, d2=Spring_OD+2, h=Len+Overlap*2, $fn=$preview? 90:360);
+		translate([0,0,-7]) cylinder(d=Spring_OD, h=Len+Overlap*2, $fn=$preview? 90:360);
+		translate([0,0,-4]) cylinder(d1=Spring_OD, d2=Spring_OD+2, h=7+Overlap*2, $fn=$preview? 90:360);
 		
 		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) translate([0,Spring_OD/2+10,-Overlap]) cylinder(d=Rope_d, h=Len);
+		
+		translate([0,0,95]) rotate([180,0,0]) Nosecone();
+		
+		rotate([0,0,AlTube_a])
+			translate([0,0,AlTube_Z]) rotate([90,0,0]) cylinder(d=AlTube_OD+IDXtra, h=AlTube_Len+Overlap, center=true, $fn=90);
 	} // difference
 	
-	rotate([0,0,AlTube_a])
-	difference(){
-		hull(){
-			translate([0,0,-AlTube_OD/2]) rotate([90,0,0]) cylinder(d=AlTube_OD+6, h=Spring_ID+20, center=true, $fn=$preview? 90:360);
-			cube([AlTube_OD+8, Spring_ID+20, Overlap], center=true);
-		} // hull	
-		
-		translate([0,0,-AlTube_OD-10]) cylinder(d=Spring_ID, h=50, $fn=$preview? 90:360);
-		translate([0,0,-AlTube_OD/2]) rotate([90,0,0]) cylinder(d=AlTube_OD, h=Spring_ID+20+Overlap, center=true, $fn=$preview? 90:360);
-	} // difference
+	
 } // SpingTop
 
 // rotate([180,0,0]) SpingTop();
@@ -373,7 +402,7 @@ module Petal_Hub(){
 
 module BallRetainerTop(){
 	STB_BallRetainerTop(Outer_OD=Body_OD, Engagement_d=Engagement_D, nLockBalls=nLockBalls, 
-			HasIntegratedCouplerTube=true, nBolts=5, IntegratedCouplerLenXtra=-10, Body_ID=Body_ID, 	
+			HasIntegratedCouplerTube=true, nBolts=5, Bolt_a=0, IntegratedCouplerLenXtra=-10, Body_ID=Body_ID, 	
 			HasSecondServo=false, UsesBigServo=false, Engagement_Len=Engagement_Len, HasLargeInnerBearing=true, Xtra_r=0.2);
 		
 } // BallRetainerTop

@@ -567,7 +567,7 @@ module STB_ManualArmingHole(Body_ID=BT75Body_ID){
 //STB_ManualArmingHole();
 
 module STB_BallRetainerTop(Body_ID=BT75Body_ID, Outer_OD=0, Engagement_d=BT75Body_ID, nLockBalls=nLockBalls,
-			HasIntegratedCouplerTube=false, nBolts=0,
+			HasIntegratedCouplerTube=false, nBolts=0, Bolt_a=0,
 			IntegratedCouplerLenXtra=0,
 				
 			HasSecondServo=false,
@@ -708,7 +708,7 @@ module STB_BallRetainerTop(Body_ID=BT75Body_ID, Outer_OD=0, Engagement_d=BT75Bod
 			
 		// Integrated coupler bolt holes
 		if (HasIntegratedCouplerTube && nBolts>0) translate([0,0,Engagement_Len/2+IntCouplerLen+7.5])
-			for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+180/nBolts]) translate([0,Engagement_d/2+5,0]) rotate([-90,0,0]) Bolt4Hole();
+			for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+Bolt_a]) translate([0,Engagement_d/2+5,0]) rotate([-90,0,0]) Bolt4Hole();
 			
 		
 		// Bolt holes

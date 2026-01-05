@@ -26,8 +26,8 @@
 // ***********************************
 //  ***** for STL output *****
 //
-// rotate([0,180,0]) NoseLockRing(Fairing_OD=BP_Fairing_OD, Fairing_ID =BP_Fairing_ID);
-//
+// CenteringRing(OD=BT98Coupler_ID, ID=LOC29Body_OD+IDXtra, Thickness=5, nHoles=5, Offset=0, myfn=90);
+//  
 //	Electronics_Bay();	
 //   AltDoor54(Tube_OD=BP_Body_OD);
 //   FairingBaseBulkPlate(Tube_ID=BP_Fairing_OD, Fairing_ID=BP_Fairing_ID, ShockCord_a=90);
@@ -51,24 +51,26 @@
 // BluntOgiveNoseCone(ID=BP_Booster_Body_ID, OD=BP_Booster_Body_OD, L=BP_Booster_NC_Len, Base_L=BP_Booster_NC_Base_L, nRivets=3, RivertInset=0, Tip_R=BP_Booster_NC_Tip_r, HasThreadedTip=false, Wall_T=BP_Booster_NC_Wall_t, Cut_d=0, LowerPortion=false, FillTip=true);
 //
 //
-// rotate([180,0,0]) BoosterLockPin();
-// rotate([180,0,0]) CRBB_InnerBearingRetainerLP(HasServo=true, HasCenterHole=true);
-// rotate([180,0,0]) Booster_CRBB_TopRetainer();
-// CRBB_OuterBearingRetainer();
-// rotate([180,0,0]) CRBB_MagnetBracket();
-// rotate([180,0,0]) CRBB_TriggerPost(HasOuterPost=false);
+//  *** Spring Thing Internal 54 ***
+//
+// STI_ServoMount(Body_ID=LOC54Body_ID, MountBoltBC_d=38);
+// STI_LockDisk(nLockBalls=nLockBalls, Xtra_r=0.0);
+// rotate([180,0,0]) STI_BallRetainerTop(nLockBalls=nLockBalls, Xtra_r=0.0);
+// STI_BallRetainerBottom(nLockBalls=nLockBalls, Xtra_r=0.0);
+// STI_SpringEndTwo(Body_ID=LOC54Body_ID-IDXtra, nLockBalls=3, HasPetalLock=true, UseBallGroove=false);
+// STI_SpringEndOne();
+// STI_SmallSpringSplice();
+
 //
 // PD_NC_PetalHub(OD=BP_Booster_Body_ID-0.7, nPetals=2, HasReplaceableSpringHolder=false, nRopes=0, ShockCord_a=-1, HasThreadedCore=true, ST_DSpring_ID=SE_Spring_CS4323_ID(), ST_DSpring_OD=SE_Spring_CS4323_OD(), CouplerTube_ID=0, CouplerTubeLen=-1);
 // rotate([-90,0,0]) PD_PetalSpringHolder2();
 // rotate([180,0,0]) PD_Petals(OD=BP_Booster_Body_ID-0.5, Len=100, nPetals=2, Wall_t=1.6, AntiClimber_h=0, HasLocks=true, Lock_Span_a=30);
 //
 //
-// BoosterParachuteBay(Len=162.5);
-// rotate([0,-90,0]) PD_PetalLockCatch(OD=BP_Booster_Body_ID, ID=BP_Booster_Body_ID-3.4, Wall_t=1.8, Len=27.5, LockStop=false);
-//
 // BoosterForwardEnd();
+// BoosterSpacer(Len=1.5);
 // rotate([180,0,0]) BoosterTail();
-// BoosterButton();
+// BoosterButton(XtraLen=0.8);
 //
 // ***********************************
 //  ***** Routines *****
@@ -98,6 +100,7 @@ use<CableReleaseBB.scad>
 use<SpringEndsLib.scad>
 use<ElectronicsBayLib.scad>
 use<BatteryHolderLib.scad>
+use<SpringThingInside.scad>
 //use<ThreadLib.scad>
 
 //Alt_DoorXtra_X=4;
@@ -251,6 +254,12 @@ module BoosterInTubeEbay(){
 } // BoosterInTubeEbay
 
 // rotate([180,0,0]) BoosterInTubeEbay();
+
+module BoosterSpacer(Len=1.5){
+	Tube(OD=BP_Booster_Body_OD, ID=BP_Booster_Body_ID, Len=Len, myfn=$preview? 90:180);
+} // BoosterSpacer
+
+// BoosterSpacer(Len=1.5);
 
 module BoosterForwardEnd(){
 	Tube_Len=40;

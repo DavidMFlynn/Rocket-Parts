@@ -3,7 +3,7 @@
 // Filename: BatteryHolderLib.scad
 // by David M. Flynn
 // Created: 9/30/2022 
-// Revision: 1.2.5  8/16/2024
+// Revision: 1.2.6  1/3/2026
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,9 +12,10 @@
 //
 //  ***** History *****
 //
-function BatteryHolderLibRev()="BatteryHolderLib 1.2.5";
+function BatteryHolderLibRev()="BatteryHolderLib 1.2.6";
 echo(BatteryHolderLibRev());
 //
+// 1.2.6  1/3/2026    Added Batt_DoorMagSW();
 // 1.2.5  8/16/2024	  Added BlueRavenMount();
 // 1.2.4  8/11/2024   Added RocketServoHolder()
 // 1.2.3  1/3/2024    Added function BattDoorX()
@@ -34,6 +35,7 @@ echo(BatteryHolderLibRev());
 //  ***** for STL output *****
 //
 //  Batt_Door(Tube_OD=PML98Body_OD, Door_X=BattDoorX(), InnerTube_OD=PML54Body_OD, HasSwitch=false, DoubleBatt=false, BlankDoor=false);
+//  Batt_DoorMagSW(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, HasRS_PCB=false, HasSwitch=false, BlankDoor=false);
 //  Batt_Door6xAAA(Tube_OD=BT137Body_OD, InnerTube_OD=BT54Body_OD, HasSwitch=true);
 //  SingleBatteryPocket(ShowBattery=true);
 //
@@ -632,6 +634,136 @@ module Batt_Door(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, InnerTube_OD=PML38Bod
 //Batt_Door(Tube_OD=BT137Body_OD, InnerTube_OD=0, HasSwitch=true);
 //Batt_Door(Tube_OD=BT54Body_OD, Door_X=40, InnerTube_OD=0, HasSwitch=true); // not good
 
+
+//  ***** 2 Cell LiPo Battery Holder *****
+
+	// Battery size
+	LiPo2S_Batt_X=20;
+	LiPo2S_Batt_Y=12.2;
+	LiPo2S_Batt_Z=40; // was 43
+
+	module LiPo2S_BattHole(Xtra_X=0,Xtra_Y=0, Xtra_Z=0){
+		cube([LiPo2S_Batt_X+Xtra_X, LiPo2S_Batt_Y+Xtra_Y, LiPo2S_Batt_Z+Xtra_Z], center=true);
+	} // LiPo2S_BattHole
+	
+	module LiPo2S_BattPocket(){
+		Wall_t=1.2;
+		
+		difference(){
+			LiPo2S_BattHole(Xtra_X=Wall_t*2,Xtra_Y=Wall_t*2, Xtra_Z=Wall_t*2);
+			
+			translate([0,0,2]) LiPo2S_BattHole(Xtra_X=0, Xtra_Y=0, Xtra_Z=4);
+			
+			// wires
+			translate([0,0,LiPo2S_Batt_Z/2+2]) rotate([0,90,0]) cylinder(d=7, h=20);
+			
+			// push-up
+			translate([0,0,-LiPo2S_Batt_Z/2-Wall_t-Overlap]) cylinder(d=5,h=5);
+			
+			// Lighter		
+			hull(){
+				rotate([90,0,0]) cylinder(d=14, h=LiPo2S_Batt_Y+Wall_t*2+Overlap, center=true);
+				translate([0,0,LiPo2S_Batt_Z/3]) rotate([90,0,0]) cylinder(d=3, h=LiPo2S_Batt_Y+Wall_t*2+Overlap, center=true);
+				translate([0,0,-LiPo2S_Batt_Z/3]) rotate([90,0,0]) cylinder(d=3, h=LiPo2S_Batt_Y+Wall_t*2+Overlap, center=true);
+			} // hull
+			
+			hull(){
+				rotate([0,90,0]) cylinder(d=10, h=LiPo2S_Batt_X+Wall_t*2+Overlap, center=true);
+				translate([0,0,LiPo2S_Batt_Z/3]) rotate([0,90,0]) cylinder(d=3, h=LiPo2S_Batt_X+Wall_t*2+Overlap, center=true);
+				translate([0,0,-LiPo2S_Batt_Z/3]) rotate([0,90,0]) cylinder(d=3, h=LiPo2S_Batt_X+Wall_t*2+Overlap, center=true);
+			} // hull
+			
+		} // difference
+	} // LiPo2S_BattPocket
+	
+module Batt_DoorMagSW(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, HasRS_PCB=false, HasSwitch=false, BlankDoor=false){
+
+	ShowBattery=true;
+	Door_Y=HasSwitch? Batt_Door_Y+CK_RotSw_d:Batt_Door_Y;
+	//Door_X=Batt_Door_X;
+	Door_t=Batt_DoorThickness-0.7;
+	DoorEdge_a=asin((Door_X/2)/(Tube_OD/2));
+	BoltBossInset=3;
+	Batt_Offset_Y=Door_Y/2-68;
+	
+	BattInset_Z=get_inset(Tube_OD);
+	Batt_h=LiPo2S_Batt_Z;
+	BattConn_h=12;
+	Batt_X=LiPo2S_Batt_X;
+	Batt_Y=LiPo2S_Batt_Y;
+	Switch_Z=-5;
+	Switch_X=-LiPo2S_Batt_X/2-1;
+	Switch_Y=18;
+	LED_Z=-Door_Y/2+10;
+	RS_PCB_X=11;
+	RS_PCB_Y=17;
+	
+	function get_inset(d) = lookup(d, [
+ 		[ 54, 3.6 ],
+ 		[ 98, 2.2 ],
+ 		[ 137, 1.4 ]
+ 	]);
+	
+	//RocketServoRevCBoltPattern() Bolt4Hole();
+	//RocketServoHolderRevC(IsDouble=false, HasBackHoles=false);
+	//FW_MagSw_BoltPattern(Reversed=false) Bolt4Hole();
+	//FW_MagSw_Mount(HasMountingEars=false, Reversed=false);
+
+	difference(){
+		union(){
+			Door(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t, Tube_OD=Tube_OD, HasSixBolts=false);
+			
+			if (!BlankDoor)
+			intersection(){
+				
+				translate([0,0,-Door_Y/2])
+						cylinder(d=Tube_OD-1, h=Door_Y);
+					
+				union(){
+					//Battery holder
+					 translate([0, -Tube_OD/2+Door_t+Batt_Y/2+BattInset_Z, Door_Y/2-Batt_h/2-BattConn_h]) 
+						rotate([0,0,180]) LiPo2S_BattPocket();
+						
+					if (HasRS_PCB)
+						translate([RS_PCB_X,-Tube_OD/2+Door_t+RS_PCB_Y,0]){
+							rotate([0,0,-90]) rotate([-90,0,0]) RocketServoHolderRevC(IsDouble=false, HasBackHoles=false);
+							
+							hull(){
+								translate([3,-15,-29.9]) rotate([90,0,0]) cylinder(d=6, h=13, center=true);
+								translate([3,-15,29.9]) rotate([90,0,0]) cylinder(d=6, h=13, center=true);
+							} // hull
+							
+						}
+					
+					// Switch
+					if (HasSwitch)
+						translate([Switch_X, -Tube_OD/2+Switch_Y, Switch_Z]){
+							rotate([90,0,-90]) FW_MagSw_Mount(HasMountingEars=false, Reversed=false);
+							translate([-4,-18,-10.5]) cube([4.0,10,21]);
+						}
+				} // union
+			} // intersection
+			
+		} // union
+		
+		if (HasRS_PCB && !BlankDoor)
+			translate([RS_PCB_X,-Tube_OD/2+Door_t+RS_PCB_Y,0])
+				rotate([0,0,-90]) rotate([-90,0,0]) RocketServoRevCBoltPattern() translate([0,0,1]) Bolt4Hole(depth=7);
+		
+		// Switch
+		if (HasSwitch && !BlankDoor){
+		
+			translate([Switch_X-2, -Tube_OD/2+Switch_Y, Switch_Z])
+				rotate([90,0,-90]) FW_MagSw_BoltPattern(Reversed=false) Bolt4Hole(depth=4);
+			// LED
+			translate([0, -Tube_OD/2, LED_Z]) 
+				rotate([90,0,0]) cylinder(d=3, h=10, center=true);
+		}
+	} // difference
+
+} // Batt_DoorMagSW
+
+// Batt_DoorMagSW(HasRS_PCB=true, HasSwitch=true);
 
 module Batt_Door6xAAA(Tube_OD=BT137Body_OD, InnerTube_OD=BT54Body_OD, HasSwitch=true){
 	Door_Y=HasSwitch? Batt_Door_Y+CK_RotSw_d:Batt_Door_Y;

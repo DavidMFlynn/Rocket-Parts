@@ -104,17 +104,20 @@ NC_Base=15;
 PetalWidth=15;
 
 module PD_PetalLockGroove(Tube_ID=LOC54Body_ID){
-	Petal_ID=Tube_ID-4.0; // should fit loose
-	PetalLock_ID=Tube_ID-7.5; // Should not touch at all
+	Petal_ID=Tube_ID-4.4; // should fit loose
+	PetalLock_ID=Tube_ID-8.4; // Should not touch at all
+	GrooveEnd_H=2;
+	PetalLockGroove_H=2.5;
+	Groove_OAH=GrooveEnd_H+PetalLockGroove_H;
 	myFn=floor(Tube_ID)*2;
 	
 	difference(){
-		translate([0,0,-Overlap]) cylinder(d=Tube_ID+1, h=4.5+Overlap*2, $fn=$preview? 90:myFn);
+		translate([0,0,-Overlap]) cylinder(d=Tube_ID+1, h=Groove_OAH+Overlap*2, $fn=$preview? 90:myFn);
 			
 		// Puller ring
-		translate([0,0,-Overlap*2]) cylinder(d=Petal_ID, h=2+Overlap*3, $fn=$preview? 90:myFn);
+		translate([0,0,-Overlap*2]) cylinder(d=Petal_ID, h=GrooveEnd_H+Overlap*3, $fn=$preview? 90:myFn);
 		// Petal lock
-		translate([0,0,-Overlap*2]) cylinder(d=PetalLock_ID, h=4.5+Overlap*4, $fn=$preview? 90:myFn);
+		translate([0,0,-Overlap*2]) cylinder(d=PetalLock_ID, h=Groove_OAH+Overlap*4, $fn=$preview? 90:myFn);
 			
 	} // difference
 } // PD_PetalLockGroove

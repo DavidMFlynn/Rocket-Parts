@@ -90,7 +90,7 @@ module FNL_PetalHub(){
 } // FNL_PetalHub
 
 module FNL_Petals(){
-	PD_Petals(OD=Body_ID-1, Len=Petal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=false, Lock_Span_a=0);
+	PD_Petals(OD=Body_ID-1, Len=Petal_Len, nPetals=nPetals, Wall_t=2.0, AntiClimber_h=4, HasLocks=false, Lock_Span_a=0);
 } // FNL_Petals
 
 module FNL_SlidingSpringMiddle(){
@@ -144,15 +144,34 @@ module FNL_Custom_BallRetainerTop(){
 	Retainer_OD=Body_ID*CF_Comp;
 	Skirt_Len=8;
 	nBolts=4;
+	SC_Tube_OD=LOC29Body_OD+IDXtra*2;
 	
-	STB_BallRetainerTop(Body_ID=Retainer_OD, Outer_OD=Retainer_OD, Engagement_d=Body_ID*CF_Comp, 
+	difference(){
+		STB_BallRetainerTop(Body_ID=Retainer_OD, Outer_OD=Retainer_OD, Engagement_d=Body_ID*CF_Comp, 
 							nLockBalls=nLockBalls, HasIntegratedCouplerTube=false, nBolts=4, 
 							HasSecondServo=false, UsesBigServo=true, Engagement_Len=Engagement_Len, HasLargeInnerBearing=true, Xtra_r=0.2);
+		//cube([100,100,100]);		
+	} // difference
 							
 	difference(){
 		union(){
 			translate([0,0,Engagement_Len/2]) Tube(OD=EBay_OD+Wall_t*2, ID=EBay_ID-1, Len=Skirt_Len, myfn=$preview? 90:360);
 			translate([0,0,Engagement_Len/2-4.5]) Tube(OD=EBay_ID, ID=EBay_ID-Wall_t*2, Len=5+Skirt_Len+15, myfn=$preview? 90:360);
+			
+			// Shockcord tube
+			translate([0,0,Engagement_Len/2-4.5]) 
+				Tube(OD=28, ID=23, Len=5+Skirt_Len, myfn=90);
+				
+			difference(){
+				translate([0,0,Engagement_Len/2-4.5+5+Skirt_Len-Overlap]) 
+					cylinder(d1=28, d2=SC_Tube_OD+2.4, h=5+Overlap*2);
+				
+				translate([0,0,Engagement_Len/2-4.5+5+Skirt_Len-Overlap*2])
+					cylinder(d1=23, d2=SC_Tube_OD-3, h=5+Overlap*4);
+			} // difference
+			
+			translate([0,0,Engagement_Len/2+Skirt_Len+0.5+5]) 
+				Tube(OD=SC_Tube_OD+2.4, ID=SC_Tube_OD, Len=10, myfn=90);
 		} // union
 		
 		difference(){
@@ -164,8 +183,13 @@ module FNL_Custom_BallRetainerTop(){
 		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j]) 
 			translate([0,EBay_OD/2,Engagement_Len/2+Skirt_Len+7.5]) rotate([-90,0,0]) Bolt4Hole();
 		
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+180/nBolts]) 
+			translate([0,EBay_OD/2,Engagement_Len/2+Skirt_Len+5]) rotate([-90,0,0]) Bolt4Hole();
+		
 		translate([0,0,Engagement_Len/2-3]) STB_BR_BoltPattern(Body_ID=Retainer_OD, Body_OD=Retainer_OD, nLockBalls=nLockBalls) 
 			Bolt4HeadHole(depth=8,lHead=12);
+			
+		//cube([100,100,100]);
 	} // difference
 
 	

@@ -112,6 +112,10 @@ module EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=false, DoubleBatt=false, Blank
 
 //EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=false);
 
+module EB_BattDoorMagRS(Tube_OD=BT98Body_OD, HasRS_PCB=false, HasSwitch=false, BlankDoor=false){
+	Batt_DoorMagSW(Tube_OD=Tube_OD, Door_X=EB_BattDoor_X(Tube_OD=Tube_OD), HasRS_PCB=HasRS_PCB, HasSwitch=HasSwitch, BlankDoor=BlankDoor);
+} // EB_BattDoorMagRS
+
 module EB_LowerElectronics_Bay(Tube_OD=BT98Body_OD, Tube_ID=BT98Body_ID, Len=162, nBolts=5, BoltInset=7.5, ShowDoors=false,
 								Bolted=false, TopOnly=false, BottomOnly=false, HasLowerIntegratedCoupler=false, 
 								HasRailGuide=false, RailGuideLen=35){

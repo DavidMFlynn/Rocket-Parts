@@ -369,6 +369,89 @@ module BB_LockingThrustPoint(BodyTube_OD=PML98Body_OD, BoosterBody_OD=PML54Body_
 
 //BB_LockingThrustPoint(BodyTube_OD=137, BoosterBody_OD=78);
 
+module GearCover(MountHalfOnly=true, CoverHalfOnly=false){
+	Gear_pd=300*24/180;
+	Gear_d=Gear_pd+300/180*2;
+	
+	ServoShaft_d=14;
+	Gear_a=22.5;
+	Axil_d=28;
+	Axil_X=13;
+	Axil_Y=-Gear_pd+7;
+	
+	Case_t=16;
+	
+	difference(){
+		union(){
+			hull(){
+				cylinder(d=Gear_d+8, h=Case_t);
+				rotate([0,0,Gear_a]) translate([0,-Gear_pd,0]) cylinder(d=Gear_d+8, h=Case_t);
+			} // hull
+			
+			if (CoverHalfOnly)
+			translate([0,0,12])
+				hull(){
+					cylinder(d=Gear_d+8, h=Overlap);
+					rotate([0,0,Gear_a]) translate([0,-Gear_pd,0]) cylinder(d=Gear_d+8, h=Overlap);
+					
+					translate([0,0,2]) {
+						cylinder(d=Gear_d+12, h=2);
+						rotate([0,0,Gear_a]) translate([0,-Gear_pd,0]) cylinder(d=Gear_d+12, h=2);
+					}
+				} // hull
+			
+			if (!CoverHalfOnly)
+				translate([-20,-5,16-Overlap]) cube([45,5,10]);
+		} // union
+		
+		if (CoverHalfOnly)
+			translate([0,0,14])
+				hull(){
+					cylinder(d=Gear_d+8+IDXtra*2, h=2+Overlap);
+					rotate([0,0,Gear_a]) translate([0,-Gear_pd,0]) cylinder(d=Gear_d+8+IDXtra*2, h=2+Overlap);
+				} // hull
+				
+		// Servo shaft
+		translate([0,0,-Overlap])
+		hull(){
+			cylinder(d=ServoShaft_d, h=4);
+			rotate([0,0,Gear_a]) translate([0,-Gear_pd,-Overlap]) cylinder(d=ServoShaft_d, h=4);
+		} // hull
+
+			
+		// Main shaft
+		hull(){
+			rotate([0,0,Gear_a]) translate([0,-Gear_pd,-Overlap]) cylinder(d=Axil_d, h=20);
+			rotate([0,0,Gear_a]) translate([0,-Gear_pd,-Overlap]) rotate([0,0,-Gear_a]) 
+				translate([0,-Gear_pd,0]) cylinder(d=Axil_d, h=20);
+			
+		} // hull
+		
+		GearCutOut_H=CoverHalfOnly? 15:12;
+		// Gears
+		translate([0,0,2])
+			hull(){
+				cylinder(d=Gear_d+4, h=GearCutOut_H);
+				rotate([0,0,Gear_a]) translate([0,-Gear_pd,0]) cylinder(d=Gear_d+4, h=GearCutOut_H);
+			} // hull
+			
+		hull(){
+			rotate([0,0,Gear_a]) translate([0,-Gear_pd,2]) cylinder(d=Gear_d+4, h=12);
+			rotate([0,0,Gear_a]) translate([0,-Gear_pd,2]) rotate([0,0,-Gear_a]) 
+				translate([0,-Gear_pd,0])  cylinder(d=Gear_d+4, h=12);
+		} // hull
+		
+		// trim bottom
+		rotate([0,0,Gear_a]) translate([0,-Gear_pd,0]) rotate([0,0,-Gear_a]) 
+				translate([-50,-Gear_pd/2-88,-Overlap]) cube([100,100,100]);
+		
+		if (MountHalfOnly) translate([0,0,-Overlap]) cylinder(d=150, h=Case_t-2);
+	} // difference
+} // GearCover
+
+// GearCover(MountHalfOnly=true, CoverHalfOnly=false);
+// GearCover(MountHalfOnly=false, CoverHalfOnly=true);
+
 module BB_Gear(nTeeth=24){
 	Pitch=300;
 	PressureAngle=20;
