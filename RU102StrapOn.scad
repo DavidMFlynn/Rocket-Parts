@@ -3,7 +3,7 @@
 // Filename: RU102StrapOn.scad
 // by David M. Flynn
 // Created: 9/4/2025
-// Revision: 0.9.3  1/9/2026 
+// Revision: 0.9.4  1/9/2026 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -50,6 +50,7 @@
 //
 //  ***** History *****
 //
+// 0.9.4  1/9/2026   Added missing parts to drawing.
 // 0.9.3  1/9/2026   Updated Fincan, Ready to printing, FC1
 // 0.9.2  9/7/2025   Changed Body_OD, added SE_SlidingSpringMiddle
 // 0.9.1  9/5/2025   Printing and iterating
@@ -64,8 +65,8 @@
 // rotate([180,0,0]) SpingTop();
 // SE_SlidingSpringMiddle(OD=InnerTube_ID-IDXtra*3, nRopes=3, SliderLen=30, SpLen=30, SpringStop_Z=10, UseSmallSpring=true);
 // Petal_Hub();
-// PD_Petals(OD=InnerTube_ID-IDXtra*3, Len=150, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
-// rotate([-90,0,0]) PD_PetalSpringHolder2();
+// PD_Petals(OD=InnerTube_ID-IDXtra*3, Len=Petal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
+// rotate([-90,0,0]) PD_PetalSpringHolder();
 //
 // *** Ball Lock ***
 //
@@ -160,12 +161,12 @@ Fin_TipOffset=0;
 Fin_Chamfer_L=32;
 FinInset_Len=5;
 FinCan_Len=Fin_Root_L+FinInset_Len*2; // Calculated fin can length
-
+Petal_Len=150;
 	
 BoosterDropperCL=300; // for 54/852 case, minimum for sustainer
 echo(BoosterDropperCL=BoosterDropperCL);
 
-DeploymentTube_Len=200;
+DeploymentTube_Len=222;
 UpperTubeLen=135;
 BodyTubeLen=BoosterDropperCL-FinCan_Len-EBay_Len+64; //-BD_ThrustRing_h();
 MotorTubeLen=360; // to bottom of ebay
@@ -195,37 +196,52 @@ module ShowRocketStrapOn(ShowInternals=true){
 	BodyTube_Z=FinCan_Z+FinCan_Len+Overlap*2;
 	EBay_Z=BodyTube_Z+BodyTubeLen-15;
 	BallRetainerTop_Z=EBay_Z+EBay_Len;
-	UpperTube_Z=EBay_Z+EBay_Len+3.1+Overlap;
+	
+	UpperTube_Z=BallRetainerTop_Z+29;
 	R75SRB_TopRetainer_Z=EBay_Z+EBay_Len;
 	SpringEnd_Z=R75SRB_TopRetainer_Z+20;
+	PetalHub_Z=R75SRB_TopRetainer_Z+Petal_Len+42;
 	
 	SpringEndOffet=90;
 	NoseCone_Z=UpperTube_Z+UpperTubeLen+Overlap*2;
+	SpringTop_Z=NoseCone_Z+SpringEndOffet;
 	
 	//*
-	translate([0,0,NoseCone_Z]){
+	translate([0,0,NoseCone_Z])
 		Nosecone();
 	
-		if (ShowInternals) {
-			translate([0,0,SpringEndOffet]) rotate([180,0,0]) SpingTop();
+	if (ShowInternals) 
+			translate([0,0,SpringTop_Z]) rotate([180,0,0]) SpingTop();
+			
+	if (ShowInternals) 
 			difference(){
-				translate([0,0,SpringEndOffet-3]) color("LightBlue") rotate([180,0,0])
+				translate([0,0,SpringTop_Z-3]) color("LightBlue") rotate([180,0,0])
 					Tube(OD=InnerTube_OD, ID=InnerTube_ID, Len=DeploymentTube_Len, myfn=$preview? 90:360);
 					
-				translate([0,0,SpringEndOffet-3+Overlap]) rotate([180,0,0])
-				cube([100,100,DeploymentTube_Len+Overlap*2]);
-			}
+				translate([0,0,SpringTop_Z-3+Overlap]) rotate([180,0,0])
+					cube([100,100,DeploymentTube_Len+Overlap*2]);
+			} // difference
 			
-			translate([0,0,SpringEndOffet-40]) rotate([180,0,0]) Petal_Hub();
-			translate([0,0,SpringEndOffet-40-3]) 
-				rotate([180,0,0]) PD_Petals(OD=InnerTube_ID, Len=150, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=true);
-			}
+	if (ShowInternals) translate([0,0,SpringTop_Z-3-DeploymentTube_Len+10])
+		CenteringRing(OD=Body_ID, ID=InnerTube_OD+IDXtra, Thickness=3, nHoles=0, Offset=0, myfn=$preview? 90:360);
+		
+	if (ShowInternals) {
+		translate([0,0,PetalHub_Z+21]) 
+			SE_SlidingSpringMiddle(OD=InnerTube_ID-IDXtra*3, nRopes=3, SliderLen=30, SpLen=30, SpringStop_Z=10, UseSmallSpring=true);
+		translate([0,0,PetalHub_Z]) rotate([180,0,0]) color("Green") Petal_Hub();
+		translate([0,0,PetalHub_Z-10]) color("Tan")
+			rotate([180,0,0]) PD_Petals(OD=InnerTube_ID, Len=Petal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=true);
+
 	}
 	/**/
 	
 	if (!ShowInternals) translate([0,0,UpperTube_Z]) 
 		color("LightBlue") Tube(OD=Body_OD, ID=Body_ID, Len=UpperTubeLen, myfn=$preview? 90:360);
 		
+	if (!ShowInternals) 
+		translate([0,0,BallRetainerTop_Z+13.6]) rotate([180,0,0]) color("Tan")
+			STB_InternalTubeEnd(Body_OD=Body_OD, Body_ID=Body_ID, Engagement_ID=Engagement_D, nLockBalls=5, Engagement_Len=20);
+	
 	//*
 	translate([0,0,BallRetainerTop_Z+13.1]) rotate([180,0,18]) BallRetainerTop();
 	if (ShowInternals) translate([0,0,BallRetainerTop_Z+13.1]) rotate([180,0,18]) 
@@ -343,7 +359,7 @@ module Nosecone(){
 		} // hull
 	} // BodyTubeAlignment
 	
-	BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD, L=NC_Len, Base_L=NC_Base_L, 
+	BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD*CF_Comp+Vinyl_d, L=NC_Len, Base_L=NC_Base_L, 
 		nRivets=0, RivertInset=0, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, FillTip=true);
 		
 	difference(){
