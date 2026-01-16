@@ -189,8 +189,8 @@ STB_Xtra_r=0.3; // Makes the lock tighter
 // ===============
 //
 //  Holds petal while assmbling the rocket for flight. Updated 8/3/25
-// PD_PetalHolder2(Petal_OD=ULine157Body_ID*CF_Comp, Is_Top=false); // bottom half
-// PD_PetalHolder2(Petal_OD=ULine157Body_ID*CF_Comp, Is_Top=true); // top half
+// PD_PetalHolder(Petal_OD=ULine157Body_ID*CF_Comp-1, Is_Top=false); // bottom half
+// PD_PetalHolder(Petal_OD=ULine157Body_ID*CF_Comp-1, Is_Top=true); // top half
 // PD_PetalHolderLockLever();
 //
 // FinCanAlignmetTool(D=24.9); // for sustainer

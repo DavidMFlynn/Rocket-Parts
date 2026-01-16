@@ -968,7 +968,7 @@ module PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, HasReplaceableSpringHolder=f
 			if (CouplerTube_ID>0){
 				// Coupler tube interface
 				translate([0,0,-BodyTube_L]) 
-					cylinder(d=CouplerTube_ID, h=BodyTube_L+1, $fn=$preview? 90:360);
+					cylinder(d=CouplerTube_ID, h=BodyTube_L+Overlap, $fn=$preview? 90:360);
 			}else{ if (CouplerTubeLen>-1){
 				// Filet to prevent bridging from pulling skirt in
 				translate([0,0,-4+Overlap])
@@ -983,6 +983,13 @@ module PD_NC_PetalHub(OD=BT75Coupler_OD, nPetals=3, HasReplaceableSpringHolder=f
 			
 		// round shock cord
 		//translate([12,0,-Overlap]) cylinder(d=4, h=30);
+		
+		// Hollow Bottom
+		if (CouplerTube_ID>ST_DSpring_OD+10) translate([0,0,-BodyTube_L-Overlap]) difference(){
+			cylinder(d=CouplerTube_ID-4.4, h=BodyTube_L+Overlap*3);
+			translate([0,0,-Overlap]) cylinder(d=ST_DSpring_OD+10, h=BodyTube_L+Overlap*5);
+		} // difference
+		
 		
 		// Center Hole
 		if (OD>60){
@@ -1044,6 +1051,11 @@ PD_NC_PetalHub(OD=PML54Coupler_OD, nPetals=2, HasReplaceableSpringHolder=false, 
 PD_NC_PetalHub(OD=BT137Coupler_OD, nPetals=3, nRopes=6, ShockCord_a=-1, HasThreadedCore=false,
 		ST_DSpring_ID=SE_Spring_CS11890_ID(),
 		ST_DSpring_OD=SE_Spring_CS11890_OD(), CouplerTube_ID=BT137Coupler_ID);
+/**/
+/*
+PD_NC_PetalHub(OD=ULine157Coupler_OD, nPetals=6, HasReplaceableSpringHolder=true, nRopes=6, ShockCord_a=-1, HasThreadedCore=false,
+		ST_DSpring_ID=SE_Spring_CS11890_ID(),
+		ST_DSpring_OD=SE_Spring_CS11890_OD(), CouplerTube_ID=ULine157Coupler_ID);
 /**/
 
 

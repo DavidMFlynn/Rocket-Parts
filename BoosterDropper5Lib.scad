@@ -3,7 +3,7 @@
 // Filename: BoosterDropper5Lib.scad
 // by David M. Flynn
 // Created: 9/8/2025 
-// Revision: 0.9.1  9/10/2025
+// Revision: 0.9.3  1/11/2026
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -11,12 +11,20 @@
 //  Booster Dropper for strap on boosters. 
 //  This is the mechanism for retaining and dropping strap-on boosters.
 //  New design w/ gears for 2 or more boosters
-//  Uses MS62 servo 25kg•cm (2.4Nm)
+//  Uses MS62 servo 25kg•cm (2.4Nm) 270° 
+//
+// Gear ratios:
+//  Servo 270° Input:  0.75r * 20t/r = 15t
+//  Center Shaft 15t / 40t/r = 0.375r
+//  Ring Gear 0.375r * 48t = 18t
+//  Driven Gear Output: 18t / 36t/r = 0.5r 
 //
 //  ***** History *****
 //
-function BoosterDropper5Rev()="BoosterDropper5Lib 0.9.1";
-echo(BoosterDropper5Rev());
+function BoosterDropper5LibRev()="BoosterDropper5Lib 0.9.3";
+echo(BoosterDropper5LibRev());
+// 0.9.3  1/11/2026 Little fixes for ULine157Body
+// 0.9.2  1/10/2026 Tested good, modify for ULine 6" tube
 // 0.9.1  9/10/2025 Cleaned up some code. Ready for a printing and test.
 // 0.9.0  9/8/2025  Copied from BoosterDropperLib 9.9, prefix changed to BD5_
 // 0.9.9  9/5/2025  Now ball bearing only. Added ShowLockingThrustPoint()
@@ -24,14 +32,13 @@ echo(BoosterDropper5Rev());
 // ***********************************
 //  ***** for STL output *****
 //
-// BD5_BoosterThrustRing(MtrTube_OD=PML38Body_OD, BodyTube_OD=PML54Body_OD); // Print 2 per booster
 //
 // BD5_BoosterButton(XtraLen=0.3); // Print 2 per booster
-// BD5_ServoMountingRing(Body_ID=BT137Body_ID);
+// BD5_ServoMountingRing(Body_ID=Body_ID*CF_Comp-IDXtra*2);
 // 
-// BD5_LockingThrustPoint(BodyTube_OD=PML98Body_OD, BoosterBody_OD=PML54Body_OD); // Print 1 per booster, incorperate into rocket body
+// BD5_LockingThrustPoint(BodyTube_OD=Body_COD, BoosterBody_OD=BoosterBody_COD); // Print 1 per booster, incorperate into rocket body
 // BD5_Lock(); // Print 1 per booster
-// rotate([180,0,0]) BD5_ServoGear(nTeeth=24);
+// rotate([180,0,0]) BD5_ServoGear(nTeeth=nTeethServoGear);
 // BD5_TopRingGear(Bore_d=CenterBore_d, nTeeth=nTeethTopGear);
 // BD5_TopGearMount(Bore_d=CenterBore_d, nBolts=6);
 //
@@ -39,21 +46,21 @@ echo(BoosterDropper5Rev());
 // BD5_InnerRace(Bore_d=CenterBore_d);
 // BD5_OuterRace(Bore_d=CenterBore_d);
 // BD5_BallSpacer(Bore_d=CenterBore_d);
-// BD5_OuterRaceMount(Tube_ID=BT137Body_ID, Bore_d=CenterBore_d);
+// BD5_OuterRaceMount(Tube_ID=Body_ID*CF_Comp-IDXtra*2, Bore_d=CenterBore_d);
 //
-// BD5_DrivenGear(Hub_Len=5);
+// BD5_DrivenGear(Hub_Len=DrivenGearHubLen);
 //
-// RocketBody(Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, nBoosters=nBoosters);
+// BD5_RocketBody(Body_OD=Body_COD, Body_ID=Body_ID*CF_Comp, nBoosters=nBoosters);
 //
-// CenteringRing(OD=Body_ID-4.4-IDXtra, ID=BT54Body_OD+IDXtra*2, Thickness=5, nHoles=6, Offset=0, myfn=$preview? 90:360);
-// CenteringRing(OD=BT137Body_ID, ID=BT54Body_OD+IDXtra*2, Thickness=5, nHoles=7, Offset=0, myfn=$preview? 90:360);
+// CenteringRing(OD=Body_ID*CF_Comp, ID=MotorTube_OD+IDXtra*2, Thickness=5, nHoles=7, Offset=0, myfn=$preview? 90:360); // Top
+// CenteringRing(OD=Body_ID*CF_Comp-4.4-IDXtra, ID=MotorTube_OD+IDXtra*2, Thickness=5, nHoles=6, Offset=0, myfn=$preview? 90:360); // Bottom
 //
 // ***********************************
 //  ***** Routines *****
 //
 function BD5_BoosterButtonOAH()=BoosterButtonOA_h;
-function BD_ThrustRing_h(Btn_d=BoosterButtonMinor_d)=Btn_d+6;
-function BP5_Calc_nBalls(BallCircle_d=50,Ball_d=6)=floor(BallCircle_d*PI / (Ball_d*2.25)/2)*2;
+function BD5_ThrustRing_h(Btn_d=BoosterButtonMinor_d)=Btn_d+6;
+function BD5_Calc_nBalls(BallCircle_d=50,Ball_d=6)=floor(BallCircle_d*PI / (Ball_d*2.25)/2)*2;
 //
 // BD5_ThrustPoint(BodyTube_OD=PML98Body_OD, BoosterBody_OD=PML54Body_OD); 
 // BD5_ThrustPoint_Hole(Swell=-Overlap);
@@ -66,14 +73,14 @@ function BP5_Calc_nBalls(BallCircle_d=50,Ball_d=6)=floor(BallCircle_d*PI / (Ball
 //  ***** for Viewing *****
 //
 // BD5_ShowLockingThrustPoint();
-// ShowRocketBody(Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, nBoosters=nBoosters);
+// BD5_ShowRocketBody(Body_OD=Body_COD, Body_ID=Body_ID, nBoosters=nBoosters);
 // BD5_ShowMech(Bore_d=CenterBore_d);
 //
 /*
   //for (j=[0:nBoosters-1]) rotate([0,0,360/nBoosters*j])
-  translate([0,BT137Body_OD/2-12.4,63]) rotate([-90,0,0]) BD5_ShowLockingThrustPoint(ShowLocked=false);
+	translate([0,Body_COD/2-12.4,63]) rotate([-90,0,0]) BD5_ShowLockingThrustPoint(ShowLocked=false);
   translate([0,0,120.1]) color("Tan") BD5_ServoMountingRing();
-  ShowRocketBody(Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, nBoosters=nBoosters);
+  BD5_ShowRocketBody(Body_OD=Body_COD, Body_ID=Body_ID, nBoosters=nBoosters);
   translate([0,0,63+31]) rotate([180,0,0]) BD5_ShowMech();
   translate([0,0,63+35]) BD5_OuterRaceMount();
 /**/
@@ -106,6 +113,7 @@ BoosterButtonMajor_h=5;
 BoosterButtonTrans_h=(BoosterButtonMajor_d-BoosterButtonMinor_d)/3;
 BoosterButtonOA_h=BoosterButtonMajor_h+BoosterButtonPost_h+BoosterButtonTrans_h;
 
+
 BD5_Lock_Wall_t=2.2;
 
 Housing_OD=BB6805_2RS_OD+Bolt4Inset*4;
@@ -115,7 +123,11 @@ RaceBC_d=BB6805_2RS_OD+Bolt4Inset*2;
 TopOfRace=-3.5; 
 
 // Values for BT137Body w/ 3 strap-on boosters
-//*
+/*
+Body_OD=BT137Body;
+Body_COD=Body_OD*CF_Comp+Vinyl_d; // Compensated OD
+echo(Body_COD=Body_COD);
+
 nBoosters=3;
 nTeethServoGear=20;
 nTeethTopGear=nTeethServoGear*2;
@@ -129,11 +141,69 @@ BevelRingGearConeDistance=48;
 Ball_d=3/8*25.4;
 Race_w=10;
 BearingPreload=-0.25; // -0.35 was too loose
+MotorTube_OD=BT54Body_OD;
+MotorTube_ID=BT54Body_ID;
 CenterBore_d=60; // clear the BT54Body motor tube
 /**/
 
+// Values for ULine157Body_OD w/ 3 strap-on boosters
+//*
+Body_OD=ULine157Body_OD;
+Body_ID=ULine157Body_ID;
+Body_COD=Body_OD*CF_Comp+Vinyl_d; // Compensated OD
+echo(Body_COD=Body_COD);
+BoosterBody_OD=ULine102Body_OD;
+BoosterBody_COD=BoosterBody_OD*CF_Comp+Vinyl_d;
 
-module BD5_ShowLockingThrustPoint(ShowLocked=true){
+nBoosters=3;
+nTeethServoGear=20;
+nTeethTopGear=nTeethServoGear*2;
+GearPitch=300;
+BevelGearPitch=300;
+GearPressureAngle=20;
+nDrivenGearTeeth=36;
+DrivenGearConeDistance=54.0833;
+nBevelRingGearTeeth=48;
+BevelRingGearConeDistance=48;
+Ball_d=3/8*25.4;
+Race_w=10;
+BearingPreload=-0.25; // -0.35 was too loose
+MotorTube_OD=BT54Body_OD;
+MotorTube_ID=BT54Body_ID;
+CenterBore_d=60; // clear the BT54Body motor tube
+/**/
+
+// Values for ULine157Body_OD w/ 3 strap-on boosters ULine75 motor tube
+// it doesn't fit
+/*
+Body_OD=ULine157Body_OD;
+Body_ID=ULine157Body_ID;
+Body_COD=Body_OD*CF_Comp+Vinyl_d; // Compensated OD
+echo(Body_COD=Body_COD);
+BoosterBody_OD=ULine102Body_OD;
+BoosterBody_COD=BoosterBody_OD*CF_Comp+Vinyl_d;
+
+nBoosters=3;
+nTeethServoGear=20;
+nTeethTopGear=54;
+nBevelRingGearTeeth=48; 
+nDrivenGearTeeth=36;
+GearPitch=300;
+BevelGearPitch=300;
+GearPressureAngle=20;
+DrivenGearConeDistance=54.0833;
+BevelRingGearConeDistance=48;
+Ball_d=3/8*25.4;
+Race_w=10;
+BearingPreload=-0.25; // -0.35 was too loose
+MotorTube_OD=ULine75Body_OD;
+MotorTube_ID=ULine75Body_ID;
+CenterBore_d=81; // clear the BT54Body motor tube
+/**/
+
+DrivenGearHubLen=Body_COD/2-CenterBore_d/2-35;
+
+module BD5_ShowLockingThrustPoint(Body_OD=Body_COD, BoosterBody_OD=BoosterBody_COD, ShowLocked=true){
 	module Bearing(){
 		difference(){
 			cylinder(d=BB6805_2RS_OD, h=BB6805_2RS_H);
@@ -148,14 +218,14 @@ module BD5_ShowLockingThrustPoint(ShowLocked=true){
 			BD5_Lock();
 			translate([0,0,-10.6]) color("Red") Bearing();
 			//translate([0,0,-12.7]) BD5_BearingStop();
-			translate([0,0,-12.7-3.1]) rotate([180,0,0]) BD5_DrivenGear();
+			translate([0,0,-12.7-3.1]) rotate([180,0,0]) BD5_DrivenGear(Hub_Len=DrivenGearHubLen);
 		}
 	} // LockWithBearing
 	
 	color("Tan") BD5_BoosterButton(XtraLen=0);
 	
 	//difference(){
-		BD5_LockingThrustPoint(BodyTube_OD=BT137Body_OD, BoosterBody_OD=ULine102Body_OD);
+		BD5_LockingThrustPoint(BodyTube_OD=Body_OD, BoosterBody_OD=BoosterBody_OD);
 		//translate([0,0,-20]) cube([50,70,50]);
 	//}
 	LockWithBearing(ShowLocked=ShowLocked);
@@ -163,22 +233,22 @@ module BD5_ShowLockingThrustPoint(ShowLocked=true){
 	//color("Green") BD5_LTP_Hole();
 } // BD5_ShowLockingThrustPoint
 
-// translate([0,BT137Body_OD/2-12.4,63]) rotate([-90,0,0]) BD5_ShowLockingThrustPoint(ShowLocked=false);
+// translate([0,Body_COD/2-12.4,63]) rotate([-90,0,0]) BD5_ShowLockingThrustPoint(ShowLocked=false);
 
-module ShowRocketBody(Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, nBoosters=nBoosters){
+module BD5_ShowRocketBody(Body_OD=Body_COD, Body_ID=Body_ID, nBoosters=nBoosters){
 	LowerCR_Z=3.5;
 	
 	translate([0,0,LowerCR_Z-5.1])
-		CenteringRing(OD=Body_ID-4.4-IDXtra, ID=BT54Body_OD+IDXtra*2, Thickness=5, nHoles=6, Offset=0, myfn=$preview? 90:360);
+		CenteringRing(OD=Body_ID-4.4-IDXtra, ID=MotorTube_OD+IDXtra*2, Thickness=5, nHoles=6, Offset=0, myfn=$preview? 90:360);
 	
 	
-	RocketBody(Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, nBoosters=nBoosters);
+	BD5_RocketBody(Body_OD=Body_OD, Body_ID=Body_ID, nBoosters=nBoosters);
 	
 	
-	translate([0,0,-50]) color("LightBlue") Tube(OD=BT54Body_OD, ID=BT54Body_ID, Len=250, myfn=$preview? 36:360);
-} // ShowRocketBody
+	translate([0,0,-50]) color("LightBlue") Tube(OD=MotorTube_OD, ID=MotorTube_ID, Len=250, myfn=$preview? 36:360);
+} // BD5_ShowRocketBody
 
-// ShowRocketBody();
+// BD5_ShowRocketBody();
 
 module BD5_ShowMech(Bore_d=CenterBore_d){
 	Bearing_Z=-14.1;
@@ -189,7 +259,7 @@ module BD5_ShowMech(Bore_d=CenterBore_d){
 		Race_ID=Gear_OD+1;
 		BallCircle_d=Race_ID+Race_t*2+Ball_d;
 		
-		nBalls=BP5_Calc_nBalls(BallCircle_d,Ball_d);
+		nBalls=BD5_Calc_nBalls(BallCircle_d,Ball_d);
 		for (j=[0:nBalls-1]) rotate([0,0,360/nBalls*j]) translate([BallCircle_d/2,0,0]) color("Red") sphere(d=Ball_d);
 	} // ShowMyBalls
 
@@ -212,11 +282,14 @@ module BD5_ShowMech(Bore_d=CenterBore_d){
 // translate([0,0,63+31]) rotate([180,0,0]) BD5_ShowMech();
 
 
-module BD5_ServoMountingRing(Body_ID=BT137Body_ID){
+module BD5_ServoMountingRing(Body_ID=Body_ID){
 	TubeLen=21;
 	GearCenter_Y=-GearPitch*(nTeethServoGear+nTeethTopGear)/360;
 	Gear_d=37;
 	Gusset_h=8;
+	Gusset_Y=-Body_ID/2+2.0;
+	Gusset_Y1=GearCenter_Y-14;
+	Gusset_Y2=GearCenter_Y+1;
 	nBolts=6;
 	
 	difference(){
@@ -225,26 +298,26 @@ module BD5_ServoMountingRing(Body_ID=BT137Body_ID){
 			
 			rotate([0,0,24]) 
 			hull(){
-				translate([0,-Body_ID/2+2,0]) cylinder(d=4, h=TubeLen-3);
-				translate([-1,-Body_ID/2+20.5,TubeLen-11]) cylinder(d=4, h=Gusset_h);
+				translate([0,Gusset_Y,0]) cylinder(d=4, h=TubeLen-3);
+				translate([-1,Gusset_Y2,TubeLen-11]) cylinder(d=4, h=Gusset_h);
 			} // hull
 			
 			rotate([0,0,-50]) 
 			hull(){
-				translate([0,-Body_ID/2+2,0]) cylinder(d=4, h=TubeLen-3);
-				translate([4,-Body_ID/2+19,TubeLen-11]) cylinder(d=4, h=Gusset_h);
+				translate([0,Gusset_Y,0]) cylinder(d=4, h=TubeLen-3);
+				translate([4,Gusset_Y2,TubeLen-11]) cylinder(d=4, h=Gusset_h);
 			} // hull
 			
 			rotate([0,0,-36]) 
 			hull(){
-				translate([0,-Body_ID/2+2,0]) cylinder(d=4, h=TubeLen-4);
-				translate([0,-Body_ID/2+4,TubeLen-11]) cylinder(d=4, h=Gusset_h);
+				translate([0,Gusset_Y,0]) cylinder(d=4, h=TubeLen-4);
+				translate([0,Gusset_Y1,TubeLen-11]) cylinder(d=4, h=Gusset_h);
 			} // hull
 			
 			rotate([0,0,14]) 
 			hull(){
-				translate([0,-Body_ID/2+2,0]) cylinder(d=4, h=TubeLen-4);
-				translate([0,-Body_ID/2+5,TubeLen-11]) cylinder(d=4, h=Gusset_h);
+				translate([0,Gusset_Y,0]) cylinder(d=4, h=TubeLen-4);
+				translate([0,Gusset_Y1,TubeLen-11]) cylinder(d=4, h=Gusset_h);
 			} // hull
 		} // union
 		
@@ -260,7 +333,7 @@ module BD5_ServoMountingRing(Body_ID=BT137Body_ID){
 
 //translate([0,0,120.1]) color("Tan") BD5_ServoMountingRing();
 	
-module RocketBody(Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, nBoosters=nBoosters){
+module BD5_RocketBody(Body_OD=Body_COD, Body_ID=Body_ID, nBoosters=nBoosters){
 	MountingBlock_X=Housing_OD+2.4;
 	LTP_Z=63;
 	LTP_Mount_Z=LTP_Z-57;
@@ -273,23 +346,25 @@ module RocketBody(Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, nBoosters=nBooster
 	ServoRing_Z=120;
 	nServoRingBolts=6;	
 	
+	BigFn=180;
+	
 	difference(){
 		union(){
-			Tube(OD=Body_OD, ID=Body_ID, Len=TubeLen, myfn=$preview? 36:360);
+			Tube(OD=Body_OD, ID=Body_ID, Len=TubeLen, myfn=$preview? 90:BigFn);
 			
 			// integrated coupler
-			translate([0,0,-15]) Tube(OD=Body_ID, ID=Body_ID-4.4, Len=19, myfn=$preview? 36:360);
-			Tube(OD=Body_ID+1, ID=Body_ID-4.4, Len=8, myfn=$preview? 36:360);
+			translate([0,0,-15]) Tube(OD=Body_ID, ID=Body_ID-4.4, Len=19, myfn=$preview? 90:BigFn);
+			Tube(OD=Body_ID+1, ID=Body_ID-4.4, Len=8, myfn=$preview? 90:BigFn);
 			
 			// Stop for Servo Ring
-			translate([0,0,ServoRing_Z]) rotate([180,0,0]) TubeStop(InnerTubeID=Body_ID-4.4, OuterTubeOD=Body_ID+2, myfn=$preview? 36:360);
+			translate([0,0,ServoRing_Z]) rotate([180,0,0]) TubeStop(InnerTubeID=Body_ID-4.4, OuterTubeOD=Body_ID+2, myfn=$preview? 90:BigFn);
 			
 			// Stop for lower centering ring
-			translate([0,0,LowerCR_Z]) TubeStop(InnerTubeID=Body_ID-8.8, OuterTubeOD=Body_ID+2, myfn=$preview? 36:360);
+			translate([0,0,LowerCR_Z]) TubeStop(InnerTubeID=Body_ID-8.8, OuterTubeOD=Body_ID+2, myfn=$preview? 90:BigFn);
 			
 			// Mounting Blocks
 			intersection(){
-				cylinder(d=BT137Body_OD-1, h=100);
+				cylinder(d=Body_OD-1, h=100);
 				
 				union(){
 					for (j=[0:nBoosters-1]) rotate([0,0,360/nBoosters*j]) 
@@ -299,11 +374,11 @@ module RocketBody(Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, nBoosters=nBooster
 						} // hull
 						
 					// key
-					translate([0,BT137Body_ID/2,MechMounting_Z-Overlap]) cylinder(d=4, h=5);
+					translate([0,Body_ID/2,MechMounting_Z-Overlap]) cylinder(d=4, h=5);
 					
 					// Mounting Face
 					translate([0,0,MechMounting_Z]) 
-						rotate([180,0,0]) TubeStop(InnerTubeID=Body_ID-4.4, OuterTubeOD=Body_OD, myfn=$preview? 36:360);
+						rotate([180,0,0]) TubeStop(InnerTubeID=Body_ID-4.4, OuterTubeOD=Body_OD, myfn=$preview? 90:BigFn);
 				} // union
 			} // intersection
 			
@@ -314,7 +389,7 @@ module RocketBody(Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, nBoosters=nBooster
 					cylinder(d=Gear_d+2, h=18+8.8, center=true);
 				}
 		
-				translate([0,0,120]) cylinder(d=Body_ID, h=30, center=true, $fn=$preview? 36:360);
+				translate([0,0,120]) cylinder(d=Body_ID, h=30, center=true, $fn=$preview? 90:BigFn);
 			} // difference
 		} // union
 		
@@ -341,9 +416,9 @@ module RocketBody(Body_OD=BT137Body_OD, Body_ID=BT137Body_ID, nBoosters=nBooster
 		if ($preview) translate([0,0,-50]) cube([100,100,TubeLen+60]);
 	} // difference
 	
-} // RocketBody
+} // BD5_RocketBody
 
-// RocketBody();
+// BD5_RocketBody();
 
 module BD5_TopGearMount(Bore_d=CenterBore_d, nBolts=6){
 	BackPlate_t=5;
@@ -473,7 +548,7 @@ module BD5_OuterRace(Bore_d=CenterBore_d){
 
 //translate([0,0,-14.1]) BD5_OuterRace();
 
-module BD5_OuterRaceMount(Tube_ID=BT137Body_ID, Bore_d=CenterBore_d){
+module BD5_OuterRaceMount(Tube_ID=Body_ID, Bore_d=CenterBore_d){
 	Race_t=2.2;
 	nBolts=6;
 	Thickness=5;
@@ -513,7 +588,7 @@ module BD5_BallSpacer(Bore_d=CenterBore_d){
 	Gear_OD=Bore_d+Bolt4Inset*4;
 	Race_ID=Gear_OD+1;
 	BallCircle_d=Race_ID+Race_t*2+Ball_d;
-	nBalls=BP5_Calc_nBalls(BallCircle_d,Ball_d);
+	nBalls=BD5_Calc_nBalls(BallCircle_d,Ball_d);
 	echo(nBalls=nBalls);
 
 	module TwoPartBoltedBallSpacer(BallCircle_d=72, Ball_d=7.9375, nBalls=14){ // 9.525
@@ -539,42 +614,6 @@ module BD5_BallSpacer(Bore_d=CenterBore_d){
 } // BD5_BallSpacer
 
 // BD5_BallSpacer();
-
-module BD5_BoosterThrustRing(MtrTube_OD=PML38Body_OD, BodyTube_OD=PML54Body_OD){
-	OAL=BD_ThrustRing_h();
-	//echo(MtrTube_OD=MtrTube_OD);
-	
-	module LighteningHole(H=10, W=8, L=50){
-		R=1;
-		hull(){
-			translate([0,H/2-R,0]) cylinder(r=R, h=L);
-			translate([0,-H/2+R,0]) cylinder(r=R, h=L);
-			translate([-W/2+R,0,0]) cylinder(r=R, h=L);
-			translate([W/2-R,0,0]) cylinder(r=R, h=L);
-		} // hull
-	} // LighteningHole
-
-	difference(){
-		union(){
-			cylinder(d=BodyTube_OD, h=OAL, $fn=$preview? 90:360);
-			translate([0,-BodyTube_OD/2,OAL/2])
-				rotate([-90,0,0]) cylinder(d=BoosterButtonMinor_d, h=5);
-		} // union
-		
-		//for (j=[7:17]) rotate([0,0,30*j]) translate([0,0,OAL/2]) 
-		//	rotate([-90,0,0]) LighteningHole(H=OAL-6, W=8, L=50);
-			
-		translate([0,0,-Overlap]) cylinder(d=MtrTube_OD+IDXtra*3, h=OAL+Overlap*2);
-		translate([0,0,3]) cylinder(d1=MtrTube_OD+IDXtra*3, d2=MtrTube_OD+IDXtra*5, h=1+Overlap*2);
-		translate([0,0,OAL-4-Overlap]) cylinder(d2=MtrTube_OD+IDXtra*3, d1=MtrTube_OD+IDXtra*5, h=1+Overlap*2);
-		translate([0,0,4]) cylinder(d=MtrTube_OD+IDXtra*5, h=OAL-8);
-		
-		translate([0,-BodyTube_OD/2,OAL/2])
-				rotate([90,0,0]) Bolt250Hole();
-	} // difference
-} // BD5_BoosterThrustRing
-
-//translate([0,BoosterButtonMinor_d/2,PML54Body_OD/2+BoosterButtonOA_h+Overlap]) rotate([90,0,0]) BD5_BoosterThrustRing();
 
 module BD5_BoosterButton(XtraLen=0){
 	
@@ -619,7 +658,7 @@ module BD5_ThrustPoint_Hole(Swell=-Overlap){
 //BD5_ThrustPoint_Hole();
 //BD5_ThrustPoint_Hole(Swell=IDXtra*2);
 
-module BD5_ThrustPoint(BodyTube_OD=PML98Body_OD, BoosterBody_OD=PML54Body_OD){
+module BD5_ThrustPoint(BodyTube_OD=Body_COD, BoosterBody_OD=BoosterBody_COD){
 	Ramp_h=12;
 	OAL=BoosterButtonMajor_d*3.25;
 	Block_w=BoosterButtonMajor_d+BD5_Lock_Wall_t*2;
@@ -709,7 +748,7 @@ module BD5_LTP_BoltPattern(){
 	translate([-9,49,6]) children();
 } // BD5_LTP_BoltPattern
 
-module BD5_LockingThrustPoint(BodyTube_OD=PML98Body_OD, BoosterBody_OD=PML54Body_OD){	
+module BD5_LockingThrustPoint(BodyTube_OD=Body_COD, BoosterBody_OD=BoosterBody_COD){	
 	// Ball Bearing 6805-2RS
 	//BB6805_2RS_ID=25;
 	//BB6805_2RS_OD=37;
@@ -804,24 +843,29 @@ module BD5_DrivenGearBevel(){
 
 // BD5_DrivenGearBevel();
 
-module BD5_DrivenGear(Hub_Len=5){
+module BD5_DrivenGear(Hub_Len=DrivenGearHubLen){
 
 	difference(){
 		union(){
 			translate([0,0,Hub_Len-2]) BD5_DrivenGearBevel();
-			translate([0,0,-Hub_Len]) cylinder(d=BB6805_2RS_ID+3, h=Hub_Len+Overlap);
+			translate([0,0,-5]) cylinder(d=BB6805_2RS_ID+3, h=Hub_Len+Overlap);
+			
+			// Stop Plate
+			cylinder(d=RaceBC_d+8, h=Hub_Len-4, $fn=90);
 		} // union
 		
+		// Bolts
 		translate([0,0,6]) BD5_LockBoltPattern() Bolt4HeadHole(depth=6+Hub_Len);
 		
 		// center hole
-		translate([0,0,-Hub_Len-Overlap]) cylinder(d=Race_ID, h=5+Hub_Len+Overlap*3);
+		translate([0,0,-5-Overlap]) cylinder(d=Race_ID, h=5+Hub_Len+Overlap*3);
 		
+		// Stop
 		translate([0,0,-1]) rotate_extrude(angle=188, start=-4, $fn=90) translate([RaceBC_d/2-2,0,0]) square(4);
 	} // difference
 } // BD5_DrivenGear
 
-// BD5_DrivenGear();
+// BD5_DrivenGear(Hub_Len=7);
 
 module BD5_Gear(nTeeth=24, Thickness=8){
 	Pitch=GearPitch;

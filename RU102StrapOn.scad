@@ -96,6 +96,7 @@
 // ***********************************
 //  ***** Routines *****
 //
+// function BoosterButtonSpacing()=BoosterDropperCL;
 //
 // ***********************************
 //  ***** for Viewing *****
@@ -121,7 +122,7 @@ use<ElectronicsBayLib.scad>
 Overlap=0.05;
 IDXtra=0.2;
 $fn=$preview? 24:90;
-
+Bolt4Inset=4;
 Vinyl_d=0.3; // measured
 
 nLockBalls=5;
@@ -161,13 +162,19 @@ Fin_TipOffset=0;
 Fin_Chamfer_L=32;
 FinInset_Len=5;
 FinCan_Len=Fin_Root_L+FinInset_Len*2; // Calculated fin can length
-Petal_Len=150;
+
+UseShortPetals=true;
+Petal_Len=UseShortPetals? 130:150;
+HasSpringMiddle=UseShortPetals? false:true;
+
+nPetals=3;
 	
 BoosterDropperCL=300; // for 54/852 case, minimum for sustainer
+function BoosterButtonSpacing()=BoosterDropperCL;
 echo(BoosterDropperCL=BoosterDropperCL);
 
-DeploymentTube_Len=222;
-UpperTubeLen=135;
+DeploymentTube_Len=UseShortPetals? 222-50:222;
+UpperTubeLen=UseShortPetals? 135-50:135;
 BodyTubeLen=BoosterDropperCL-FinCan_Len-EBay_Len+64; //-BD_ThrustRing_h();
 MotorTubeLen=360; // to bottom of ebay
 
@@ -175,17 +182,12 @@ echo(DeploymentTube_Len=DeploymentTube_Len);
 echo(UpperTubeLen=UpperTubeLen);
 echo(BodyTubeLen=BodyTubeLen);
 echo(MotorTubeLen=MotorTubeLen);
-
-
-Bolt4Inset=4;
-ShockCord_a=45;
-nPetals=3;
+echo(Petal_Len=Petal_Len);
 
 MotorTube_Z=-20;
 MotorTubeOffset=-12;
 MotorTube_a=4;
 AftThrustPoint_Z=20;
-
 
 
 module ShowRocketStrapOn(ShowInternals=true){
@@ -226,7 +228,7 @@ module ShowRocketStrapOn(ShowInternals=true){
 		CenteringRing(OD=Body_ID, ID=InnerTube_OD+IDXtra, Thickness=3, nHoles=0, Offset=0, myfn=$preview? 90:360);
 		
 	if (ShowInternals) {
-		translate([0,0,PetalHub_Z+21]) 
+		if (HasSpringMiddle) translate([0,0,PetalHub_Z+21]) 
 			SE_SlidingSpringMiddle(OD=InnerTube_ID-IDXtra*3, nRopes=3, SliderLen=30, SpLen=30, SpringStop_Z=10, UseSmallSpring=true);
 		translate([0,0,PetalHub_Z]) rotate([180,0,0]) color("Green") Petal_Hub();
 		translate([0,0,PetalHub_Z-10]) color("Tan")
