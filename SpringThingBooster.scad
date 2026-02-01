@@ -509,6 +509,8 @@ module STB_InternalTubeEnd(Body_OD=ULine102Body_OD, Body_ID=ULine102Body_ID, Eng
 			
 		STB_ManualDisArmingHole(Body_ID=Body_ID, nLockBalls=nLockBalls);
 		STB_ManualArmingHole(Body_ID=Body_ID);
+		
+		//translate([0,0,-40]) cube([100,100,100]);
 	} // difference
 	
 	//echo("STB_LockBall_d=",STB_LockBall_d(Body_ID));

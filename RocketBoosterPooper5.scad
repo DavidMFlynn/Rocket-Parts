@@ -40,53 +40,48 @@
 //
 // SE_SlidingBigSpringMiddle(OD=Body_ID*CF_Comp-1, SliderLen=60, Extension=0);
 //
-// PD_NC_PetalHub(OD=Body_ID*CF_Comp-1, nPetals=nPetals, HasReplaceableSpringHolder=true, nRopes=6, ShockCord_a=-1, HasThreadedCore=false, ST_DSpring_ID=SE_Spring_CS11890_ID(), ST_DSpring_OD=SE_Spring_CS11890_OD(), CouplerTube_ID=Coupler_ID*CF_Comp);
 // rotate([180,0,0]) R157_PusherRing(OD=Coupler_OD*CF_Comp, ID=Coupler_ID*CF_Comp, OA_Len=40, Engagemnet_Len=10, Wall_t=4, PetalStop_h=0, PetalWall_t=2.4, nBolts=0);
-
+// PD_NC_PetalHub(OD=Body_ID*CF_Comp-1, nPetals=nPetals, HasReplaceableSpringHolder=true, nRopes=6, ShockCord_a=-1, HasThreadedCore=false, ST_DSpring_ID=SE_Spring_CS11890_ID(), ST_DSpring_OD=SE_Spring_CS11890_OD(), CouplerTube_ID=Coupler_ID*CF_Comp);
 // PD_HubSpringHolder();
 // rotate([-90,0,0]) PD_PetalSpringHolder();
 // PD_Petals(OD=Coupler_OD*CF_Comp, Len=180, nPetals=nPetals, Wall_t=2.4, AntiClimber_h=5, HasLocks=false, Lock_Span_a=0);
 //
+// 
+// rotate([180,0,0]) R157_PusherRing(OD=Coupler_OD*CF_Comp, ID=Coupler_ID*CF_Comp, OA_Len=40, Engagemnet_Len=7, Wall_t=4, PetalStop_h=3, PetalWall_t=2.4, nBolts=0);
+// R157_SkirtRing(Coupler_OD=Coupler_OD*CF_Comp, Coupler_ID=Coupler_ID*CF_Comp, HasPD_Ring=true, Engagemnet_Len=7);
+//
 // R157_PetalHub(OD=Coupler_OD*CF_Comp, nPetals=nPetals, nBolts=nPetals); // Bolts to bottom of electronics bay
 //
-// SE_SpringEndTypeC(Coupler_OD=Coupler_OD*CF_Comp, Coupler_ID=Coupler_ID*CF_Comp, Len=20, nRopes=6, UseSmallSpring=false);
-// rotate([180,0,0]) R157_PusherRing(OD=Coupler_OD*CF_Comp, ID=Coupler_ID*CF_Comp, OA_Len=40, Engagemnet_Len=7, Wall_t=4, PetalStop_h=3, PetalWall_t=2.4, nBolts=0);
+// SE_SpringEndTypeC(Coupler_OD=Coupler_OD*CF_Comp, Coupler_ID=Coupler_ID*CF_Comp, Len=15, nRopes=6, UseSmallSpring=false, HasVentHoles=true);
 //
 //  ***** Ball Lock *****
 //
 // STB_LockDisk(Body_ID=Body_ID*CF_Comp, nLockBalls=nLockBalls, HasLargeInnerBearing=true, Xtra_r=0.2);
-// rotate([180,0,0]) RBP4_BallRetainerTop();
-// R157_BallRetainerBottom(Body_ID=Body_ID*CF_Comp, Engagement_Len=Engagement_Len, Xtra_r=0.0);
-// R157_BallRetainerBottom(Body_ID=Body_ID*CF_Comp, Engagement_Len=Engagement_Len, Xtra_r=0.0);
-// rotate([180,0,0]) STB_TubeEnd(Body_ID=Body_ID*CF_Comp, nLockBalls=nLockBalls, Body_OD=Body_COD, Engagement_Len=Engagement_Len);
+// rotate([180,0,0]) R157_BallRetainerTop(Body_OD=Body_COD, Body_ID=Body_ID*CF_Comp, EBayTube_OD=ULine38Body_OD, Engagement_Len=Engagement_Len, nBolts=6, Xtra_r=0.2, CouplerLenXtra=-20);
+// R157_BallRetainerBottom(Body_ID=Body_ID*CF_Comp, Engagement_Len=17, Xtra_r=0.2);
+// rotate([180,0,0]) STB_TubeEnd(Body_ID=Body_ID*CF_Comp, nLockBalls=nLockBalls, Body_OD=Body_OD*CF_Comp, Engagement_Len=Engagement_Len);
 //
 //  ***** Upper Electronics Bay *****
-// rotate([180,0,0]) EB_Electronics_Bay55(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, Len=EBay_Len, nBolts=6, BoltInset=7.5, ShowDoors=false, HasRailGuide=false, RailGuideLen=35, TopOnly=true, BottomOnly=false); // new 1/26/25
-// EB_Electronics_Bay55(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, Len=EBay_Len, nBolts=6, BoltInset=7.5, ShowDoors=false, HasRailGuide=false, RailGuideLen=35, TopOnly=false, BottomOnly=true); // new 1/26/25
+//
+// rotate([180,0,0]) R157_MainEBay(TopOnly=true, BottomOnly=false, ShowDoors=false, RedundantAtls=false);
+// R157_MainEBay(TopOnly=false, BottomOnly=true, ShowDoors=false, RedundantAtls=false);
+//
+//  *** Doors ***
+//
+// rotate([-90,0,0]) EB_AltDoor(Tube_OD=Body_COD);
+// rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_COD, HasSwitch=false, DoubleBatt=false);
+// rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_COD, HasSwitch=true, DoubleBatt=false);
+// rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_COD, HasSwitch=true, DoubleBatt=true); // for redundant electronics
+//
 //
 // CenteringRing(OD=Body_ID, ID=BT38Body_OD, Thickness=5, nHoles=8, Offset=0, myfn=$preview? 90:360);
 //
-// rotate([-90,0,0]) EB_AltDoor(Tube_OD=Body_OD);
-// rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD, HasSwitch=false, DoubleBatt=false);
-// rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD, HasSwitch=true, DoubleBatt=true);
 //
 // * Drogue PetalHub *
-// R137_PetalHub(Body_OD=Coupler_OD, CenterHole_d=76);
-// PD_Petals2(OD=Coupler_OD, Len=100, nPetals=6, Wall_t=2.4, AntiClimber_h=5, HasLocks=false);
+// R157_PetalHub(OD=Coupler_OD*CF_Comp, nPetals=nPetals, nBolts=nPetals, nRopes=0, Skirt_Len=4);
+// PD_Petals(OD=Coupler_OD*CF_Comp, Len=100, nPetals=6, Wall_t=2.4, AntiClimber_h=5, HasLocks=false);
 //
 //
-// BB_LockingThrustPoint(BodyTube_OD=Body_OD, BoosterBody_OD=BoosterBody_OD); // Print 1 per booster
-// BB_Lock(); // Print 1 per booster
-// BB_BearingStop(); // Only used with ball bearing
-// rotate([180,0,0]) BB_LockShaft(Len=LockShaftLen, nTeeth=nServoGearTeeth, Gear_z=28);
-// rotate([180,0,0]) ServoGear(nTeeth=nServoGearTeeth);
-// rotate([180,0,0]) ServoMount();
-//
-// ElectronicsBay();
-//
-// rotate([-90,0,0]) AltDoor54(Tube_OD=Body_OD, IsLoProfile=false, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowAlt=true);
-// 
-// rotate([-90,0,0]) Batt_Door(Tube_OD=Body_OD, InnerTube_OD=0, HasSwitch=true);
 //
 // Rocket_Fin();
 //
@@ -100,6 +95,17 @@
 // MotorRetainer(HasWrenchCuts=false, Cone_Len=TailConeLen, ExtraLen=0);
 //
 // BodyDrillingJig(Tube_OD=Body_OD, Tube_ID=Body_ID, nBolts=6, BoltInset=7.5);
+//
+//  ***** Strap-On Boosters *****
+//
+Booster_NC_Len=162;
+Booster_NC_Tip_r=8;
+Booster_NC_Wall_t=1.8;
+Booster_NC_Base_L=15;
+//
+// RU102S_Nosecone(OD=Booster_Body_COD, ID=Booster_Body_ID, NC_Len=Booster_NC_Len, NC_Base_L=Booster_NC_Base_L, NC_Tip_r=Booster_NC_Tip_r, NC_Wall_t=Booster_NC_Wall_t);
+// rotate([180,0,0]) STB_InternalTubeEnd(Body_OD=Booster_Body_COD, Body_ID=Booster_Body_ID, Engagement_ID=Booster_Engagement_D, nLockBalls=Booster_nLockBalls, Engagement_Len=Booster_Engagement_Len);
+//
 //
 // ***********************************
 //  ***** Routines *****
@@ -120,7 +126,7 @@
 
 use<AT_RMS_Lib.scad>
 include<TubesLib.scad>
-use<R157Lib.scad>
+use<R157Lib.scad>				echo(R157Lib_Rev());
 use<LD-20MGServoLib.scad>
 use<BoosterDropper5Lib.scad> 	echo(BoosterDropper5LibRev());
 use<RailGuide.scad>
@@ -141,6 +147,15 @@ Overlap=0.05;
 IDXtra=0.2;
 $fn=$preview? 36:90;
 Bolt4Inset=4;
+Epoxy_d=0.4;
+
+Booster_Body_COD=ULine102Body_OD*CF_Comp+Vinyl_d+Epoxy_d;
+//echo(ULine102Body_OD=ULine102Body_OD);
+//echo(Booster_Body_COD=Booster_Body_COD);
+Booster_Body_ID=ULine102Body_ID;
+Booster_Engagement_D=ULine102Coupler_ID-1;
+Booster_Engagement_Len=20;
+Booster_nLockBalls=5;
 
 Body_OD=ULine157Body_OD;
 Body_ID=ULine157Body_ID;
@@ -157,8 +172,8 @@ DrogueInnerTube_ID=BT98Coupler_ID;
 UpperEBayTube_OD=BT54Body_OD;
 UpperEBayTube_ID=BT54Body_ID;
 
-nLockBalls=7;
-Engagement_Len=30;
+nLockBalls=R157_nLockBalls();
+Engagement_Len=R157_Engagement_Len();
 
 // *** 54mm Motor Tube ***
 MotorTube_OD=BT54Body_OD;
@@ -186,7 +201,7 @@ echo(LockShaftLen=LockShaftLen);
 nServoGearTeeth=28;
 
 EBay_Len=168; 
-nEBayBolts=6;
+nEBayBolts=R157_nEBayBolts();
 
 nPetals=6;
 
@@ -284,7 +299,7 @@ module ShowRocket(ShowInternals=false, ShowBoosters=false, ShowFins=true){
 	//translate([0,0,DrogueCup_Z]) rotate([0,0,-180/nFins]) Drogue_Cup();
 	//translate([0,0,FwdLock_Z]) rotate([0,0,-180/nFins]) ForwardBoosterLock();
 	
-	//translate([0,0,EBay_Z]) rotate([0,0,45]) ElectronicsBay();
+	//translate([0,0,EBay_Z]) rotate([0,0,45]) R157_MainEBay(TopOnly=false, BottomOnly=false, ShowDoors=false, RedundantAtls=false);
 	
 	/*
 	if (ShowInternals==false) translate([0,0,FinCanLen+0.1]) 
@@ -706,80 +721,6 @@ module AlignmentPins(nPins=6){
 
 //AlignmentPins();
 
-	
-module ElectronicsBay(ShowDoors=false){
-	// Z=0, BoosterButton center line
-	// Includes altimeter and rocket servo
-	OAL_Z=126;
-	//
-	echo(OAL_Z=OAL_Z);
-	
-	UpperCR_Z=OAL_Z;
-	LowerCR_Z=-10;
-	
-	Altimeter_Z=OAL_Z/2;
-	BattSwDoor_Z=OAL_Z/2;
-	Alt_a=-30;
-	Batt1_a=30;
-	
-	difference(){
-		union(){
-			// Body
-			Tube(OD=Body_OD, ID=Body_ID, Len=OAL_Z, myfn=$preview? 36:360);
-		
-			translate([0,0,LowerCR_Z]) rotate([0,0,30]) 
-				CenteringRing(OD=Body_ID-1, ID=MotorTubeHole_d, Thickness=5, nHoles=6);
-				
-			//translate([0,0,UpperCR_Z])  rotate([0,0,30]) 
-			//	CenteringRing(OD=Body_ID-1, ID=MotorTubeHole_d, Thickness=5, nHoles=6);
-			
-			// Integrated lower coupler
-			LowerCT_Len=10;
-			translate([0,0,-LowerCT_Len])
-					Tube(OD=Body_ID-IDXtra, ID=Body_ID-6, Len=LowerCT_Len+1, myfn=$preview? 36:360);
-			translate([0,0,1-Overlap]) 
-			difference(){
-				cylinder(d=Body_OD-1, h=6);
-				translate([0,0,-Overlap]) cylinder(d1=Body_ID-6-Overlap, d2=Body_ID+Overlap, h=6+Overlap*2, $fn=$preview? 36:360);
-			} // difference
-					
-			
-			// Integrated upper coupler
-			UpperCT_Len=10;
-				translate([0,0,OAL_Z-1])
-					Tube(OD=Body_ID-IDXtra, ID=Body_ID-6, Len=UpperCT_Len+1, myfn=$preview? 36:360);
-			translate([0,0,OAL_Z-1-6-Overlap]) 
-			difference(){
-				cylinder(d=Body_OD-1, h=6);
-				translate([0,0,-Overlap]) cylinder(d2=Body_ID-6-Overlap, d1=Body_ID+Overlap, h=6+Overlap*2, $fn=$preview? 36:360);
-			} // difference
-		} // union		
-			
-	
-		// Altimeter
-		translate([0,0,Altimeter_Z]) rotate([0,0,Alt_a]) 
-			Alt_BayFrameHole(Tube_OD=Body_OD, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, DeepHole_t=42);
-		
-		// Battery and Switch door holes
-		translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
-			Batt_BayFrameHole(Tube_OD=Body_OD, HasSwitch=true, DeepHole_t=42);
-	
-	} // difference
-	
-
-	// Altimeter
-	translate([0,0,Altimeter_Z]) rotate([0,0,Alt_a])
-			Alt_BayDoorFrame(Tube_OD=Body_OD, Tube_ID=Body_ID, DoorXtra_X=Alt_DoorXtra_X, DoorXtra_Y=Alt_DoorXtra_Y, ShowDoor=ShowDoors);
-			
-	// Battery and Switch door2
-	translate([0,0,BattSwDoor_Z]) rotate([0,0,Batt1_a]) 
-			Batt_BayDoorFrame(Tube_OD=Body_OD, HasSwitch=true, ShowDoor=ShowDoors);
-			
-		
-} // ElectronicsBay
-
-//ElectronicsBay();
-	
 module ServoMountHolePattern(){
 	Tray_W=30;
 	MountFace_X=6;

@@ -649,7 +649,7 @@ module MainEBay(TopOnly=false, BottomOnly=false, ShowDoors=false, RedundantAtls=
 									HasAftIntegratedCoupler=false, HasAftShockMount=false,
 									HasRailGuide=false, RailGuideLen=RailGuide_Len,
 									HasFwdCenteringRing=false, HasAftCenteringRing=false, InnerTube_OD=ULine38Body_OD,
-									Bolted=true, ExtraBolts=[45], TopOnly=TopOnly, BottomOnly=BottomOnly);
+									Bolted=true, ExtraBolts=ExtraBolts, TopOnly=TopOnly, BottomOnly=BottomOnly);
 									
 	if (MainEB_HasCR){
 		// Bottom centering ring stop

@@ -10,7 +10,7 @@
 //
 //   Strap-On Booster
 //   ULine75mm body tube Drployment tube, 200mm long
-//   ULine102mm body tube, 135mm Long
+//   ULine102mm body tube, 85mm or 135mm Long
 //   ULine102mm body tube, 68mm Long
 //   BT54Body motor tube, 360mm Long
 //   300mm BoosterButton spacing
@@ -61,7 +61,7 @@
 //
 // *** Nosecode ***
 //
-// Nosecone();
+// RU102S_Nosecone(OD=Body_OD*CF_Comp+Vinyl_d, ID=Body_ID, NC_Len=NC_Len, NC_Base_L=NC_Base_L, NC_Tip_r=NC_Tip_r, NC_Wall_t=NC_Wall_t);
 // rotate([180,0,0]) SpingTop();
 // SE_SlidingSpringMiddle(OD=InnerTube_ID-IDXtra*3, nRopes=3, SliderLen=30, SpLen=30, SpringStop_Z=10, UseSmallSpring=true);
 // Petal_Hub();
@@ -173,7 +173,7 @@ BoosterDropperCL=300; // for 54/852 case, minimum for sustainer
 function BoosterButtonSpacing()=BoosterDropperCL;
 echo(BoosterDropperCL=BoosterDropperCL);
 
-DeploymentTube_Len=UseShortPetals? 222-50:222;
+DeploymentTube_Len=UseShortPetals? 177:222;
 UpperTubeLen=UseShortPetals? 135-50:135;
 BodyTubeLen=BoosterDropperCL-FinCan_Len-EBay_Len+64; //-BD_ThrustRing_h();
 MotorTubeLen=360; // to bottom of ebay
@@ -210,7 +210,7 @@ module ShowRocketStrapOn(ShowInternals=true){
 	
 	//*
 	translate([0,0,NoseCone_Z])
-		Nosecone();
+		RU102S_Nosecone();
 	
 	if (ShowInternals) 
 			translate([0,0,SpringTop_Z]) rotate([180,0,0]) SpingTop();
@@ -256,7 +256,7 @@ module ShowRocketStrapOn(ShowInternals=true){
 	
 	
 	if (ShowInternals==false) translate([0,0,BodyTube_Z]) 
-		color("LightBlue") Tube(OD=Body_OD, ID=Body_ID, Len=BodyTubeLen, myfn=$preview? 90:360);
+		color("LightBlue") Tube(OD=Body_OD, ID=Body_ID, Len=BodyTubeLen-Overlap*3, myfn=$preview? 90:360);
 		
 	translate([0,0,FinCan_Z]) rotate([0,0,90]) FinCan();
 	
@@ -347,7 +347,7 @@ module EBay_CR(IsUpper=true){
 // EBay_CR(IsUpper=true); 
 // EBay_CR(IsUpper=false);
 
-module Nosecone(){
+module RU102S_Nosecone(OD=Body_OD*CF_Comp+Vinyl_d, ID=Body_ID, NC_Len=NC_Len, NC_Base_L=NC_Base_L, NC_Tip_r=NC_Tip_r, NC_Wall_t=NC_Wall_t){
 	AeroShellCoupler_Len=15;
 	nBolts=5;
 	
@@ -361,29 +361,29 @@ module Nosecone(){
 		} // hull
 	} // BodyTubeAlignment
 	
-	BluntOgiveNoseCone(ID=Body_ID, OD=Body_OD*CF_Comp+Vinyl_d, L=NC_Len, Base_L=NC_Base_L, 
+	BluntOgiveNoseCone(ID=ID, OD=OD, L=NC_Len, Base_L=NC_Base_L, 
 		nRivets=0, RivertInset=0, Tip_R=NC_Tip_r, Wall_T=NC_Wall_t, FillTip=true);
 		
 	difference(){
 		translate([0,0,-AeroShellCoupler_Len])
-			Tube(OD=Body_ID, ID=Body_ID-4.4, Len=AeroShellCoupler_Len+Overlap, myfn=$preview? 90:360);
+			Tube(OD=ID, ID=ID-4.4, Len=AeroShellCoupler_Len+Overlap, myfn=$preview? 90:360);
 			
-		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+6]) translate([0,Body_OD/2,-7.5]) rotate([-90,0,0]) Bolt4Hole();
+		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+6]) translate([0,OD/2,-7.5]) rotate([-90,0,0]) Bolt4Hole();
 	} // difference
 		
 	difference(){
-		cylinder(d=Body_OD-1, h=3, $fn=$preview? 90:360);
+		cylinder(d=OD-1, h=3, $fn=$preview? 90:360);
 		
-		translate([0,0,-Overlap]) cylinder(d1=Body_ID-4.4, d2=Body_ID, h=3+Overlap*2, $fn=$preview? 90:360);
+		translate([0,0,-Overlap]) cylinder(d1=ID-4.4, d2=ID, h=3+Overlap*2, $fn=$preview? 90:360);
 	} // difference
 	
 	
-	translate([0,0,-AeroShellCoupler_Len]) BodyTubeAlignment(OD=Body_ID-2);
+	translate([0,0,-AeroShellCoupler_Len]) BodyTubeAlignment(OD=ID-2);
 	translate([0,0,40]) BodyTubeAlignment(OD=101);
 		
-} // Nosecone
+} // RU102S_Nosecone
 
-// Nosecone();
+// RU102S_Nosecone();
 
 module SpingTop(Tube_OD=InnerTube_OD, Tube_ID=InnerTube_ID, Spring_OD=SE_Spring_CS4323_OD(), Spring_ID=SE_Spring_CS4323_ID(), nRopes=3){
 	Len=10;
@@ -418,7 +418,7 @@ module SpingTop(Tube_OD=InnerTube_OD, Tube_ID=InnerTube_ID, Spring_OD=SE_Spring_
 		
 		for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) translate([0,Spring_OD/2+10,-Overlap]) cylinder(d=Rope_d, h=Len);
 		
-		translate([0,0,95]) rotate([180,0,0]) Nosecone();
+		translate([0,0,95]) rotate([180,0,0]) RU102S_Nosecone();
 		
 		rotate([0,0,AlTube_a])
 			translate([0,0,AlTube_Z]) rotate([90,0,0]) cylinder(d=AlTube_OD+IDXtra, h=AlTube_Len+Overlap, center=true, $fn=90);

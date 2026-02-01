@@ -54,7 +54,7 @@ echo(SpringEndsLibRev());
 //		Requires a short piece of coupler tube.
 //
 // SE_SpringEndTypeB(Coupler_OD=BT75Coupler_OD, MotorCoupler_OD=BT54Coupler_OD, nRopes=3, UseSmallSpring=true);
-// SE_SpringEndTypeC(Coupler_OD=BT137Coupler_OD, Coupler_ID=BT137Coupler_ID, Len=25, nRopes=6, UseSmallSpring=false);
+// SE_SpringEndTypeC(Coupler_OD=BT137Coupler_OD, Coupler_ID=BT137Coupler_ID, Len=25, nRopes=6, UseSmallSpring=false, HasVentHoles=false);
 //
 // SE_SlidingBigSpringMiddle(OD=BT137Coupler_OD, SliderLen=50, Extension=0)
 // SE_SlidingSpringMiddle(OD=BT98Coupler_OD, nRopes=6, SliderLen=40, SpLen=40, SpringStop_Z=20, UseSmallSpring=true);
@@ -561,18 +561,22 @@ module SE_SpringEndTypeB(Coupler_OD=BT75Coupler_OD, MotorCoupler_OD=BT54Coupler_
 //SE_SpringEndTypeB(Coupler_OD=BT137Coupler_OD, MotorCoupler_OD=BT75Coupler_OD, nRopes=6, UseSmallSpring=false);
 //SE_SpringEndTypeB(Coupler_OD=ULine157Coupler_OD, MotorCoupler_OD=BT75Coupler_OD, nRopes=6, UseSmallSpring=false);
 
-module SE_SpringEndTypeC(Coupler_OD=BT137Coupler_OD, Coupler_ID=BT137Coupler_ID, Len=25, nRopes=5, UseSmallSpring=false){
+module SE_SpringEndTypeC(Coupler_OD=BT137Coupler_OD, Coupler_ID=BT137Coupler_ID, Len=25, nRopes=5, UseSmallSpring=false, HasVentHoles=false){
 	Spring_OD=UseSmallSpring? Spring_CS4323_OD:Spring_CS11890_OD;
 	Spring_ID=UseSmallSpring? Spring_CS4323_ID:Spring_CS11890_ID;
 	// engagement length = 7
 	
 	Rope_BC_r=Spring_OD/2+11;
+	nVentHoles=(nRopes>0)? nRopes:6;
+	VentHole_d=Coupler_ID/2-10-Spring_OD/2-5;
+	VentHole_Y=Coupler_ID/2-5-VentHole_d/2;
+	Plate_t=3;
 	
 	difference(){
 		union(){
 			cylinder(d1=Spring_OD+12, d2=Spring_OD+8, h=Len, $fn=$preview? 90:360);
 			
-			cylinder(d=Coupler_OD, h=3, $fn=$preview? 90:360);
+			cylinder(d=Coupler_OD, h=Plate_t, $fn=$preview? 90:360);
 			Tube(OD=Coupler_ID, ID=Coupler_ID-4.4, Len=10, myfn=$preview? 90:360);
 		} // union
 		
@@ -582,15 +586,19 @@ module SE_SpringEndTypeC(Coupler_OD=BT137Coupler_OD, Coupler_ID=BT137Coupler_ID,
 		cylinder(d= Spring_OD, h=Len-3, $fn=$preview? 90:360);
 		cylinder(d= Spring_ID, h=Len+1, $fn=$preview? 90:360);
 		
+		if (HasVentHoles)
+			for (j=[0:nVentHoles]) rotate([0,0,360/nVentHoles*j+180/nVentHoles])
+				translate([0,VentHole_Y,-Overlap]) cylinder(d=VentHole_d, h=Plate_t+Overlap*2);
+		
 		// Retention cord
 		if (nRopes>0) 
 			for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) 
-				translate([Rope_BC_r,0,-Overlap]) cylinder(d=4, h=Len);
+				translate([0,Rope_BC_r,-Overlap]) cylinder(d=4, h=Len);
 	} // difference
 
 } // SE_SpringEndTypeC
 
-//SE_SpringEndTypeC();
+//SE_SpringEndTypeC(HasVentHoles=true);
 //SE_SpringEndTypeC(Coupler_OD=ULine157Coupler_OD, Coupler_ID=ULine157Coupler_ID, Len=10, nRopes=6, UseSmallSpring=false);
 
 module SE_SlidingBigSpringMiddle(OD=BT137Coupler_OD, SliderLen=50, Extension=0){

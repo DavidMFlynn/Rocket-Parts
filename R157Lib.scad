@@ -3,7 +3,7 @@
 // Filename: R157Lib.scad
 // by David M. Flynn
 // Created: 1/19/2025 
-// Revision: 0.9.2  7/7/2025 
+// Revision: 0.9.3  1/18/2026 
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -11,9 +11,10 @@
 // A collection of parts for 157mm (6" mailing tube) rockets.
 //
 //  ***** History *****
-function R157Lib_Rev()="R157Lib 0.9.2";
+function R157Lib_Rev()="R157Lib 0.9.3";
 echo(R157Lib_Rev());
 //
+// 0.9.3  1/18/2026	  Added functions, little fixes.
 // 0.9.2  7/7/2025    Added nBolts clearances to R157_PusherRing()
 // 0.9.1  7/2/2025	  Updated for RocketOmegaU157
 // 0.9.0  1/19/2025   Copied from R203Lib.scad Rev 0.9.3
@@ -32,10 +33,18 @@ echo(R157Lib_Rev());
 // R157_BoosterSpringBottom(OD=Body_ID, MotorTube_OD=MotorTube_OD)
 //
 // ***********************************
+//  **** Routines *****
+//
+function R157_nLockBalls()=nLockBalls;
+function R157_Engagement_Len()=Engagement_Len;
+function R157_nEBayBolts()=nEBayBolts;
+//
+// ***********************************
 include<TubesLib.scad>
 use<SpringThingBooster.scad> echo(SpringThingBoosterRev());
 use<PetalDeploymentLib.scad>
 use<SpringEndsLib.scad>
+use<ElectronicsBayLib.scad>
 
 Overlap=0.05;
 IDXtra=0.2;
@@ -43,6 +52,7 @@ $fn=$preview? 36:90;
 
 CouplerLenXtra=0;
 nLockBalls=6;
+Engagement_Len=30;
 PetalWall_t=2.6; // minimum to get 4 layers when sliced
 nPetals=6;
 nEBayBolts=6;
@@ -58,6 +68,37 @@ CouplerThinWall_ID=ULine157ThinWallCoupler_ID;
 MotorTube_OD=BT75Body_OD;
 MotorTube_ID=BT75Body_ID;
 
+EBay_Len=162;
+MainEB_HasCR=false;
+MainEBay_Len=MainEB_HasCR? 170:EBay_Len;
+EBayCR_t=5;
+
+module R157_MainEBay(TopOnly=false, BottomOnly=false, ShowDoors=false, RedundantAtls=false){
+	TubeStop_Z=EBayBoltInset*2+EBayCR_t+1.9;
+	Doors_a=RedundantAtls? [[-30,30],[150,210],[-90,90]]:[[45],[135],[225,315]];
+	ExtraBolts=RedundantAtls? []:[45];
+
+	EB_Electronics_BayUniversal(Tube_OD=Body_OD*CF_Comp+Vinyl_d, Tube_ID=Body_ID*CF_Comp, DoorAngles=Doors_a, Len=MainEBay_Len, 
+									nBolts=nEBayBolts, BoltInset=EBayBoltInset, ShowDoors=ShowDoors,
+									HasFwdIntegratedCoupler=false, HasFwdShockMount=false,
+									HasAftIntegratedCoupler=false, HasAftShockMount=false,
+									HasRailGuide=false, RailGuideLen=0,
+									HasFwdCenteringRing=false, HasAftCenteringRing=false, InnerTube_OD=ULine38Body_OD,
+									Bolted=true, ExtraBolts=ExtraBolts, TopOnly=TopOnly, BottomOnly=BottomOnly);
+									
+	if (MainEB_HasCR){
+		// Bottom centering ring stop
+		if (!TopOnly) translate([0,0,TubeStop_Z]) 
+			TubeStop(InnerTubeID=Coupler_ID, OuterTubeOD=Body_OD, myfn=$preview? 36:360);
+			
+		// Top centering ring stop
+		if (!BottomOnly) translate([0,0,MainEBay_Len-TubeStop_Z]) rotate([180,0,0])
+			TubeStop(InnerTubeID=Coupler_ID, OuterTubeOD=Body_OD, myfn=$preview? 36:360);
+	}
+									
+} // R157_MainEBay
+
+// R157_MainEBay(RedundantAtls=true);
 
 module R157_NC_PetalHub(OD=Body_ID, nPetals=nPetals, nRopes=nPetals, Coupler_ID=Coupler_ID){
 	
@@ -178,12 +219,13 @@ module R157_MotorTubeTopper(OD=Body_ID, MotorTube_OD=BT54Body_OD, MotorTube_ID=B
 
 // R157_MotorTubeTopper();
 
-module R157_PetalHub(OD=Coupler_OD, nPetals=nPetals, nBolts=nPetals, nRopes=0){
+module R157_PetalHub(OD=Coupler_OD, nPetals=nPetals, nBolts=nPetals, nRopes=0, Skirt_Len=0){
 	Center_Hole_d=OD-60;
 	
 	// Bolts to bottom of electronics bay
 	difference(){
-		PD_PetalHub(OD=OD, 
+		union(){
+			PD_PetalHub(OD=OD, 
 					nPetals=nPetals, 
 					HasReplaceableSpringHolder=true,
 					HasBolts=true,
@@ -191,15 +233,22 @@ module R157_PetalHub(OD=Coupler_OD, nPetals=nPetals, nBolts=nPetals, nRopes=0){
 					ShockCord_a=-2,
 					HasNCSkirt=false, CenterHole_d=Center_Hole_d);
 				
+			if (Skirt_Len>0) translate([0,0,-Skirt_Len]) cylinder(d=OD, h=Skirt_Len+Overlap, $fn=180);
+		} // union
+		
+		if (Skirt_Len>0) translate([0,0,-Skirt_Len-Overlap]) cylinder(d=Center_Hole_d, h=Skirt_Len+Overlap*3, $fn=180);
+		
+		if (Skirt_Len>0 && nBolts>0) translate([0,0,3]) PD_PetalHubBoltPattern(OD=OD, nBolts=nBolts) #Bolt4ClearHole(depth=Skirt_Len+10);
+		
 		if (nRopes>0)
-			for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) translate([Center_Hole_d/2+6,0,-Overlap]) cylinder(d=4, h=10);
+			for (j=[0:nRopes-1]) rotate([0,0,360/nRopes*j]) translate([Center_Hole_d/2+6,0,-Skirt_Len-Overlap]) cylinder(d=4, h=Skirt_Len+10);
 			
 	} // difference
 	
 } // R157_PetalHub
 
-// translate([0,0,-20]) rotate([180,0,0]) R157_PetalHub(OD=Coupler_OD, nPetals=3, nBolts=6, nRopes=6);
-// R157_BallRetainerBottom(Body_OD=Body_OD, Body_ID=Body_ID, HasPD_Ring=true);
+// translate([0,0,-20]) rotate([180,0,0]) R157_PetalHub(OD=Coupler_OD, nPetals=6, nBolts=6, nRopes=0, Skirt_Len=6);
+// R157_BallRetainerBottom(OD=Body_ID, HasPD_Ring=true);
 
 module R157_SkirtPHRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, Engagemnet_Len=7){
 	
@@ -248,7 +297,7 @@ module R157_SkirtPHRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, Engagemnet
 
 // R157_SkirtPHRing();
 
-module R157_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, EBayTube_OD=ULine38Body_OD, Engagement_Len=30, nBolts=6, Xtra_r=0.0,CouplerLenXtra=0){
+module R157_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, EBayTube_OD=ULine38Body_OD, Engagement_Len=R157_Engagement_Len(), nBolts=6, Xtra_r=0.0,CouplerLenXtra=0){
 	Tube_d=12.7;
 	Skirt_Len=16;
 	Tube_a=-30;
@@ -264,12 +313,13 @@ module R157_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, EBayTube_OD=ULine3
 	
 	difference(){
 		union(){
-			STB_BallRetainerTop(Body_ID=Body_ID, Outer_OD=Body_OD, Body_OD=Body_ID, nLockBalls=nLockBalls,
-						HasIntegratedCouplerTube=true, nBolts=0,
-						IntegratedCouplerLenXtra=CouplerLenXtra,
-						HasSecondServo=true,
-						UsesBigServo=true,
-						Engagement_Len=Engagement_Len, HasLargeInnerBearing=true, Xtra_r=Xtra_r);
+			STB_BallRetainerTop(Body_ID=Body_ID, Outer_OD=Body_OD, Engagement_d=Body_ID, nLockBalls=nLockBalls,
+			HasIntegratedCouplerTube=true, nBolts=0, Bolt_a=0,
+			IntegratedCouplerLenXtra=CouplerLenXtra,
+				
+			HasSecondServo=true,
+			UsesBigServo=true,
+			Engagement_Len=Engagement_Len, HasLargeInnerBearing=true, Xtra_r=Xtra_r);
 			
 			// Extend skirt
 			translate([0,0,Top_Z-Skirt_Len]) 
@@ -353,7 +403,7 @@ module R157_BallRetainerBottom(Body_ID=Body_ID, Engagement_Len=0, Xtra_r=0.0){
 	} // difference
 } // R157_BallRetainerBottom
 
-// R157_BallRetainerBottom(Body_ID=ULine157Body_ID, Engagement_Len=30, Xtra_r=0.2);
+// R157_BallRetainerBottom(Body_ID=ULine157Body_ID, Engagement_Len=17.0, Xtra_r=0.2);
 
 module R157_SkirtRing(Coupler_OD=Coupler_OD, Coupler_ID=Coupler_ID, HasPD_Ring=false, Engagemnet_Len=7){
 	
