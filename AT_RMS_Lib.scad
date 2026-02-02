@@ -27,6 +27,8 @@ echo(AT_RMS_Lib_Rev());
 // ***********************************
 //  ***** Routines *****
 //
+function ATRMS_Motor54Retainer_OD()=kATRMS_Motor54Retainer_OD;
+//
 function ATRMS_38_Aft_d()=kATRMS_Aft38_d;
 //
 // ATRMS_38_120_Motor(HasEyeBolt=false);
@@ -104,6 +106,8 @@ kATRMS_For38_oal=27.8;
 kATRMS_Aft38_d=41.4;
 kATRMS_Aft38_h=10;
 
+
+kATRMS_Motor54Retainer_OD=65;
 
 kATRMS_54_Case_d=54;
 kATRMS_54_427_Case_h=127;
@@ -507,7 +511,7 @@ module BT54MotorRetainer(){
 	MotorTubeHole_d=BT54Body_OD+IDXtra*3;
 	MotorAftClosure_d=kATRMS_Aft54_d;
 	MotorAftClosure_h=kATRMS_Aft54_h;
-	Retainer_d=65;
+	Retainer_d=kATRMS_Motor54Retainer_OD;
 	OAH=33;
 	
 	difference(){

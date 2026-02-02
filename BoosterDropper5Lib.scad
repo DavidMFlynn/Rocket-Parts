@@ -333,13 +333,13 @@ module BD5_ServoMountingRing(Body_ID=Body_ID){
 
 //translate([0,0,120.1]) color("Tan") BD5_ServoMountingRing();
 	
-module BD5_RocketBody(Body_OD=Body_COD, Body_ID=Body_ID, nBoosters=nBoosters){
+module BD5_RocketBody(Body_OD=Body_COD, Body_ID=Body_ID, HasAftCoupler=false, nBoosters=nBoosters){
 	MountingBlock_X=Housing_OD+2.4;
 	LTP_Z=63;
 	LTP_Mount_Z=LTP_Z-57;
 	MechMounting_Z=LTP_Z+30;
 	MountingBlockSize_Z=87;
-	nSkirtBolts=6;
+	nSkirtBolts=nBoosters*4;
 	LowerCR_Z=3.5;
 	Gear_d=37;
 	TubeLen=141+15; // 141 is top of servo ring
@@ -353,14 +353,22 @@ module BD5_RocketBody(Body_OD=Body_COD, Body_ID=Body_ID, nBoosters=nBoosters){
 			Tube(OD=Body_OD, ID=Body_ID, Len=TubeLen, myfn=$preview? 90:BigFn);
 			
 			// integrated coupler
-			translate([0,0,-15]) Tube(OD=Body_ID, ID=Body_ID-4.4, Len=19, myfn=$preview? 90:BigFn);
-			Tube(OD=Body_ID+1, ID=Body_ID-4.4, Len=8, myfn=$preview? 90:BigFn);
+			if (HasAftCoupler){
+				translate([0,0,-15]) Tube(OD=Body_ID, ID=Body_ID-4.4, Len=19, myfn=$preview? 90:BigFn);
+				Tube(OD=Body_ID+1, ID=Body_ID-4.4, Len=8, myfn=$preview? 90:BigFn);
+			}else{
+				translate([0,0,-15]) Tube(OD=Body_OD, ID=Body_ID, Len=15+Overlap, myfn=$preview? 90:BigFn);
+			}
 			
 			// Stop for Servo Ring
 			translate([0,0,ServoRing_Z]) rotate([180,0,0]) TubeStop(InnerTubeID=Body_ID-4.4, OuterTubeOD=Body_ID+2, myfn=$preview? 90:BigFn);
 			
 			// Stop for lower centering ring
-			translate([0,0,LowerCR_Z]) TubeStop(InnerTubeID=Body_ID-8.8, OuterTubeOD=Body_ID+2, myfn=$preview? 90:BigFn);
+			if (HasAftCoupler){
+				translate([0,0,LowerCR_Z]) TubeStop(InnerTubeID=Body_ID-8.8, OuterTubeOD=Body_ID+2, myfn=$preview? 90:BigFn);
+			}else{
+				translate([0,0,LowerCR_Z]) TubeStop(InnerTubeID=Body_ID-6, OuterTubeOD=Body_ID+2, myfn=$preview? 90:BigFn);
+			}
 			
 			// Mounting Blocks
 			intersection(){
