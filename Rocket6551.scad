@@ -3,7 +3,7 @@
 // Filename: Rocket6551.scad
 // by David M. Flynn
 // Created: 9/18/2025
-// Revision: 1.0.0  10/25/2025
+// Revision: 1.0.1  3/12/2026
 // Units: mm
 // *********************************************
 //  ***** Notes *****
@@ -21,8 +21,10 @@
 //
 //
 //  2 Stage version w/ 38mm motors, I357T, H123W
+//    Flown to 4600 feet on I300T, H123W
 //
 //  ***** History *****
+// 1.0.1   3/12/2026  Quick review and update.
 // 1.0.0   10/25/2025 Just a little clean up.
 // 0.9.11  10/23/2025 R65_EBayMiddleRing() now has 6 rivet holes.
 // 0.9.10  10/23/2025 Moved ebays to R65Lib.scad
@@ -92,7 +94,7 @@ SustainerPetal_Len=140; // 140 to 180
 // R65_DroguePetalHub(OD=Coupler_OD, nPetals=nPetals, nBolts=nPetals*2, Skirt_h=5, HasWirePath=true);
 /*
 R65_DrogueCoupler(OD=Body_ID, Coupler_ID=Coupler_ID, 
-			Thread_d=MotorBolt_d, Thread_p=MotorBoltPitch, LockPin_d=LockPin_d, 
+			Thread_d=MotorBolt_d, Thread_p=MotorBoltPitch,
 			nRopes=0, Skirt_h=25, HasTubeStop=false, Body_OD=Body_OD*CF_Comp+Vinyl_d, HasWirePath=true, HasStiffCore=true);
 /**/
 //
@@ -130,11 +132,11 @@ R65_DrogueCoupler(OD=Body_ID, Coupler_ID=Coupler_ID,
 //
 //  *** Tools ***
 //
-// PD_PetalHolder2(Petal_OD=Body_ID-0.5, Is_Top=false); // bottom half
-// PD_PetalHolder2(Petal_OD=Body_ID-0.5, Is_Top=true); // top half
+// PD_PetalHolder(Petal_OD=Body_ID-0.5, Is_Top=false); // bottom half
+// PD_PetalHolder(Petal_OD=Body_ID-0.5, Is_Top=true); // top half
 // PD_PetalHolderLockLever();
 //
-// rotate([180,0,0])// R65_DeepSocket(); // 7/16" Socket for 1/4-20 nuts (29mm RMS)
+// rotate([180,0,0]) R65_DeepSocket(); // 7/16" Socket for 1/4-20 nuts (29mm RMS)
 // R65_DeepSocket500(); // 1/2" Socket for 5/16-18 nuts (38mm RMS)
 //
 // R65_ExtensionAlignmentRing38(); // Align threaded rod to center of 38mm motor tube
@@ -250,7 +252,7 @@ FinCan_Len=Fin_Root_L+FinInset_Len*2;
 FinCanWall_t=1.2;
 /**/
 
-//*
+/*
 // Little Bird data
 
 // DR65Body_OD
@@ -284,7 +286,7 @@ FinCan_Len=Fin_Root_L+FinInset_Len*2;
 FinCanWall_t=0.8;
 /**/
 
-/*
+//*
 // Little Red One Data
 Petal_Len=140; // 80 minimum, 100,120 or 140 is preferred 140 is max for a single 4323 spring
 BPetal_Len=140;
