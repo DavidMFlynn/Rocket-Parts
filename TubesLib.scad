@@ -3,7 +3,7 @@
 // Filename: TubesLib.scad
 // by David M. Flynn
 // Created: 6/13/2022 
-// Revision: 0.9.22  1/2/2025
+// Revision: 0.9.23  2/152/2025
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,8 +12,9 @@
 //
 //  ***** History *****
 //
-function TubesLib_Rev()="TubesLib 0.9.22";
+function TubesLib_Rev()="TubesLib 0.9.23";
 echo(TubesLib_Rev());
+// 0.9.23  2/152/2025 Added 3" x 36" ULine tube
 // 0.9.22  1/2/2025   Added seconds set of holes to BodyDrillingJig()
 // 0.9.21  12/28/2024 Added BodyDrillingJig()
 // 0.9.20  12/27/2024 Updated ULine203Body, now fits correctly using PETG-CF, add 0.5% for PETG?
@@ -63,6 +64,7 @@ echo(TubesLib_Rev());
 //
 // TubeTest(OD=BT137Body_OD, ID=BT137Body_ID, TestOD=false); // for test fitting tubes
 // TubeTest(OD=ULine102Body_OD, ID=ULine102Body_ID);
+// TubeTest(OD=ULineH75Body_OD*CF_Comp, ID=ULineH75Body_ID*CF_Comp, TestOD=false); // for test fitting tubes
 //
 // Tube(OD=PML54Body_OD, ID=PML54Body_ID, Len=300, myfn=$preview? 36:360);
 // TubeStop(InnerTubeID=PML54Coupler_ID, OuterTubeOD=PML54Body_OD, myfn=$preview? 36:360);
@@ -107,6 +109,8 @@ ULine38Body_ID=38.90; // was 38.7 Works w/ BT38Coupler_OD
 // ULine 3 inch mailing tube
 ULine75Body_OD=80.30;
 ULine75Body_ID=76.60; // Works w/ BT75Coupler_OD
+ULineH75Body_OD=80.60; // 3" x 36" x 0.080" kraft tube
+ULineH75Body_ID=76.30; // Works w/ BT75Coupler_OD
 
 BT98Body_OD=101.9;
 BT98Body_ID=98.9;

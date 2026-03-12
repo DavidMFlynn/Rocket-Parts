@@ -708,8 +708,7 @@ module R65_RocketServoMountVertBoltPattern(Base_h=0){
 
 // R65_RocketServoMountVertBoltPattern(Base_h=0) Bolt4Hole();
 
-	
-	
+
 module R65_EBayMC(OD=LOC65Coupler_OD, CenterBolt_d=0.250*25.4, CenterBolt_p=25.4/20, HasRS_Mount=false, BaseOnly=true, UseMCClip=false){
 	// Mission Control version
 	// Featherweight Mag Switch, Rocket Servo PCBA, 2S LiPo

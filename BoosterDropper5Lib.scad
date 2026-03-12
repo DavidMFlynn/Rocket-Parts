@@ -61,6 +61,7 @@ echo(BoosterDropper5LibRev());
 function BD5_BoosterButtonOAH()=BoosterButtonOA_h;
 function BD5_ThrustRing_h(Btn_d=BoosterButtonMinor_d)=Btn_d+6;
 function BD5_Calc_nBalls(BallCircle_d=50,Ball_d=6)=floor(BallCircle_d*PI / (Ball_d*2.25)/2)*2;
+function BD5_CenterBore_d()=CenterBore_d;
 //
 // BD5_ThrustPoint(BodyTube_OD=PML98Body_OD, BoosterBody_OD=PML54Body_OD); 
 // BD5_ThrustPoint_Hole(Swell=-Overlap);

@@ -75,6 +75,8 @@ PD_PetalHub(OD=BT75Coupler_OD,
 // PD_PetalHolder(Petal_OD=BT98Coupler_OD, Is_Top=true); // top half
 // PD_PetalHolder(Petal_OD=ULine102Body_ID-0.5, Is_Top=false); // bottom half
 // PD_PetalHolder(Petal_OD=ULine102Body_ID-0.5, Is_Top=true); // top half
+// PD_PetalHolder(Petal_OD=ULineH75Body_ID-0.5, Is_Top=false); // bottom half
+// PD_PetalHolder(Petal_OD=ULineH75Body_ID-0.5, Is_Top=true); // top half
 //
 // ***********************************
 //  ***** Routines *****

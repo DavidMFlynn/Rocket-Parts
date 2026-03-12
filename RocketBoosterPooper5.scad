@@ -73,13 +73,17 @@
 // R157_PetalHub(OD=Coupler_OD*CF_Comp, nPetals=nPetals, nBolts=nPetals, nRopes=0, Skirt_Len=4);
 // PD_Petals(OD=Coupler_OD*CF_Comp, Len=100, nPetals=6, Wall_t=2.4, AntiClimber_h=5, HasLocks=false);
 //
+//  *** Booster Dropper ***
 //
+// BD5_OuterRaceMount(Tube_ID=Body_ID*CF_Comp-IDXtra*2, Bore_d=CenterBore_d);
+// BD5_RocketBody(Body_OD=Body_COD, Body_ID=Body_ID, HasAftCoupler=false, nBoosters=nBoosters);
+// CenteringRing(OD=Body_ID*CF_Comp, ID=MotorTube_OD+IDXtra*2, Thickness=5, nHoles=6, Offset=0, myfn=$preview? 90:360);
 //
-// Rocket_Fin();
+// rotate([0,0,90]) Rocket_Fin();
 //
-// FinCan(HideTop=false, HideBottom=true);
-// FinCan(HideTop=true, HideBottom=false);
-// rotate([180,0,0]) FinCan(HideNotTail=true);
+// FinCanTopHalf();
+// FinCanBottomHalf();
+// rotate([180,0,0]) TailCone();
 //
 // rotate([90,0,0]) BoltOnRailGuide(Length = 40, BoltSpace=12.7, RoundEnds=true); // lower fin can
 // rotate([90,0,0]) BoltOnRailGuide(Length = 35, BoltSpace=12.7, RoundEnds=true); // ForwardBoosterLock
@@ -108,6 +112,7 @@ Booster_NC_Base_L=15;
 //
 // ShowRocket(ShowInternals=true, ShowBoosters=false, ShowFins=false);
 // ShowRocket(ShowInternals=false, ShowBoosters=true, ShowFins=true);
+// ShowRocket(ShowInternals=false, ShowBoosters=false, ShowFins=true);
 // 
 /*
 	for (j=[0:nBoosters-1]) rotate([0,0,360/nBoosters*j]) translate([0,-Body_COD/2-BoosterBody_OD/2-1,0]) 
@@ -141,6 +146,8 @@ $fn=$preview? 36:90;
 Bolt4Inset=4;
 Epoxy_d=0.4;
 
+CenterBore_d=60;
+
 Booster_Body_COD=ULine102Body_OD*CF_Comp+Vinyl_d+Epoxy_d;
 //echo(ULine102Body_OD=ULine102Body_OD);
 //echo(Booster_Body_COD=Booster_Body_COD);
@@ -171,8 +178,8 @@ Fin_Post_h=14;
 Fin_Root_L=270;
 Fin_Root_W=14;
 Fin_Tip_W=5;
-Fin_Tip_L=120;
-Fin_Span=180;
+Fin_Tip_L=140;
+Fin_Span=150;
 Fin_TipOffset=50;
 Fin_Chamfer_L=50;
 
@@ -203,7 +210,7 @@ nBoosters=3;
 BoosterButton1_z=52.8+5; // align to bottom of centering ring
 RailGuide_Z=35;
 RailGuide_a=0;
-RailGuide_H=Body_OD/2+2;
+RailGuide_H=Body_COD/2+10;
 
 BodyTubeLen=400;
 echo(BodyTubeLen=BodyTubeLen);
@@ -389,19 +396,25 @@ module Rocket_Fin(){
 					TipOffset=Fin_TipOffset, PrinterBrim_H=0.8, HasSpiralVaseRibs=false);
 } // Rocket_Fin
 
-// Rocket_Fin();
+//// Rocket_Fin();
 
-module FinCan(){
+module FinCan(Wall_t=2.2){
 	nCouplerBolts=nFins*2;
+	Body_OD=Body_COD;
+	MotorTubeSleve_t=1.6;
+	Body_ID=Body_ID; //Integrated coupler OD
 	
 	difference(){
 		union(){
 			//Integrated coupler
 			CouplerLen=15;
-			if (UseAlignmentPins==false) translate([0,0,FinCanLen-Overlap])
+			translate([0,0,FinCanLen-Overlap])
 				Tube(OD=Body_ID, ID=Body_ID-6, Len=CouplerLen, myfn=$preview? 90:360);
 				
-			Tube(OD=Body_OD, ID=Body_ID, Len=FinCanLen, myfn=$preview? 90:360);
+			Tube(OD=Body_OD, ID=Body_OD-Wall_t*2, Len=FinCanLen, myfn=$preview? 90:360);
+			
+			// Motor tube
+			Tube(OD=MotorTubeHole_d+MotorTubeSleve_t*2, ID=MotorTubeHole_d, Len=FinCanLen, myfn=$preview? 90:360);
 			
 			// Top centering ring
 			translate([0,0,FinCanLen-5])
@@ -413,32 +426,43 @@ module FinCan(){
 				
 			// Bottom centering ring
 			rotate([0,0,180/nFins])
-				CenteringRing(OD=Body_OD-1, ID=MotorTubeHole_d, Thickness=10, nHoles=nFins);
+				CenteringRing(OD=Body_OD-1, ID=MotorTubeHole_d, Thickness=5, nHoles=nFins);
 				
 			// Fin Holders
 			intersection(){
-				cylinder(d=Body_ID+1, h=FinCanLen);
+				cylinder(d=Body_OD-1, h=FinCanLen);
 
 				for (j=[0:nFins-1]) hull(){
-					cylinder(d=Fin_Root_W+4.4, h=FinCanLen);
+					cylinder(d=Fin_Root_W+Wall_t*2, h=FinCanLen);
 
 					rotate([0,0,360/nFins*j]) translate([Body_OD/2,0,0])
-						cylinder(d=Fin_Root_W+4.4, h=FinCanLen);
+						cylinder(d=Fin_Root_W+Wall_t*2, h=FinCanLen);
 				} // hull
 			} // intersection
 			
 			// Thrust transfer blocks
 			intersection(){
-				cylinder(d=Body_ID+1, h=FinCanLen/2);
+				cylinder(d=Body_OD-1, h=FinCanLen/2);
 
 				for (j=[0:nBoosters-1]) hull(){
-					cylinder(d=Fin_Root_W+4.4, h=FinCanLen/2);
+					cylinder(d=Fin_Root_W+Wall_t*2, h=FinCanLen/2);
 
 					rotate([0,0,360/nBoosters*j+180/nFins]) translate([Body_OD/2,0,0])
-						cylinder(d=Fin_Root_W+4.4, h=FinCanLen/2);
+						cylinder(d=Fin_Root_W+Wall_t*2, h=FinCanLen/2);
 				} // hull
 			} // intersection
 		} // union
+		
+		//Hollow fin backing
+		
+		difference(){
+			for (j=[0:nFins-1]) rotate([0,0,360/nFins*j])
+				translate([0,-Fin_Root_W/2,5]) cube([Body_OD/2-Fin_Post_h-1.8,Fin_Root_W,FinCanLen-10]);
+				
+			translate([0,0,FinCanLen/2]) cylinder(d=Body_OD+1, h=10, center=true);
+			translate([0,0,-Overlap]) cylinder(d=MotorTubeHole_d+MotorTubeSleve_t*2, h=FinCanLen+Overlap*2);
+			translate([0,0,-Overlap]) cylinder(d=MotorTubeHole_d+Wall_t*2, h=75);
+		} // difference
 		
 		//CouplerBolts
 		for (j=[0:nCouplerBolts]) rotate([0,0,360/nCouplerBolts*j]) 
@@ -464,20 +488,21 @@ module FinCan(){
 					
 		// Fin slots
 		translate([0,0,FinCanLen/2])
-			TrapFin2Slots(Tube_OD=Body_OD, nFins=nFins,
+			TrapFin3Slots(Tube_OD=Body_OD, nFins=nFins,
 				Post_h=Fin_Post_h, Root_L=Fin_Root_L,
 				Root_W=Fin_Root_W, Chamfer_L=Fin_Chamfer_L);
 		
 		// Motor tube
 		translate([0,0,-Overlap]) cylinder(d=MotorTubeHole_d, h=FinCanLen+Overlap*2);
 				
+		if ($preview) cube([Body_OD/2+1,Body_OD/2+1,FinCanLen+16]);
 	} // difference
 
 	
 	for (j=[0:nBoosters-1])
 		rotate([0,0,360/nBoosters*j-360/nFins]) 
 			translate([0, Body_OD/2-BD5_BoosterButtonOAH(), BoosterButton1_z]) 
-				rotate([-90,0,0]) BD5_ThrustPoint(BodyTube_OD=Body_COD, BoosterBody_OD=BoosterBody_OD);
+				rotate([-90,0,0]) BD5_ThrustPoint(BodyTube_OD=Body_OD, BoosterBody_OD=BoosterBody_OD);
 			
 	//*
 	// Rail Guide
@@ -486,7 +511,7 @@ module FinCan(){
 		translate([0,0,RailGuide_Z]) rotate([0,0,RailGuide_a])
 			RailGuidePost(OD=Body_OD, MtrTube_OD=MotorTubeHole_d, H=RailGuide_H, TubeLen=70, Length = 40, BoltSpace=12.7);
 
-		translate([0,0,RailGuide_Z]) TrapFin2Slots(Tube_OD=Body_OD, nFins=nFins,
+		translate([0,0,RailGuide_Z]) TrapFin3Slots(Tube_OD=Body_OD, nFins=nFins,
 			Post_h=Fin_Post_h, Root_L=Fin_Root_L, Root_W=Fin_Root_W, Chamfer_L=Fin_Chamfer_L);
 			
 		for (j=[0:nBoosters-1])
@@ -494,7 +519,7 @@ module FinCan(){
 				translate([0,Body_OD/2-BD5_BoosterButtonOAH(), BoosterButton1_z]) 
 					rotate([-90,0,0]) BD5_ThrustPoint_Hole();
 					
-		translate([0,0,5]) mirror([0,0,1]) cylinder(d=Body_OD+10, h=FinCanLen);
+		//translate([0,0,5]) mirror([0,0,1]) cylinder(d=Body_OD+10, h=FinCanLen);
 	} // difference
 	/**/
 	
@@ -505,19 +530,19 @@ module FinCan(){
 
 module FinCanBottomHalf(){
 	difference(){
-		FinCan();
+		FinCan(Wall_t=2.2);
 		
 		translate([0,0,FinCanLen/2]) cylinder(d=Body_OD+10, h=FinCanLen);
 	} // difference
 } // FinCanBottomHalf
 
-//rotate([180,0,0]) FinCanBottomHalf();
+// rotate([180,0,0]) FinCanBottomHalf();
 
 module FinCanTopHalf(){
 	difference(){
-		FinCan();
+		FinCan(Wall_t=1.2);
 		
-		translate([0,0,-TailConeLen-Overlap]) cylinder(d=Body_OD+10, h=FinCanLen/2+TailConeLen+Overlap);
+		translate([0,0,-TailConeLen-Overlap]) cylinder(d=Body_OD+30, h=FinCanLen/2+TailConeLen+Overlap);
 	} // difference
 } // FinCanTopHalf
 

@@ -1545,6 +1545,21 @@ module R102_FwdSpringEnd(OD=Body_ID-BodyTubeAnnulus, ID=Body_ID-3.6, LockPin_d=1
 
 // R102_FwdSpringEnd();
 
+module MiniMicroSwitch(){
+	SW_X=5.8;
+	SW_Y=13;
+	SW_Z=12;
+	SW_Z_Offset=6; // CL of bolts
+	BoltSpacing=6.5;
+	
+	translate([-SW_X/2, -SW_Y/2, 0]) cube([SW_X,SW_Y,SW_Z]);
+	// Bolts
+	translate([0, -BoltSpacing/2, SW_Z_Offset]) rotate([0,90,0]) Bolt2Hole();
+	translate([0, BoltSpacing/2, SW_Z_Offset]) rotate([0,90,0]) Bolt2Hole();
+} // MiniMicroSwitch
+
+// MiniMicroSwitch();
+
 
 module Stager_Cup_Light(Collar_H=17){
 	OD=Body_OD*CF_Comp+Vinyl_d;
@@ -1565,6 +1580,9 @@ module Stager_Cup_Light(Collar_H=17){
 				
 		} // union
 
+		// micro switch
+		translate([-OD/2+8,0,-2]) #MiniMicroSwitch();
+		
 		translate([0,0,-4]) cylinder(d=Body_ID-10, h=10, $fn=180);
 		translate([0,0,4]) cylinder(d1=Body_ID-10, d2=Body_ID-7, h=6, $fn=180);
 		translate([0,0,10-Overlap]) cylinder(d=Body_ID-7, h=Collar_H-11, $fn=180);
