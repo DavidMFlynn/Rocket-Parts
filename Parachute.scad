@@ -3,7 +3,7 @@
 // Filename: Parachute.scad
 // by David M. Flynn
 // Created: 9/13/2022 
-// Revision: 0.9.5  11/11/2022
+// Revision: 0.9.6  3/16/2026
 // Units: mm
 // *******************************************
 //  ***** Notes *****
@@ -27,6 +27,7 @@
 //
 //  ***** History *****
 //
+// 0.9.6  3/16/2026  Added 124" parachute design.
 // 0.9.5  11/11/2022 Making a 32" 'chute. 
 // 0.9.4  10/22/2022 Making a 45" 'chute. 
 // 0.9.3  10/6/2022 Made a 63" 'chute it is good.
@@ -188,6 +189,32 @@ module P_Shape(){
 // *** Parameter test ***
 
 /*
+// *** 124", ?? panels, 84 sqft ***
+nPanels=32;
+Diameter=124*25.4;
+CenterHole_d=12.0*25.4;
+echo(Diameter=Diameter);
+// DrawTip(nTipPanels=nPanels);
+// DrawBase();
+
+module DrawTip(nTipPanels=nPanels){
+	difference(){
+		P_ShapeTest(Diameter=Diameter, nPanels=nTipPanels, CenterHole_d=CenterHole_d, SeamAllowance=6);
+		
+		translate([-500,-10,0]) square([1000,854]); // 500-seam
+	} // difference
+} // DrawTip
+
+module DrawBase(){
+	difference(){
+		P_ShapeTest(Diameter=Diameter, nPanels=nPanels, CenterHole_d=CenterHole_d, SeamAllowance=6);
+		
+		translate([-500,856,0]) square([1000,2000]); // 500+seam
+	} // difference
+} // DrawBase
+/**/
+
+/*
 // *** 88", 20 panels, 42 sqft ***
 nPanels=20;
 Diameter=88*25.4;
@@ -195,7 +222,7 @@ CenterHole_d=10.0*25.4;
 echo(Diameter=Diameter);
 // DrawTip();
 // DrawBase();
-/**/
+
 module DrawTip(){
 	difference(){
 		P_ShapeTest(Diameter=Diameter, nPanels=nPanels, CenterHole_d=CenterHole_d, SeamAllowance=6);
@@ -211,7 +238,7 @@ module DrawBase(){
 		translate([-210,506,0]) square([420,1000]); // 500+seam
 	} // difference
 } // DrawBase
-
+/**/
 
 /*
 // *** 78", 16 panels, 33 sqft ***
@@ -268,7 +295,13 @@ echo(Diameter=Diameter);
 /**/
 
 
-//*
+/*
+// Test 124"
+//
+//
+for (j=[0:nPanels-1]) rotate([0,0,360/nPanels*j]) translate([0,-Diameter/2-CenterHole_d+36,0])
+	P_ShapeTest(Diameter=Diameter, nPanels=nPanels, CenterHole_d=CenterHole_d, SeamAllowance=0);
+/**/
 
 //P_ShapeTest(Diameter=14*25.4, nPanels=6, CenterHole_d=2.5*25.4, SeamAllowance=6);
 
@@ -277,30 +310,40 @@ echo(Diameter=Diameter);
 //for (j=[0:nPanels-1]) rotate([0,0,360/nPanels*j]) translate([0,-Center_Y,0]) // show full circle
 //translate([PrintingOffset_X,PrintingOffset_Y+SeamAllowance,0]) // offset for pdf
  // comment out when showing full circle
-	
+ 
+ 
+//*
 module P_ShapeTest(Diameter=14*25.4, nPanels=6, CenterHole_d=2.5*25.4, SeamAllowance=6){
 	R=Diameter/2;
 	Panel_w=Diameter*PI/nPanels;
-	Apex_w=CenterHole_d*PI/nPanels;
-	Skirt_Y=(R-R*0.707)*2*PI/4;
-	Center_Y=Skirt_Y+R*0.707;
+	FlatPortion_r=R*0.707;
+	Skirt_Y=(R-FlatPortion_r)*2*PI/4;  // 1/4 of the circomference
+	//SkirtPanel_w=FlatPortion_r*2*PI/nPanels;
+	Center_Y=Skirt_Y+FlatPortion_r;
 	Apex_Y=Center_Y-CenterHole_d/2;
 	
+	Adjustment=cos(9.8); //???
 	echo(Apex_Y=Apex_Y);
 	echo(R=R);
 	
 	offset(delta=SeamAllowance)
 	difference(){
 		hull(){
+			// Skirt
 			intersection(){
-				translate([Panel_w/2-R, 0, 0]) circle(r=R);
-				translate([-Panel_w/2+R, 0, 0]) circle(r=R);
-				translate([-Panel_w/2,0,0]) square([Panel_w, Apex_Y]);
-			}
+				translate([Panel_w/2-R*Adjustment, 0, 0]) circle(r=R);
+				translate([-Panel_w/2+R*Adjustment, 0, 0]) circle(r=R);
+				
+				// Keep only positive Y part
+				translate([-Panel_w,0,0]) square([Panel_w*2, Apex_Y]);
+			} // intersection
 			
+			// Center
 			translate([0,Center_Y,0]) circle(d=1);
 		} // hull
 		
+		// Remove Center
+		echo(CenterHole_d=CenterHole_d);
 		translate([0,Center_Y,0]) color("Orange") circle(d=CenterHole_d);
 	} // difference
 } // P_ShapeTest
