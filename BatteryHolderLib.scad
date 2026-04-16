@@ -563,6 +563,109 @@ module Batt_BayDoorFrame(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, HasSwitch=fal
 //Batt_BayDoorFrame(Tube_OD=PML54Body_OD, Door_X=Batt_Door_X-10, HasSwitch=true, ShowDoor=false);
 //rotate([90,0,0]) Batt_Door54(Tube_OD=PML54Body_OD, HasSwitch=true);
 
+// Rocket Servo 2 data
+RS2_H1_X=3.175;
+RS2_H1_Y=31.115;
+RS2_H2_X=26.035;
+RS2_H2_Y=4.445;
+RS2_LED1_X=22.860;
+RS2_LED2_X=25.400;
+RS2_LED3_X=27.94;
+RS2_LED_Y=19.05;
+RS2_PCB_X=29.845;
+RS2_PCB_Y=52.705;
+RS2_PCB_H=9.2;
+
+module RocketServo2BoltBosses(){
+	translate([-RS2_PCB_X/2,-RS2_PCB_Y/2,0]){
+		// Mounting bolts
+		translate([RS2_H1_X,RS2_H1_Y,0]) cylinder(d=8,h=20);
+		translate([RS2_H2_X,RS2_H2_Y,0]) cylinder(d=8,h=20);
+	}
+} // RocketServo2BoltBosses
+
+module RocketServo2BoltPattern(){
+	translate([-RS2_PCB_X/2,-RS2_PCB_Y/2,0]){
+		// Mounting bolts
+		translate([RS2_H1_X,RS2_H1_Y,0]) rotate([180,0,0]) Bolt4Hole();
+		translate([RS2_H2_X,RS2_H2_Y,0]) rotate([180,0,0]) Bolt4Hole();
+		// LED light pipes
+		translate([RS2_LED1_X,RS2_LED_Y,0]) cylinder(d=2, h=20);
+		translate([RS2_LED2_X,RS2_LED_Y,0]) cylinder(d=2, h=20);
+		translate([RS2_LED3_X,RS2_LED_Y,0]) cylinder(d=2, h=20);
+		//T-Block
+		translate([1,1,0]) cube([22,6,8]);
+	}
+} // RocketServo2BoltPattern
+
+// rotate([90,0,0]) RocketServo2BoltPattern();
+
+module RocketServo2Door(Tube_OD=ULineH75Body_OD, Door_X=Batt_Door_X, 
+						HasMagSwitch=false, HasBatt=false, BlankDoor=false){
+	ShowBattery=true;
+	Door_Y=HasMagSwitch? Batt_Door_Y+CK_RotSw_d:Batt_Door_Y;
+	//Door_X=Batt_Door_X;
+	Door_t=Batt_DoorThickness-0.7;
+	DoorEdge_a=asin((Door_X/2)/(Tube_OD/2));
+	BoltBossInset=3;
+	Batt_Offset_Y=Door_Y/2-68;
+	
+	BattInset_Z=get_inset(Tube_OD);
+	Switch_Y=-Door_Y/2+CK_RotSw_d/2+6;
+	
+	function get_inset(d) = lookup(d, [
+ 		[ 54, 3.6 ],
+ 		[ 98, 2.2 ],
+ 		[ 137, 1.4 ]
+ 	]);
+	
+	difference(){
+		union(){
+			Door(Door_X=Door_X, Door_Y=Door_Y, Door_t=Door_t, Tube_OD=Tube_OD, HasSixBolts=false);
+			
+			if (!BlankDoor)
+			intersection(){
+				translate([0,0,-Door_Y/2])
+						cylinder(d=Tube_OD-1, h=Door_Y);
+				
+				union(){
+					translate([0,-Tube_OD/2+Door_t+RS2_PCB_H+BattInset_Z,0]) rotate([90,0,0]) RocketServo2BoltBosses();
+				
+					//Battery holder
+					/*
+					 translate([0, -Tube_OD/2+Door_t+Batt_Y/2+BattInset_Z, Door_Y/2-Batt_h-BattConn_h-10]) 
+						if (DoubleBatt){
+							translate([0,(Batt_Y*2-Batt_X),0]) rotate([0,0,90]) 
+								DoubleBatteryPocket(Extra=5, ShowBattery=ShowBattery);
+						}else{
+							SingleBatteryPocket(Extra=5, ShowBattery=ShowBattery);
+						}
+						/**/
+					
+					// Switch
+					if (HasMagSwitch)
+						translate([0, -Tube_OD/2+CK_RotSw_AO_h/2, Switch_Y])
+							rotate([90,0,0]) cylinder(d=CK_RotSw_d+4, h=CK_RotSw_AO_h);
+				} // union
+			} // intersection
+		} // union
+		
+		translate([0,-Tube_OD/2+Door_t+RS2_PCB_H+BattInset_Z,0]) rotate([90,0,0]) RocketServo2BoltPattern();
+		
+		// Switch
+		if (HasMagSwitch && !BlankDoor)
+			translate([0, -Tube_OD/2+CK_RotSw_AO_h/2+Overlap, Switch_Y]) rotate([90,0,0]){
+				cylinder(d=CK_RotSw_d+IDXtra*2, h=CK_RotSw_AO_h/2-Door_t);
+				cylinder(d=CK_RotSw_Face_d+IDXtra*2, h=CK_RotSw_AO_h/2+CK_RotSw_Face_h-Door_t);
+				cylinder(d=CK_RotSw_Access_d+IDXtra, h=CK_RotSw_AO_h/2+Overlap*2);
+			translate([10,CK_RotSw_d/2+2,0]) cylinder(d=3, h=10);
+			}
+	} // difference
+
+} // RocketServo2Door
+
+//rotate([-90,0,0]) RocketServo2Door();
+			
 module Batt_Door(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, InnerTube_OD=PML38Body_OD, HasSwitch=false, DoubleBatt=false, BlankDoor=false){
 
 	ShowBattery=true;
