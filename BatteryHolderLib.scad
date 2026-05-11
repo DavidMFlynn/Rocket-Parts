@@ -611,7 +611,9 @@ module RocketServo2Door(Tube_OD=ULineH75Body_OD, Door_X=Batt_Door_X,
 	Batt_Offset_Y=Door_Y/2-68;
 	
 	BattInset_Z=get_inset(Tube_OD);
-	Switch_Y=-Door_Y/2+CK_RotSw_d/2+6;
+	Switch_Y=Door_Y/2-20;
+	Switch_a=(Door_X/(Tube_OD*PI))*135;
+	RS2_Z=HasMagSwitch? -CK_RotSw_d/2:0;
 	
 	function get_inset(d) = lookup(d, [
  		[ 54, 3.6 ],
@@ -629,7 +631,8 @@ module RocketServo2Door(Tube_OD=ULineH75Body_OD, Door_X=Batt_Door_X,
 						cylinder(d=Tube_OD-1, h=Door_Y);
 				
 				union(){
-					translate([0,-Tube_OD/2+Door_t+RS2_PCB_H+BattInset_Z,0]) rotate([90,0,0]) RocketServo2BoltBosses();
+					translate([0,-Tube_OD/2+Door_t+RS2_PCB_H+BattInset_Z,RS2_Z]) 
+						rotate([90,0,0]) RocketServo2BoltBosses();
 				
 					//Battery holder
 					/*
@@ -644,27 +647,25 @@ module RocketServo2Door(Tube_OD=ULineH75Body_OD, Door_X=Batt_Door_X,
 					
 					// Switch
 					if (HasMagSwitch)
-						translate([0, -Tube_OD/2+CK_RotSw_AO_h/2, Switch_Y])
-							rotate([90,0,0]) cylinder(d=CK_RotSw_d+4, h=CK_RotSw_AO_h);
+						rotate([0,0,Switch_a]) translate([-4, -Tube_OD/2+10.5, Switch_Y])
+							rotate([90,0,90])
+							FW_MagSw_Mount(HasMountingEars=false, Reversed=false);
 				} // union
 			} // intersection
 		} // union
 		
-		translate([0,-Tube_OD/2+Door_t+RS2_PCB_H+BattInset_Z,0]) rotate([90,0,0]) RocketServo2BoltPattern();
+		translate([0,-Tube_OD/2+Door_t+RS2_PCB_H+BattInset_Z,RS2_Z]) 
+			rotate([90,0,0]) RocketServo2BoltPattern();
 		
-		// Switch
-		if (HasMagSwitch && !BlankDoor)
-			translate([0, -Tube_OD/2+CK_RotSw_AO_h/2+Overlap, Switch_Y]) rotate([90,0,0]){
-				cylinder(d=CK_RotSw_d+IDXtra*2, h=CK_RotSw_AO_h/2-Door_t);
-				cylinder(d=CK_RotSw_Face_d+IDXtra*2, h=CK_RotSw_AO_h/2+CK_RotSw_Face_h-Door_t);
-				cylinder(d=CK_RotSw_Access_d+IDXtra, h=CK_RotSw_AO_h/2+Overlap*2);
-			translate([10,CK_RotSw_d/2+2,0]) cylinder(d=3, h=10);
-			}
+		// LED view
+		if (HasMagSwitch) 
+			rotate([0,0,Switch_a]) translate([1.5, -Tube_OD/2+5, Switch_Y])
+			rotate([90,0,0]) cylinder(d=3,h=10);
 	} // difference
 
 } // RocketServo2Door
 
-//rotate([-90,0,0]) RocketServo2Door();
+//rotate([-90,0,0]) RocketServo2Door(Tube_OD=ULineH75Body_OD, Door_X=Batt_Door_X, HasMagSwitch=true, HasBatt=false, BlankDoor=false);
 			
 module Batt_Door(Tube_OD=PML98Body_OD, Door_X=Batt_Door_X, InnerTube_OD=PML38Body_OD, HasSwitch=false, DoubleBatt=false, BlankDoor=false){
 

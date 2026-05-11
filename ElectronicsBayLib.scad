@@ -63,6 +63,7 @@ EB_Electronics_BayUniversal(Tube_OD=BT137Body_OD, Tube_ID=BT137Body_ID, DoorAngl
 // rotate([-90,0,0]) EB_AltDoor(Tube_OD=BT98Body_OD, BlankDoor=false, IsLoProfile=false);
 // rotate([-90,0,0]) EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=false, DoubleBatt=false, BlankDoor=false);
 // rotate([-90,0,0]) EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=true, DoubleBatt=false, BlankDoor=false);
+// rotate([-90,0,0]) EB_RocketServo2Door(Tube_OD=BT98Body_OD, HasMagSwitch=false, HasBatt=false, BlankDoor=false);
 //
 // ***********************************
 //  ***** Routines *****
@@ -119,6 +120,13 @@ module EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=false, DoubleBatt=false, Blank
 } // EB_BattDoor
 
 //EB_BattDoor(Tube_OD=BT98Body_OD, HasSwitch=false);
+
+module EB_RocketServo2Door(Tube_OD=BT98Body_OD, HasMagSwitch=false, HasBatt=false, BlankDoor=false){
+	RocketServo2Door(Tube_OD=Tube_OD, Door_X=EB_BattDoor_X(Tube_OD=Tube_OD), 
+						HasMagSwitch=HasMagSwitch, HasBatt=HasBatt, BlankDoor=BlankDoor);
+} // EB_RocketServo2Door
+
+// EB_RocketServo2Door(Tube_OD=BT98Body_OD, HasMagSwitch=false, HasBatt=false, BlankDoor=false);
 
 module EB_BattDoorMagRS(Tube_OD=BT98Body_OD, HasRS_PCB=false, HasSwitch=false, BlankDoor=false){
 	Batt_DoorMagSW(Tube_OD=Tube_OD, Door_X=EB_BattDoor_X(Tube_OD=Tube_OD), HasRS_PCB=HasRS_PCB, HasSwitch=HasSwitch, BlankDoor=BlankDoor);

@@ -3,7 +3,7 @@
 // Filename: R75Lib.scad
 // by David M. Flynn
 // Created: 7/17/2024 
-// Revision: 0.9.6  3/1/2026
+// Revision: 0.9.7  5/5/2026
 // Units: mm
 // ***********************************
 //  ***** Notes *****
@@ -12,7 +12,8 @@
 //
 //  ***** History *****
 //
-function R75Lib_Rev()="R75Lib Rev 0.9.6";
+function R75Lib_Rev()="R75Lib Rev 0.9.7";
+// 0.9.7  5/5/2026   Shorter R75_BallRetainerTop
 // 0.9.6  3/1/2026   Added R75_EBayBR(), R75_EBayMC()
 // 0.9.5  2/16/2026  Added R75_MotorNutStop(), R75_MotorTubeTopperTR()
 // 0.9.4  2/15/2026  Changed R75_PetalHub params,
@@ -296,7 +297,7 @@ module R75_MotorTubeTopperTR(OD=ULineH75Body_ID, ID=ULine38Body_OD, MT_ID=ULine3
 
 module R75_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=3){
 	Tube_d=12.7;
-	Tube_Z=25;
+	Tube_Z=19.5;
 	Tube_a=-70;
 	TubeSlot_w=35;
 	TubeOffset_X=10;
@@ -308,26 +309,27 @@ module R75_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=3){
 	
 	difference(){
 		union(){
-			STB_BallRetainerTop(Body_ID=Body_ID, Body_OD=Body_ID, nLockBalls=nLockBalls,
-								HasIntegratedCouplerTube=true, IntegratedCouplerLenXtra=CouplerLenXtra,
-								Outer_OD=Body_OD,
-								HasSecondServo=false, UsesBigServo=false, Engagement_Len=Engagement_Len);
+			STB_BallRetainerTop(Body_ID=Body_ID, Outer_OD=Body_OD, Engagement_d=Body_ID, nLockBalls=nLockBalls,
+				HasIntegratedCouplerTube=true, IntegratedCouplerSkirtLen=Tube_d+Wall_t+0.2, 
+				nBolts=nBolts, Bolt_a=200, IntegratedCouplerLenXtra=-10, HasSecondServo=false, UsesBigServo=false, 
+				Engagement_Len=Engagement_Len, HasLargeInnerBearing=false, Xtra_r=0.0);
 			
-			translate([0,0,Tube_Z]) 
-				Tube(OD=Body_ID, ID=Body_ID-IDXtra-Wall_t*2, Len=Tube_d/2+Wall_t, myfn=$preview? 90:360);
+			//translate([0,0,Tube_Z]) 
+			//	Tube(OD=Body_ID, ID=Body_ID-IDXtra-Wall_t*2, Len=Tube_d/2+Wall_t, myfn=$preview? 90:360);
 			
 			// Shock cord retention
 			difference(){
-				rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z])
+				rotate([0,0,Tube_a]) 
 				hull(){
-					rotate([90,0,0]) cylinder(d=Tube_d+Wall_t*2, h=Body_ID-2, center=true);
-					translate([0,0,-17]) 
+					translate([TubeOffset_X,0,Tube_Z]) rotate([90,0,0]) 
+						cylinder(d=Tube_d+Wall_t*2, h=Body_ID-2, center=true);
+					translate([TubeOffset_X,0,8.5]) 
 						cube([Tube_d+6, Body_ID-2, 1], center=true);
 				} // hull
 				
-				rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z]) hull(){
-					rotate([90,0,0]) cylinder(d=Tube_d+7, h=TubeSlot_w, center=true);
-					translate([0,0,-17]) 
+				rotate([0,0,Tube_a]) hull(){
+					translate([TubeOffset_X,0,Tube_Z]) rotate([90,0,0]) cylinder(d=Tube_d+7, h=TubeSlot_w, center=true);
+					translate([TubeOffset_X,0,8.4]) 
 						cube([Tube_d+6+Overlap, TubeSlot_w,1], center=true);
 					}
 				// Trim outside
@@ -335,13 +337,15 @@ module R75_BallRetainerTop(Body_OD=Body_OD, Body_ID=Body_ID, nBolts=3){
 			} // difference
 		} // union
 	
+		// Al Tube hole
 		rotate([0,0,Tube_a]) translate([TubeOffset_X,0,Tube_Z]) rotate([90,0,0]) cylinder(d=Tube_d, h=Body_OD, center=true);
 		
+		/*
 		//Bolt holes for ebay
 		for (j=[0:nBolts-1]) rotate([0,0,360/nBolts*j+Bolt_a])
 			translate([0, -Body_OD/2-1, Engagement_Len/2+Skirt_H+7.5]) 
 				rotate([90,0,0]) Bolt4Hole(depth=6);
-		
+		/**/
 	} // difference
 } // R75_BallRetainerTop
 

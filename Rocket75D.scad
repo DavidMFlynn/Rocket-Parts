@@ -82,7 +82,7 @@
 //
 // *** Single/Dual Deploy Electronics Bay ***
 //
-DualDeploy=true;
+DualDeploy=false;
 // rotate([180,0,0]) ElectronicsBay(IsDualDeploy=DualDeploy, ShowDoors=false, TopOnly=true, BottomOnly=false);
 // ElectronicsBay(IsDualDeploy=DualDeploy, ShowDoors=false, TopOnly=false, BottomOnly=true);
 // 
@@ -91,6 +91,12 @@ DualDeploy=true;
 // rotate([-90,0,0]) EB_AltDoor(Tube_OD=Body_OD+Vinyl_d);
 // rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD+Vinyl_d, HasSwitch=true, DoubleBatt=false);
 // rotate([-90,0,0]) EB_BattDoor(Tube_OD=Body_OD+Vinyl_d, HasSwitch=false, DoubleBatt=false);
+/*
+difference(){
+	rotate([-90,0,0]) EB_RocketServo2Door(Tube_OD=Body_OD+Vinyl_d, HasMagSwitch=true, HasBatt=true, BlankDoor=true);
+	translate([0,0,8.8]) cube([100,200,40], center=true);
+} // difference
+/**/
 //
 // *** Ball Lock ***
 //
@@ -98,16 +104,17 @@ DualDeploy=true;
 // rotate([180,0,0]) R75_BallRetainerTop(Body_OD=Body_OD+Vinyl_d, Body_ID=Body_ID); // Print 2
 // R75_BallRetainerBottom(Body_ID=Body_ID, HasPD_Ring=false); // Forward
 // R75_BallRetainerBottom(Body_ID=Body_ID, HasPD_Ring=true); // Aft
-// rotate([180,0,0]) STB_TubeEnd2(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD, Engagement_Len=20); // Print 2
+// rotate([180,0,0]) STB_TubeEnd(Body_ID=Body_ID, nLockBalls=nLockBalls, Body_OD=Body_OD, Engagement_Len=20); // Print 2
 //
 // *** petal deployer ***
 //
 // PD_NC_PetalHub(OD=Coupler_OD, nPetals=nPetals, nRopes=3); // for dual deploy only
-// R75_PetalHub(Body_OD=Body_OD, Body_ID=Body_ID); // for bottom of ebay
+// R75_PetalHub(OD=Coupler_OD, nPetals=nPetals, nBolts=nPetals*2, Skirt_h=0, HasCenterHole=false); // for bottom of ebay
 // rotate([-90,0,0]) PD_PetalSpringHolder();  // Print 6
 // PD_Petals2(OD=Coupler_OD, Len=ForwardPetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
 // rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=AftPetal_Len, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
 // rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=75, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=0, HasLocks=false);
+// rotate([180,0,0]) PD_Petals(OD=Coupler_OD, Len=190, nPetals=nPetals, Wall_t=1.8, AntiClimber_h=4, HasLocks=false);
 //
 // SE_SpringEndTop(OD=Coupler_OD, Tube_ID=Coupler_OD-4.4, nRopeHoles=3, CutOutCenter=true);
 // SE_SlidingSpringMiddle(OD=Coupler_OD, nRopes=3);
@@ -135,7 +142,8 @@ DualDeploy=true;
 // Rocket75D_SFincan(LowerHalfOnly=false, UpperHalfOnly=false); // alt. Sustainer version for 2 stage
 //
 // RocketFin();
-// RocketFin(HasSpiralVaseRibs=false); // PETG-CF test fin
+// rotate([0,0,90]) RocketFin(HasSpiralVaseRibs=false); // PETG-CF test fin
+// RocketFinOld(HasSpiralVaseRibs=false);
 //
 // rotate([90,0,0]) BoltOnRailGuide(Length = RailGuideLen, BoltSpace=12.7, RoundEnds=true, ExtraBack=0);
 // rotate([-90,0,0]) RailGuideSpacer(OD=Body_OD, H=RailGuide_h, Length = RailGuideLen, BoltSpace=12.7);
@@ -169,6 +177,11 @@ DualDeploy=true;
 // Rocket75D_MotorRetainer();
 //
 // ***********************************
+//  ***** Tools *****
+//
+// BodyDrillingJig(Tube_OD=Body_OD+Vinyl_d, Tube_ID=Body_ID, nBolts=3, BoltInset=7.8);
+//
+// ***********************************
 //  ***** Routines *****
 //
 //
@@ -192,7 +205,7 @@ use<SpringThingBooster.scad>
 use<PetalDeploymentLib.scad>
 use<SpringEndsLib.scad>			echo(SpringEndsLibRev());
 use<R75Lib.scad>
-use<AT-RMS-Lib.scad>
+use<AT_RMS_Lib.scad>
 include<Stager75BBLib.scad>
 
 //also included
@@ -250,12 +263,19 @@ MotorCoupler_OD=BT38Coupler_OD;
 TailCone_Len=50;
 /**/
 // *** 54mm Motor Tube ***
-//*
+/*
 MotorTube_OD=BT54Body_OD;
 MotorTube_ID=BT54Body_ID;
 MotorCoupler_OD=BT54Coupler_OD;
 TailCone_Len=40;
 /**/
+//*
+MotorTube_OD=LOC54Body_OD;
+MotorTube_ID=LOC54Body_ID;
+MotorCoupler_OD=LOC54Coupler_OD;
+TailCone_Len=40;
+/**/
+
 
 TailConeExtra_OD=2;
 /**/
@@ -273,8 +293,8 @@ Fin_TipOffset=110;
 Fin_Chamfer_L=32;
 FinInset_Len=5;
 /**/
-
-//*
+//FinCan_Wall_t=1.2;
+/*
 // smaller for dual deploy
 nFins=5;
 //Fin_Post_h=14; // 38mm motor
@@ -287,6 +307,35 @@ Fin_Span=70;
 Fin_TipOffset=30;
 Fin_Chamfer_L=32;
 FinInset_Len=5;
+/**/
+
+/*
+// 5 smaller fins, old rocket replacement fins
+nFins=5;
+Fin_Post_h=10;
+Fin_Root_L=189.5; //<<<< was 190
+Fin_Root_W=7.0; //<<<< was 8
+Fin_Tip_W=2.0;
+Fin_Tip_L=83;
+Fin_Span=83;
+Fin_TipOffset=24;
+Fin_Chamfer_L=22;
+FinInset_Len=10;
+/**/
+//*
+// 5 simple trap fins
+nFins=5;
+Fin_Post_h=10;
+Fin_Root_L=150;
+Fin_Root_W=8.0;
+Fin_Tip_W=2.0;
+Fin_Tip_L=90;
+Fin_Span=90;
+Fin_TipOffset=0;
+Fin_Chamfer_L=22;
+FinInset_Len=5;
+FinCan_Wall_t=1.1;
+FinCan_HasMidCenteringRing=false;
 /**/
 
 /*
@@ -560,15 +609,16 @@ module S_LowerElectronicsBay(IsDualDeploy=false, ShowDoors=false, TopOnly=false,
 
 // S_LowerElectronicsBay(IsDualDeploy=false, ShowDoors=false, TopOnly=false, BottomOnly=false);
 
+
 module Rocket75D_Fincan(LowerHalfOnly=false, UpperHalfOnly=false, Hollow=true){
 	// for single stage version
 	FC2_FinCan(Body_OD=Body_OD+Vinyl_d, Body_ID=Body_ID, Can_Len=FinCan_Len,
 				MotorTube_OD=MotorTube_OD, RailGuide_h=RailGuide_h, RailGuideLen=RailGuideLen,
-				nFins=nFins, HasIntegratedCoupler=true, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
+				nFins=nFins, HasIntegratedCoupler=true, HasMidCenteringRing=FinCan_HasMidCenteringRing, HasMotorSleeve=true, HasAftIntegratedCoupler=false,
 				Fin_Root_W=Fin_Root_W, Fin_Root_L=Fin_Root_L, Fin_Post_h=Fin_Post_h, Fin_Chamfer_L=Fin_Chamfer_L,
 				Cone_Len=TailCone_Len, ThreadedTC=true, Extra_OD=TailConeExtra_OD,
 				LowerHalfOnly=LowerHalfOnly, UpperHalfOnly=UpperHalfOnly, HasWireHoles=false, HollowTailcone=Hollow, 
-				HollowFinRoots=Hollow, Wall_t=1.2, UseTrapFin3=true);
+				HollowFinRoots=Hollow, Wall_t=FinCan_Wall_t, UseTrapFin3=true);
 } // Rocket75D_Fincan
 
 // Rocket75D_Fincan(LowerHalfOnly=false, UpperHalfOnly=false);
@@ -615,6 +665,19 @@ module Rocket75D_MotorRetainer(){
 						HasWrenchCuts=false, Cone_Len=TailCone_Len, ExtraLen=0, Extra_OD=TailConeExtra_OD);
 } // Rocket75D_MotorRetainer
 	
+module RocketFinOld(HasSpiralVaseRibs=true){
+	
+	TrapFin2(Post_h=Fin_Post_h, Root_L=Fin_Root_L, Tip_L=Fin_Tip_L, Root_W=Fin_Root_W,
+				Tip_W=Fin_Tip_W, Span=Fin_Span, Chamfer_L=Fin_Chamfer_L,
+				TipOffset=Fin_TipOffset,
+				Bisect=false, Bisect_X=0,
+				HasSpar=false, Spar_d=8, Spar_L=100, HasSpiralVaseRibs=HasSpiralVaseRibs);
+				
+	
+} // RocketFinOld
+
+// RocketFinOld(HasSpiralVaseRibs=false);
+
 module RocketFin(HasSpiralVaseRibs=true){
 	
 	TrapFin3(Post_h=Fin_Post_h, Root_L=Fin_Root_L, Tip_L=Fin_Tip_L, Root_W=Fin_Root_W,

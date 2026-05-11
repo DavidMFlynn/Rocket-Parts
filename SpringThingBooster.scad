@@ -569,7 +569,7 @@ module STB_ManualArmingHole(Body_ID=BT75Body_ID){
 //STB_ManualArmingHole();
 
 module STB_BallRetainerTop(Body_ID=BT75Body_ID, Outer_OD=0, Engagement_d=BT75Body_ID, nLockBalls=nLockBalls,
-			HasIntegratedCouplerTube=false, nBolts=0, Bolt_a=0,
+			HasIntegratedCouplerTube=false, IntegratedCouplerSkirtLen=13, nBolts=0, Bolt_a=0,
 			IntegratedCouplerLenXtra=0,
 				
 			HasSecondServo=false,
@@ -663,7 +663,7 @@ module STB_BallRetainerTop(Body_ID=BT75Body_ID, Outer_OD=0, Engagement_d=BT75Bod
 			
 			if (HasIntegratedCouplerTube){
 				translate([0,0,Engagement_Len/2]) 
-					Tube(OD=Body_ID, ID=Body_ID-6, Len=IntCouplerLen+13, myfn=$preview? 90:360);
+					Tube(OD=Body_ID, ID=Body_ID-6, Len=IntCouplerLen+IntegratedCouplerSkirtLen, myfn=$preview? 90:360);
 					
 				// gap filler
 				translate([0,0,Engagement_Len/2]) 
